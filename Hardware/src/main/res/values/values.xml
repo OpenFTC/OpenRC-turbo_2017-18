@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="controllerPortConnectionInfoFormat">%1$s; port %2$d</string>
+    <string name="errorExpansionHubIsMissing">Expansion Hub \"%s\" is missing</string>
+    <string name="hwDeviceDescriptionAndConnection">\"%1$s [%2$s]\"</string>
+    <string name="hwPoorlyNamedDevice">an attached device</string>
+    <string name="progressUpdatingDeviceFirmware">Updating Expansion Hub firmware (%s)</string>
+    <string name="quotes">\"%s\"</string>
+    <string name="unhealthyDevice">problem with %s</string>
+    <string name="warningProblemCommunicatingWithUSBDevice">problem communicating with %s</string>
+    <string name="warningUSBDeviceDetached">%s detached</string>
+    <string name="warningUnableToOpen">unable to open %s</string>
+</resources>

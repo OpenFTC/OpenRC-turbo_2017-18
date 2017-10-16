@@ -506,7 +506,6 @@ public class FtcRobotControllerActivity extends Activity
       finish();
       return true;
     }
-
    return super.onOptionsItemSelected(item);
   }
 
