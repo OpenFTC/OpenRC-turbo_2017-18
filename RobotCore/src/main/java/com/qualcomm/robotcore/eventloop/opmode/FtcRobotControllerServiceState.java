@@ -2,7 +2,7 @@ package com.qualcomm.robotcore.eventloop.opmode;
 
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
+// modified for turbo: removed webserver import
 
 /**
  * Created by David on 7/7/2017.

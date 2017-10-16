@@ -68,7 +68,7 @@ import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterRC;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
+// modified for turbo: remove webserver import
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -108,7 +108,7 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
   private WifiDirectAgent wifiDirectAgent = WifiDirectAgent.getInstance();
   private final Object    wifiDirectCallbackLock = new Object();
 
-  private final WebServer webServer = new WebServer();
+  // modified for turbo: removed webserver var declaration
 
   //----------------------------------------------------------------------------------------------
   // Initialization
@@ -322,9 +322,7 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     return this.robot;
   }
 
-  public @NonNull WebServer getWebServer() {
-    return this.webServer;
-  }
+  //modified for turbo: removed getWebServer method
 
   @Override public void onCreate() {
     super.onCreate();
@@ -375,7 +373,7 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
   @Override public void onDestroy() {
     super.onDestroy();
     RobotLog.vv(TAG, "onDestroy()");
-    webServer.stop();
+    //modified for turbo: no need to stop a nonexistent webserver
     stopLEDS();
     wifiDirectAgent.unregisterCallback(this);
   }
@@ -479,7 +477,7 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
         break;
       case CONNECTION_INFO_AVAILABLE:
         RobotLog.ii(TAG, "Network Connection Passphrase: " + networkConnection.getPassphrase());
-        webServer.start();
+        //modified for turbo: don't start the webserver here
         break;
       case ERROR:
         RobotLog.ee(TAG, "Network Connection Error: " + networkConnection.getFailureReason());

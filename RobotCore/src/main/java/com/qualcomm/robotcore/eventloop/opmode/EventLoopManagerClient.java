@@ -34,7 +34,7 @@ package com.qualcomm.robotcore.eventloop.opmode;
 
 import android.support.annotation.NonNull;
 
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
+//modified for turbo: removed webserver import
 
 /**
  * Provides certain functionality to the EventLoopManager from its client
@@ -42,5 +42,5 @@ import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 @SuppressWarnings("WearkAccess")
 public interface EventLoopManagerClient
     {
-    @NonNull WebServer getWebServer();
+        //modified for turbo: Removed getWebServer
     }

@@ -33,7 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.robotcore.internal.opmode;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
@@ -41,8 +40,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Supplier;
-import org.firstinspires.ftc.robotcore.internal.files.FileModifyObserver;
-import org.firstinspires.ftc.robotcore.internal.files.RecursiveFileObserver;
+//modified for turbo: removed file watcher imports
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 
@@ -59,6 +57,7 @@ import java.util.Map;
 @SuppressWarnings("WeakerAccess")
 public class RegisteredOpModes implements OpModeManager
     {
+
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -79,10 +78,7 @@ public class RegisteredOpModes implements OpModeManager
 
     protected final List<InstanceOpModeRegistrar> instanceOpModeRegistrars = new ArrayList<InstanceOpModeRegistrar>();
 
-    protected RecursiveFileObserver blocksOpModeMonitor;
-    protected volatile boolean      blocksOpModesChanged;
-    protected FileModifyObserver    onBotJavaMonitor;
-    protected volatile boolean      onBotJavaChanged;
+    // modified for turbo: removed file watcher objects for OnBot and Blockly
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -90,60 +86,10 @@ public class RegisteredOpModes implements OpModeManager
 
     public RegisteredOpModes()
         {
-        // Setup OnBotJava monitoring system
-        onBotJavaChanged = false;
-        onBotJavaMonitor = new FileModifyObserver(OnBotJavaManager.buildSuccessfulFile, new FileModifyObserver.Listener()
-            {
-            @Override
-            public void onFileChanged(int event, File file)
-                {
-                RobotLog.vv(TAG, "noting that OnBotJava changed");
-                onBotJavaChanged = true;
-                }
-            });
-
-        // Setup Blocks monitoring system
-        blocksOpModesChanged = false;
-        final int blocksOpModeMonitorAccess = RecursiveFileObserver.CLOSE_WRITE | RecursiveFileObserver.DELETE | RecursiveFileObserver.MOVED_FROM | RecursiveFileObserver.MOVED_TO;
-        blocksOpModeMonitor = new RecursiveFileObserver(AppUtil.BLOCK_OPMODES_DIR, blocksOpModeMonitorAccess, RecursiveFileObserver.Mode.NONRECURSVIVE, new RecursiveFileObserver.Listener()
-            {
-            @Override
-            public void onEvent(int event, File file)
-                {
-                if ((event & blocksOpModeMonitorAccess) != 0)
-                    {
-                    if (file.getName().endsWith(AppUtil.BLOCKS_JS_EXT) || file.getName().endsWith(AppUtil.BLOCKS_BLK_EXT))
-                        {
-                        RobotLog.vv(TAG, "noting that Blocks changed");
-                        blocksOpModesChanged = true;
-                        }
-                    }
-                }
-            });
-        blocksOpModeMonitor.startWatching();
+            //modified for turbo: removed file monitoring code for blocks and OnBot
         }
 
-    //----------------------------------------------------------------------------------------------
-    // Change management
-    //----------------------------------------------------------------------------------------------
-
-    public boolean getOnBotJavaChanged()
-        {
-        return onBotJavaChanged;
-        }
-    public void clearOnBotJavaChanged()
-        {
-        onBotJavaChanged = false;
-        }
-
-    public boolean getBlocksOpModesChanged()
-        {
-        return blocksOpModesChanged;
-        }
-    public void clearBlocksOpModesChanged()
-        {
-        blocksOpModesChanged = false;
-        }
+    // modified for turbo: removed "change management" section with public methods for monitoring new opmodes
 
     //----------------------------------------------------------------------------------------------
     // OpMode management

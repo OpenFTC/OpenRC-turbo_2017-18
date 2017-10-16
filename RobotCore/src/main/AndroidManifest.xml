@@ -68,15 +68,6 @@
         <meta-data
             android:name="autoStartService.org.firstinspires.ftc.robotcore.internal.files.MediaTransferProtocolMonitorService"
             android:value="BOTH|1000" />
-
-        <!-- Service that provides build services for OnBotJava -->
-        <service
-            android:name="org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaService"
-            android:enabled="true" />
-
-        <meta-data
-            android:name="autoStartService.org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaService"
-            android:value="RC|2000" />
     </application>
 
 </manifest>

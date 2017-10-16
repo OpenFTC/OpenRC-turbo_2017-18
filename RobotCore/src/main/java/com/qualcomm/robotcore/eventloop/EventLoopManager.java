@@ -63,7 +63,7 @@ import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.SendOnceRunnable;
 import org.firstinspires.ftc.robotcore.internal.network.SocketConnect;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
-import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
+//modified for turbo: removed webserver import
 
 import java.net.InetAddress;
 import java.util.Set;
@@ -155,9 +155,7 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
   // Accessors
   //------------------------------------------------------------------------------------------------
 
-  public @NonNull WebServer getWebServer() {
-    return eventLoopManagerClient.getWebServer();
-  }
+  //modified for turbo: removed getWebserver method
 
   /**
    * Set a monitor for this event loop

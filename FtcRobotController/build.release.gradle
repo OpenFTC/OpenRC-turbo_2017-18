@@ -1,7 +1,6 @@
 dependencies {
     compile project(':RobotCore')
     compile project(':Inspection')
-    compile project(':Blocks')
     compile project(':Hardware')
     compile project(':FtcCommon')
     compile (name:'Analytics-release', ext:'aar')

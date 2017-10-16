@@ -122,8 +122,8 @@ public class FtcEventLoop extends FtcEventLoopBase {
   // Construction
   //------------------------------------------------------------------------------------------------
 
-  public FtcEventLoop(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext, ProgrammingModeController programmingModeController) {
-    super(hardwareFactory, userOpmodeRegister, callback, activityContext, programmingModeController);
+  public FtcEventLoop(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext) { //modified for turbo: removed programmingModeController parameter
+    super(hardwareFactory, userOpmodeRegister, callback, activityContext); //modified for turbo: removed programmingModeController parameter
     this.opModeManager              = createOpModeManager(activityContext);
     this.usbModuleAttachmentHandler = new DefaultUsbModuleAttachmentHandler();
     this.recentlyAttachedUsbDevices = new ConcurrentHashMap<String,Long>();
@@ -201,7 +201,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
       processOpModeStopRequest(opModeToStop);
     }
 
-    checkForChangedOpModes();
+    // checkForChangedOpModes(); //modified for turbo: don't check for new OpModes
 
     ftcEventLoopHandler.displayGamePadInfo(opModeManager.getActiveOpModeName());
     Gamepad gamepads[] = ftcEventLoopHandler.getGamepads();

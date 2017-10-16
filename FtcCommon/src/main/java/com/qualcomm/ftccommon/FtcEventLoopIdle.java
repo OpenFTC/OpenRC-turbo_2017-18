@@ -28,9 +28,9 @@ public class FtcEventLoopIdle extends FtcEventLoopBase
     {
     public static final String TAG = "FtcEventLoopIdle";
 
-    public FtcEventLoopIdle(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext, ProgrammingModeController programmingModeController)
-        {
-        super(hardwareFactory, userOpmodeRegister, callback, activityContext, programmingModeController);
+    public FtcEventLoopIdle(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext) //modified for turbo: remmove programming mode controller parameter
+    {
+        super(hardwareFactory, userOpmodeRegister, callback, activityContext);
         }
 
     @Override
@@ -49,7 +49,7 @@ public class FtcEventLoopIdle extends FtcEventLoopBase
     @Override public void loop() throws RobotCoreException, InterruptedException
         {
         try {
-            checkForChangedOpModes();
+            //checkForChangedOpModes(); modified for turbo
             }
         catch (Exception e)
             {
