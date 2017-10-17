@@ -75,33 +75,27 @@ public class ViewLogsActivity extends ThemedActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_view_logs);
 
-    setContentView(R.layout.activity_view_logs_enhanced);
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    boolean wrapLines = sharedPreferences.getBoolean(getString(R.string.pref_line_wrap_log), false);
 
-    LinearLayout layout = (LinearLayout) findViewById(R.id.viewLogsActivityLinearLayout);
-    final ScrollView logViewerVerticalScrollView = new ScrollView(this);
-    logViewerVerticalScrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    HorizontalScrollView logViewerHorizontalScrollView = new HorizontalScrollView(this);
-    logViewerHorizontalScrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    textAdbLogs = new TextView(this);
-    textAdbLogs.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-    textAdbLogs.setTextSize(12);
-    logViewerVerticalScrollView.addView(textAdbLogs);
 
-    if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("enhancedLogView", false))
-    {
-      logViewerHorizontalScrollView.addView(logViewerVerticalScrollView);
-      layout.addView(logViewerHorizontalScrollView);
-    }
-    else
-    {
-      layout.addView(logViewerVerticalScrollView);
+    LinearLayout rootLayout = (LinearLayout)findViewById(R.id.viewLogsActivityLinearLayout);
+    HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
+    final ScrollView verticalScrollView = (ScrollView) findViewById(R.id.verticalScrollView);
+    textAdbLogs = (TextView) findViewById(R.id.textAdbLogs);
+
+    if(wrapLines) {
+      horizontalScrollView.removeView(verticalScrollView);
+      rootLayout.removeView(horizontalScrollView);
+      rootLayout.addView(verticalScrollView);
     }
 
-    logViewerVerticalScrollView.post(new Runnable() {
+    verticalScrollView.post(new Runnable() {
       @Override
       public void run() {
-        logViewerVerticalScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+        verticalScrollView.fullScroll(ScrollView.FOCUS_DOWN);
       }
     });
   }

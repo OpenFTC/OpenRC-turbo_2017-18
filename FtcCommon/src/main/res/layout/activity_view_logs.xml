@@ -1,0 +1,36 @@
+<!--Padding is hardcoded because this activity doesn't have typical UI features,
+ and standard padding consequently looks weird-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:id="@+id/viewLogsActivityLinearLayout"
+    android:paddingStart="8dp"
+    android:paddingEnd="0dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    tools:context="com.qualcomm.ftccommon.ViewLogsActivity"
+    android:orientation="vertical">
+
+  <HorizontalScrollView
+      android:id="@+id/horizontalScrollView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/verticalScrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+      <TextView
+          android:id="@+id/textAdbLogs"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp" />
+
+    </ScrollView>
+
+  </HorizontalScrollView>
+</LinearLayout>
