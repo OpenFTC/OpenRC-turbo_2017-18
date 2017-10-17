@@ -194,7 +194,7 @@ public class AboutActivity extends ThemedActivity {
       private Item getTurboVersion() {
         Item i = new Item();
         i.title = getString(R.string.about_turbo_version_title);
-        i.info = "1.1";
+        i.info = getString(R.string.about_turbo_version);
         return i;
       }
     };
