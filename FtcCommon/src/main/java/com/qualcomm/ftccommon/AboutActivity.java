@@ -135,7 +135,7 @@ public class AboutActivity extends ThemedActivity {
       @Override
       public int getCount()
       {
-        return 5;
+        return 6;
       }
 
       @Override
@@ -146,6 +146,7 @@ public class AboutActivity extends ThemedActivity {
           case 2: return getNetworkProtocolVersion();
           case 3: return getConnectionInfo();
           case 4: return getBuildTimeInfo();
+          case 5: return getTurboVersion();
         }
         return new Item();
       }
@@ -187,6 +188,13 @@ public class AboutActivity extends ThemedActivity {
         Item i = new Item();
         i.title = getString(R.string.about_build_time);
         i.info = getBuildTime();
+        return i;
+      }
+
+      private Item getTurboVersion() {
+        Item i = new Item();
+        i.title = getString(R.string.about_turbo_version_title);
+        i.info = getString(R.string.about_turbo_version);
         return i;
       }
     };
