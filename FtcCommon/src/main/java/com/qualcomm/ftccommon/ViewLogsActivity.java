@@ -42,6 +42,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -73,22 +76,32 @@ public class ViewLogsActivity extends ThemedActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    setContentView(R.layout.activity_view_logs_enhanced);
+
+    LinearLayout layout = (LinearLayout) findViewById(R.id.viewLogsActivityLinearLayout);
+    final ScrollView logViewerVerticalScrollView = new ScrollView(this);
+    logViewerVerticalScrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    HorizontalScrollView logViewerHorizontalScrollView = new HorizontalScrollView(this);
+    logViewerHorizontalScrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    textAdbLogs = new TextView(this);
+    textAdbLogs.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    textAdbLogs.setTextSize(12);
+    logViewerVerticalScrollView.addView(textAdbLogs);
+
     if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("enhancedLogView", false))
     {
-      setContentView(R.layout.activity_view_logs_enhanced);
+      logViewerHorizontalScrollView.addView(logViewerVerticalScrollView);
+      layout.addView(logViewerHorizontalScrollView);
     }
     else
     {
-      setContentView(R.layout.activity_view_logs);
+      layout.addView(logViewerVerticalScrollView);
     }
 
-    textAdbLogs = (TextView) findViewById(R.id.textAdbLogs);
-
-    final ScrollView scrollView = ((ScrollView) findViewById(R.id.scrollView));
-    scrollView.post(new Runnable() {
+    logViewerVerticalScrollView.post(new Runnable() {
       @Override
       public void run() {
-        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+        logViewerVerticalScrollView.fullScroll(ScrollView.FOCUS_DOWN);
       }
     });
   }
@@ -126,15 +139,8 @@ public class ViewLogsActivity extends ThemedActivity {
         try {
           String output = readNLines(DEFAULT_NUMBER_OF_LINES);
 
-          if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("enhancedLogView", false))
-          {
-            Spannable colorized = colorize(output);
-            textAdbLogs.setText(colorized);
-          }
-          else
-          {
-            textAdbLogs.setText(output);
-          }
+          Spannable colorized = colorize(output);
+          textAdbLogs.setText(colorized);
 
         } catch (IOException e) {
           RobotLog.e(e.toString());
