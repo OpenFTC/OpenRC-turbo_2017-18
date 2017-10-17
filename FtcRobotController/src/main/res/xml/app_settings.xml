@@ -50,7 +50,6 @@ See https://developer.android.com/guide/topics/ui/settings.html
         android:title="@string/prefedit_device_name_rc"
         android:summary="@string/prefedit_device_name_summary_rc"
         android:key="@string/pref_device_name"
-        android:defaultValue=""
         />
 
     <org.firstinspires.ftc.robotcore.internal.ui.ColorListPreference
@@ -79,15 +78,28 @@ See https://developer.android.com/guide/topics/ui/settings.html
             />
     </PreferenceScreen>
 
-    <PreferenceScreen
-        android:title="@string/prefedit_view_logs"
-        android:summary="@string/prefedit_view_logs_summary"
-        android:key="@string/pref_launch_viewlogs">
-      <intent
-        android:targetPackage="@string/packageName"
-        android:targetClass="com.qualcomm.ftccommon.ViewLogsActivity" />
-    </PreferenceScreen>
 
+
+  </PreferenceCategory>
+
+  <PreferenceCategory
+      android:title="@string/prefcat_logging">
+
+    <SwitchPreference
+          android:title="@string/pref_line_wrap_log_title"
+          android:summary="@string/pref_line_wrap_log_summary"
+          android:key="@string/pref_line_wrap_log"
+          android:defaultValue="false"
+          />
+
+    <PreferenceScreen
+          android:title="@string/prefedit_view_logs"
+          android:summary="@string/prefedit_view_logs_summary"
+          android:key="@string/pref_launch_viewlogs">
+        <intent
+            android:targetPackage="@string/packageName"
+            android:targetClass="com.qualcomm.ftccommon.ViewLogsActivity" />
+      </PreferenceScreen>
   </PreferenceCategory>
 
 </PreferenceScreen>

@@ -32,14 +32,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.ftccommon;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -72,13 +77,25 @@ public class ViewLogsActivity extends ThemedActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_view_logs);
 
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    boolean wrapLines = sharedPreferences.getBoolean(getString(R.string.pref_line_wrap_log), false);
+
+
+    LinearLayout rootLayout = (LinearLayout)findViewById(R.id.viewLogsActivityLinearLayout);
+    HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
+    final ScrollView verticalScrollView = (ScrollView) findViewById(R.id.verticalScrollView);
     textAdbLogs = (TextView) findViewById(R.id.textAdbLogs);
 
-    final ScrollView scrollView = ((ScrollView) findViewById(R.id.scrollView));
-    scrollView.post(new Runnable() {
+    if(wrapLines) {
+      horizontalScrollView.removeView(verticalScrollView);
+      rootLayout.removeView(horizontalScrollView);
+      rootLayout.addView(verticalScrollView);
+    }
+
+    verticalScrollView.post(new Runnable() {
       @Override
       public void run() {
-        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+        verticalScrollView.fullScroll(ScrollView.FOCUS_DOWN);
       }
     });
   }
@@ -115,8 +132,10 @@ public class ViewLogsActivity extends ThemedActivity {
       public void run() {
         try {
           String output = readNLines(DEFAULT_NUMBER_OF_LINES);
+
           Spannable colorized = colorize(output);
           textAdbLogs.setText(colorized);
+
         } catch (IOException e) {
           RobotLog.e(e.toString());
           textAdbLogs.setText("File not found: " + filepath);
@@ -168,7 +187,7 @@ public class ViewLogsActivity extends ThemedActivity {
     String[] lines = output.split("\\n");
     int currentStringIndex = 0;
     for (String line : lines) {
-      if (line.contains("E/RobotCore") || line.contains(RobotLog.ERROR_PREPEND)) {
+      if (line.contains("E RobotCore") || line.contains(RobotLog.ERROR_PREPEND)) {
         span.setSpan(new ForegroundColorSpan(Color.RED),
             currentStringIndex, currentStringIndex + line.length(),
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
