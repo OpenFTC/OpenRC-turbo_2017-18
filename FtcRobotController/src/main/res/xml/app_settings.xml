@@ -50,7 +50,7 @@ See https://developer.android.com/guide/topics/ui/settings.html
         android:title="@string/prefedit_device_name_rc"
         android:summary="@string/prefedit_device_name_summary_rc"
         android:key="@string/pref_device_name"
-        android:defaultValue=""
+
         />
 
     <org.firstinspires.ftc.robotcore.internal.ui.ColorListPreference
@@ -66,6 +66,13 @@ See https://developer.android.com/guide/topics/ui/settings.html
         android:title="@string/prefedit_sound_on_off"
         android:summary="@string/prefedit_sound_on_off_summary"
         android:key="@string/pref_sound_on_off"
+        android:defaultValue="true"
+        />
+
+    <SwitchPreference
+        android:title="@string/prefEnhancedLogViewerTitle"
+        android:summary="@string/prefEnhancedLogViewerSummary"
+        android:key="@string/prefEnhancedLogViewer"
         android:defaultValue="true"
         />
 

@@ -32,10 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.ftccommon;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -70,7 +72,15 @@ public class ViewLogsActivity extends ThemedActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_view_logs);
+
+    if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("enhancedLogView", false))
+    {
+      setContentView(R.layout.activity_view_logs_enhanced);
+    }
+    else
+    {
+      setContentView(R.layout.activity_view_logs);
+    }
 
     textAdbLogs = (TextView) findViewById(R.id.textAdbLogs);
 
@@ -115,8 +125,17 @@ public class ViewLogsActivity extends ThemedActivity {
       public void run() {
         try {
           String output = readNLines(DEFAULT_NUMBER_OF_LINES);
-          Spannable colorized = colorize(output);
-          textAdbLogs.setText(colorized);
+
+          if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("enhancedLogView", false))
+          {
+            Spannable colorized = colorize(output);
+            textAdbLogs.setText(colorized);
+          }
+          else
+          {
+            textAdbLogs.setText(output);
+          }
+
         } catch (IOException e) {
           RobotLog.e(e.toString());
           textAdbLogs.setText("File not found: " + filepath);
@@ -168,7 +187,7 @@ public class ViewLogsActivity extends ThemedActivity {
     String[] lines = output.split("\\n");
     int currentStringIndex = 0;
     for (String line : lines) {
-      if (line.contains("E/RobotCore") || line.contains(RobotLog.ERROR_PREPEND)) {
+      if (line.contains("E RobotCore") || line.contains(RobotLog.ERROR_PREPEND)) {
         span.setSpan(new ForegroundColorSpan(Color.RED),
             currentStringIndex, currentStringIndex + line.length(),
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

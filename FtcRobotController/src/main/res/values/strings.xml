@@ -67,5 +67,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </integer-array>
 
   <string name="packageName">@string/packageNameRobotController</string>
+    <string name="prefEnhancedLogViewerTitle">Enhanced log viewer</string>
+    <string name="prefEnhancedLogViewerSummary">Makes the log viewer scroll horizontally as well as vertically. Also changes error lines to red.</string>
+    <string name="prefEnhancedLogViewer">enhancedLogView</string>
 
 </resources>
