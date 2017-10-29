@@ -5,6 +5,8 @@ OpenFTC-app provides teams a new way to use the [FTC SDK](https://github.com/ftc
 
 This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system.
 
+OpenFTC-app-turbo removes the OnBotJava and Blocks programming systems for teams that don't use or need them, speeding up deploy time by removing the large files required for those systems. If you use these systems, please see [OpenFTC-app](https://github.com/OpenFTC/OpenFTC-app).
+
 ## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
