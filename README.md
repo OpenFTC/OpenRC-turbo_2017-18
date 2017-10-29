@@ -1,5 +1,10 @@
-Let's show FIRST the power of the community
+Let's show FIRST the power of the community!
 ---
+
+OpenFTC-app provides teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app). Since the AAR files have been converted to modules in the Android Studio project, all changes in code can be tracked and modified, with full Gradle support. This allows proper changelogs - teams can see exactly which code has been changed and how it will affect them.
+
+This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system.
+
 ## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
