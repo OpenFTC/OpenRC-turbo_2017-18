@@ -8,4 +8,4 @@
                  android:paddingBottom="15dp"
                  android:ellipsize="marquee"
                  android:gravity="end"
-                 android:maxLines="1"/>
+                 android:singleLine="true"/>
