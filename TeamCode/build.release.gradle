@@ -1,7 +1,7 @@
 dependencies {
-    compile project(':FtcRobotController')
-    compile project(':RobotCore')
-    compile project(':Hardware')
-    compile project(':FtcCommon')
-    compile (name:'WirelessP2p-release', ext:'aar')
+    implementation project(':FtcRobotController')
+    implementation project(':RobotCore')
+    implementation project(':Hardware')
+    implementation project(':FtcCommon')
+    implementation (name:'WirelessP2p-release', ext:'aar')
 }

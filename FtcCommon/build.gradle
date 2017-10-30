@@ -26,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':RobotCore')
-    compile project(':Hardware')
-    compile project(':Inspection')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':RobotCore')
+    implementation project(':Hardware')
+    implementation project(':Inspection')
 }
