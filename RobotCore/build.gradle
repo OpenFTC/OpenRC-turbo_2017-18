@@ -1,9 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "25.0.3"
-
+    compileSdkVersion 26
 
     defaultConfig {
         minSdkVersion 19
@@ -22,5 +20,5 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs') //mark as api once we update the Android plugin to 3.0+
+    api fileTree(include: ['*.jar'], dir: 'libs') // api configuration required because RobotCore leaks lots of dependencies
 }
