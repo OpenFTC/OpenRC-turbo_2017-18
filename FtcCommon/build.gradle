@@ -1,9 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "25.0.3"
-
+    compileSdkVersion 26
 
     defaultConfig {
         minSdkVersion 19
@@ -28,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':RobotCore')
-    compile project(':Hardware')
-    compile project(':Inspection')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':RobotCore')
+    implementation project(':Hardware')
+    implementation project(':Inspection')
 }
