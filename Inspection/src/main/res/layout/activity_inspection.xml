@@ -410,6 +410,40 @@
 
         </LinearLayout>
 
+
+        <TextView
+            android:id="@+id/textOpenFTCWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="OpenFTC is a modified version of the SDK. For more information, see the About screen."
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textOpenFTCVersionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OpenFTC Version:"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/txtOpenFTCVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
         <Space
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -431,7 +465,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="Software courtesy of Team HazMat \n9277 &amp; 10650"
+                android:layout_marginTop="25dp"
+                android:text="Original inspection software courtesy of Team HazMat 9277 &amp; 10650"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
 

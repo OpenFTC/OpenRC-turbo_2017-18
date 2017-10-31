@@ -61,6 +61,7 @@ import com.google.blocks.ftcrobotcontroller.ProgrammingModeActivity;
 import com.google.blocks.ftcrobotcontroller.ProgrammingModeControllerImpl;
 import com.google.blocks.ftcrobotcontroller.ProgrammingWebHandlers;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
+import com.openftc.OpenFTCConfig;
 import com.qualcomm.ftccommon.AboutActivity;
 import com.qualcomm.ftccommon.ClassManagerFactory;
 import com.qualcomm.ftccommon.FtcEventLoop;
@@ -143,6 +144,8 @@ public class FtcRobotControllerActivity extends Activity
   protected TextView textOpMode;
   protected TextView textErrorMessage;
   protected ImmersiveMode immersion;
+
+  protected TextView textOpenFTCVersion;
 
   protected UpdateUI updateUI;
   protected Dimmer dimmer;
@@ -280,6 +283,10 @@ public class FtcRobotControllerActivity extends Activity
     textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
     textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
+
+    textOpenFTCVersion = (TextView) findViewById(R.id.openftc_version);
+    textOpenFTCVersion.setText(OpenFTCConfig.VERSION_COMPLETE);
+
     immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(this);
     dimmer.longBright();
@@ -399,12 +406,16 @@ public class FtcRobotControllerActivity extends Activity
   }
 
   protected void logPackageVersions() {
+    RobotLog.v("THIS APP WAS MADE FROM OpenFTC, A MODIFIED VERSION OF THE SDK.");
+    RobotLog.v("You can find more information at http://OpenFTC.org or the About screen.");
+    RobotLog.v("OpenFTC Version: " + OpenFTCConfig.VERSION_COMPLETE);
     RobotLog.logBuildConfig(com.qualcomm.ftcrobotcontroller.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.robotcore.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.hardware.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
     RobotLog.logBuildConfig(com.google.blocks.BuildConfig.class);
     RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
+    RobotLog.logBuildConfig(com.openftc.OpenFTCConfig.class);
   }
 
   protected void readNetworkType() {

@@ -32,4 +32,5 @@ repositories {
 
 dependencies {
     compile project(':RobotCore')
+    compile project(':OpenFTC')
 }
