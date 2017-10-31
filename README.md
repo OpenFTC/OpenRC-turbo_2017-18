@@ -1,6 +1,12 @@
 Let's show FIRST the power of the community!
 ---
 
+Version 3.5 of the official SDK has been released. Right now, OpenFTC is still based on version 3.4. 
+If you are using OpenFTC, DO NOT ATTEMPT TO UPDATE TO VERSION 3.5 until OpenFTC has itself been updated.
+At the latest, OpenFTC and OpenFTC Turbo will be updated by end of day November 7. 
+
+The OpenFTC documentation is still under construction.
+
 OpenFTC-app provides teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app). Since the AAR files have been converted to modules in the Android Studio project, all changes in code can be tracked and modified, with full Gradle support. This allows proper changelogs - teams can see exactly which code has been changed and how it will affect them.
 
 This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system.
