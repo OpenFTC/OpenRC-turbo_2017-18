@@ -42,7 +42,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.openftc.OpenFTCConfig;
+import org.openftc.openftc.OpenFTCConfig;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.ThreadPool;

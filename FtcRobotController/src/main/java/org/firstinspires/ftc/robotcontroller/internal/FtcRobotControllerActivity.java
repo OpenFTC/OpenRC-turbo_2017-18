@@ -61,7 +61,6 @@ import com.google.blocks.ftcrobotcontroller.ProgrammingModeActivity;
 import com.google.blocks.ftcrobotcontroller.ProgrammingModeControllerImpl;
 import com.google.blocks.ftcrobotcontroller.ProgrammingWebHandlers;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
-import com.openftc.OpenFTCConfig;
 import com.qualcomm.ftccommon.AboutActivity;
 import com.qualcomm.ftccommon.ClassManagerFactory;
 import com.qualcomm.ftccommon.FtcEventLoop;
@@ -109,6 +108,9 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.RcInspectionActivity;
+import org.openftc.openftc.OpenFTCConfig;
+import org.openftc.openftc.UI_Utils;
+import org.openftc.openftc.Utils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -220,6 +222,18 @@ public class FtcRobotControllerActivity extends Activity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     RobotLog.vv(TAG, "onCreate()");
+
+    /*
+     * Check to see if the DS app is also installed.
+     * If it is, then show the user a dialog explaining
+     * the situation and offer them the option to uninstall
+     * either the DS app or the RC app
+     */
+    if(Utils.isFtcDriverStationInstalled(getPackageManager()))
+    {
+      UI_Utils.showDsAppNotInstalledDialog(this);
+    }
+
     ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor
 
     Assert.assertTrue(FtcRobotControllerWatchdogService.isFtcRobotControllerActivity(AppUtil.getInstance().getRootActivity()));
@@ -415,7 +429,7 @@ public class FtcRobotControllerActivity extends Activity
     RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
     RobotLog.logBuildConfig(com.google.blocks.BuildConfig.class);
     RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
-    RobotLog.logBuildConfig(com.openftc.OpenFTCConfig.class);
+    RobotLog.logBuildConfig(org.openftc.openftc.OpenFTCConfig.class);
   }
 
   protected void readNetworkType() {
