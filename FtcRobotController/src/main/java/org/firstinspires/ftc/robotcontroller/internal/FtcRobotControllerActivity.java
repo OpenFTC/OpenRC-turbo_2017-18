@@ -231,7 +231,7 @@ public class FtcRobotControllerActivity extends Activity
      */
     if(Utils.isFtcDriverStationInstalled(getPackageManager()))
     {
-      UI_Utils.showDsAppNotInstalledDialog(this);
+      UI_Utils.showDsAppInstalledDialog(this);
     }
 
     ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor
