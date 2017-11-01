@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
 
 public class UI_Utils
 {
-    public static void showDsAppNotInstalledDialog (final Activity activity)
+    public static void showDsAppInstalledDialog (final Activity activity)
     {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(activity);
