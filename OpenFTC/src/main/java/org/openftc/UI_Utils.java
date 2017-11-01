@@ -1,4 +1,4 @@
-package org.openftc.openftc;
+package org.openftc;
 
 import android.app.Activity;
 import android.app.AlertDialog;

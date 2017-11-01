@@ -1,4 +1,4 @@
-package org.openftc.openftc;
+package org.openftc;
 
 public class OpenFTCConfig {
     // Mimics the structure of a generated BuildConfig file - maintain the basic format and keep the first three fields intact.

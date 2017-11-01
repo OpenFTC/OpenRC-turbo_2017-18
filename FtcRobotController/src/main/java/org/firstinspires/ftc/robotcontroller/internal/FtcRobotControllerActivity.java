@@ -108,9 +108,9 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.RcInspectionActivity;
-import org.openftc.openftc.OpenFTCConfig;
-import org.openftc.openftc.UI_Utils;
-import org.openftc.openftc.Utils;
+import org.openftc.OpenFTCConfig;
+import org.openftc.UI_Utils;
+import org.openftc.Utils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -429,7 +429,7 @@ public class FtcRobotControllerActivity extends Activity
     RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
     RobotLog.logBuildConfig(com.google.blocks.BuildConfig.class);
     RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
-    RobotLog.logBuildConfig(org.openftc.openftc.OpenFTCConfig.class);
+    RobotLog.logBuildConfig(OpenFTCConfig.class);
   }
 
   protected void readNetworkType() {
