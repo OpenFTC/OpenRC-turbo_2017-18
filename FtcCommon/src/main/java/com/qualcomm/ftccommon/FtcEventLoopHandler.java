@@ -108,12 +108,37 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
 
     long milliseconds = (long)(robotControllerBatteryCheckerInterval * 1000); //milliseconds
     robotControllerBatteryChecker = new BatteryChecker(robotControllerContext, this, milliseconds);
-    robotControllerBatteryChecker.startBatteryMonitoring();
   }
+
+  //------------------------------------------------------------------------------------------------
+  // Loop life cycle
+  //------------------------------------------------------------------------------------------------
 
   public void init(EventLoopManager eventLoopManager) {
     this.eventLoopManager = eventLoopManager;
+    robotControllerBatteryChecker.startBatteryMonitoring();
   }
+
+  public void close() {
+    // Close motor and servo controllers first, since some of them may reside on top
+    // of legacy modules: closing first just keeps things more graceful
+    closeMotorControllers();
+    closeServoControllers();
+
+    // Now close everything that's USB-connected (yes that might re-close a motor or servo
+    // controller, but that's ok
+    closeAutoCloseOnTeardown();
+
+    // Stop the battery monitoring so we don't send stale telemetry
+    closeBatteryMonitoring();
+
+    // Paranoia: shut down interactions for absolute certain
+    eventLoopManager = null;
+  }
+
+  //------------------------------------------------------------------------------------------------
+  // Accessing
+  //------------------------------------------------------------------------------------------------
 
   public EventLoopManager getEventLoopManager() {
     return eventLoopManager;
@@ -125,7 +150,6 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
 
         // Create a newly-active hardware map
         hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
-
       }
       return hardwareMap;
     }
@@ -155,13 +179,15 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
       updateUITimer.reset();
 
       // Get access to gamepad 1 and 2
-      Gamepad gamepads[] = eventLoopManager.getGamepads();
+      Gamepad gamepads[] = getGamepads();
       callback.updateUi(activeOpModeName, gamepads);
     }
   }
 
   public Gamepad[] getGamepads() {
-    return eventLoopManager.getGamepads();
+    return eventLoopManager != null
+            ? eventLoopManager.getGamepads()
+            : new Gamepad[2];
   }
 
   /**
@@ -225,7 +251,9 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
         // Send if there's anything to send. If we send, then we always clear, as the current
         // data has already been send.
         if (telemetry.hasData()) {
-          eventLoopManager.sendTelemetryData(telemetry);
+          if (eventLoopManager!=null) {
+            eventLoopManager.sendTelemetryData(telemetry);
+          }
           telemetry.clearData();
         }
       }
@@ -300,36 +328,42 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
     telemetry.addData(tag, msg);
     if (eventLoopManager != null) {
       eventLoopManager.sendTelemetryData(telemetry);
-      telemetry.clearData();
+    } else {
+      RobotLog.vv(TAG, "sendTelemetry() with null EventLoopManager; ignored");
     }
+    telemetry.clearData();
   }
 
-  public void closeMotorControllers() {
+  protected void closeMotorControllers() {
     for (DcMotorController controller : hardwareMap.getAll(DcMotorController.class)) {
       controller.close();
     }
   }
 
-  public void closeServoControllers()  {
+  protected void closeServoControllers()  {
     for (ServoController controller : hardwareMap.getAll(ServoController.class)) {
       controller.close();
     }
   }
 
-  public void closeAutoCloseOnTeardown() {
+  protected void closeAutoCloseOnTeardown() {
     for (HardwareDeviceCloseOnTearDown device : hardwareMap.getAll(HardwareDeviceCloseOnTearDown.class)) {
       device.close();
     }
   }
 
+  protected void closeBatteryMonitoring() {
+    robotControllerBatteryChecker.close();
+  }
+
   public void restartRobot() {
-    RobotLog.d("restarting robot...");
-    robotControllerBatteryChecker.endBatteryMonitoring();
+    RobotLog.dd(TAG, "restarting robot...");
+    closeBatteryMonitoring();   // probably not needed now that close() above does this too. but harmless here if so
     callback.restartRobot();
   }
 
   public String getOpMode(String extra) {
-    if (eventLoopManager.state != RobotState.RUNNING) {
+    if (eventLoopManager == null || eventLoopManager.state != RobotState.RUNNING) {
       return OpModeManager.DEFAULT_OP_MODE_NAME;
     }
     return extra;

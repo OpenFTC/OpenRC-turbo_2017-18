@@ -123,11 +123,13 @@
                 }
             }
 
-            function getFromRawSource(url, _editor, whitespace) {
+            function getFromRawSource(url, _editor, whitespace, readonly) {
                 if (url === null) {
                     console.error("Cowardly refusing to attempt to fetch from self!");
                     return;
                 }
+
+                if (typeof readonly === 'undefined' || readonly === null) readonly = false;
 
                 console.log("Getting " + url);
                 function setupEditorWithData(data, readonly) {
@@ -148,7 +150,7 @@
 
                 $.get(url, function (data) {
                     if (data !== null) { // Sanity check
-                        setupEditorWithData(data);
+                        setupEditorWithData(data, readonly);
 
                         whitespace.detectIndentation(_editor.session);
                         if (document.URL.indexOf(env.javaUrlRoot) === -1) $scope.outsideSource = true;
@@ -187,52 +189,7 @@
                 }
 
                 function configureEditorToDefaults() {
-                    _editor.setValue('\
-# Welcome to the OnBotJava Code Editor\n\
-\n\
-If you are just starting out, click the \'+\' (Add File) icon in the top left corner.\n\
-Enter your new file name, and then choose one of the many samples.\n\
-If you just want to drive a basic robot, select the \"BasicOpMode_Linear\" sample.\n\
-Select the \"TeleOp\" radio button, and then click \"OK\".\n\
-\n\
-The sample you chose will be renamed to match the name you entered, and it \n\
-will appear on the \"project files\" list in the left pane.\n\
-\n\
-To edit your code, just click on the desired file in the left hand pane, \n\
-and it will be loaded into this Code Editor window. Make any changes.\n\
-\n\
-Once you are done, click the \"Build Everything\" icon at the bottom of this pane.\n\
-This will build your OpModes and report any errors.\n\
-If there are no errors, the OpModes will be stored on the Robot for immediate use.\n\
-\n\
-## Samples\n\
-\n\
-There are a range of different samples to choose from.\n\
-Sample names use a convention which helps to indicate their general, and specific, purpose.\n\
-\n\
-eg: The name\'s prefix describes the general purpose, which can be one of the following:\n\
-\n\
-* Basic:    This is a minimally functional OpMode used to illustrate the skeleton\/structure\n\
-            of a particular style of OpMode.  These are bare bones examples.\n\
-* Sensor:   This is a Sample OpMode that shows how to use a specific sensor.\n\
-            It is not intended as a functioning robot, it is simply showing the minimal code\n\
-            required to read and display the sensor values.\n\
-* Pushbot:  This is a Sample OpMode that uses the Pushbot robot structure as a base.\n\
-* Concept:	This is a sample OpMode that illustrates performing a specific function or concept.\n\
-            These may be complex, but their operation will be explained clearly in the comments,\n\
-            or the header should reference an external doc., guide or tutorial.\n\
-* Hardware: This is not an actual OpMode, but a helper class that is used to describe\n\
-            one particular robot\'s hardware devices. eg: A Pushbot.  Look at any\n\
-            Pushbot sample to see how this can be used in an OpMode.\n\
-            If you add a Hardware sample to your project, you MUST use the identical name.\n\
-\n\
-For more help, visit the FTC Control System Wiki (https://github.com/ftctechnh/ftc_app/wiki) \n\
-\n\
-\n\
-\n\
-');
-                    _editor.getSession().setUndoManager(new ace.UndoManager());
-                    _editor.setReadOnly(true);
+                    getFromRawSource(env.urls.URI_JAVA_README_FILE, _editor, whitespace, true);
                 }
 
                 function loadFromUrlAddress(url) {
@@ -601,14 +558,14 @@ For more help, visit the FTC Control System Wiki (https://github.com/ftctechnh/f
                             if (!silent) {
                                 alert('Copy of file \'' + oldFile + '\' failed!');
                             }
-                        }).fail(function () {
+
                             didARequestFail = true;
                         });
 
                         requests.push(request);
                     });
 
-                    return $.when.apply($, requests).then(function () {
+                    return $.when.apply($, requests).always(function () {
                         if (typeof params.callback === 'function') {
                             params.callback(didARequestFail);
                         }
