@@ -29,8 +29,8 @@ extract_aar () {
 	rm -rf ../$1/src/main/assets
 	mv assets ../$1/src/main
 	
-	rm ../$1/src/main/jniLibs/*
-	mv jni/* ../$1/src/main/jniLibs
+	# Currently untested
+	mv -f jni/* ../libs/armeabi-v7a
 	
 	rm -rf ../$1/libs
 	mv libs ../$1/
@@ -62,5 +62,5 @@ extract RobotCore
 git rm doc/apk/FtcRobotController-release.apk
 
 echo "==============================================================================="
-echo "Don't forget to move the version for every library from the manifest to Gradle."
+echo "Don't forget to move the version for every library from its manifest to Gradle."
 echo "==============================================================================="
