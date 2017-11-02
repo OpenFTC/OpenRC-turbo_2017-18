@@ -1,4 +1,4 @@
-Let's show FIRST the power of the community!
+OpenFTC-app
 ---
 
 Version 3.5 of the official SDK has been released. Right now, OpenFTC is still based on version 3.4. 
