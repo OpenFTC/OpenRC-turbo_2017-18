@@ -1,4 +1,4 @@
-Let's show FIRST the power of the community!
+OpenFTC-app-turbo
 ---
 
 OpenFTC-app provides teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app). Since the AAR files have been converted to modules in the Android Studio project, all changes in code can be tracked and modified, with full Gradle support. This allows proper changelogs - teams can see exactly which code has been changed and how it will affect them.
