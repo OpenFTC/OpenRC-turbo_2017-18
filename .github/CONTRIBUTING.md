@@ -8,11 +8,9 @@ Note: this is based on the official FIRST-provided FTC SDK, but it is NOT endors
 
 ### Report bugs
 
-This section guides you through filing a bug report.  The better the report the more likely it is to be root caused and fixed.
+This section guides you through filing a bug report.  The better the report the more likely it is to be root caused and fixed. Even if you think that the bug likely also exists in the official SDK, don't report it there unless you take the time to reproduce it with the official version. FIRST doesn't want to support unofficial code.
 
 #### Before submitting a bug report
-
-- Make sure that your bug is specific to the OpenFTC SDK. If the bug still occurs while using the official FTC SDK, your bug report should be reported to the [official SDK](https://github.com/ftctechnh/ftc_app).
 
 - Perform a search of current [OpenFTC-app issues](https://github.com/OpenFTC/OpenFTC-app/issues) to see if the problem has already been reported.  If so, add a comment to the existing issue instead of creating a new one.
 
