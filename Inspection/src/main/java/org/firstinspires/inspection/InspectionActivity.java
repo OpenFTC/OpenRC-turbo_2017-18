@@ -42,7 +42,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.openftc.OpenFTCConfig;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.ThreadPool;
@@ -318,7 +317,7 @@ public abstract class InspectionActivity extends ThemedActivity
         appsOkay = refreshPackage(txtIsRCInstalled, state.robotControllerVersion, state.robotControllerVersionCode, RC_MIN_VERSIONCODE) && appsOkay;
         appsOkay = refreshPackage(txtIsDSInstalled, state.driverStationVersion, state.driverStationVersionCode, DS_MIN_VERSIONCODE) && appsOkay;
 
-        refresh(txtOpenFTCVersion, OpenFTCConfig.VERSION_COMPLETE, true);
+        refresh(txtOpenFTCVersion, org.openftc.BuildConfig.VERSION_COMPLETE, true);
 
         if (!state.isRobotControllerInstalled() && !state.isDriverStationInstalled()
             || state.isRobotControllerInstalled() && state.isDriverStationInstalled())
