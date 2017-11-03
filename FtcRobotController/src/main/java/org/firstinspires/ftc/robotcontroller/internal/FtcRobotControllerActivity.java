@@ -61,7 +61,6 @@ import com.google.blocks.ftcrobotcontroller.ProgrammingModeActivity;
 import com.google.blocks.ftcrobotcontroller.ProgrammingModeControllerImpl;
 import com.google.blocks.ftcrobotcontroller.ProgrammingWebHandlers;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
-import com.openftc.OpenFTCConfig;
 import com.qualcomm.ftccommon.AboutActivity;
 import com.qualcomm.ftccommon.ClassManagerFactory;
 import com.qualcomm.ftccommon.FtcEventLoop;
@@ -109,6 +108,8 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.RcInspectionActivity;
+import org.openftc.UiUtils;
+import org.openftc.Utils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -220,6 +221,18 @@ public class FtcRobotControllerActivity extends Activity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     RobotLog.vv(TAG, "onCreate()");
+
+    /*
+     * Check to see if the DS app is also installed.
+     * If it is, then show the user a dialog explaining
+     * the situation and offer them the option to uninstall
+     * either the DS app or the RC app
+     */
+    if(Utils.isFtcDriverStationInstalled(getPackageManager()))
+    {
+      UiUtils.showDsAppInstalledDialog(this);
+    }
+
     ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor
 
     Assert.assertTrue(FtcRobotControllerWatchdogService.isFtcRobotControllerActivity(AppUtil.getInstance().getRootActivity()));
@@ -285,7 +298,7 @@ public class FtcRobotControllerActivity extends Activity
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
 
     textOpenFTCVersion = (TextView) findViewById(R.id.openftc_version);
-    textOpenFTCVersion.setText(OpenFTCConfig.VERSION_COMPLETE);
+    textOpenFTCVersion.setText(org.openftc.BuildConfig.VERSION_COMPLETE);
 
     immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(this);
@@ -408,14 +421,14 @@ public class FtcRobotControllerActivity extends Activity
   protected void logPackageVersions() {
     RobotLog.v("THIS APP WAS MADE FROM OpenFTC, A MODIFIED VERSION OF THE SDK.");
     RobotLog.v("You can find more information at http://OpenFTC.org or the About screen.");
-    RobotLog.v("OpenFTC Version: " + OpenFTCConfig.VERSION_COMPLETE);
+    RobotLog.v("OpenFTC Version: " + org.openftc.BuildConfig.VERSION_COMPLETE);
     RobotLog.logBuildConfig(com.qualcomm.ftcrobotcontroller.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.robotcore.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.hardware.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
     RobotLog.logBuildConfig(com.google.blocks.BuildConfig.class);
     RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
-    RobotLog.logBuildConfig(com.openftc.OpenFTCConfig.class);
+    RobotLog.logBuildConfig(org.openftc.BuildConfig.class);
   }
 
   protected void readNetworkType() {
