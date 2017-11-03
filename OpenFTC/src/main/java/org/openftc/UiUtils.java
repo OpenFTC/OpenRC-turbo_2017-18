@@ -13,7 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-public class UI_Utils
+public class UiUtils
 {
     public static void showDsAppInstalledDialog (final Activity activity)
     {

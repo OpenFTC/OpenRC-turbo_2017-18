@@ -108,7 +108,7 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.RcInspectionActivity;
-import org.openftc.UI_Utils;
+import org.openftc.UiUtils;
 import org.openftc.Utils;
 
 import java.util.Queue;
@@ -230,7 +230,7 @@ public class FtcRobotControllerActivity extends Activity
      */
     if(Utils.isFtcDriverStationInstalled(getPackageManager()))
     {
-      UI_Utils.showDsAppInstalledDialog(this);
+      UiUtils.showDsAppInstalledDialog(this);
     }
 
     ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor
