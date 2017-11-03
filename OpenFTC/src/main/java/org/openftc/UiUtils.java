@@ -21,7 +21,8 @@ public class UiUtils
         builder = new AlertDialog.Builder(activity);
         builder.setCancelable(false);
 
-        String test = "<font color='#FF0000'>This device has the FTC Driver Station app installed.</font><br><br>Either:<br>1) You accidentally deployed the RC to your DS and you need uninstall the RC; or<br><br>2) You need to uninstall the DS";
+        String test = "<font color='#FF0000'>This device has the FTC Driver Station app installed.</font>" +
+            "<br> <br>You need to uninstall either this Robot Controller (RC) app or the Driver Station (DS) app.";
 
         builder.setTitle("Ruh-roh!")
                 .setMessage(Html.fromHtml(test))
