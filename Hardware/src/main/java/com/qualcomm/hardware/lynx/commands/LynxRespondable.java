@@ -228,6 +228,8 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         try {
             try {
                 this.module.sendCommand(this);
+                RobotLog.d("Sending command.");
+                logSerializationStatus(); //At this point, this command should have its serialization set.
                 }
             catch (LynxUnsupportedCommandNumberException e)
                 {
@@ -361,6 +363,8 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
                 }
 
             // Retransmit
+                RobotLog.d("Retransmitting.");
+                logSerializationStatus(); // Is the serialization status still correct?
             this.module.retransmit(this);
             }
         }
@@ -376,4 +380,11 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
             awaitAndRetransmit(this.ackOrNackReceived, LynxNack.ReasonCode.ABANDONED_WAITING_FOR_ACK, "ack");
             }
         }
+
+      private void logSerializationStatus() {
+          String serializationStatus = (serialization == null) ? "unset" : "set";
+          RobotLog.d("Initial command sent. Serialization status: " + serializationStatus);
+      }
     }
+
+
