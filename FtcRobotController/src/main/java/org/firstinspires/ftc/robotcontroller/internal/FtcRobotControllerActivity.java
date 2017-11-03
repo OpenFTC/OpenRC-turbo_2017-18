@@ -108,7 +108,6 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.RcInspectionActivity;
-import org.openftc.OpenFTCConfig;
 import org.openftc.UI_Utils;
 import org.openftc.Utils;
 
@@ -299,7 +298,7 @@ public class FtcRobotControllerActivity extends Activity
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
 
     textOpenFTCVersion = (TextView) findViewById(R.id.openftc_version);
-    textOpenFTCVersion.setText(OpenFTCConfig.VERSION_COMPLETE);
+    textOpenFTCVersion.setText(org.openftc.BuildConfig.VERSION_COMPLETE);
 
     immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(this);
@@ -422,14 +421,14 @@ public class FtcRobotControllerActivity extends Activity
   protected void logPackageVersions() {
     RobotLog.v("THIS APP WAS MADE FROM OpenFTC, A MODIFIED VERSION OF THE SDK.");
     RobotLog.v("You can find more information at http://OpenFTC.org or the About screen.");
-    RobotLog.v("OpenFTC Version: " + OpenFTCConfig.VERSION_COMPLETE);
+    RobotLog.v("OpenFTC Version: " + org.openftc.BuildConfig.VERSION_COMPLETE);
     RobotLog.logBuildConfig(com.qualcomm.ftcrobotcontroller.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.robotcore.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.hardware.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
     RobotLog.logBuildConfig(com.google.blocks.BuildConfig.class);
     RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
-    RobotLog.logBuildConfig(OpenFTCConfig.class);
+    RobotLog.logBuildConfig(org.openftc.BuildConfig.class);
   }
 
   protected void readNetworkType() {

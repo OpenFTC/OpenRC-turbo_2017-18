@@ -12,6 +12,10 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        def openFTCVariant = "OpenFTC-full"
+
+        buildConfigField "String", "OPENFTC_VARIANT", "\"${openFTCVariant}\""
+        buildConfigField "String", "VERSION_COMPLETE", "\"${openFTCVariant} ${versionName}\""
     }
     buildTypes {
         release {
