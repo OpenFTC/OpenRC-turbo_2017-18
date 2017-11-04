@@ -77,6 +77,7 @@ public abstract class InspectionActivity extends ThemedActivity
     TextView widiName, widiConnected, wifiEnabled, batteryLevel, osVersion, airplaneMode, bluetooth, wifiConnected, appsStatus;
     TextView txtManufacturer, txtModel, txtAppVersion;
     TextView txtIsRCInstalled, txtIsDSInstalled, txtIsCCInstalled;
+    TextView txtOpenFTCVersion;
     Pattern teamNoRegex;
     Future refreshFuture = null;
     int textOk = AppUtil.getInstance().getColor(R.color.text_okay);
@@ -102,6 +103,8 @@ public abstract class InspectionActivity extends ThemedActivity
         txtIsRCInstalled = (TextView) findViewById(R.id.txtIsRCInstalled);
         txtIsDSInstalled = (TextView) findViewById(R.id.txtIsDSInstalled);
         txtIsCCInstalled = (TextView) findViewById(R.id.txtIsCCInstalled);
+
+        txtOpenFTCVersion = (TextView) findViewById(R.id.txtOpenFTCVersion);
 
         widiName = (TextView) findViewById(R.id.widiName);
         widiConnected = (TextView) findViewById(R.id.widiConnected);
@@ -313,6 +316,8 @@ public abstract class InspectionActivity extends ThemedActivity
         appsOkay = refreshOptional(txtIsCCInstalled, state.zteChannelChangeVersion, state.channelChangerRequired) && appsOkay;
         appsOkay = refreshPackage(txtIsRCInstalled, state.robotControllerVersion, state.robotControllerVersionCode, RC_MIN_VERSIONCODE) && appsOkay;
         appsOkay = refreshPackage(txtIsDSInstalled, state.driverStationVersion, state.driverStationVersionCode, DS_MIN_VERSIONCODE) && appsOkay;
+
+        refresh(txtOpenFTCVersion, org.openftc.BuildConfig.VERSION_COMPLETE, true);
 
         if (!state.isRobotControllerInstalled() && !state.isDriverStationInstalled()
             || state.isRobotControllerInstalled() && state.isDriverStationInstalled())

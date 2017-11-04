@@ -1,11 +1,23 @@
 OpenFTC-app-turbo
 ---
 
-OpenFTC-app provides teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app). Since the AAR files have been converted to modules in the Android Studio project, all changes in code can be tracked and modified, with full Gradle support. This allows proper changelogs - teams can see exactly which code has been changed and how it will affect them.
+Version 3.5 of the official SDK has been released. Right now, OpenFTC is still based on version 3.4.
+If you are using OpenFTC, DO NOT ATTEMPT TO UPDATE TO VERSION 3.5 until OpenFTC has itself been updated.
+At the latest, OpenFTC and OpenFTC Turbo will be updated by end of day November 7.
 
-This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system.
+The OpenFTC documentation is still under construction.
+
+---
 
 OpenFTC-app-turbo removes the OnBotJava and Blocks programming systems for teams that don't use or need them, speeding up deploy time by removing the large files required for those systems. If you use these systems, please see [OpenFTC-app](https://github.com/OpenFTC/OpenFTC-app).
+
+The OpenFTC family of Robot Controller apps provide teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit). Since the AAR files have been converted to modules in the Android Studio project, it's easy to see and modify the entirety of the SDK's source code. In addition, the history in Git shows all changes that have been made to the core code since OpenFTC's inception. This is a very useful supplement to the changelogs that FIRST provides - teams can see exactly which code has been changed and how it will affect them.
+
+This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system. Most enhancements will likely be accepted as long as they _do not force teams to change their workflow._ Changes made in the OpenFTC SDK should allow teams to move from the official SDK to OpenFTC-app with no code changes required.
+
+To request a new feature, you can open an issue on this repository. If there's a large enough call for the feature, it's very likely to be added to the list for a future release.
+
+This version keeps the OnBotJava and Blocks programming system. If your team doesn't use these, you may want to look into [OpenFTC-app-turbo](https://github.com/OpenFTC/OpenFTC-app-turbo), which helps to decrease deploy times.
 
 ## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
