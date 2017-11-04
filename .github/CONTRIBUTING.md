@@ -41,9 +41,13 @@ Explain the problem and include additional details to help maintainers reproduce
 
 1. Before you start coding a new feature, create an issue to ask if it's something that the maintainers would want to have as a part of the OpenFTC app. If there is an existing issue tracking a similar feature request, comment on it to say that you're going to work on it, so that we don't have duplicated efforts.
 
-2. Create a new branch based off the current OpenFTC-app master. That way, anything you can change things on your master branch without those changes getting added to the pull request. It also allows us to safely do squash merges.
+2. Create a new branch based off the current OpenFTC-app `develop` branch. That way, anything you can change things on your master branch without those changes getting added to the pull request. It also allows us to safely do squash merges.
 
 3. Any code you change should be marked with `// Modified for OpenFTC`, unless it is in an OpenFTC-specific file or is something that can safely be overwritten by changes to the official SDK. 
+
+4. Make sure your pull request has the `develop` branch as its base.
+
+5. If your pull request takes care of a filed issue, put "closes #23" (replace with the number of the issue to be closed) in the pull request description. If the issue is a bug, you can replace "closes" with "fixes". 
 
 More guidelines to come in the future.
 
