@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <declare-styleable name="ColorListPreference"><attr format="reference" name="colors"/></declare-styleable>
-
-</resources>
