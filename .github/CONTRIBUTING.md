@@ -43,7 +43,7 @@ Explain the problem and include additional details to help maintainers reproduce
 
 2. Create a new branch based off the current OpenFTC-app `develop` branch. That way, anything you can change things on your master branch without those changes getting added to the pull request. It also allows us to safely do squash merges.
 
-3. Any code you change should be marked with `// Modified for OpenFTC`, unless it is in an OpenFTC-specific file, is an import statement, or is something that can safely be overwritten by changes to the official SDK. 
+3. Any code you change should be marked with `// Modified for OpenFTC`, unless it is brand new code, is in an OpenFTC-specific file, is an import statement, or is something that can safely be overwritten by changes to the official SDK. 
 
 4. Make sure your pull request has the `develop` branch as its base.
 
