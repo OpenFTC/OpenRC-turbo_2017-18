@@ -78,6 +78,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -154,6 +155,7 @@ public class AppUtil
     private Activity            rootActivity;
     private Activity            currentActivity;
     private ProgressDialog      currentProgressDialog;
+    private Random              random;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -174,6 +176,7 @@ public class AppUtil
         rootActivity     = null;
         currentActivity  = null;
         currentProgressDialog = null;
+        random = new Random();
 
         application.registerActivityLifecycleCallbacks(lifeCycleMonitor);
 
@@ -227,11 +230,22 @@ public class AppUtil
                 // Successfully newly created the dir. Notify MTP. However, MTP doesn't like to be
                 // notified of directories. So we make a temp file, notify on that, then delete same
                 // once the scan has completed.
-                if (notify) MediaTransferProtocolMonitor.makeIndicatorFile(directory);
+                if (notify)
+                    {
+                    MediaTransferProtocolMonitor.makeIndicatorFile(directory);
+                    }
                 }
             else
                 {
-                // already existed, or error; latter ignored. Clean up any indicator files.
+                // already existed, or error; latter logged & ignored. Try to clean up any indicator files.
+                if (directory.isDirectory())
+                    {
+                    // all is well
+                    }
+                else
+                    {
+                    RobotLog.ee(TAG, "failed to create directory %s", directory);
+                    }
                 if (notify)
                     {
                     MediaTransferProtocolMonitor.renoticeIndicatorFiles(directory);
@@ -390,6 +404,37 @@ public class AppUtil
             if (cbRead <= 0) break;
             outputStream.write(buffer, 0, cbRead);
             }
+        }
+
+    public File createTempFile(@NonNull String prefix, @Nullable String suffix, @Nullable File directory) throws IOException
+        {
+        return File.createTempFile(prefix, suffix, directory);
+        }
+
+    public File createTempDirectory(@NonNull String prefix, @Nullable String suffix, @Nullable File directory) throws IOException
+        {
+        /** @see File#createTempFile */
+        if (prefix.length() < 3)
+            {
+            throw new IllegalArgumentException("prefix must be at least 3 characters");
+            }
+        if (suffix == null)
+            {
+            suffix = ".tmp";
+            }
+        File tmpDirFile = directory;
+        if (tmpDirFile == null)
+            {
+            String tmpDir = System.getProperty("java.io.tmpdir", ".");
+            tmpDirFile = new File(tmpDir);
+            }
+        File result;
+        do
+            {
+            result = new File(tmpDirFile, prefix + random.nextInt() + suffix);
+            }
+        while (!result.mkdir()); // mkdir returns false failure or if the directory already existed.
+        return result;
         }
 
     //----------------------------------------------------------------------------------------------

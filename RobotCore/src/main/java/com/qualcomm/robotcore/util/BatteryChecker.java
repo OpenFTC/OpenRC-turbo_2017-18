@@ -88,7 +88,8 @@ public class BatteryChecker {
   private long repeatDelay;
   private long initialDelay = 5000; // ms. 'not exactly clear why we wait to send
   private BatteryWatcher watcher;
-  protected Handler batteryHandler;
+  protected final Handler batteryHandler;
+  protected boolean closed;
   protected final Monitor monitor = new Monitor();
 
   //------------------------------------------------------------------------------------------------
@@ -100,26 +101,37 @@ public class BatteryChecker {
     this.watcher = watcher;
     this.repeatDelay = delay;
     batteryHandler = new Handler();
+    closed = true;
   }
 
   public void startBatteryMonitoring() {
     // sends one battery update after a short delay.
-    batteryHandler.postDelayed(batteryLevelChecker, initialDelay);
+    synchronized (batteryHandler) {
+      closed = false;
+      batteryHandler.postDelayed(batteryLevelChecker, initialDelay);
+    }
     registerReceiver(monitor);
   }
 
-  public void endBatteryMonitoring() {
-    // If the following throws an exception, it is not a big deal, log it and continue
-    try {
-      context.unregisterReceiver(monitor);
-    } catch (Exception ex) {
-      RobotLog.ee(TAG, ex, "Failed to unregister battery monitor receiver");
-    }
+  public void close() {
 
-    try {
-      batteryHandler.removeCallbacks(batteryLevelChecker);
-    } catch (Exception ex) {
-      RobotLog.ee(TAG, ex, "Failed to remove battery monitor callbacks");
+    if (!closed) {
+
+      // If the following throws an exception, it is not a big deal, log it and continue
+      try {
+        context.unregisterReceiver(monitor);
+      } catch (Exception ex) {
+        RobotLog.ee(TAG, ex, "Failed to unregister battery monitor receiver; ignored");
+      }
+
+      try {
+        synchronized (batteryHandler) {
+          closed = true; // force any in-flight callback to simply drain
+          batteryHandler.removeCallbacks(batteryLevelChecker);
+        }
+      } catch (Exception ex) {
+        RobotLog.ee(TAG, ex, "Failed to remove battery monitor callbacks; ignored");
+      }
     }
   }
 
@@ -152,7 +164,11 @@ public class BatteryChecker {
       pollBatteryLevel(watcher);
 
       // Posts the next iteration of this runnable, to be run after "delay" milliseconds.
-      batteryHandler.postDelayed(batteryLevelChecker, repeatDelay);
+      synchronized (batteryHandler) {
+        if (!closed) {
+          batteryHandler.postDelayed(batteryLevelChecker, repeatDelay);
+        }
+      }
     }
   };
 

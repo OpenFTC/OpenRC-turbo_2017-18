@@ -930,10 +930,18 @@ public abstract class FtcEventLoopBase implements EventLoop
         }
     protected void handleCommandStartDriverStationProgramAndManage()
         {
-        WebServer webServer = ftcEventLoopHandler.getEventLoopManager().getWebServer();
-        String extra = webServer.getConnectionInformation().toJson();
-        RobotLog.vv(TAG, "sending p&m resp: %s", extra);
-        networkConnectionHandler.sendCommand(new Command(CommandList.CMD_START_DS_PROGRAM_AND_MANAGE_RESP, extra));
+        EventLoopManager eventLoopManager = ftcEventLoopHandler.getEventLoopManager();
+        if (eventLoopManager != null)
+            {
+            WebServer webServer = eventLoopManager.getWebServer();
+            String extra = webServer.getConnectionInformation().toJson();
+            RobotLog.vv(TAG, "sending p&m resp: %s", extra);
+            networkConnectionHandler.sendCommand(new Command(CommandList.CMD_START_DS_PROGRAM_AND_MANAGE_RESP, extra));
+            }
+        else
+            {
+            RobotLog.vv(TAG, "handleCommandStartDriverStationProgramAndManage() with null EventLoopManager; ignored");
+            }
         }
 
     /**

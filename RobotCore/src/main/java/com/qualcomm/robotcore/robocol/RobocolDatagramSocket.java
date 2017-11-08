@@ -135,12 +135,12 @@ public class RobocolDatagramSocket {
       } catch (SocketException|SocketTimeoutException e) {
         if (!recvErrorReported) {
           recvErrorReported = !DEBUG;
-          RobotLog.logExceptionHeader(e, TAG, "no packet received");
+          RobotLog.logExceptionHeader(TAG, e, "no packet received");
         }
         return null;
 
       } catch (IOException|RuntimeException e) {
-        RobotLog.logExceptionHeader(e, TAG, "no packet received");
+        RobotLog.logExceptionHeader(TAG, e, "no packet received");
         return null;
       }
 

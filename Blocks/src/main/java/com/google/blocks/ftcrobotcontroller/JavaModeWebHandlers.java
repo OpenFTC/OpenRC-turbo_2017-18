@@ -116,7 +116,8 @@ class JavaModeWebHandlers {
     private static final String URI_JAVA_PREFIX = "/java";
     @SuppressWarnings("unused") // required for the OnBotUI
     private static final String URI_JAVA_EDITOR = URI_JAVA_PREFIX + "/editor.html";
-
+    @SuppressWarnings("unused")
+    private static final String URI_JAVA_README_FILE = URI_JAVA_PREFIX + "/readme.md";
     // File Tasks
     private static final String URI_FILE_COPY = URI_JAVA_PREFIX + "/file/copy";
     private static final String URI_FILE_DELETE = URI_JAVA_PREFIX + "/file/delete";

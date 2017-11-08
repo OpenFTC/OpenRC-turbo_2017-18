@@ -253,7 +253,7 @@ public class HardwareItemMap {
     // paranoia: avoid theoretically possible exact duplicates
     for (HardwareItem item : hardwareItemList) {
       if (item.deviceName.equals(deviceName)) {
-        return; // we already have this guy
+        return; // we already have this item
       }
     }
     hardwareItemList.add(new HardwareItem(hardwareType, deviceName));

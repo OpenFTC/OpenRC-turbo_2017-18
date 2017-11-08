@@ -123,19 +123,23 @@ public class HardwareUtil {
 
     // hardware
     for (HardwareType hardwareType : HardwareType.values()) {
-      jsHardware
-          .append("function ").append(hardwareType.createDropdownFunctionName).append("() {\n")
-          .append("  var CHOICES = [\n");
-      if (hardwareItemMap.contains(hardwareType)) {
-        for (HardwareItem hardwareItem : hardwareItemMap.getHardwareItems(hardwareType)) {
-          jsHardware
-              .append("      ['").append(hardwareItem.visibleName).append("', '")
-              .append(hardwareItem.identifier).append("'],\n");
+      // Some HardwareTypes might have a null createDropdownFunctionName. This allows us to support
+      // certain hardware types (for OnBotJava), even though we don't actually provide blocks.
+      if (hardwareType.createDropdownFunctionName != null) {
+        jsHardware
+            .append("function ").append(hardwareType.createDropdownFunctionName).append("() {\n")
+            .append("  var CHOICES = [\n");
+        if (hardwareItemMap.contains(hardwareType)) {
+          for (HardwareItem hardwareItem : hardwareItemMap.getHardwareItems(hardwareType)) {
+            jsHardware
+                .append("      ['").append(hardwareItem.visibleName).append("', '")
+                .append(hardwareItem.identifier).append("'],\n");
+          }
         }
+        jsHardware.append("  ];\n")
+            .append("  return createFieldDropdown(CHOICES);\n")
+            .append("}\n");
       }
-      jsHardware.append("  ];\n")
-          .append("  return createFieldDropdown(CHOICES);\n")
-          .append("}\n");
     }
 
     jsHardware.append("function addReservedWordsForHardware() {\n");
@@ -151,24 +155,30 @@ public class HardwareUtil {
 
     jsHardware.append("function getIconClass(categoryName) {\n");
     for (HardwareType hardwareType : HardwareType.values()) {
-      jsHardware.append("  if (categoryName == \"").append(hardwareType.toolboxCategoryName).append("\") {\n")
-          .append("    return \"").append(hardwareType.toolboxIconClass).append("\";\n")
-          .append("  }\n");
+      // Some HardwareTypes might have a null toolboxCategoryName. This allows us to support
+      // certain hardware types (for OnBotJava), even though we don't actually provide blocks.
+      // Also, some HardwareTypes, such as BNO055IMU, do not (yet) have a toolbox icon.
+      if (hardwareType.toolboxCategoryName != null &&
+          hardwareType.toolboxIcon != null) {
+        jsHardware.append("  if (categoryName == \"").append(hardwareType.toolboxCategoryName).append("\") {\n")
+            .append("    return \"").append(hardwareType.toolboxIcon.cssClass).append("\";\n")
+            .append("  }\n");
+      }
     }
     jsHardware.append("  if (categoryName == \"").append(DC_MOTOR_DUAL_CATEGORY_NAME).append("\") {\n")
-        .append("    return \"").append("DcMotor-icon").append("\";\n")
+        .append("    return \"").append(ToolboxIcon.DC_MOTOR.cssClass).append("\";\n")
         .append("  }\n");
     jsHardware.append("  if (categoryName == \"").append(GAMEPAD_CATEGORY_NAME).append("\") {\n")
-        .append("    return \"").append("Gamepad-icon").append("\";\n")
+        .append("    return \"").append(ToolboxIcon.GAMEPAD.cssClass).append("\";\n")
         .append("  }\n");
     jsHardware.append("  if (categoryName == \"").append(LINEAR_OP_MODE_CATEGORY_NAME).append("\") {\n")
-        .append("    return \"").append("LinearOpMode-icon").append("\";\n")
+        .append("    return \"").append(ToolboxIcon.LINEAR_OPMODE.cssClass).append("\";\n")
         .append("  }\n");
     jsHardware.append("  if (categoryName == \"").append(COLOR_CATEGORY_NAME).append("\") {\n")
-        .append("    return \"").append("ColorSensor-icon").append("\";\n")
+        .append("    return \"").append(ToolboxIcon.COLOR_SENSOR.cssClass).append("\";\n")
         .append("  }\n");
     jsHardware.append("  if (categoryName == \"").append(ELAPSED_TIME_CATEGORY_NAME).append("\") {\n")
-        .append("    return \"").append("ElapsedTime-icon").append("\";\n")
+        .append("    return \"").append(ToolboxIcon.ELAPSED_TIME.cssClass).append("\";\n")
         .append("  }\n");
     jsHardware.append("  return \"\";\n")
         .append("}\n");
@@ -207,12 +217,16 @@ public class HardwareUtil {
           .append("\">\n");
       for (HardwareType hardwareType : hardwareItemMap.getHardwareTypes()) {
         if (hardwareType.toolboxFolder == toolboxFolder) {
-          addHardwareCategoryToToolbox(
-              xmlToolbox, hardwareType, hardwareItemMap.getHardwareItems(hardwareType));
-          if (hardwareType == HardwareType.BNO055IMU) {
-            if (assetManager != null) {
-              ToolboxUtil.addAssetToToolbox(
-                  xmlToolbox, assetManager, "toolbox/bno055imu_parameters.xml");
+          // Some HardwareTypes might have a null toolboxCategoryName. This allows us to support
+          // certain hardware types (for OnBotJava), even though we don't actually provide blocks.
+          if (hardwareType.toolboxCategoryName != null) {
+            addHardwareCategoryToToolbox(
+                xmlToolbox, hardwareType, hardwareItemMap.getHardwareItems(hardwareType));
+            if (hardwareType == HardwareType.BNO055IMU) {
+              if (assetManager != null) {
+                ToolboxUtil.addAssetToToolbox(
+                    xmlToolbox, assetManager, "toolbox/bno055imu_parameters.xml");
+              }
             }
           }
         }
@@ -367,7 +381,7 @@ public class HardwareUtil {
           addVoltageSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
         default:
-          throw new IllegalArgumentException("Unknown hardware type " + hardwareType);
+          throw new IllegalArgumentException("Unexpected hardware type " + hardwareType);
       }
 
       xmlToolbox.append("  </category>\n");

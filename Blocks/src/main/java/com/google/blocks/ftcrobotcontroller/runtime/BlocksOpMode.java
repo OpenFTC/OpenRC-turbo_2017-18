@@ -48,8 +48,8 @@ public class BlocksOpMode extends LinearOpMode {
   private static Activity activity;
   private static WebView webView;
   private static final AtomicReference<String> nameOfOpModeLoadedIntoWebView = new AtomicReference<String>();
-  private static final Map<String, Access> javascriptInterfaces = new ConcurrentHashMap<String, Access>();
-
+  // Visible for testing.
+  static final Map<String, Access> javascriptInterfaces = new ConcurrentHashMap<String, Access>();
   private final String project;
   private final String logPrefix;
   private final AtomicLong interruptedTime = new AtomicLong();
@@ -293,7 +293,7 @@ public class BlocksOpMode extends LinearOpMode {
     }
   }
 
-  // Visible for testing
+  // Visible for testing.
   void addJavascriptInterfacesForIdentifiers() {
     javascriptInterfaces.put(
         Identifier.ACCELERATION.identifier,
@@ -408,9 +408,11 @@ public class BlocksOpMode extends LinearOpMode {
                 hardwareItem.identifier + "\". Ignoring hardware type " + hardwareType + ".");
             continue;
           }
-          javascriptInterfaces.put(
-              hardwareItem.identifier,
-              HardwareAccess.newHardwareAccess(this, hardwareType, hardwareMap, hardwareItem));
+          Access access =
+              HardwareAccess.newHardwareAccess(this, hardwareType, hardwareMap, hardwareItem);
+          if (access != null) {
+            javascriptInterfaces.put(hardwareItem.identifier, access);
+          }
         }
       }
     }
