@@ -68,6 +68,7 @@ import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -80,6 +81,7 @@ import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
+import org.openftc.UiUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -100,6 +102,21 @@ public class AboutActivity extends ThemedActivity {
   protected void onStart() {
     super.onStart();
     setContentView(R.layout.activity_about);
+
+    /*
+     * Setup the button that will show the AlertDialog which
+     * contains a summary of OpenFTC
+     */
+    Button aboutOpenFTCBtn;
+    aboutOpenFTCBtn = (Button) findViewById(R.id.aboutOpenFTC);
+    aboutOpenFTCBtn.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View view)
+      {
+        UiUtils.showOpenFtcSummary(AboutActivity.this);
+      }
+    });
 
     Intent intent = getIntent();
     Serializable extra = intent.getSerializableExtra(LaunchActivityConstantsList.ABOUT_ACTIVITY_CONNECTION_TYPE);

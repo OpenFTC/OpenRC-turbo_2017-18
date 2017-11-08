@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="app_theme_colors">
+        <item>@color/medium_light_red</item>
+        <item>@color/medium_light_green</item>
+        <item>@color/medium_light_blue</item>
+        <item>@color/medium_light_purple</item>
+        <item>@color/medium_light_orange</item>
+        <item>@color/medium_light_teal</item>
+    </array>
+    <integer-array name="app_theme_ids">
+        <item>@style/AppTheme.Red</item>
+        <item>@style/AppTheme.Green</item>
+        <item>@style/AppTheme.Blue</item>
+        <item>@style/AppTheme.Purple</item>
+        <item>@style/AppTheme.Orange</item>
+        <item>@style/AppTheme.Teal</item>
+    </integer-array>
+    <string-array name="app_theme_names">
+        <item>Red</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Purple</item>
+        <item>Orange</item>
+        <item>Teal</item>
+    </string-array>
+    <string-array name="app_theme_tokens">
+        <item>@string/tokenThemeRed</item>
+        <item>@string/tokenThemeGreen</item>
+        <item>@string/tokenThemeBlue</item>
+        <item>@string/tokenThemePurple</item>
+        <item>@string/tokenThemeOrange</item>
+        <item>@string/tokenThemeTeal</item>
+    </string-array>
+    <string-array name="wifi_direct_channels">
+        <item>Auto – device selects channel|0</item>
+        <item>Channel  1 – 2.412 GHz|1</item>
+        <item>Channel  2 – 2.417 GHz|2</item>
+        <item>Channel  3 – 2.422 GHz|3</item>
+        <item>Channel  4 – 2.427 GHz|4</item>
+        <item>Channel  5 – 2.432 GHz|5</item>
+        <item>Channel  6 – 2.437 GHz|6</item>
+        <item>Channel  7 – 2.442 GHz|7</item>
+        <item>Channel  8 – 2.447 GHz|8</item>
+        <item>Channel  9 – 2.452 GHz|9</item>
+        <item>Channel 10 – 2.457 GHz|10</item>
+        <item>Channel 11 – 2.462 GHz|11</item>
+        <!--
+        <item>5GHz, Channel 36</item>
+        <item>5GHz, Channel 40</item>
+        <item>5GHz, Channel 44</item>
+        <item>5GHz, Channel 48</item>
+        -->
+        <!--
+        <item>5GHz, Channel 149</item>
+        <item>5GHz, Channel 153</item>
+        <item>5GHz, Channel 157</item>
+        <item>5GHz, Channel 161</item>
+        -->
+    </string-array>
+</resources>
