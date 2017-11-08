@@ -410,7 +410,7 @@ public class FtcRobotControllerActivity extends Activity
     RobotLog.logBuildConfig(com.qualcomm.robotcore.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.hardware.BuildConfig.class);
     RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
-    //modified for turbo: don't log the blocks version
+    // Modified for Turbo: don't log the blocks version
     RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
     RobotLog.logBuildConfig(org.openftc.BuildConfig.class);
   }

@@ -1,6 +1,6 @@
-# Contributing to the OpenFTC SDK
+# Contributing to the OpenFTC Turbo SDK
 
-The following is a set of guidelines for contributing to the OpenFTC SDK. OpenFTC welcomes new features and bug reports. Our goal is to provide a place where any member of the community with something valuable can contribute.
+The following is a set of guidelines for contributing to the OpenFTC Turbo SDK. OpenFTC welcomes new features and bug reports. Our goal is to provide a place where any member of the community with something valuable can contribute.
 
 Note: this is based on the official FIRST-provided FTC SDK, but it is NOT endorsed or run by FIRST. Most, if not all, changes made here will likely never be merged into the official SDK, but the OpenFTC SDK will be kept up to date with official features. 
 
@@ -41,11 +41,13 @@ Explain the problem and include additional details to help maintainers reproduce
 
 ### Pull requests
 
+#### Do not submit a Pull Request to this repo unless you are changing something specific to the Turbo version of OpenFTC.
+
 1. Before you start coding a new feature, create an issue to ask if it's something that the maintainers would want to have as a part of the OpenFTC app. If there is an existing issue tracking a similar feature request, comment on it to say that you're going to work on it, so that we don't have duplicated efforts.
 
 2. Create a new branch based off the current OpenFTC-app master. That way, anything you can change things on your master branch without those changes getting added to the pull request. It also allows us to safely do squash merges.
 
-3. Any code you change should be marked with `// Modified for OpenFTC`, unless it is in an OpenFTC-specific file or is something that can safely be overwritten by changes to the official SDK. 
+3. Any code you change should be marked with `// Modified for Turbo`, unless it is in an OpenFTC-specific file or is something that can safely be overwritten by changes to the official SDK.
 
 More guidelines to come in the future.
 
