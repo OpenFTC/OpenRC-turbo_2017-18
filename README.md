@@ -1,9 +1,7 @@
 OpenFTC-app-turbo
 ---
 
-Version 3.5 of the official SDK has been released. Right now, OpenFTC is still based on version 3.4.
-If you are using OpenFTC, DO NOT ATTEMPT TO UPDATE TO VERSION 3.5 until OpenFTC has itself been updated.
-At the latest, OpenFTC and OpenFTC Turbo will be updated by end of day November 7.
+OpenFTC-app-turbo is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
 The OpenFTC documentation is still under construction.
 
@@ -16,8 +14,6 @@ The OpenFTC family of Robot Controller apps provide teams a new way to use the [
 This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system. Most enhancements will likely be accepted as long as they _do not force teams to change their workflow._ Changes made in the OpenFTC SDK should allow teams to move from the official SDK to OpenFTC-app with no code changes required.
 
 To request a new feature, you can open an issue on this repository. If there's a large enough call for the feature, it's very likely to be added to the list for a future release.
-
-This version keeps the OnBotJava and Blocks programming system. If your team doesn't use these, you may want to look into [OpenFTC-app-turbo](https://github.com/OpenFTC/OpenFTC-app-turbo), which helps to decrease deploy times.
 
 ## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
@@ -63,6 +59,23 @@ For technical questions regarding the SDK, please visit the FTC Technology forum
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology
 
 
+**************************************************************************************
+# Release Information
+**************************************************************************************
+
+Version 3.5 (built on 17.10.30)
+
+Changes with version 3.5 include:
+ * Introduced a fix to prevent random op mode stops, which can occur after the Robot Controller app has been paused and then resumed (for example, when a user temporarily turns off the display of the Robot Controller phone, and then turns the screen back on).
+ * Introduced a fix to prevent random op mode stops, which were previously caused by random peer disconnect events on the Driver Station.
+ * Fixes issue where log files would be closed on pause of the RC or DS, but not re-opened upon resume.
+ * Fixes issue with battery handler (voltage) start/stop race.
+ * Fixes issue where Android Studio generated op modes would disappear from available list in certain situations.
+ * Fixes problem where OnBot Java would not build on REV Robotics Control Hub.
+ * Fixes problem where OnBot Java would not build if the date and time on the Robot Controller device was "rewound" (set to an earlier date/time).
+ * Improved error message on OnBot Java that occurs when renaming a file fails.
+ * Removed unneeded resources from android.jar binaries used by OnBot Java to reduce final size of Robot Controller app.
+ * Added MR_ANALOG_TOUCH_SENSOR block to Blocks Programming Tool.
 
 **************************************************************************************
 # Release Information
@@ -70,7 +83,7 @@ For technical questions regarding the SDK, please visit the FTC Technology forum
 
 Version 3.4 (built on 17.09.06)
 
-Changes with verion 3.4 include:
+Changes with version 3.4 include:
  * Added telemetry.update() statement for BlankLinearOpMode template.
  * Renamed sample Block op modes to be more consistent with Java samples.
  * Added some additional sample Block op modes.
@@ -205,8 +218,7 @@ Changes include:
     - Fixes bug with projects page for Firefox browser.
     - Added IsSpeaking block to AndroidTextToSpeech.  
  * Implements support for the REV Robotics Expansion Hub
-    - Implements support for integral REV IMU (physically installed on I2C bus 0, uses same Bosch BNO055 9 axis absolute orientation sensor as Adafruit 9DOF abs orientation sensor).
-    - Implements support for REV color/range/light sensor.
+    - Implements support for integral REV IMU (physically installed on I2C bus 0, uses same Bosch BNO055 9 axis absolute orientation sensor as Adafruit 9DOF abs orientation sensor).    - Implements support for REV color/range/light sensor.
     - Provides support to update Expansion Hub firmware through FTC SDK.
     - Detects REV firmware version and records in log file.
     - Includes support for REV Control Hub (note that the REV Control Hub is not yet approved for FTC use).

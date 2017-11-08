@@ -909,8 +909,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         }
     protected void handleCommandStartDriverStationProgramAndManage()
         {
-        //TODO: Test if having this method do nothing will prevent the webview from popping up on the DS
-            //modified for turbo
+            // Modified for Turbo
         }
 
     /**

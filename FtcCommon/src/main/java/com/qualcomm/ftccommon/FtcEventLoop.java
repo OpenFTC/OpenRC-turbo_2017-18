@@ -68,8 +68,6 @@ import com.qualcomm.ftccommon.configuration.FtcConfigurationActivity;
 import com.qualcomm.ftccommon.configuration.ScannedDevices;
 import com.qualcomm.ftccommon.configuration.USBScanManager;
 import com.qualcomm.hardware.HardwareFactory;
-import com.qualcomm.hardware.lynx.LynxUsbUtil;
-import com.qualcomm.hardware.modernrobotics.comm.ModernRoboticsUsbUtil;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
@@ -236,14 +234,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
     opModeManager.stopActiveOpMode();
     opModeManager.teardown();
 
-    // Close motor and servo controllers first, since some of them may reside on top
-    // of legacy modules: closing first just keeps things more graceful
-    ftcEventLoopHandler.closeMotorControllers();
-    ftcEventLoopHandler.closeServoControllers();
-
-    // Now close everything that's USB-connected (yes that might re-close a motor or servo
-    // controller, but that's ok
-    ftcEventLoopHandler.closeAutoCloseOnTeardown();
+    ftcEventLoopHandler.close();
 
     RobotLog.ii(TAG, "======= TEARDOWN COMPLETE =======");
   }

@@ -129,6 +129,14 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
                 String name = getOpModeName(opModeMetaAndClass);
                 this.registeredOpModes.register(OpModeMeta.forName(name, opModeMetaAndClass.meta), opModeMetaAndClass.clazz);
                 }
+            for (OpModeMetaAndClass opModeMetaAndClass : knownOpModes)
+                {
+                if (!newOpModes.contains(opModeMetaAndClass))
+                    {
+                    String name = getOpModeName(opModeMetaAndClass);
+                    this.registeredOpModes.register(OpModeMeta.forName(name, opModeMetaAndClass.meta), opModeMetaAndClass.clazz);
+                    }
+                }
             }
         finally
             {

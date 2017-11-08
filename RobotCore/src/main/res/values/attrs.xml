@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="color" name="backgroundAlmostDark"/>
+    <attr format="color" name="backgroundDark"/>
+    <attr format="color" name="backgroundLight"/>
+    <attr format="color" name="backgroundMedium"/>
+    <attr format="color" name="backgroundMediumDark"/>
+    <attr format="color" name="backgroundMediumLight"/>
+    <attr format="color" name="backgroundMediumMedium"/>
+    <attr format="color" name="backgroundVeryDark"/>
+    <attr format="color" name="backgroundVeryVeryDark"/>
+    <attr format="color" name="feedbackBackground"/>
+    <attr format="color" name="feedbackBorder"/>
+    <attr format="reference" name="feedbackShape"/>
+    <attr format="color" name="lineBright"/>
+    <attr format="color" name="lineLight"/>
+    <attr format="color" name="textBright"/>
+    <attr format="color" name="textLight"/>
+    <attr format="color" name="textMedium"/>
+    <attr format="color" name="textMediumAlmostDark"/>
+    <attr format="color" name="textMediumDark"/>
+    <attr format="color" name="textMediumLight"/>
+    <attr format="color" name="textMediumMedium"/>
+    <attr format="color" name="textVeryDark"/>
+    <attr format="color" name="textVeryVeryDark"/>
+    <attr format="color" name="textWhite"/>
+</resources>

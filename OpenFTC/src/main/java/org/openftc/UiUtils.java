@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -43,6 +44,26 @@ public class UiUtils
                     }
                 })
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .show();
+    }
+
+    public static void showOpenFtcSummary(final Activity activity)
+    {
+        LayoutInflater inflater= LayoutInflater.from(activity);
+        View view = inflater.inflate(R.layout.about_openftc_layout, null);
+
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(activity);
+        builder.setCancelable(false);
+
+        builder.setTitle("About OpenFTC")
+                .setView(view)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setIcon(R.drawable.ic_info_outline)
                 .show();
     }
 }

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ColorListPreference"><attr format="reference" name="colors"/></declare-styleable>
+
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!-- Theme customizations available in newer API levels can go in res/values-vXX/styles.xml,
+        while customizations related to backward-compatibility can go here. -->
+    </style>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:textViewStyle">@style/FtcTextViewStyle</item>
+        <item name="android:buttonStyle">@style/FtcButtonStyle</item>
+        <item name="textWhite">@color/text_white</item>
+    </style>
+    <style name="AppTheme.Blue">
+        <item name="textBright">@color/bright_blue</item>
+        <item name="textLight">@color/light_blue</item>
+        <item name="textMedium">@color/medium_blue</item>
+        <item name="textMediumDark">@color/medium_dark_blue</item>
+        <item name="textVeryDark">@color/very_dark_blue</item>
+        <item name="textVeryVeryDark">@color/very_very_dark_blue</item>
+
+        <item name="backgroundLight">@color/light_blue</item>
+        <item name="backgroundMediumLight">@color/medium_light_blue</item>
+        <item name="backgroundMedium">@color/medium_blue</item>
+        <item name="backgroundMediumMedium">@color/medium_medium_blue</item>
+        <item name="backgroundMediumDark">@color/medium_dark_blue</item>
+        <item name="backgroundAlmostDark">@color/almost_dark_blue</item>
+        <item name="backgroundDark">@color/dark_blue</item>
+        <item name="backgroundVeryDark">@color/very_dark_blue</item>
+        <item name="backgroundVeryVeryDark">@color/very_very_dark_blue</item>
+        <item name="lineBright">@color/bright_blue</item>
+        <item name="lineLight">@color/light_blue</item>
+        <item name="feedbackBackground">@color/background_orange</item>
+        <item name="feedbackBorder">@color/border_orange</item>
+        <item name="feedbackShape">@drawable/feedback_shape_orange</item>
+    </style>
+    <style name="AppTheme.Green">
+        <item name="textBright">@color/bright_green</item>
+        <item name="textLight">@color/light_green</item>
+        <item name="textMedium">@color/medium_green</item>
+        <item name="textMediumDark">@color/medium_dark_green</item>
+        <item name="textVeryDark">@color/very_dark_green</item>
+        <item name="textVeryVeryDark">@color/very_very_dark_green</item>
+
+        <item name="backgroundLight">@color/light_green</item>
+        <item name="backgroundMediumLight">@color/medium_light_green</item>
+        <item name="backgroundMedium">@color/medium_green</item>
+        <item name="backgroundMediumMedium">@color/medium_medium_green</item>
+        <item name="backgroundMediumDark">@color/medium_dark_green</item>
+        <item name="backgroundAlmostDark">@color/almost_dark_green</item>
+        <item name="backgroundDark">@color/dark_green</item>
+        <item name="backgroundVeryDark">@color/very_dark_green</item>
+        <item name="backgroundVeryVeryDark">@color/very_very_dark_green</item>
+        <item name="lineBright">@color/bright_green</item>
+        <item name="lineLight">@color/light_green</item>
+        <item name="feedbackBackground">@color/background_orange</item>
+        <item name="feedbackBorder">@color/border_orange</item>
+        <item name="feedbackShape">@drawable/feedback_shape_orange</item>
+    </style>
+    <style name="AppTheme.Orange">
+        <item name="textBright">@color/bright_orange</item>
+        <item name="textLight">@color/light_orange</item>
+        <item name="textMedium">@color/medium_orange</item>
+        <item name="textMediumDark">@color/medium_dark_orange</item>
+        <item name="textVeryDark">@color/very_dark_orange</item>
+        <item name="textVeryVeryDark">@color/very_very_dark_orange</item>
+
+        <item name="backgroundLight">@color/light_orange</item>
+        <item name="backgroundMediumLight">@color/medium_light_orange</item>
+        <item name="backgroundMedium">@color/medium_orange</item>
+        <item name="backgroundMediumMedium">@color/medium_medium_orange</item>
+        <item name="backgroundMediumDark">@color/medium_dark_orange</item>
+        <item name="backgroundAlmostDark">@color/almost_dark_orange</item>
+        <item name="backgroundDark">@color/dark_orange</item>
+        <item name="backgroundVeryDark">@color/very_dark_orange</item>
+        <item name="backgroundVeryVeryDark">@color/very_very_dark_orange</item>
+        <item name="lineBright">@color/bright_orange</item>
+        <item name="lineLight">@color/light_orange</item>
+        <item name="feedbackBackground">@color/background_orange</item>
+        <item name="feedbackBorder">@color/border_orange</item>
+        <item name="feedbackShape">@drawable/feedback_shape_orange</item>
+    </style>
+    <style name="AppTheme.Purple">
+        <item name="textBright">@color/bright_purple</item>
+        <item name="textLight">@color/light_purple</item>
+        <item name="textMedium">@color/medium_purple</item>
+        <item name="textMediumDark">@color/medium_dark_purple</item>
+        <item name="textVeryDark">@color/very_dark_purple</item>
+        <item name="textVeryVeryDark">@color/very_very_dark_purple</item>
+
+        <item name="backgroundLight">@color/light_purple</item>
+        <item name="backgroundMediumLight">@color/medium_light_purple</item>
+        <item name="backgroundMedium">@color/medium_purple</item>
+        <item name="backgroundMediumMedium">@color/medium_medium_purple</item>
+        <item name="backgroundMediumDark">@color/medium_dark_purple</item>
+        <item name="backgroundAlmostDark">@color/almost_dark_purple</item>
+        <item name="backgroundDark">@color/dark_purple</item>
+        <item name="backgroundVeryDark">@color/very_dark_purple</item>
+        <item name="backgroundVeryVeryDark">@color/very_very_dark_purple</item>
+        <item name="lineBright">@color/bright_purple</item>
+        <item name="lineLight">@color/light_purple</item>
+        <item name="feedbackBackground">@color/background_orange</item>
+        <item name="feedbackBorder">@color/border_orange</item>
+        <item name="feedbackShape">@drawable/feedback_shape_orange</item>
+    </style>
+    <style name="AppTheme.Red">
+        <item name="textBright">@color/bright_red</item>
+        <item name="textLight">@color/light_red</item>
+        <item name="textMedium">@color/medium_red</item>
+        <item name="textMediumDark">@color/medium_dark_red</item>
+        <item name="textVeryDark">@color/very_dark_red</item>
+        <item name="textVeryVeryDark">@color/very_very_dark_red</item>
+
+        <item name="backgroundLight">@color/light_red</item>
+        <item name="backgroundMediumLight">@color/medium_light_red</item>
+        <item name="backgroundMedium">@color/medium_red</item>
+        <item name="backgroundMediumMedium">@color/medium_medium_red</item>
+        <item name="backgroundMediumDark">@color/medium_dark_red</item>
+        <item name="backgroundAlmostDark">@color/almost_dark_red</item>
+        <item name="backgroundDark">@color/dark_red</item>
+        <item name="backgroundVeryDark">@color/very_dark_red</item>
+        <item name="backgroundVeryVeryDark">@color/very_very_dark_red</item>
+        <item name="lineBright">@color/bright_red</item>
+        <item name="lineLight">@color/light_red</item>
+        <item name="feedbackBackground">@color/background_orange</item>
+        <item name="feedbackBorder">@color/border_orange</item>
+        <item name="feedbackShape">@drawable/feedback_shape_orange</item>
+    </style>
+    <style name="AppTheme.Teal">
+        <item name="textBright">@color/bright_teal</item>
+        <item name="textLight">@color/light_teal</item>
+        <item name="textMedium">@color/medium_teal</item>
+        <item name="textMediumDark">@color/medium_dark_teal</item>
+        <item name="textVeryDark">@color/very_dark_teal</item>
+        <item name="textVeryVeryDark">@color/very_very_dark_teal</item>
+
+        <item name="backgroundLight">@color/light_teal</item>
+        <item name="backgroundMediumLight">@color/medium_light_teal</item>
+        <item name="backgroundMedium">@color/medium_teal</item>
+        <item name="backgroundMediumMedium">@color/medium_medium_teal</item>
+        <item name="backgroundMediumDark">@color/medium_dark_teal</item>
+        <item name="backgroundAlmostDark">@color/almost_dark_teal</item>
+        <item name="backgroundDark">@color/dark_teal</item>
+        <item name="backgroundVeryDark">@color/very_dark_teal</item>
+        <item name="backgroundVeryVeryDark">@color/very_very_dark_teal</item>
+        <item name="lineBright">@color/bright_teal</item>
+        <item name="lineLight">@color/light_teal</item>
+        <item name="feedbackBackground">@color/background_orange</item>
+        <item name="feedbackBorder">@color/border_orange</item>
+        <item name="feedbackShape">@drawable/feedback_shape_orange</item>
+    </style>
+    <style name="ConfigWifiDirectDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">@color/background_black</item>
+        <item name="android:textColor">?attr/textWhite</item>
+        <item name="android:windowBackground">?attr/backgroundVeryDark</item>
+    </style>
+    <style name="FeedbackButton" parent="android:Widget.Button">
+        <item name="android:textColor">?attr/feedbackBorder</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="FeedbackText" parent="FtcTextViewStyle">
+        <item name="android:textColor">?attr/textWhite</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="FtcButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="FtcTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="FtcTextViewStyleBold" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="OpModeDialogTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">?android:attr/textColorAlertDialogListItem</item>
+    </style>
+</resources>

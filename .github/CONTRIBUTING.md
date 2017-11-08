@@ -1,6 +1,6 @@
-# Contributing to the OpenFTC Turbo SDK
+# Contributing to the OpenFTC SDK
 
-The following is a set of guidelines for contributing to the OpenFTC Turbo SDK. OpenFTC welcomes new features and bug reports. Our goal is to provide a place where any member of the community with something valuable can contribute.
+The following is a set of guidelines for contributing to the OpenFTC SDK. OpenFTC welcomes new features and bug reports. Our goal is to provide a place where any member of the community with something valuable can contribute.
 
 Note: this is based on the official FIRST-provided FTC SDK, but it is NOT endorsed or run by FIRST. Most, if not all, changes made here will likely never be merged into the official SDK, but the OpenFTC SDK will be kept up to date with official features. 
 
@@ -8,11 +8,9 @@ Note: this is based on the official FIRST-provided FTC SDK, but it is NOT endors
 
 ### Report bugs
 
-This section guides you through filing a bug report.  The better the report the more likely it is to be root caused and fixed.
+This section guides you through filing a bug report.  The better the report the more likely it is to be root caused and fixed. Even if you think that the bug likely also exists in the official SDK, don't report it there unless you take the time to reproduce it with the official version. FIRST doesn't want to support unofficial code.
 
 #### Before submitting a bug report
-
-- Make sure that your bug is specific to the OpenFTC SDK. If the bug still occurs while using the official FTC SDK, your bug report should be reported to the [official SDK](https://github.com/ftctechnh/ftc_app).
 
 - Perform a search of current [OpenFTC-app issues](https://github.com/OpenFTC/OpenFTC-app/issues) to see if the problem has already been reported.  If so, add a comment to the existing issue instead of creating a new one.
 
@@ -41,13 +39,13 @@ Explain the problem and include additional details to help maintainers reproduce
 
 ### Pull requests
 
-#### Do not submit a Pull Request to this repo unless you are changing something specific to the Turbo version of OpenFTC.
-
 1. Before you start coding a new feature, create an issue to ask if it's something that the maintainers would want to have as a part of the OpenFTC app. If there is an existing issue tracking a similar feature request, comment on it to say that you're going to work on it, so that we don't have duplicated efforts.
 
 2. Create a new branch based off the current OpenFTC-app master. That way, anything you can change things on your master branch without those changes getting added to the pull request. It also allows us to safely do squash merges.
 
-3. Any code you change should be marked with `// Modified for Turbo`, unless it is in an OpenFTC-specific file or is something that can safely be overwritten by changes to the official SDK.
+3. Any code you change should be marked with `// Modified for Turbo`, unless it is brand new code, is in an OpenFTC-specific file, is an import statement, or is something that can safely be overwritten by changes to the official SDK.
+
+4. If your pull request takes care of a filed issue, put "closes #23" (replace with the number of the issue to be closed) in the pull request description. If the issue is a bug, you can replace "closes" with "fixes".
 
 More guidelines to come in the future.
 
