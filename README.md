@@ -1,9 +1,7 @@
 OpenFTC-app
 ---
 
-Version 3.5 of the official SDK has been released. Right now, OpenFTC is still based on version 3.4. 
-If you are using OpenFTC, DO NOT ATTEMPT TO UPDATE TO VERSION 3.5 until OpenFTC has itself been updated.
-At the latest, OpenFTC and OpenFTC Turbo will be updated by end of day November 7. 
+OpenFTC-app is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
 The OpenFTC documentation is still under construction.
 
