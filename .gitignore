@@ -23,3 +23,5 @@ Thumbs.db
 .idea
 .gradle
 build/
+
+!/doc/apk/FtcDriverStation-release.apk
