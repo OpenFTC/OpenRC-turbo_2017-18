@@ -1,5 +1,5 @@
-OpenFTC-app
----
+# OpenFTC-app is to be used at your own risk. 
+#### While every change is made with care not to break anything, FIRST has not tested our modifications. Volunteers at competitions may be less willing to assist you if you use OpenFTC. Our community is very helpful though, so please create an issue if you encounter any problems.
 
 OpenFTC-app is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
@@ -7,7 +7,7 @@ The OpenFTC documentation is still under construction.
 
 ---
 
-The OpenFTC family of Robot Controller apps provide teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit). Since the AAR files have been converted to modules in the Android Studio project, it's easy to see and modify the entirety of the SDK's source code. In addition, the history in Git shows all changes that have been made to the core code since OpenFTC's inception. This is a very useful supplement to the changelogs that FIRST provides - teams can see exactly which code has been changed and how it will affect them.
+The OpenFTC family of Robot Controller apps provide teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit). Since the AAR files have been converted to modules in the Android Studio project, it's easy to see and modify almost the entirety of the SDK's source code. In addition, the history in Git shows all changes that have been made to the core code since OpenFTC's inception. This is a very useful supplement to the changelogs that FIRST provides - teams can see exactly what code has been changed and how it will affect them.
 
 This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system. Most enhancements will likely be accepted as long as they _do not force teams to change their workflow._ Changes made in the OpenFTC SDK should allow teams to move from the official SDK to OpenFTC-app with no code changes required.
 
