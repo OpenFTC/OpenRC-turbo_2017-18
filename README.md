@@ -1,5 +1,5 @@
-OpenFTC-app-turbo
----
+# OpenFTC-app-turbo is to be used at your own risk. 
+#### While every change is made with care not to break anything, FIRST has not tested our modifications. Volunteers at competitions may be less willing to assist you if you use OpenFTC. Our community is very helpful though, so please create an issue if you encounter any problems.
 
 OpenFTC-app-turbo is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
@@ -7,7 +7,7 @@ The OpenFTC documentation is still under construction.
 
 ---
 
-OpenFTC-app-turbo removes the OnBotJava and Blocks programming systems for teams that don't use or need them, speeding up deploy time by removing the large files required for those systems. If you use these systems, please see [OpenFTC-app](https://github.com/OpenFTC/OpenFTC-app).
+OpenFTC-app-turbo removes the OnBotJava and Blocks programming systems for teams that don't use them, speeding up deploy time by removing the large files required for those systems. If you use these systems, please see [OpenFTC-app](https://github.com/OpenFTC/OpenFTC-app).
 
 The OpenFTC family of Robot Controller apps provide teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit). Since the AAR files have been converted to modules in the Android Studio project, it's easy to see and modify the entirety of the SDK's source code. In addition, the history in Git shows all changes that have been made to the core code since OpenFTC's inception. This is a very useful supplement to the changelogs that FIRST provides - teams can see exactly which code has been changed and how it will affect them.
 
