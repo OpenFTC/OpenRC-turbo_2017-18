@@ -58,6 +58,9 @@ public class DroneOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // IMPORTANT: Initialize the hardwareMap
+        robot.init(hardwareMap);
+
         // Init directSave array
         for (int i = 0; i < 3; i++) {
             directSave[i] = 0;
