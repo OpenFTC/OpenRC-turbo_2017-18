@@ -3,11 +3,14 @@ package org.firstinspires.ftc.teamcode.robot;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.preference.PreferenceManager;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,11 +31,14 @@ public class RevbotHardware {
     public Servo fondler = null;
 
     public ColorSensor color = null;
+    public DistanceSensor distance = null;
 
     public ElapsedTime elapsedTime = new ElapsedTime();
 
     HardwareMap hwMap = null;
     public Resources res = null;
+
+    private ToneGenerator tone = null;
 
     public RevbotHardware() {
 
@@ -53,6 +59,7 @@ public class RevbotHardware {
         fondler = hwMap.get(Servo.class, "fondler");
 
         color = hwMap.get(ColorSensor.class, "color");
+        distance = hwMap.get(DistanceSensor.class, "color");
 
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -60,5 +67,11 @@ public class RevbotHardware {
         cubeLift.setDirection(DcMotor.Direction.REVERSE);
 
         res = hwMap.appContext.getResources();
+
+        tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+    }
+
+    public void beep() {
+        tone.startTone(ToneGenerator.TONE_CDMA_KEYPAD_VOLUME_KEY_LITE);
     }
 }

@@ -163,6 +163,21 @@ public class DroneOp extends LinearOpMode {
 
             }
 
+            // Move fondler
+            if (gamepad1.y) {
+
+                robot.fondler.setPosition(RevbotValues.FONDLER_CENTER_VALUE);
+
+            } else if (gamepad1.x) {
+
+                robot.fondler.setPosition(RevbotValues.FONDLER_LEFT_VALUE);
+
+            } else if (gamepad1.b) {
+
+                robot.fondler.setPosition(RevbotValues.FONDLER_RIGHT_VALUE);
+
+            }
+
             telemetry.addData("OpMode Status", "Running");
             telemetry.addData("Servo Position", robot.clawLeft.getPosition());
             telemetry.update();
