@@ -9,11 +9,12 @@ import android.preference.PreferenceManager;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import static org.firstinspires.ftc.teamcode.robot.RevbotValues.*;
 
 /**
  * This is the hardware map for the 2017-2018 robot.
@@ -21,24 +22,24 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @SuppressWarnings("unused")
 public class RevbotHardware {
 
-    public DcMotor leftDrive = null;
-    public DcMotor rightDrive = null;
-    public DcMotor strafe = null;
-    public DcMotor cubeLift = null;
+    public DcMotor leftDrive;
+    public DcMotor rightDrive;
+    public DcMotor strafe;
+    public DcMotor cubeLift;
 
-    public Servo clawRight = null;
-    public Servo clawLeft = null;
-    public Servo fondler = null;
+    public Servo clawRight;
+    public Servo clawLeft;
+    public Servo fondler;
 
-    public ColorSensor color = null;
-    public DistanceSensor distance = null;
+    public ColorSensor color;
+    public DistanceSensor distance;
 
     public ElapsedTime elapsedTime = new ElapsedTime();
 
-    HardwareMap hwMap = null;
-    public Resources res = null;
+    HardwareMap hwMap;
+    public Resources res;
 
-    private ToneGenerator tone = null;
+    private ToneGenerator tone;
 
     public RevbotHardware() {
 

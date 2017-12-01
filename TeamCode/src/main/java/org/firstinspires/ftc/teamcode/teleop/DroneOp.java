@@ -36,7 +36,8 @@ public class DroneOp extends LinearOpMode {
     private RevbotHardware robot = new RevbotHardware();
 
     // Declare power variables
-    private double drivePower;
+    private double leftPower;
+    private double rightPower;
     private double strafePower;
     private double turnPower;
 
@@ -54,6 +55,8 @@ public class DroneOp extends LinearOpMode {
 
     // Other constants used
     private static final double MIN_DIRECTSAVE_VALUE = 0.1;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -76,19 +79,21 @@ public class DroneOp extends LinearOpMode {
             hyperPrecision = gamepad1.left_trigger * HP_STRENGTH + 1;
             smartDirect = gamepad1.left_bumper;
 
-            drivePower = -gamepad1.left_stick_y;
+            leftPower = -gamepad1.left_stick_y;
+            rightPower = -gamepad1.left_stick_y;
 
             turnPower = gamepad1.right_stick_x;
 
             strafePower = -gamepad1.left_stick_x;
-            drivePower /= turnPower;
+            leftPower += turnPower;
+            rightPower -= turnPower;
 
             strafePower /= hyperPrecision;
-            drivePower /= hyperPrecision;
-            turnPower /= hyperPrecision;
+            leftPower /= hyperPrecision;
+            rightPower /= hyperPrecision;
 
             // If directSave is on, use saved movement.
-            if (gamepad1.left_trigger > MIN_DIRECTSAVE_VALUE) {
+            if (gamepad1.right_trigger > MIN_DIRECTSAVE_VALUE) {
 
                 robot.leftDrive.setPower(directSave[0] * gamepad1.right_trigger);
                 robot.rightDrive.setPower(directSave[1] * gamepad1.right_trigger);
@@ -97,12 +102,12 @@ public class DroneOp extends LinearOpMode {
             } else {
 
                 // Set drivePower conditions
-                if (!smartDirect || (Math.abs(drivePower) >= Math.abs(strafePower))) {
+                if (!smartDirect || (Math.abs(leftPower) >= Math.abs(strafePower))) {
 
-                    robot.leftDrive.setPower(drivePower);
-                    robot.rightDrive.setPower(drivePower);
+                    robot.leftDrive.setPower(leftPower);
+                    robot.rightDrive.setPower(rightPower);
 
-                    if (smartDirect && Math.abs(drivePower) >= Math.abs(strafePower)) {
+                    if (smartDirect && Math.abs(leftPower) >= Math.abs(strafePower)) {
 
                         robot.strafe.setPower(0);
 
@@ -111,11 +116,11 @@ public class DroneOp extends LinearOpMode {
                 }
 
                 // Set strafePower conditions
-                if (!smartDirect || (Math.abs(drivePower) < Math.abs(strafePower))) {
+                if (!smartDirect || (Math.abs(leftPower) < Math.abs(strafePower))) {
 
                     robot.strafe.setPower(strafePower);
 
-                    if (smartDirect && Math.abs(drivePower) < Math.abs(strafePower)) {
+                    if (smartDirect && Math.abs(leftPower) < Math.abs(strafePower)) {
 
                         robot.leftDrive.setPower(0);
                         robot.rightDrive.setPower(0);
@@ -178,8 +183,24 @@ public class DroneOp extends LinearOpMode {
 
             }
 
+            // Gamepad 2 claw fine control
+            if (gamepad2.dpad_left) {
+
+                robot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_OPENED_VALUE);
+
+            } else if (gamepad2.dpad_right) {
+
+                robot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_OPENED_VALUE);
+
+            } else if (gamepad2.dpad_up) {
+
+                robot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_CLOSED_VALUE);
+                robot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_CLOSED_VALUE);
+
+            }
+
             telemetry.addData("OpMode Status", "Running");
-            telemetry.addData("Servo Position", robot.clawLeft.getPosition());
+            telemetry.addData("Hyper Precision: ", hyperPrecision);
             telemetry.update();
 
         }
