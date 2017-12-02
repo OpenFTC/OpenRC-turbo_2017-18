@@ -12,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous(name = "Auto Red Top", group = "auto")
 public class AutoRedTop extends AutoBase {
 
+    private String boxLocation;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // put common code in superclass
@@ -19,22 +21,57 @@ public class AutoRedTop extends AutoBase {
         waitForStart();
 
         // add autonomous code here
-        strafeLeft(0.5, 1);
+        strafeLeft(1, 0.5);
         telemetry.addData("Auto", "Strafe Left");
         telemetry.update();
 
         robot.beep();
         fondleBalls("red");
+        robot.cubeLift.setPower(0.5);
+        sleep(500);
+        robot.cubeLift.setPower(0);
+
+        strafeRight(0.5);
+        backward(0.5);
+        sleep(900);
+        strafeRight(0);
+        backward(0);
         robot.beep();
+        sleep(500);
 
-        strafeRight(0.5, 1);
+        boxLocation = readImage();
 
-        while (opModeIsActive()) {
-            telemetry.addData("Blue", robot.color.blue());
-            telemetry.addData("Red", robot.color.red());
-            telemetry.update();
+        backward(500, 0.5);
+        sleep(500);
+
+        switch (boxLocation) {
+            case "RIGHT":
+                backward(500, 0.5);
+                break;
+
+            case "CENTER":
+                backward(1000, 0.5);
+                break;
+
+            case "LEFT":
+                backward(1500, 0.5);
+                break;
+
+            default:
+                backward(750, 0.5);
+                break;
         }
 
+        robot.cubeLift.setPower(-0.5);
+        sleep(500);
+        robot.cubeLift.setPower(0);
+        turnLeft(0.5, 0.75);
+        sleep(500);
+        forward(1000, 1);
+
+        for (int i = 0; i < 3; i++) {
+            robot.beep();
+        }
     }
 
 }

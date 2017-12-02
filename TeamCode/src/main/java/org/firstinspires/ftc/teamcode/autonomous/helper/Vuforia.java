@@ -13,13 +13,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.autonomous.AutoBase;
 import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 
 /**
  * Created by josh on 11/24/17.
  */
 
-public class Vuforia extends LinearOpMode {
+public class Vuforia extends AutoBase {
 
     public static final String TAG = "Vuforia Navigation";
 

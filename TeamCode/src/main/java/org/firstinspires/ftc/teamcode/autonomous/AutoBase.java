@@ -5,7 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.robot.RevbotHardware;
 import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 
@@ -20,6 +25,8 @@ public class AutoBase extends LinearOpMode {
 
     RevbotHardware robot = new RevbotHardware();
     ElapsedTime elapsedTime = new ElapsedTime();
+    VuforiaLocalizer vuforia;
+    VuforiaTrackable relicTemplate;
 
     double distance;
     double distanceFromWall;
@@ -28,6 +35,7 @@ public class AutoBase extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);
+        initVuforia();
         initFondler();
         closeClaw();
         robot.beep();
@@ -99,6 +107,11 @@ public class AutoBase extends LinearOpMode {
         robot.rightDrive.setPower(0);
     }
 
+    public void forward(double power) {
+        robot.leftDrive.setPower(power);
+        robot.rightDrive.setPower(power);
+    }
+
     /**
      * Drive backward (using motors "leftDrive" and "rightDrive)
      * @param ms milliseconds to wait
@@ -106,6 +119,10 @@ public class AutoBase extends LinearOpMode {
      */
     public void backward(long ms, double power){
         forward(ms, -power);
+    }
+
+    public void backward(double power) {
+        forward(-power);
     }
 
     /**
@@ -121,6 +138,11 @@ public class AutoBase extends LinearOpMode {
         robot.rightDrive.setPower(0);
     }
 
+    public void turnLeft(double power) {
+        robot.leftDrive.setPower(-power);
+        robot.rightDrive.setPower(power);
+    }
+
     /**
      * Turn right (using motors "leftDrive" and "rightDrive)
      * @param seconds seconds to wait
@@ -128,6 +150,10 @@ public class AutoBase extends LinearOpMode {
      */
     public void turnRight(double seconds, double power) {
         turnLeft(seconds, -power);
+    }
+
+    public void turnRight(double power) {
+        turnLeft(-power);
     }
 
     public boolean isBlue() {
@@ -159,8 +185,33 @@ public class AutoBase extends LinearOpMode {
         telemetry.addData("isBlue", robot.color.blue());
         telemetry.update();
 
-        sleep(3000);
+        sleep(1000);
 
     }
 
+    // Vuforia Stuff
+    public void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = RevbotValues.VUFORIA_LICENSE_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        this.relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+
+        telemetry.addData("Vuforia", "Initialized");
+    }
+
+    public String readImage() {
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+            telemetry.addData("VuMark", "%s visible",vuMark);
+            return vuMark.name();
+        } else {
+            telemetry.addData("VuMark", "not found");
+            return ":B:roke";
+        }
+    }
 }
