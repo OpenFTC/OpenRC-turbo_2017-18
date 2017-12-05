@@ -29,26 +29,32 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaInsn;
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaMethod;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntIterator;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntSet;
+
 import java.util.ArrayList;
 
 /**
  * Base class of all register allocators.
  */
 public abstract class RegisterAllocator {
-    /** method being processed */
+    /**
+     * method being processed
+     */
     protected final SsaMethod ssaMeth;
 
-    /** interference graph, indexed by register in both dimensions */
+    /**
+     * interference graph, indexed by register in both dimensions
+     */
     protected final InterferenceGraph interference;
 
     /**
      * Creates an instance. Call {@code allocateRegisters} to run.
-     * @param ssaMeth method to process.
+     *
+     * @param ssaMeth      method to process.
      * @param interference Interference graph, indexed by register in both
-     * dimensions.
+     *                     dimensions.
      */
     public RegisterAllocator(SsaMethod ssaMeth,
-            InterferenceGraph interference) {
+                             InterferenceGraph interference) {
         this.ssaMeth = ssaMeth;
         this.interference = interference;
     }
@@ -126,18 +132,18 @@ public abstract class RegisterAllocator {
      * last insn in a block.
      *
      * @param insn {@code non-null;} insn to insert move before, must
-     * be last insn in block
-     * @param reg {@code non-null;} SSA register to duplicate
+     *             be last insn in block
+     * @param reg  {@code non-null;} SSA register to duplicate
      * @return {@code non-null;} spec of new SSA register created by move
      */
     protected final RegisterSpec insertMoveBefore(SsaInsn insn,
-            RegisterSpec reg) {
+                                                  RegisterSpec reg) {
         SsaBasicBlock block = insn.getBlock();
         ArrayList<SsaInsn> insns = block.getInsns();
         int insnIndex = insns.indexOf(insn);
 
         if (insnIndex < 0) {
-            throw new IllegalArgumentException (
+            throw new IllegalArgumentException(
                     "specified insn is not in this block");
         }
 

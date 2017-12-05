@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dex.MethodId;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.CodeReader;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.OpcodeInfo;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.instructions.DecodedInstruction;
+
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashSet;
@@ -77,7 +78,7 @@ public final class FindUsages {
 
         codeReader.setFieldVisitor(new CodeReader.Visitor() {
             public void visit(DecodedInstruction[] all,
-                    DecodedInstruction one) {
+                              DecodedInstruction one) {
                 int fieldId = one.getIndex();
                 if (fieldIds.contains(fieldId)) {
                     out.println(location() + ": field reference " + dex.fieldIds().get(fieldId)

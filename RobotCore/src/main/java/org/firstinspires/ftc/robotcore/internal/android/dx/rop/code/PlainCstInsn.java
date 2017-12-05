@@ -30,11 +30,11 @@ public final class PlainCstInsn
     /**
      * Constructs an instance.
      *
-     * @param opcode {@code non-null;} the opcode
+     * @param opcode   {@code non-null;} the opcode
      * @param position {@code non-null;} source position
-     * @param result {@code null-ok;} spec for the result, if any
-     * @param sources {@code non-null;} specs for all the sources
-     * @param cst {@code non-null;} the constant
+     * @param result   {@code null-ok;} spec for the result, if any
+     * @param sources  {@code non-null;} specs for all the sources
+     * @param cst      {@code non-null;} the constant
      */
     public PlainCstInsn(Rop opcode, SourcePosition position,
                         RegisterSpec result, RegisterSpecList sources,
@@ -46,42 +46,52 @@ public final class PlainCstInsn
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeList getCatches() {
         return StdTypeList.EMPTY;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visitPlainCstInsn(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withAddedCatch(Type type) {
         throw new UnsupportedOperationException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withRegisterOffset(int delta) {
         return new PlainCstInsn(getOpcode(), getPosition(),
-                                getResult().withOffset(delta),
-                                getSources().withOffset(delta),
-                                getConstant());
+                getResult().withOffset(delta),
+                getSources().withOffset(delta),
+                getConstant());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withNewRegisters(RegisterSpec result,
-            RegisterSpecList sources) {
+                                 RegisterSpecList sources) {
 
         return new PlainCstInsn(getOpcode(), getPosition(),
-                                result,
-                                sources,
-                                getConstant());
+                result,
+                sources,
+                getConstant());
 
     }
 }

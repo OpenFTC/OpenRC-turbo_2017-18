@@ -24,16 +24,24 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
  * a method.
  */
 public final class LocalVariableExtractor {
-    /** {@code non-null;} method being extracted from */
+    /**
+     * {@code non-null;} method being extracted from
+     */
     private final RopMethod method;
 
-    /** {@code non-null;} block list for the method */
+    /**
+     * {@code non-null;} block list for the method
+     */
     private final BasicBlockList blocks;
 
-    /** {@code non-null;} result in-progress */
+    /**
+     * {@code non-null;} result in-progress
+     */
     private final LocalVariableInfo resultInfo;
 
-    /** {@code non-null;} work set indicating blocks needing to be processed */
+    /**
+     * {@code non-null;} work set indicating blocks needing to be processed
+     */
     private final int[] workSet;
 
     /**
@@ -102,7 +110,7 @@ public final class LocalVariableExtractor {
          * exception targets.
          */
         boolean canThrowDuringLastInsn = block.hasExceptionHandlers() &&
-            (insns.getLast().getResult() != null);
+                (insns.getLast().getResult() != null);
         int freezeSecondaryStateAt = insnSz - 1;
         RegisterSpecSet secondaryState = primaryState;
 
@@ -181,7 +189,7 @@ public final class LocalVariableExtractor {
         for (int i = 0; i < succSz; i++) {
             int succ = successors.get(i);
             RegisterSpecSet state = (succ == primarySuccessor) ?
-                primaryState : secondaryState;
+                    primaryState : secondaryState;
 
             if (resultInfo.mergeStarts(succ, state)) {
                 Bits.set(workSet, succ);

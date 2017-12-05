@@ -11,14 +11,14 @@ import android.webkit.JavascriptInterface;
  */
 class SystemAccess extends Access {
 
-  SystemAccess(BlocksOpMode blocksOpMode, String identifier) {
-    super(blocksOpMode, identifier);
-  }
+    SystemAccess(BlocksOpMode blocksOpMode, String identifier) {
+        super(blocksOpMode, identifier);
+    }
 
-  @SuppressWarnings("unused")
-  @JavascriptInterface
-  public long nanoTime() {
-    checkIfStopRequested();
-    return System.nanoTime();
-  }
+    @SuppressWarnings("unused")
+    @JavascriptInterface
+    public long nanoTime() {
+        checkIfStopRequested();
+        return System.nanoTime();
+    }
 }

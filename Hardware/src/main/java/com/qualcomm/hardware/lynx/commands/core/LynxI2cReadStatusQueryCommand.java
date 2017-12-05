@@ -43,8 +43,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-05-06.
  */
-public class LynxI2cReadStatusQueryCommand extends LynxDekaInterfaceCommand<LynxI2cReadStatusQueryResponse>
-    {
+public class LynxI2cReadStatusQueryCommand extends LynxDekaInterfaceCommand<LynxI2cReadStatusQueryResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -57,54 +56,47 @@ public class LynxI2cReadStatusQueryCommand extends LynxDekaInterfaceCommand<Lynx
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cReadStatusQueryCommand(LynxModuleIntf module)
-        {
+    public LynxI2cReadStatusQueryCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxI2cReadStatusQueryResponse(module, 0);
-        }
+    }
 
-    public LynxI2cReadStatusQueryCommand(LynxModuleIntf module, int busZ, int cbExpected)
-        {
+    public LynxI2cReadStatusQueryCommand(LynxModuleIntf module, int busZ, int cbExpected) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
         this.response = new LynxI2cReadStatusQueryResponse(module, cbExpected);
-        this.i2cBus = (byte)busZ;
-        }
+        this.i2cBus = (byte) busZ;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxI2cReadStatusQueryResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public void onResponseReceived(LynxMessage generic)
-        {
+    public void onResponseReceived(LynxMessage generic) {
         super.onResponseReceived(generic);
         // TODO: process the status byte therein
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
-        }
     }
+}

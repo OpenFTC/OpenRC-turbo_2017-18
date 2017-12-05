@@ -21,7 +21,9 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst;
  */
 public abstract class CstLiteral32
         extends CstLiteralBits {
-    /** the value as {@code int} bits */
+    /**
+     * the value as {@code int} bits
+     */
     private final int bits;
 
     /**
@@ -33,21 +35,27 @@ public abstract class CstLiteral32
         this.bits = bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean equals(Object other) {
         return (other != null) &&
-            (getClass() == other.getClass()) &&
-            bits == ((CstLiteral32) other).bits;
+                (getClass() == other.getClass()) &&
+                bits == ((CstLiteral32) other).bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int hashCode() {
         return bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         int otherBits = ((CstLiteral32) other).bits;
@@ -61,25 +69,33 @@ public abstract class CstLiteral32
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean fitsInInt() {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getIntBits() {
         return bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final long getLongBits() {
         return (long) bits;

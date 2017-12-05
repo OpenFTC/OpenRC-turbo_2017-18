@@ -45,13 +45,13 @@ import fi.iki.elonen.NanoHTTPD;
 
 /**
  * WebServer.
- *
+ * <p>
  * Most of this WebServer is derived from the ProgrammingModeServer.java file.
+ *
  * @author shager
  */
 @SuppressWarnings("WeakerAccess")
-public class WebServer
-{
+public class WebServer {
     public static final String TAG = WebServer.class.getSimpleName();
 
     private static final int DEFAULT_PORT = 8080;
@@ -71,13 +71,11 @@ public class WebServer
     private boolean serverIsAlive;
     private int port;
 
-    public WebServer()
-    {
+    public WebServer() {
         this(DEFAULT_PORT);
     }
 
-    public WebServer(int port)
-    {
+    public WebServer(int port) {
         this.port = port;
         this.networkType = NetworkType.WIFIDIRECT;
         this.nanoHttpd = createNanoHttpd(port);
@@ -86,14 +84,12 @@ public class WebServer
         this.startStopLock = new Object();
     }
 
-    public WebHandlerManager getWebHandlerManager()
-    {
+    public WebHandlerManager getWebHandlerManager() {
         return webHandlerManager;
     }
 
     // convenience for error logging
-    private static void logError(String message)
-    {
+    private static void logError(String message) {
         RobotLog.ee(TAG, message);
     }
 
@@ -102,8 +98,7 @@ public class WebServer
      *
      * @return true if the server was started and false otherwise.
      */
-    public boolean wasStarted()
-    {
+    public boolean wasStarted() {
         synchronized (startStopLock) {
             return nanoHttpd.wasStarted();
         }
@@ -112,36 +107,28 @@ public class WebServer
     /**
      * start the WebServer.
      */
-    public void start()
-    {
-        synchronized (startStopLock)
-        {
+    public void start() {
+        synchronized (startStopLock) {
             try {
-                if (wasStarted())
-                {
+                if (wasStarted()) {
                     return;
                 }
                 RobotLog.vv(TAG, "starting port=%d", port);
                 nanoHttpd.start();
-                synchronized (lock)
-                {
+                synchronized (lock) {
                     timeServerStartedMillis = System.currentTimeMillis();
 
                     // By this time, the NetworkConnection should already have been created. Therefore it should
                     // be OK to pass null for the context.
                     networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, null);
-                    if (networkConnection == null)
-                    {
+                    if (networkConnection == null) {
                         logError("Cannot start Network Connection of type: " + networkType);
                     }
                     networkConnection.enable();
 
-                    if (networkConnection instanceof WifiDirectAssistant)
-                    {
+                    if (networkConnection instanceof WifiDirectAssistant) {
                         networkName = ((WifiDirectAssistant) networkConnection).getGroupNetworkName();
-                    }
-                    else
-                    {
+                    } else {
                         networkName = networkConnection.getConnectionOwnerName();
                     }
                     passphrase = networkConnection.getPassphrase();
@@ -160,17 +147,13 @@ public class WebServer
     /**
      * stop the WebServer.
      */
-    public void stop()
-    {
-        synchronized (startStopLock)
-        {
+    public void stop() {
+        synchronized (startStopLock) {
             RobotLog.vv(TAG, "stopping port=%d", port);
             nanoHttpd.stop();
 
-            synchronized (lock)
-            {
-                if (networkConnection != null)
-                {
+            synchronized (lock) {
+                if (networkConnection != null) {
                     networkConnection.disable();
                     networkConnection = null;
                 }
@@ -184,16 +167,12 @@ public class WebServer
      *
      * @return an instance of {@link RobotControllerWebInfo}
      */
-    public RobotControllerWebInfo getConnectionInformation()
-    {
-        synchronized (lock)
-        {
+    public RobotControllerWebInfo getConnectionInformation() {
+        synchronized (lock) {
             String serverUrl = "(unavailable)";
-            if (connectionOwnerAddress != null)
-            {
+            if (connectionOwnerAddress != null) {
                 final int port = nanoHttpd.getListeningPort();
-                if (port != -1)
-                {
+                if (port != -1) {
                     serverUrl = "http://" + connectionOwnerAddress.getHostAddress() + ":" + port;
                 }
             }
@@ -209,11 +188,9 @@ public class WebServer
      *
      * @return the newly instantiated nanoHttpd server.
      */
-    private NanoHTTPD createNanoHttpd(int port)
-    {
-		RobotLog.vv(TAG, "creating NanoHTTPD(%d)", port);
-        return new NanoHTTPD(port)
-        {
+    private NanoHTTPD createNanoHttpd(int port) {
+        RobotLog.vv(TAG, "creating NanoHTTPD(%d)", port);
+        return new NanoHTTPD(port) {
             /**
              * Forward all sessions to the single RequestHandlerService to process a Response.
              *
@@ -221,10 +198,9 @@ public class WebServer
              * @return a Response for the current session
              */
             @Override
-            public Response serve(IHTTPSession session)
-            {
+            public Response serve(IHTTPSession session) {
                 Method method = session.getMethod();
-                if (Method.GET==method || Method.PUT==method || Method.POST==method) {
+                if (Method.GET == method || Method.PUT == method || Method.POST == method) {
                     return webHandlerManager.serve(session);
                 } else {
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "");
@@ -233,9 +209,10 @@ public class WebServer
         };
     }
 
-    /** a debugging utility */
-    public static void logSession(NanoHTTPD.IHTTPSession session)
-    {
+    /**
+     * a debugging utility
+     */
+    public static void logSession(NanoHTTPD.IHTTPSession session) {
         String prefix = "\n   ";
         StringBuilder builder = new StringBuilder();
         builder.append(prefix).append(String.format("uri='%s'", session.getUri()));
@@ -244,7 +221,7 @@ public class WebServer
             builder.append(prefix).append(String.format("query='%s'", session.getQueryParameterString()));
         }
         for (Map.Entry<String, List<String>> param : session.getParameters().entrySet()) {
-            builder.append(prefix).append(String.format("param('%s')=[",param.getKey()));
+            builder.append(prefix).append(String.format("param('%s')=[", param.getKey()));
             boolean first = true;
             for (String value : param.getValue()) {
                 if (!first) builder.append(", ");
@@ -253,7 +230,7 @@ public class WebServer
             }
             builder.append("]");
         }
-        for (Map.Entry<String,String> header : session.getHeaders().entrySet()) {
+        for (Map.Entry<String, String> header : session.getHeaders().entrySet()) {
             builder.append(prefix).append(String.format("header %s=%s", header.getKey(), header.getValue()));
         }
         RobotLog.dd(TAG, "session(0x%08x)=%s", session.hashCode(), builder.toString());

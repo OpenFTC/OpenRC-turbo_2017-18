@@ -50,14 +50,17 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
  * {@link FtcAdvancedRCSettingsActivity} manages the editing of advanced RC settings
  */
 @SuppressWarnings("WeakerAccess")
-public class FtcAdvancedRCSettingsActivity extends ThemedActivity
-    {
+public class FtcAdvancedRCSettingsActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcAdvancedRCSettingsActivity";
-    @Override public String getTag() { return TAG; }
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
@@ -65,15 +68,13 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity
 
     protected static final String CLIENT_CONNECTED = "CLIENT_CONNECTED";
 
-    public static class SettingsFragment extends PreferenceFragment
-        {
+    public static class SettingsFragment extends PreferenceFragment {
         protected boolean clientConnected = false;
         protected boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
         protected PreferencesHelper preferencesHelper = new PreferencesHelper(TAG);
 
         @Override
-        public void onCreate(Bundle savedInstanceState)
-            {
+        public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             clientConnected = getArguments().getBoolean(CLIENT_CONNECTED);
@@ -92,33 +93,26 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity
 
             // Special case the channel changing on ZTE speeds (for non-special case, app_settings.xml
             // tells us what to do just fine)
-            if (Device.isZteSpeed() && Device.useZteProvidedWifiChannelEditorOnZteSpeeds())
-                {
-                prefChangeChannel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
-                    {
-                    public boolean onPreferenceClick(Preference preference)
-                        {
+            if (Device.isZteSpeed() && Device.useZteProvidedWifiChannelEditorOnZteSpeeds()) {
+                prefChangeChannel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    public boolean onPreferenceClick(Preference preference) {
                         Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(LaunchActivityConstantsList.ZTE_WIFI_CHANNEL_EDITOR_PACKAGE);
-                        try
-                            {
+                        try {
                             startActivity(intent);
-                            }
-                        catch (RuntimeException e)
-                            {
+                        } catch (RuntimeException e) {
                             AppUtil.getInstance().showToast(UILocation.ONLY_LOCAL, getActivity().getString(R.string.toastUnableToLaunchZTEWifiChannelEditor));
-                            }
-                        return true;
                         }
-                    });
-                }
+                        return true;
+                    }
+                });
+            }
 
             RobotLog.vv(TAG, "clientConnected=%s", clientConnected);
-            }
         }
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-        {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generic_settings);
 
@@ -135,6 +129,6 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity
                 .beginTransaction()
                 .replace(android.R.id.content, settingsFragment)
                 .commit();
-        }
-
     }
+
+}

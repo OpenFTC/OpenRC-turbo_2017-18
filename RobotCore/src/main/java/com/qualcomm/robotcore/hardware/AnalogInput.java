@@ -39,62 +39,65 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  */
 public class AnalogInput implements HardwareDevice {
 
-  private AnalogInputController controller = null;
-  private int channel = -1;
+    private AnalogInputController controller = null;
+    private int channel = -1;
 
-  /**
-   * Constructor
-   *
-   * @param controller AnalogInput controller this channel is attached to
-   * @param channel channel on the analog input controller
-   */
-  public AnalogInput(AnalogInputController controller, int channel) {
-    this.controller = controller;
-    this.channel = channel;
-  }
+    /**
+     * Constructor
+     *
+     * @param controller AnalogInput controller this channel is attached to
+     * @param channel    channel on the analog input controller
+     */
+    public AnalogInput(AnalogInputController controller, int channel) {
+        this.controller = controller;
+        this.channel = channel;
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return controller.getManufacturer();
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return controller.getManufacturer();
+    }
 
-  /**
-   * Returns the current voltage of this input.
-   * @return the current analog input voltage, in volts.
-   */
-  public double getVoltage() {
-    return controller.getAnalogInputVoltage(channel);
-  }
+    /**
+     * Returns the current voltage of this input.
+     *
+     * @return the current analog input voltage, in volts.
+     */
+    public double getVoltage() {
+        return controller.getAnalogInputVoltage(channel);
+    }
 
-  /**
-   * Returns the maximum value that getVoltage() is capable of reading
-   * @return the maximum value that getVoltage() is capable of reading, in volts.
-   * @see #getVoltage()
-   */
-  public double getMaxVoltage() {
-    return controller.getMaxAnalogInputVoltage();
-  }
+    /**
+     * Returns the maximum value that getVoltage() is capable of reading
+     *
+     * @return the maximum value that getVoltage() is capable of reading, in volts.
+     * @see #getVoltage()
+     */
+    public double getMaxVoltage() {
+        return controller.getMaxAnalogInputVoltage();
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(R.string.configTypeAnalogInput);
-  }
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(R.string.configTypeAnalogInput);
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return controller.getConnectionInfo() + "; analog port " + channel;
-  }
+    @Override
+    public String getConnectionInfo() {
+        return controller.getConnectionInfo() + "; analog port " + channel;
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public int getVersion() {
+        return 1;
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
-  @Override
-  public void close() {
-    // take no action
-  }
+    @Override
+    public void close() {
+        // take no action
+    }
 }

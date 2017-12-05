@@ -19,6 +19,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.command.dump;
 import org.firstinspires.ftc.robotcore.internal.android.dx.cf.direct.DirectClassFile;
 import org.firstinspires.ftc.robotcore.internal.android.dx.cf.direct.StdAttributeFactory;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
+
 import java.io.PrintStream;
 
 /**
@@ -29,17 +30,17 @@ public final class ClassDumper
     /**
      * Dumps the given array, interpreting it as a class file.
      *
-     * @param bytes {@code non-null;} bytes of the (alleged) class file
-     * @param out {@code non-null;} where to dump to
-     * passed in as &lt;= 0
+     * @param bytes    {@code non-null;} bytes of the (alleged) class file
+     * @param out      {@code non-null;} where to dump to
+     *                 passed in as &lt;= 0
      * @param filePath the file path for the class, excluding any base
-     * directory specification
-     * @param args bag of commandline arguments
+     *                 directory specification
+     * @param args     bag of commandline arguments
      */
     public static void dump(byte[] bytes, PrintStream out,
                             String filePath, Args args) {
         ClassDumper cd =
-            new ClassDumper(bytes, out, filePath, args);
+                new ClassDumper(bytes, out, filePath, args);
         cd.dump();
     }
 
@@ -59,7 +60,7 @@ public final class ClassDumper
         byte[] bytes = getBytes();
         ByteArray ba = new ByteArray(bytes);
         DirectClassFile cf =
-            new DirectClassFile(ba, getFilePath(), getStrictParse());
+                new DirectClassFile(ba, getFilePath(), getStrictParse());
 
         cf.setAttributeFactory(StdAttributeFactory.THE_ONE);
         cf.setObserver(this);

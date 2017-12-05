@@ -32,10 +32,10 @@ public final class PlainInsn
     /**
      * Constructs an instance.
      *
-     * @param opcode {@code non-null;} the opcode
+     * @param opcode   {@code non-null;} the opcode
      * @param position {@code non-null;} source position
-     * @param result {@code null-ok;} spec for the result, if any
-     * @param sources {@code non-null;} specs for all the sources
+     * @param result   {@code null-ok;} spec for the result, if any
+     * @param sources  {@code non-null;} specs for all the sources
      */
     public PlainInsn(Rop opcode, SourcePosition position,
                      RegisterSpec result, RegisterSpecList sources) {
@@ -58,43 +58,53 @@ public final class PlainInsn
     /**
      * Constructs a single-source instance.
      *
-     * @param opcode {@code non-null;} the opcode
+     * @param opcode   {@code non-null;} the opcode
      * @param position {@code non-null;} source position
-     * @param result {@code null-ok;} spec for the result, if any
-     * @param source {@code non-null;} spec for the source
+     * @param result   {@code null-ok;} spec for the result, if any
+     * @param source   {@code non-null;} spec for the source
      */
     public PlainInsn(Rop opcode, SourcePosition position, RegisterSpec result,
                      RegisterSpec source) {
         this(opcode, position, result, RegisterSpecList.make(source));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeList getCatches() {
         return StdTypeList.EMPTY;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visitPlainInsn(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withAddedCatch(Type type) {
         throw new UnsupportedOperationException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withRegisterOffset(int delta) {
         return new PlainInsn(getOpcode(), getPosition(),
-                             getResult().withOffset(delta),
-                             getSources().withOffset(delta));
+                getResult().withOffset(delta),
+                getSources().withOffset(delta));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withSourceLiteral() {
         RegisterSpecList sources = getSources();
@@ -113,9 +123,9 @@ public final class PlainInsn
                 Constant cst = (Constant) firstType;
                 RegisterSpecList newSources = sources.withoutFirst();
                 Rop newRop = Rops.ropFor(getOpcode().getOpcode(), getResult(),
-                                             newSources, cst);
+                        newSources, cst);
                 return new PlainCstInsn(newRop, getPosition(), getResult(),
-                                            newSources, cst);
+                        newSources, cst);
             }
             return this;
         } else {
@@ -130,7 +140,7 @@ public final class PlainInsn
                 int opcode = getOpcode().getOpcode();
                 if (opcode == RegOps.SUB && cst instanceof CstInteger) {
                     opcode = RegOps.ADD;
-                    cst = CstInteger.make(-((CstInteger)cst).getValue());
+                    cst = CstInteger.make(-((CstInteger) cst).getValue());
                 }
                 newRop = Rops.ropFor(opcode, getResult(), newSources, cst);
             } catch (IllegalArgumentException ex) {
@@ -144,14 +154,16 @@ public final class PlainInsn
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withNewRegisters(RegisterSpec result,
-            RegisterSpecList sources) {
+                                 RegisterSpecList sources) {
 
         return new PlainInsn(getOpcode(), getPosition(),
-                             result,
-                             sources);
+                result,
+                sources);
 
     }
 }

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent" >
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-  <Button
-      android:layout_width="match_parent"
-      android:id="@+id/aboutOpenFTC"
-      android:layout_alignParentBottom="true"
-      android:text="About OpenFTC"
-      android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/aboutOpenFTC"
+        android:layout_alignParentBottom="true"
+        android:text="About OpenFTC"
+        android:layout_height="wrap_content"/>
 
-  <ListView
-    android:id="@+id/aboutList"
-    android:layout_width="match_parent"
-    android:layout_alignParentTop="true"
-    android:layout_above="@id/aboutOpenFTC"
-    android:layout_height="wrap_content" />
+    <ListView
+        android:id="@+id/aboutList"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/aboutOpenFTC"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

@@ -26,20 +26,26 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaMethod;
  * about normal or wide categories. Used for debugging.
  */
 public class NullRegisterAllocator extends RegisterAllocator {
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public NullRegisterAllocator(SsaMethod ssaMeth,
-            InterferenceGraph interference) {
+                                 InterferenceGraph interference) {
         super(ssaMeth, interference);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean wantsParamsMovedHigh() {
         // We're not smart enough for this.
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RegisterMapper allocateRegisters() {
         int oldRegCount = ssaMeth.getRegCount();
@@ -47,7 +53,7 @@ public class NullRegisterAllocator extends RegisterAllocator {
         BasicRegisterMapper mapper = new BasicRegisterMapper(oldRegCount);
 
         for (int i = 0; i < oldRegCount; i++) {
-            mapper.addMapping(i, i*2, 2);
+            mapper.addMapping(i, i * 2, 2);
         }
 
         return mapper;

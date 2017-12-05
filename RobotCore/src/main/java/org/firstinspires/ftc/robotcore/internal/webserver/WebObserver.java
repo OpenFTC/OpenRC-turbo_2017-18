@@ -38,7 +38,6 @@ import fi.iki.elonen.NanoHTTPD;
  * {@link WebObserver} instances like to observe (rather than handle) web traffic as it goes buy
  */
 @SuppressWarnings("WeakerAccess")
-public interface WebObserver
-    {
+public interface WebObserver {
     void observe(NanoHTTPD.IHTTPSession session);
-    }
+}

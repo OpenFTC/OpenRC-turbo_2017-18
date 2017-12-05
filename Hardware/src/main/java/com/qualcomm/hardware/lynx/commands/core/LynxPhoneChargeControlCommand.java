@@ -41,8 +41,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-09-01.
  */
-public class LynxPhoneChargeControlCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxPhoneChargeControlCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,42 +54,37 @@ public class LynxPhoneChargeControlCommand extends LynxDekaInterfaceCommand<Lynx
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxPhoneChargeControlCommand(LynxModuleIntf module)
-        {
+    public LynxPhoneChargeControlCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxPhoneChargeControlCommand(LynxModuleIntf module, boolean chargeEnabled)
-        {
+    public LynxPhoneChargeControlCommand(LynxModuleIntf module, boolean chargeEnabled) {
         this(module);
-        this.chargeEnabled = chargeEnabled ? (byte)1 : (byte)0;
-        }
+        this.chargeEnabled = chargeEnabled ? (byte) 1 : (byte) 0;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public boolean isChargeEnabled()
-        {
+    public boolean isChargeEnabled() {
         return this.chargeEnabled != 0;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.chargeEnabled);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.chargeEnabled = buffer.get();
-        }
     }
+}

@@ -23,16 +23,20 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
  * A (name, value) pair. These are used as the contents of an annotation.
  */
 public final class NameValuePair implements Comparable<NameValuePair> {
-    /** {@code non-null;} the name */
+    /**
+     * {@code non-null;} the name
+     */
     private final CstString name;
 
-    /** {@code non-null;} the value */
+    /**
+     * {@code non-null;} the value
+     */
     private final Constant value;
 
     /**
      * Construct an instance.
      *
-     * @param name {@code non-null;} the name
+     * @param name  {@code non-null;} the name
      * @param value {@code non-null;} the value
      */
     public NameValuePair(CstString name, Constant value) {
@@ -48,31 +52,37 @@ public final class NameValuePair implements Comparable<NameValuePair> {
         this.value = value;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toString() {
         return name.toHuman() + ":" + value;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int hashCode() {
         return name.hashCode() * 31 + value.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean equals(Object other) {
-        if (! (other instanceof NameValuePair)) {
+        if (!(other instanceof NameValuePair)) {
             return false;
         }
 
         NameValuePair otherPair = (NameValuePair) other;
 
         return name.equals(otherPair.name)
-            && value.equals(otherPair.value);
+                && value.equals(otherPair.value);
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p>Instances of this class compare in name-major and value-minor
      * order.</p>
      */

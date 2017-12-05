@@ -48,19 +48,18 @@ import javax.tools.JavaFileObject;
 
 /**
  * {@link OnBotJavaCompiler} guides our access to and usage of the java compiler tool.
- *
+ * <p>
  * http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/javac.html
  * https://www.ibm.com/developerworks/library/j-jcomp/
  * http://stackoverflow.com/questions/12173294/compile-code-fully-in-memory-with-javax-tools-javacompiler
  * https://github.com/trung/InMemoryJavaCompiler
  * http://www.java2s.com/Code/Java/JDK-6/CompilingfromMemory.htm
  * http://atamur.blogspot.com/2009/10/using-built-in-javacompiler-with-custom.html
- *
+ * <p>
  * http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaCompiler
-    {
+public class OnBotJavaCompiler {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -71,8 +70,7 @@ public class OnBotJavaCompiler
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public boolean compile(File srcRoot, OnBotJavaDiagnosticsListener diagnosticListener)
-        {
+    public boolean compile(File srcRoot, OnBotJavaDiagnosticsListener diagnosticListener) {
         List<File> javaFiles = javaFilesUnder(srcRoot);
 
         JavacTool javac = JavacTool.create();
@@ -80,8 +78,7 @@ public class OnBotJavaCompiler
         fileManager.setSourcePath(Collections.singleton(srcRoot));
 
         Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjects(javaFiles.toArray(new File[javaFiles.size()]));
-        if (javaFileObjects.iterator().hasNext())
-            {
+        if (javaFileObjects.iterator().hasNext()) {
             // Our list of options here matches what's used by Android Studio's build process, as empirically determined
             List<String> options = Arrays.asList(
                     "-source", "1.7",
@@ -102,9 +99,7 @@ public class OnBotJavaCompiler
                         javaFileObjects);
 
                 return task.call();
-                }
-            catch (RuntimeException e)
-                {
+            } catch (RuntimeException e) {
                 // https://docs.oracle.com/javase/7/docs/api/index.html?javax/tools/JavaCompiler.html
                 // "if an unrecoverable error occurred in a user-supplied component. The cause will be the error in user code."
                 //
@@ -113,24 +108,20 @@ public class OnBotJavaCompiler
                 //
                 RobotLog.logStackTrace(TAG, e);
                 return false;
-                }
             }
-        else
-            {
+        } else {
             RobotLog.vv(TAG, "no source files; omitting javac compile");
             return true;
-            }
         }
-
-    protected List<File> javaFilesUnder(File src)
-        {
-        return AppUtil.getInstance().filesUnder(src, new Predicate<File>()
-            {
-            @Override public boolean test(File file)
-                {
-                return file.getName().endsWith(".java");
-                }
-            });
-        }
-
     }
+
+    protected List<File> javaFilesUnder(File src) {
+        return AppUtil.getInstance().filesUnder(src, new Predicate<File>() {
+            @Override
+            public boolean test(File file) {
+                return file.getName().endsWith(".java");
+            }
+        });
+    }
+
+}

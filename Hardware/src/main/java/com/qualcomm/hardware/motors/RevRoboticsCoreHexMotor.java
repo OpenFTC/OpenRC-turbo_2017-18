@@ -40,10 +40,9 @@ import com.qualcomm.robotcore.hardware.configuration.MotorType;
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 
 // We use CCW as the (default) orientation to match the silk-screening on the front of the motor
-@MotorType(xmlTag="@string/rev_core_hex_xmltag", name="@string/rev_core_hex_name", ticksPerRev=290, gearing=36.25, maxRPM=137, orientation=Rotation.CCW)
-@DistributorInfo(distributor="@string/rev_distributor", model="REV-41-1300", url="http://www.revrobotics.com/rev-41-1300")
-@ExpansionHubMotorControllerVelocityParams(P=10, I=3, D=0)
-@ExpansionHubMotorControllerPositionParams(P=10, I=0.05, D=0)
-public interface RevRoboticsCoreHexMotor
-    {
-    }
+@MotorType(xmlTag = "@string/rev_core_hex_xmltag", name = "@string/rev_core_hex_name", ticksPerRev = 290, gearing = 36.25, maxRPM = 137, orientation = Rotation.CCW)
+@DistributorInfo(distributor = "@string/rev_distributor", model = "REV-41-1300", url = "http://www.revrobotics.com/rev-41-1300")
+@ExpansionHubMotorControllerVelocityParams(P = 10, I = 3, D = 0)
+@ExpansionHubMotorControllerPositionParams(P = 10, I = 0.05, D = 0)
+public interface RevRoboticsCoreHexMotor {
+}

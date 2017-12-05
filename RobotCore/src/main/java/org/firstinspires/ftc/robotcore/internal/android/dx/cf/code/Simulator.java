@@ -26,11 +26,12 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Prototype;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.ArrayList;
 
 /**
  * Class which knows how to simulate the effects of executing bytecode.
- *
+ * <p>
  * <p><b>Note:</b> This class is not thread-safe. If multiple threads
  * need to use a single instance, they must synchronize access explicitly
  * between themselves.</p>
@@ -41,26 +42,34 @@ public class Simulator {
      * table mismatches
      */
     private static final String LOCAL_MISMATCH_ERROR =
-        "This is symptomatic of .class transformation tools that ignore " +
-        "local variable information.";
+            "This is symptomatic of .class transformation tools that ignore " +
+                    "local variable information.";
 
-    /** {@code non-null;} machine to use when simulating */
+    /**
+     * {@code non-null;} machine to use when simulating
+     */
     private final Machine machine;
 
-    /** {@code non-null;} array of bytecode */
+    /**
+     * {@code non-null;} array of bytecode
+     */
     private final BytecodeArray code;
 
-    /** {@code non-null;} local variable information */
+    /**
+     * {@code non-null;} local variable information
+     */
     private final LocalVariableList localVariables;
 
-    /** {@code non-null;} visitor instance to use */
+    /**
+     * {@code non-null;} visitor instance to use
+     */
     private final SimVisitor visitor;
 
     /**
      * Constructs an instance.
      *
      * @param machine {@code non-null;} machine to use when simulating
-     * @param method {@code non-null;} method data to use
+     * @param method  {@code non-null;} method data to use
      */
     public Simulator(Machine machine, ConcreteMethod method) {
         if (machine == null) {
@@ -81,7 +90,7 @@ public class Simulator {
      * Simulates the effect of executing the given basic block. This modifies
      * the passed-in frame to represent the end result.
      *
-     * @param bb {@code non-null;} the basic block
+     * @param bb    {@code non-null;} the basic block
      * @param frame {@code non-null;} frame to operate on
      */
     public void simulate(ByteBlock bb, Frame frame) {
@@ -106,7 +115,7 @@ public class Simulator {
      * making appropriate calls on the given frame.
      *
      * @param offset {@code >= 0;} offset of the instruction to simulate
-     * @param frame {@code non-null;} frame to operate on
+     * @param frame  {@code non-null;} frame to operate on
      * @return the length of the instruction, in bytes
      */
     public int simulate(int offset, Frame frame) {
@@ -127,11 +136,11 @@ public class Simulator {
      * Returns the required array type for an array load or store
      * instruction, based on a given implied type and an observed
      * actual array type.
-     *
+     * <p>
      * <p>The interesting cases here have to do with object arrays,
      * <code>byte[]</code>s, <code>boolean[]</code>s, and
      * known-nulls.</p>
-     *
+     * <p>
      * <p>In the case of arrays of objects, we want to narrow the type
      * to the actual array present on the stack, as long as what is
      * present is an object type. Similarly, due to a quirk of the
@@ -139,7 +148,7 @@ public class Simulator {
      * with <code>byte[]</code> and <code>boolean[]</code> are
      * undifferentiated, and we aim here to return whichever one was
      * actually present on the stack.</p>
-     *
+     * <p>
      * <p>In the case where there is a known-null on the stack where
      * an array is expected, our behavior depends on the implied type
      * of the instruction. When the implied type is a reference, we
@@ -155,19 +164,19 @@ public class Simulator {
      * <code>NullPointerException</code>, and it won't matter what
      * opcode variant is used to achieve that result.</p>
      *
-     * @param impliedType {@code non-null;} type implied by the
-     * instruction; is <i>not</i> an array type
+     * @param impliedType    {@code non-null;} type implied by the
+     *                       instruction; is <i>not</i> an array type
      * @param foundArrayType {@code non-null;} type found on the
-     * stack; is either an array type or a known-null
+     *                       stack; is either an array type or a known-null
      * @return {@code non-null;} the array type that should be
      * required in this context
      */
     private static Type requiredArrayTypeFor(Type impliedType,
-            Type foundArrayType) {
+                                             Type foundArrayType) {
         if (foundArrayType == Type.KNOWN_NULL) {
             return impliedType.isReference()
-                ? Type.KNOWN_NULL
-                : impliedType.getArrayType();
+                    ? Type.KNOWN_NULL
+                    : impliedType.getArrayType();
         }
 
         if ((impliedType == Type.OBJECT)
@@ -204,7 +213,9 @@ public class Simulator {
          */
         private Frame frame;
 
-        /** offset of the previous bytecode */
+        /**
+         * offset of the previous bytecode
+         */
         private int previousOffset;
 
         /**
@@ -228,14 +239,18 @@ public class Simulator {
             this.frame = frame;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitInvalid(int opcode, int offset, int length) {
             throw new SimException("invalid opcode " + Hex.u1(opcode));
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitNoArgs(int opcode, int offset, int length,
-                Type type) {
+                                Type type) {
             switch (opcode) {
                 case ByteOps.NOP: {
                     machine.clearArgs();
@@ -321,12 +336,12 @@ public class Simulator {
                      */
                     Type foundArrayType = frame.getStack().peekType(1);
                     Type requiredArrayType =
-                        requiredArrayTypeFor(type, foundArrayType);
+                            requiredArrayTypeFor(type, foundArrayType);
 
                     // Make type agree with the discovered requiredArrayType.
                     type = (requiredArrayType == Type.KNOWN_NULL)
-                        ? Type.KNOWN_NULL
-                        : requiredArrayType.getComponentType();
+                            ? Type.KNOWN_NULL
+                            : requiredArrayType.getComponentType();
 
                     machine.popArgs(frame, requiredArrayType, Type.INT);
                     break;
@@ -377,7 +392,7 @@ public class Simulator {
                     boolean foundArrayLocal = stack.peekLocal(peekDepth);
 
                     Type requiredArrayType =
-                        requiredArrayTypeFor(type, foundArrayType);
+                            requiredArrayTypeFor(type, foundArrayType);
 
                     /*
                      * Make type agree with the discovered requiredArrayType
@@ -385,8 +400,8 @@ public class Simulator {
                      */
                     if (foundArrayLocal) {
                         type = (requiredArrayType == Type.KNOWN_NULL)
-                            ? Type.KNOWN_NULL
-                            : requiredArrayType.getComponentType();
+                                ? Type.KNOWN_NULL
+                                : requiredArrayType.getComponentType();
                     }
 
                     machine.popArgs(frame, requiredArrayType, Type.INT, type);
@@ -429,7 +444,7 @@ public class Simulator {
                     ExecutionStack stack = frame.getStack();
 
                     if (!(stack.peekType(0).isCategory1() &&
-                          stack.peekType(1).isCategory1())) {
+                            stack.peekType(1).isCategory1())) {
                         throw illegalTos();
                     }
 
@@ -470,7 +485,7 @@ public class Simulator {
                     } else {
                         // "form 1"
                         if (stack.peekType(1).isCategory2() ||
-                            stack.peekType(2).isCategory2()) {
+                                stack.peekType(2).isCategory2()) {
                             throw illegalTos();
                         }
                         machine.popArgs(frame, 3);
@@ -514,7 +529,7 @@ public class Simulator {
                     ExecutionStack stack = frame.getStack();
 
                     if (!(stack.peekType(0).isCategory1() &&
-                          stack.peekType(1).isCategory1())) {
+                            stack.peekType(1).isCategory1())) {
                         throw illegalTos();
                     }
 
@@ -554,9 +569,11 @@ public class Simulator {
             }
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitLocal(int opcode, int offset, int length,
-                int idx, Type type, int value) {
+                               int idx, Type type, int value) {
             /*
              * Note that the "type" parameter is always the simplest
              * type based on the original opcode, e.g., "int" for
@@ -572,9 +589,9 @@ public class Simulator {
              * the instruction.
              */
             int localOffset =
-                (opcode == ByteOps.ISTORE) ? (offset + length) : offset;
+                    (opcode == ByteOps.ISTORE) ? (offset + length) : offset;
             LocalVariableList.Item local =
-                localVariables.pcAndIndexToLocal(localOffset, idx);
+                    localVariables.pcAndIndexToLocal(localOffset, idx);
             Type localType;
 
             if (local != null) {
@@ -623,9 +640,11 @@ public class Simulator {
             machine.run(frame, offset, opcode);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitConstant(int opcode, int offset, int length,
-                Constant cst, int value) {
+                                  Constant cst, int value) {
             switch (opcode) {
                 case ByteOps.ANEWARRAY: {
                     machine.popArgs(frame, Type.INT);
@@ -662,7 +681,7 @@ public class Simulator {
                      * the machine.
                      */
                     Prototype prototype =
-                        ((CstMethodRef) cst).getPrototype(false);
+                            ((CstMethodRef) cst).getPrototype(false);
                     machine.popArgs(frame, prototype);
                     break;
                 }
@@ -672,7 +691,7 @@ public class Simulator {
                      * the machine.
                      */
                     Prototype prototype =
-                        ((CstMethodRef) cst).getPrototype(true);
+                            ((CstMethodRef) cst).getPrototype(true);
                     machine.popArgs(frame, prototype);
                     break;
                 }
@@ -687,7 +706,7 @@ public class Simulator {
                      * optimizing for.
                      */
                     Prototype prototype =
-                        Prototype.internInts(Type.VOID, value);
+                            Prototype.internInts(Type.VOID, value);
                     machine.popArgs(frame, prototype);
                     break;
                 }
@@ -702,9 +721,11 @@ public class Simulator {
             machine.run(frame, offset, opcode);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitBranch(int opcode, int offset, int length,
-                int target) {
+                                int target) {
             switch (opcode) {
                 case ByteOps.IFEQ:
                 case ByteOps.IFNE:
@@ -751,30 +772,38 @@ public class Simulator {
             machine.run(frame, offset, opcode);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitSwitch(int opcode, int offset, int length,
-                SwitchList cases, int padding) {
+                                SwitchList cases, int padding) {
             machine.popArgs(frame, Type.INT);
             machine.auxIntArg(padding);
             machine.auxSwitchArg(cases);
             machine.run(frame, offset, opcode);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitNewarray(int offset, int length, CstType type,
-                ArrayList<Constant> initValues) {
+                                  ArrayList<Constant> initValues) {
             machine.popArgs(frame, Type.INT);
             machine.auxInitValues(initValues);
             machine.auxCstArg(type);
             machine.run(frame, offset, ByteOps.NEWARRAY);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void setPreviousOffset(int offset) {
             previousOffset = offset;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public int getPreviousOffset() {
             return previousOffset;
         }

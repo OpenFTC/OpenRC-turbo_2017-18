@@ -65,7 +65,7 @@ public final class ByteBlockList extends LabeledList {
     /**
      * Sets the element at the given index.
      *
-     * @param n {@code >= 0, < size();} which element
+     * @param n  {@code >= 0, < size();} which element
      * @param bb {@code null-ok;} the value to store
      */
     public void set(int n, ByteBlock bb) {

@@ -170,7 +170,7 @@ class JavaModeWebHandlers {
     private final static String VALID_SRC_FILE_OR_FOLDER_REGEX =
             "(?:/(?:src|jars)[\\w.\\d/_$]+[\\w.\\d_$]+(?:\\.(?:java|jar|zip|txt|md)|/)|/|)$";
 
-    private static final List<Class<? extends HardwareDevice>> HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP = Arrays.asList(DcMotorController.class,ServoController.class,VoltageSensor.class,LegacyModule.class);
+    private static final List<Class<? extends HardwareDevice>> HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP = Arrays.asList(DcMotorController.class, ServoController.class, VoltageSensor.class, LegacyModule.class);
 
     private final BuildMonitor buildMonitor;
     private final Gson gson;
@@ -248,7 +248,7 @@ class JavaModeWebHandlers {
                 }
                 tempFolder.delete();
                 tempFolder.mkdirs();
-                final File outputZipFile = new File(tempFolder, filePath.substring(filePath.lastIndexOf(PATH_SEPARATOR) + 1) +  EXT_ZIP_FILE);
+                final File outputZipFile = new File(tempFolder, filePath.substring(filePath.lastIndexOf(PATH_SEPARATOR) + 1) + EXT_ZIP_FILE);
                 try (FileOutputStream destOutput = new FileOutputStream(outputZipFile)) {
                     try (final ZipOutputStream zipOutputStream = new ZipOutputStream(destOutput)) {
                         zipOutputStream.setMethod(ZipOutputStream.DEFLATED);
@@ -260,13 +260,15 @@ class JavaModeWebHandlers {
                                     if (entryName.endsWith(EXT_TEMP_FILE)) return true;
 
                                     entryName = entryName.substring(sourceFolder.getAbsolutePath().length());
-                                    if (entryName.startsWith(PATH_SEPARATOR)) entryName = entryName.substring(1);
-                                    if (file.isDirectory() && !entryName.endsWith(PATH_SEPARATOR)) entryName += PATH_SEPARATOR;
+                                    if (entryName.startsWith(PATH_SEPARATOR))
+                                        entryName = entryName.substring(1);
+                                    if (file.isDirectory() && !entryName.endsWith(PATH_SEPARATOR))
+                                        entryName += PATH_SEPARATOR;
 
                                     ZipEntry entry = new ZipEntry(entryName);
                                     zipOutputStream.putNextEntry(entry);
                                     if (!file.isDirectory()) {
-                                        try (FileInputStream inputStream =  new FileInputStream(file)) {
+                                        try (FileInputStream inputStream = new FileInputStream(file)) {
                                             AppUtil.getInstance().copyStream(inputStream, zipOutputStream);
                                         }
                                     }
@@ -289,7 +291,7 @@ class JavaModeWebHandlers {
                 outputZipFile.deleteOnExit();
                 tempFolder.deleteOnExit();
                 try {
-                    return newChunkedResponse(NanoHTTPD.Response.Status.OK, MimeTypesUtil.getMimeType( EXT_ZIP_FILE), new FileInputStream(outputZipFile));
+                    return newChunkedResponse(NanoHTTPD.Response.Status.OK, MimeTypesUtil.getMimeType(EXT_ZIP_FILE), new FileInputStream(outputZipFile));
                 } catch (FileNotFoundException e) {
                     return serverError();
                 }
@@ -627,31 +629,31 @@ class JavaModeWebHandlers {
             buildStartedFile = OnBotJavaManager.buildStartedFile;
             buildCompleteFile = OnBotJavaManager.buildCompleteFile;
             runningObserver = new FileModifyObserver(buildStartedFile,
-                new FileModifyObserver.Listener() {
-                    @Override
-                    public void onFileChanged(int event, File file) {
-                        synchronized (buildInformationUpdateLock) {
-                            isRunning = true;
-                            lastBuildCompleted = false;
-                            lastBuildSuccessful = false;
-                        }
-                    }
-                }
-            );
-            completedObserver = new FileModifyObserver(buildCompleteFile, new
-                FileModifyObserver.Listener() {
-                    @Override
-                    public void onFileChanged(int event, File file) {
-                        synchronized (buildInformationUpdateLock) {
-                            isRunning = false;
-                            lastBuildCompleted = true;
-                            lastBuildSuccessful = OnBotJavaManager.getBuildStatus() == OnBotJavaManager.BuildStatus.SUCCESSFUL;
-                            synchronized (buildCompletionNotifier) {
-                                buildCompletionNotifier.notifyAll();
+                    new FileModifyObserver.Listener() {
+                        @Override
+                        public void onFileChanged(int event, File file) {
+                            synchronized (buildInformationUpdateLock) {
+                                isRunning = true;
+                                lastBuildCompleted = false;
+                                lastBuildSuccessful = false;
                             }
                         }
                     }
-                }
+            );
+            completedObserver = new FileModifyObserver(buildCompleteFile, new
+                    FileModifyObserver.Listener() {
+                        @Override
+                        public void onFileChanged(int event, File file) {
+                            synchronized (buildInformationUpdateLock) {
+                                isRunning = false;
+                                lastBuildCompleted = true;
+                                lastBuildSuccessful = OnBotJavaManager.getBuildStatus() == OnBotJavaManager.BuildStatus.SUCCESSFUL;
+                                synchronized (buildCompletionNotifier) {
+                                    buildCompletionNotifier.notifyAll();
+                                }
+                            }
+                        }
+                    }
             );
 
             buildCompletionNotifier = new Object();
@@ -881,7 +883,8 @@ class JavaModeWebHandlers {
 
             for (Field field : JavaModeWebHandlers.class.getDeclaredFields()) {
                 int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class)) continue;
+                if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class))
+                    continue;
                 field.setAccessible(true);
                 try {
                     onBotJavaUrls.put(field.getName(), (String) field.get(JavaModeWebHandlers.this));
@@ -892,29 +895,29 @@ class JavaModeWebHandlers {
 
             final String result = String.format(Locale.ENGLISH,
                     "(function(window, $, settings) {\n" +
-                    "	window.env = typeof window.env !== 'undefined' ? window.env : {},\n" +
-                    "	env.settings = settings;\n" +
-                    "	env.settings['_dict'] = env.settings.hasOwnProperty('_dict') ? env.settings._dict : {};\n" +
-                    "	var dict = env.settings._dict;\n" +
-                    "\n" +
-                    "	settings.get = function(name) {\n" +
-                    "		return typeof dict[name] === 'undefined' ? null : dict[name];\n" +
-                    "	}\n" +
-                    "\n" +
-                    "	settings.put = function(name, val) {\n" +
-                    "		if (typeof name === 'undefined' || typeof val === 'undefined') throw new Error('put doesn\\' work with name or val undefined');\n" +
-                    "		if (settings.get(name) === null) { console.warn(name + \" is not a valid setting\"); return; }\n" +
-                    "		dict[name] = typeof val === 'function' ? val() : val;\n" +
-                    "		return $.post(settings._settingsUrl, 'settings=' + window.JSON.stringify(dict));\n" +
-                    "   }\n" +
-                    "\n" +
-                    "   env.urls = JSON.parse(settings._urls)" +
-                    "})(window, jQuery, \n" +
-                    "{\n" +
-                    "	_dict: window.JSON.parse('%s'),\n" +
-                    "	_settingsUrl: '%s',\n" +
-                    "   _urls: '%s'\n" +
-                    "});",
+                            "	window.env = typeof window.env !== 'undefined' ? window.env : {},\n" +
+                            "	env.settings = settings;\n" +
+                            "	env.settings['_dict'] = env.settings.hasOwnProperty('_dict') ? env.settings._dict : {};\n" +
+                            "	var dict = env.settings._dict;\n" +
+                            "\n" +
+                            "	settings.get = function(name) {\n" +
+                            "		return typeof dict[name] === 'undefined' ? null : dict[name];\n" +
+                            "	}\n" +
+                            "\n" +
+                            "	settings.put = function(name, val) {\n" +
+                            "		if (typeof name === 'undefined' || typeof val === 'undefined') throw new Error('put doesn\\' work with name or val undefined');\n" +
+                            "		if (settings.get(name) === null) { console.warn(name + \" is not a valid setting\"); return; }\n" +
+                            "		dict[name] = typeof val === 'function' ? val() : val;\n" +
+                            "		return $.post(settings._settingsUrl, 'settings=' + window.JSON.stringify(dict));\n" +
+                            "   }\n" +
+                            "\n" +
+                            "   env.urls = JSON.parse(settings._urls)" +
+                            "})(window, jQuery, \n" +
+                            "{\n" +
+                            "	_dict: window.JSON.parse('%s'),\n" +
+                            "	_settingsUrl: '%s',\n" +
+                            "   _urls: '%s'\n" +
+                            "});",
                     editorSettings, URI_ADMIN_SETTINGS, SimpleGson.getInstance().toJson(onBotJavaUrls).replace("\\", "\\\\"));
             return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, MIME_JSON, result);
         }
@@ -1129,9 +1132,10 @@ class JavaModeWebHandlers {
                     paramTypes.add(paramType.getName());
                 }
 
-                if (!methods.containsKey(methodName)) methods.put(methodName, new ArrayList<AutoMethod>());
+                if (!methods.containsKey(methodName))
+                    methods.put(methodName, new ArrayList<AutoMethod>());
                 methods.get(methodName)
-                        .add(new AutoMethod(fieldSecurityModifier, fieldType,paramTypes));
+                        .add(new AutoMethod(fieldSecurityModifier, fieldType, paramTypes));
             }
 
             final Class superclass = currentClass.getSuperclass();
@@ -1358,7 +1362,8 @@ class JavaModeWebHandlers {
 
         private void recursiveCopy(File origin, File dest) throws IOException {
             if (origin.isDirectory()) {
-                if (dest.exists() && !dest.isDirectory()) throw new IOException("Cannot merge origin and destination");
+                if (dest.exists() && !dest.isDirectory())
+                    throw new IOException("Cannot merge origin and destination");
                 dest.mkdirs();
                 final String[] files = origin.list();
                 for (String file : files) {
@@ -1462,11 +1467,12 @@ class JavaModeWebHandlers {
                 } else {
                     // Check to see if this is a folder, if so add a ".zip" extension
                     fileName = fileName.substring(fileName.lastIndexOf(PATH_SEPARATOR) + 1);
-                    if (fileName.endsWith(PATH_SEPARATOR)) fileName = fileName.substring(0, fileName.length() - 1) +  EXT_ZIP_FILE;
+                    if (fileName.endsWith(PATH_SEPARATOR))
+                        fileName = fileName.substring(0, fileName.length() - 1) + EXT_ZIP_FILE;
                 }
 
                 file.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-                file.addHeader("Pragma",  "no-cache");
+                file.addHeader("Pragma", "no-cache");
             }
 
             return file;
@@ -1513,7 +1519,8 @@ class JavaModeWebHandlers {
                     return successfulResponse("true");
                 } else {
                     Map<String, String> templateKeyMap = buildTemplateKeyMap(fileNameUri, data, file);
-                    if (!isValidFileLocation(fileNameUri, VALID_SRC_FILE_REGEX)) return badRequest();
+                    if (!isValidFileLocation(fileNameUri, VALID_SRC_FILE_REGEX))
+                        return badRequest();
                     if (data.containsKey(REQUEST_KEY_TEMPLATE)) {
                         String template = data.get(REQUEST_KEY_TEMPLATE).get(0);
                         if (isValidFileLocation(template, VALID_TEMPLATE_FILE_REGEX)) {
@@ -1628,7 +1635,7 @@ class JavaModeWebHandlers {
                 }
             }
 
-            if (typeClass.getSuperclass().getPackage().getName().equals(packageName))  {
+            if (typeClass.getSuperclass().getPackage().getName().equals(packageName)) {
                 return typeClass.getSuperclass();
             }
 
@@ -1895,7 +1902,7 @@ class JavaModeWebHandlers {
                         dest = OnBotJavaManager.srcDir;
                     }
                 }
-            } else if (newFileName.endsWith( EXT_ZIP_FILE) || newFileName.endsWith(".jar")) {
+            } else if (newFileName.endsWith(EXT_ZIP_FILE) || newFileName.endsWith(".jar")) {
                 dest = OnBotJavaManager.jarDir;
             } else {
                 dest = OnBotJavaManager.srcDir;

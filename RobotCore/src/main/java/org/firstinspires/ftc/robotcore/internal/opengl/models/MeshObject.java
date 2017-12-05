@@ -13,35 +13,28 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public abstract class MeshObject
-    {
-    public enum BUFFER_TYPE
-        {
-            BUFFER_TYPE_VERTEX, BUFFER_TYPE_TEXTURE_COORD, BUFFER_TYPE_NORMALS, BUFFER_TYPE_INDICES
-        }
+public abstract class MeshObject {
+    public enum BUFFER_TYPE {
+        BUFFER_TYPE_VERTEX, BUFFER_TYPE_TEXTURE_COORD, BUFFER_TYPE_NORMALS, BUFFER_TYPE_INDICES
+    }
 
-    public Buffer getVertices()
-        {
+    public Buffer getVertices() {
         return getBuffer(BUFFER_TYPE.BUFFER_TYPE_VERTEX);
-        }
+    }
 
-    public Buffer getTexCoords()
-        {
+    public Buffer getTexCoords() {
         return getBuffer(BUFFER_TYPE.BUFFER_TYPE_TEXTURE_COORD);
-        }
+    }
 
-    public Buffer getNormals()
-        {
+    public Buffer getNormals() {
         return getBuffer(BUFFER_TYPE.BUFFER_TYPE_NORMALS);
-        }
+    }
 
-    public Buffer getIndices()
-        {
+    public Buffer getIndices() {
         return getBuffer(BUFFER_TYPE.BUFFER_TYPE_INDICES);
-        }
+    }
 
-    protected Buffer fillBuffer(double[] array)
-        {
+    protected Buffer fillBuffer(double[] array) {
         // Convert to floats because OpenGL doesn't work on doubles, and manually
         // casting each input value would take too much time.
         // Each float takes 4 bytes
@@ -52,10 +45,9 @@ public abstract class MeshObject
         bb.rewind();
 
         return bb;
-        }
+    }
 
-    protected Buffer fillBuffer(float[] array)
-        {
+    protected Buffer fillBuffer(float[] array) {
         // Each float takes 4 bytes
         ByteBuffer bb = ByteBuffer.allocateDirect(4 * array.length);
         bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -64,10 +56,9 @@ public abstract class MeshObject
         bb.rewind();
 
         return bb;
-        }
+    }
 
-    protected Buffer fillBuffer(short[] array)
-        {
+    protected Buffer fillBuffer(short[] array) {
         // Each short takes 2 bytes
         ByteBuffer bb = ByteBuffer.allocateDirect(2 * array.length);
         bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -76,12 +67,12 @@ public abstract class MeshObject
         bb.rewind();
 
         return bb;
-        }
+    }
 
     public abstract Buffer getBuffer(BUFFER_TYPE bufferType);
 
     public abstract int getNumObjectVertex();
 
     public abstract int getNumObjectIndex();
-    }
+}
 

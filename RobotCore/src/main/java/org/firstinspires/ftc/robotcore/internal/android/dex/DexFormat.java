@@ -21,7 +21,8 @@ package org.firstinspires.ftc.robotcore.internal.android.dex;
  * files, and helper methods for same.
  */
 public final class DexFormat {
-    private DexFormat() {}
+    private DexFormat() {
+    }
 
     /**
      * API level to target in order to produce the most modern file
@@ -29,7 +30,9 @@ public final class DexFormat {
      */
     public static final int API_CURRENT = 24;
 
-    /** API level to target in order to suppress extended opcode usage */
+    /**
+     * API level to target in order to suppress extended opcode usage
+     */
     public static final int API_NO_EXTENDED_OPCODES = 13;
 
     /**
@@ -38,10 +41,14 @@ public final class DexFormat {
      */
     public static final String DEX_IN_JAR_NAME = "classes.dex";
 
-    /** common prefix for all dex file "magic numbers" */
+    /**
+     * common prefix for all dex file "magic numbers"
+     */
     public static final String MAGIC_PREFIX = "dex\n";
 
-    /** common suffix for all dex file "magic numbers" */
+    /**
+     * common suffix for all dex file "magic numbers"
+     */
     public static final String MAGIC_SUFFIX = "\0";
 
     /**
@@ -53,7 +60,9 @@ public final class DexFormat {
      */
     public static final String VERSION_CURRENT = "037";
 
-    /** dex file version number for API level 13 and earlier */
+    /**
+     * dex file version number for API level 13 and earlier
+     */
     public static final String VERSION_FOR_API_13 = "035";
 
     /**
@@ -89,7 +98,7 @@ public final class DexFormat {
             return -1;
         }
 
-        String version = "" + ((char) magic[4]) + ((char) magic[5]) +((char) magic[6]);
+        String version = "" + ((char) magic[4]) + ((char) magic[5]) + ((char) magic[6]);
 
         if (version.equals(VERSION_CURRENT)) {
             return API_CURRENT;

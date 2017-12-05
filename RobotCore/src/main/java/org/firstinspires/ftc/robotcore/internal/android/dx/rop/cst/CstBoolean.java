@@ -23,10 +23,14 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
  */
 public final class CstBoolean
         extends CstLiteral32 {
-    /** {@code non-null;} instance representing {@code false} */
+    /**
+     * {@code non-null;} instance representing {@code false}
+     */
     public static final CstBoolean VALUE_FALSE = new CstBoolean(false);
 
-    /** {@code non-null;} instance representing {@code true} */
+    /**
+     * {@code non-null;} instance representing {@code true}
+     */
     public static final CstBoolean VALUE_TRUE = new CstBoolean(true);
 
     /**
@@ -66,24 +70,32 @@ public final class CstBoolean
         super(value ? 1 : 0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return getValue() ? "boolean{true}" : "boolean{false}";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.BOOLEAN;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "boolean";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return getValue() ? "true" : "false";
     }

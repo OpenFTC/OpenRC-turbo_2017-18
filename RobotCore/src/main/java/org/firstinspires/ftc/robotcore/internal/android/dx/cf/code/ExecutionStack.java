@@ -24,13 +24,15 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityContro
 
 /**
  * Representation of a Java method execution stack.
- *
+ * <p>
  * <p><b>Note:</b> For the most part, the documentation for this class
  * ignores the distinction between {@link Type} and {@link
  * TypeBearer}.</p>
  */
 public final class ExecutionStack extends MutabilityControl {
-    /** {@code non-null;} array of stack contents */
+    /**
+     * {@code non-null;} array of stack contents
+     */
     private final TypeBearer[] stack;
 
     /**
@@ -48,7 +50,7 @@ public final class ExecutionStack extends MutabilityControl {
      * Constructs an instance.
      *
      * @param maxStack {@code >= 0;} the maximum size of the stack for this
-     * instance
+     *                 instance
      */
     public ExecutionStack(int maxStack) {
         super(maxStack != 0);
@@ -85,7 +87,7 @@ public final class ExecutionStack extends MutabilityControl {
             String idx = (i == limit) ? "top0" : Hex.u2(limit - i);
 
             ex.addContext("stack[" + idx + "]: " +
-                          stackElementString(stack[i]));
+                    stackElementString(stack[i]));
         }
     }
 
@@ -149,7 +151,7 @@ public final class ExecutionStack extends MutabilityControl {
      *
      * @param type {@code non-null;} type of the value
      * @throws SimException thrown if there is insufficient room on the
-     * stack for the value
+     *                      stack for the value
      */
     public void push(TypeBearer type) {
         throwIfImmutable();
@@ -265,11 +267,11 @@ public final class ExecutionStack extends MutabilityControl {
      * the following restriction on its behavior: You may only replace
      * values with other values of the same category.
      *
-     * @param n {@code >= 0;} which element to change, where {@code 0} is
-     * the top element of the stack
+     * @param n    {@code >= 0;} which element to change, where {@code 0} is
+     *             the top element of the stack
      * @param type {@code non-null;} type of the new value
      * @throws SimException thrown if {@code n >= size()} or
-     * the action is otherwise prohibited
+     *                      the action is otherwise prohibited
      */
     public void change(int n, TypeBearer type) {
         throwIfImmutable();
@@ -285,10 +287,10 @@ public final class ExecutionStack extends MutabilityControl {
         TypeBearer orig = stack[idx];
 
         if ((orig == null) ||
-            (orig.getType().getCategory() != type.getType().getCategory())) {
+                (orig.getType().getCategory() != type.getType().getCategory())) {
             throwSimException("incompatible substitution: " +
-                              stackElementString(orig) + " -> " +
-                              stackElementString(type));
+                    stackElementString(orig) + " -> " +
+                    stackElementString(type));
         }
 
         stack[idx] = type;
@@ -297,7 +299,7 @@ public final class ExecutionStack extends MutabilityControl {
     /**
      * Merges this stack with another stack. A new instance is returned if
      * this merge results in a change. If no change results, this instance is
-     * returned.  See {@link Merger#mergeStack(ExecutionStack,ExecutionStack)
+     * returned.  See {@link Merger#mergeStack(ExecutionStack, ExecutionStack)
      * Merger.mergeStack()}
      *
      * @param other {@code non-null;} a stack to merge with

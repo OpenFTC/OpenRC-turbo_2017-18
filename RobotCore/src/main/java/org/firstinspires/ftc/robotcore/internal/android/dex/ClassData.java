@@ -23,7 +23,7 @@ public final class ClassData {
     private final Method[] virtualMethods;
 
     public ClassData(Field[] staticFields, Field[] instanceFields,
-            Method[] directMethods, Method[] virtualMethods) {
+                     Method[] directMethods, Method[] virtualMethods) {
         this.staticFields = staticFields;
         this.instanceFields = instanceFields;
         this.directMethods = directMethods;

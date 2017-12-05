@@ -3,6 +3,7 @@
 package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
+
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -12,21 +13,21 @@ import com.qualcomm.robotcore.util.Range;
  */
 class RangeAccess extends Access {
 
-  RangeAccess(BlocksOpMode blocksOpMode, String identifier) {
-    super(blocksOpMode, identifier);
-  }
+    RangeAccess(BlocksOpMode blocksOpMode, String identifier) {
+        super(blocksOpMode, identifier);
+    }
 
-  @SuppressWarnings("unused")
-  @JavascriptInterface
-  public double clip(double number, double min, double max) {
-    checkIfStopRequested();
-    return Range.clip(number, min, max);
-  }
+    @SuppressWarnings("unused")
+    @JavascriptInterface
+    public double clip(double number, double min, double max) {
+        checkIfStopRequested();
+        return Range.clip(number, min, max);
+    }
 
-  @SuppressWarnings("unused")
-  @JavascriptInterface
-  public double scale(double number, double x1, double x2, double y1, double y2) {
-    checkIfStopRequested();
-    return Range.scale(number, x1, x2, y1, y2);
-  }
+    @SuppressWarnings("unused")
+    @JavascriptInterface
+    public double scale(double number, double x1, double x2, double y1, double y2) {
+        checkIfStopRequested();
+        return Range.scale(number, x1, x2, y1, y2);
+    }
 }

@@ -25,7 +25,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityContro
  * also holds the default target for the switch.
  */
 public final class SwitchList extends MutabilityControl {
-    /** {@code non-null;} list of test values */
+    /**
+     * {@code non-null;} list of test values
+     */
     private final IntList values;
 
     /**
@@ -35,7 +37,9 @@ public final class SwitchList extends MutabilityControl {
      */
     private final IntList targets;
 
-    /** ultimate size of the list */
+    /**
+     * ultimate size of the list
+     */
     private int size;
 
     /**
@@ -50,7 +54,9 @@ public final class SwitchList extends MutabilityControl {
         this.size = size;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setImmutable() {
         values.setImmutable();
@@ -122,7 +128,7 @@ public final class SwitchList extends MutabilityControl {
      * when all the non-default elements have been set.
      *
      * @param target {@code >= 0;} the absolute (not relative) default target
-     * address
+     *               address
      */
     public void setDefaultTarget(int target) {
         throwIfImmutable();
@@ -141,7 +147,7 @@ public final class SwitchList extends MutabilityControl {
     /**
      * Adds the given item.
      *
-     * @param value the test value
+     * @param value  the test value
      * @param target {@code >= 0;} the absolute (not relative) target address
      */
     public void add(int value, int target) {

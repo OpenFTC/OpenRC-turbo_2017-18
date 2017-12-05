@@ -22,21 +22,27 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.io.IndexType;
  * A decoded Dalvik instruction which has three register arguments.
  */
 public final class ThreeRegisterDecodedInstruction extends DecodedInstruction {
-    /** register argument "A" */
+    /**
+     * register argument "A"
+     */
     private final int a;
 
-    /** register argument "B" */
+    /**
+     * register argument "B"
+     */
     private final int b;
 
-    /** register argument "C" */
+    /**
+     * register argument "C"
+     */
     private final int c;
 
     /**
      * Constructs an instance.
      */
     public ThreeRegisterDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal,
-            int a, int b, int c) {
+                                           int index, IndexType indexType, int target, long literal,
+                                           int a, int b, int c) {
         super(format, opcode, index, indexType, target, literal);
 
         this.a = a;
@@ -44,27 +50,37 @@ public final class ThreeRegisterDecodedInstruction extends DecodedInstruction {
         this.c = c;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getRegisterCount() {
         return 3;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getA() {
         return a;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getB() {
         return b;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getC() {
         return c;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public DecodedInstruction withIndex(int newIndex) {
         return new ThreeRegisterDecodedInstruction(
                 getFormat(), getOpcode(), newIndex, getIndexType(),

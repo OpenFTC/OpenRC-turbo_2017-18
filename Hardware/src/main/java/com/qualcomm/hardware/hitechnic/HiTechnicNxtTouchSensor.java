@@ -44,70 +44,72 @@ import java.nio.ByteOrder;
  */
 public class HiTechnicNxtTouchSensor extends LegacyModulePortDeviceImpl implements TouchSensor {
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtTouchSensor(LegacyModule legacyModule, int physicalPort) {
-    super(legacyModule, physicalPort);
-    finishConstruction();
-  }
+    public HiTechnicNxtTouchSensor(LegacyModule legacyModule, int physicalPort) {
+        super(legacyModule, physicalPort);
+        finishConstruction();
+    }
 
-  @Override
-  protected void moduleNowArmedOrPretending() {
-    module.enableAnalogReadMode(physicalPort);
-  }
+    @Override
+    protected void moduleNowArmedOrPretending() {
+        module.enableAnalogReadMode(physicalPort);
+    }
 
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
-  @Override
-  public String toString() {
-    return String.format("Touch Sensor: %1.2f", getValue());
-  }
+    @Override
+    public String toString() {
+        return String.format("Touch Sensor: %1.2f", getValue());
+    }
 
-  public String status() {
-    return String.format("NXT Touch Sensor, connected via device %s, port %d",
-        module.getSerialNumber().toString(), physicalPort);  }
+    public String status() {
+        return String.format("NXT Touch Sensor, connected via device %s, port %d",
+                module.getSerialNumber().toString(), physicalPort);
+    }
 
-  @Override
-  public double getValue() {
-    double val = TypeConversion.byteArrayToShort(module.readAnalogRaw(physicalPort), ByteOrder.LITTLE_ENDIAN);
-    val = (val > 675)? 0.0 : 1.0;
-    return val;
-  }
+    @Override
+    public double getValue() {
+        double val = TypeConversion.byteArrayToShort(module.readAnalogRaw(physicalPort), ByteOrder.LITTLE_ENDIAN);
+        val = (val > 675) ? 0.0 : 1.0;
+        return val;
+    }
 
-  @Override
-  public boolean isPressed() {
-    return getValue() > 0.0;
-  }
+    @Override
+    public boolean isPressed() {
+        return getValue() > 0.0;
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.Lego;
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.Lego;
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeNXTTouchSensor);
-  }
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeNXTTouchSensor);
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return module.getConnectionInfo() + "; port " + physicalPort;
-  }
+    @Override
+    public String getConnectionInfo() {
+        return module.getConnectionInfo() + "; port " + physicalPort;
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public int getVersion() {
+        return 1;
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
-  @Override
-  public void close() {
-    // take not action.
-  }
+    @Override
+    public void close() {
+        // take not action.
+    }
 }

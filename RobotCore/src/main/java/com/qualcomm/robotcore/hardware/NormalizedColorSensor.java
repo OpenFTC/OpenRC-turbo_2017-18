@@ -37,11 +37,11 @@ package com.qualcomm.robotcore.hardware;
  * provides a measure of <em>absolute</em> color color intensity beyond the <em>relative</em>
  * intensities available using {@link ColorSensor}.
  */
-public interface NormalizedColorSensor extends HardwareDevice
-    {
+public interface NormalizedColorSensor extends HardwareDevice {
     /**
      * Reads the colors from the sensor
+     *
      * @return the current set of colors from the sensor
      */
     NormalizedRGBA getNormalizedColors();
-    }
+}

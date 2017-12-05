@@ -27,7 +27,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
  * Dalvik file.
  */
 public abstract class MemberIdItem extends IdItem {
-    /** {@code non-null;} the constant for the member */
+    /**
+     * {@code non-null;} the constant for the member
+     */
     private final CstMemberRef cst;
 
     /**
@@ -41,13 +43,17 @@ public abstract class MemberIdItem extends IdItem {
         this.cst = cst;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeSize() {
         return SizeOf.MEMBER_ID_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         super.addContents(file);
@@ -56,7 +62,9 @@ public abstract class MemberIdItem extends IdItem {
         stringIds.intern(getRef().getNat().getName());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void writeTo(DexFile file, AnnotatedOutput out) {
         TypeIdsSection typeIds = file.getTypeIds();
@@ -70,7 +78,7 @@ public abstract class MemberIdItem extends IdItem {
             out.annotate(0, indexString() + ' ' + cst.toHuman());
             out.annotate(2, "  class_idx: " + Hex.u2(classIdx));
             out.annotate(2, String.format("  %-10s %s", getTypoidName() + ':',
-                            Hex.u2(typoidIdx)));
+                    Hex.u2(typoidIdx)));
             out.annotate(4, "  name_idx:  " + Hex.u4(nameIdx));
         }
 

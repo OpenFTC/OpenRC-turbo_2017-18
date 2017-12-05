@@ -25,7 +25,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.FixedSizeList;
  */
 public final class CatchTable extends FixedSizeList
         implements Comparable<CatchTable> {
-    /** {@code non-null;} empty instance */
+    /**
+     * {@code non-null;} empty instance
+     */
     public static final CatchTable EMPTY = new CatchTable(0);
 
     /**
@@ -52,14 +54,16 @@ public final class CatchTable extends FixedSizeList
     /**
      * Sets the entry at the given index.
      *
-     * @param n {@code >= 0, < size();} which index
+     * @param n     {@code >= 0, < size();} which index
      * @param entry {@code non-null;} the entry to set at {@code n}
      */
     public void set(int n, Entry entry) {
         set0(n, entry);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int compareTo(CatchTable other) {
         if (this == other) {
             // Easy out.
@@ -92,20 +96,26 @@ public final class CatchTable extends FixedSizeList
      * Entry in a catch list.
      */
     public static class Entry implements Comparable<Entry> {
-        /** {@code >= 0;} start address */
+        /**
+         * {@code >= 0;} start address
+         */
         private final int start;
 
-        /** {@code > start;} end address (exclusive) */
+        /**
+         * {@code > start;} end address (exclusive)
+         */
         private final int end;
 
-        /** {@code non-null;} list of catch handlers */
+        /**
+         * {@code non-null;} list of catch handlers
+         */
         private final CatchHandlerList handlers;
 
         /**
          * Constructs an instance.
          *
-         * @param start {@code >= 0;} start address
-         * @param end {@code > start;} end address (exclusive)
+         * @param start    {@code >= 0;} start address
+         * @param end      {@code > start;} end address (exclusive)
          * @param handlers {@code non-null;} list of catch handlers
          */
         public Entry(int start, int end, CatchHandlerList handlers) {
@@ -126,7 +136,9 @@ public final class CatchTable extends FixedSizeList
             this.handlers = handlers;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
             int hash = (start * 31) + end;
@@ -134,7 +146,9 @@ public final class CatchTable extends FixedSizeList
             return hash;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean equals(Object other) {
             if (other instanceof Entry) {
@@ -144,7 +158,9 @@ public final class CatchTable extends FixedSizeList
             return false;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public int compareTo(Entry other) {
             if (start < other.start) {
                 return -1;

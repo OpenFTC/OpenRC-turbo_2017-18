@@ -38,17 +38,18 @@ package com.qualcomm.robotcore.hardware;
  * occupy a port on a LegacyModule. It provides a means by which the module and the
  * port so occupied can be retrieved.
  */
-public interface LegacyModulePortDevice
-    {
+public interface LegacyModulePortDevice {
     /**
      * Returns the legacy module associated with this device.
+     *
      * @return the legacy module associated with this device
      */
     LegacyModule getLegacyModule();
 
     /**
      * Returns the port on the associated legacy module that this device occupies.
+     *
      * @return the port on the associated legacy module that this device occupies
      */
     int getPort();
-    }
+}

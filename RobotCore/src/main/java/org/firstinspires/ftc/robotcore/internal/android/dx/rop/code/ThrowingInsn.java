@@ -27,7 +27,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
  */
 public final class ThrowingInsn
         extends Insn {
-    /** {@code non-null;} list of exceptions caught */
+    /**
+     * {@code non-null;} list of exceptions caught
+     */
     private final TypeList catches;
 
     /**
@@ -54,10 +56,10 @@ public final class ThrowingInsn
     /**
      * Constructs an instance.
      *
-     * @param opcode {@code non-null;} the opcode
+     * @param opcode   {@code non-null;} the opcode
      * @param position {@code non-null;} source position
-     * @param sources {@code non-null;} specs for all the sources
-     * @param catches {@code non-null;} list of exceptions caught
+     * @param sources  {@code non-null;} specs for all the sources
+     * @param catches  {@code non-null;} list of exceptions caught
      */
     public ThrowingInsn(Rop opcode, SourcePosition position,
                         RegisterSpecList sources,
@@ -75,46 +77,58 @@ public final class ThrowingInsn
         this.catches = catches;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getInlineString() {
         return toCatchString(catches);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeList getCatches() {
         return catches;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visitThrowingInsn(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withAddedCatch(Type type) {
         return new ThrowingInsn(getOpcode(), getPosition(),
-                                getSources(), catches.withAddedType(type));
+                getSources(), catches.withAddedType(type));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withRegisterOffset(int delta) {
         return new ThrowingInsn(getOpcode(), getPosition(),
-                                getSources().withOffset(delta),
-                                catches);
+                getSources().withOffset(delta),
+                catches);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withNewRegisters(RegisterSpec result,
-            RegisterSpecList sources) {
+                                 RegisterSpecList sources) {
 
         return new ThrowingInsn(getOpcode(), getPosition(),
-                                sources,
-                                catches);
+                sources,
+                catches);
     }
 }

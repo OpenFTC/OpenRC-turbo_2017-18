@@ -46,80 +46,75 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * Created by bob on 2016-03-12.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxAnalogInputController extends LynxController implements AnalogInputController
-    {
+public class LynxAnalogInputController extends LynxController implements AnalogInputController {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxAnalogInputController";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     public static final int apiPortFirst = 0;
-    public static final int apiPortLast = apiPortFirst + LynxConstants.NUMBER_OF_ANALOG_INPUTS -1;
+    public static final int apiPortLast = apiPortFirst + LynxConstants.NUMBER_OF_ANALOG_INPUTS - 1;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     public LynxAnalogInputController(final Context context, final LynxModule module)
-            throws RobotCoreException, InterruptedException
-        {
+            throws RobotCoreException, InterruptedException {
         super(context, module);
         this.finishConstruction();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return this.context.getString(R.string.lynxAnalogInputControllerDisplayName);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // AnalogInputController
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public SerialNumber getSerialNumber()
-        {
+    public SerialNumber getSerialNumber() {
         return this.getModule().getSerialNumber();
-        }
+    }
 
     @Override
-    public double getAnalogInputVoltage(int port)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public double getAnalogInputVoltage(int port) {
+        validatePort(port);
+        port -= apiPortFirst;
         LynxGetADCCommand command = new LynxGetADCCommand(this.getModule(), LynxGetADCCommand.Channel.user(port), LynxGetADCCommand.Mode.ENGINEERING);
         try {
             LynxGetADCResponse response = command.sendReceive();
             return response.getValue() * 0.001;
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
-        return LynxUsbUtil.makePlaceholderValue(0.0);
         }
+        return LynxUsbUtil.makePlaceholderValue(0.0);
+    }
 
     @Override
-    public double getMaxAnalogInputVoltage()
-        {
+    public double getMaxAnalogInputVoltage() {
         return 3.3;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    private void validatePort(int port)
-        {
-        if (port < apiPortFirst || port > apiPortLast)
-            {
+    private void validatePort(int port) {
+        if (port < apiPortFirst || port > apiPortLast) {
             throw new IllegalArgumentException(String.format("port %d is invalid; valid ports are %d..%d", port, apiPortFirst, apiPortLast));
-            }
         }
     }
+}

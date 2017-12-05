@@ -40,10 +40,14 @@ import java.util.zip.Adler32;
  * file, which itself consists of a set of Dalvik classes.
  */
 public final class DexFile {
-    /** options controlling the creation of the file */
+    /**
+     * options controlling the creation of the file
+     */
     private DexOptions dexOptions;
 
-    /** {@code non-null;} word data section */
+    /**
+     * {@code non-null;} word data section
+     */
     private final MixedItemSection wordData;
 
     /**
@@ -60,34 +64,54 @@ public final class DexFile {
      */
     private final MixedItemSection map;
 
-    /** {@code non-null;} string data section */
+    /**
+     * {@code non-null;} string data section
+     */
     private final MixedItemSection stringData;
 
-    /** {@code non-null;} string identifiers section */
+    /**
+     * {@code non-null;} string identifiers section
+     */
     private final StringIdsSection stringIds;
 
-    /** {@code non-null;} type identifiers section */
+    /**
+     * {@code non-null;} type identifiers section
+     */
     private final TypeIdsSection typeIds;
 
-    /** {@code non-null;} prototype identifiers section */
+    /**
+     * {@code non-null;} prototype identifiers section
+     */
     private final ProtoIdsSection protoIds;
 
-    /** {@code non-null;} field identifiers section */
+    /**
+     * {@code non-null;} field identifiers section
+     */
     private final FieldIdsSection fieldIds;
 
-    /** {@code non-null;} method identifiers section */
+    /**
+     * {@code non-null;} method identifiers section
+     */
     private final MethodIdsSection methodIds;
 
-    /** {@code non-null;} class definitions section */
+    /**
+     * {@code non-null;} class definitions section
+     */
     private final ClassDefsSection classDefs;
 
-    /** {@code non-null;} class data section */
+    /**
+     * {@code non-null;} class data section
+     */
     private final MixedItemSection classData;
 
-    /** {@code non-null;} byte data section */
+    /**
+     * {@code non-null;} byte data section
+     */
     private final MixedItemSection byteData;
 
-    /** {@code non-null;} file header */
+    /**
+     * {@code non-null;} file header
+     */
     private final HeaderSection header;
 
     /**
@@ -96,10 +120,14 @@ public final class DexFile {
      */
     private final Section[] sections;
 
-    /** {@code >= -1;} total file size or {@code -1} if unknown */
+    /**
+     * {@code >= -1;} total file size or {@code -1} if unknown
+     */
     private int fileSize;
 
-    /** {@code >= 40;} maximum width of the file dump */
+    /**
+     * {@code >= 40;} maximum width of the file dump
+     */
     private int dumpWidth;
 
     /**
@@ -112,7 +140,7 @@ public final class DexFile {
         typeLists = new MixedItemSection(null, this, 4, MixedItemSection.SortType.NONE);
         wordData = new MixedItemSection("word_data", this, 4, MixedItemSection.SortType.TYPE);
         stringData =
-            new MixedItemSection("string_data", this, 1, MixedItemSection.SortType.INSTANCE);
+                new MixedItemSection("string_data", this, 1, MixedItemSection.SortType.INSTANCE);
         classData = new MixedItemSection(null, this, 1, MixedItemSection.SortType.NONE);
         byteData = new MixedItemSection("byte_data", this, 1, MixedItemSection.SortType.TYPE);
         stringIds = new StringIdsSection(this);
@@ -128,9 +156,9 @@ public final class DexFile {
          * the final output.
          */
         sections = new Section[] {
-            header, stringIds, typeIds, protoIds, fieldIds, methodIds,
-            classDefs, wordData, typeLists, stringData, byteData,
-            classData, map };
+                header, stringIds, typeIds, protoIds, fieldIds, methodIds,
+                classDefs, wordData, typeLists, stringData, byteData,
+                classData, map};
 
         fileSize = -1;
         dumpWidth = 79;
@@ -181,12 +209,12 @@ public final class DexFile {
      * Writes the contents of this instance as either a binary or a
      * human-readable form, or both.
      *
-     * @param out {@code null-ok;} where to write to
+     * @param out      {@code null-ok;} where to write to
      * @param humanOut {@code null-ok;} where to write human-oriented output to
-     * @param verbose whether to be verbose when writing human-oriented output
+     * @param verbose  whether to be verbose when writing human-oriented output
      */
     public void writeTo(OutputStream out, Writer humanOut, boolean verbose)
-        throws IOException {
+            throws IOException {
         boolean annotate = (humanOut != null);
         ByteArrayAnnotatedOutput result = toDex0(annotate, verbose);
 
@@ -204,11 +232,11 @@ public final class DexFile {
      * in {@code byte[]} form.
      *
      * @param humanOut {@code null-ok;} where to write human-oriented output to
-     * @param verbose whether to be verbose when writing human-oriented output
+     * @param verbose  whether to be verbose when writing human-oriented output
      * @return {@code non-null;} a {@code .dex} file for this instance
      */
     public byte[] toDex(Writer humanOut, boolean verbose)
-        throws IOException {
+            throws IOException {
         boolean annotate = (humanOut != null);
         ByteArrayAnnotatedOutput result = toDex0(annotate, verbose);
 
@@ -234,7 +262,7 @@ public final class DexFile {
 
     /**
      * Gets the total file size, if known.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the {@link HeaderSection} to set itself up properly.</p>
      *
@@ -251,7 +279,7 @@ public final class DexFile {
 
     /**
      * Gets the string data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -264,7 +292,7 @@ public final class DexFile {
 
     /**
      * Gets the word data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -277,7 +305,7 @@ public final class DexFile {
 
     /**
      * Gets the type lists section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -290,7 +318,7 @@ public final class DexFile {
 
     /**
      * Gets the map section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow the header section
      * to query it.</p>
      *
@@ -302,7 +330,7 @@ public final class DexFile {
 
     /**
      * Gets the string identifiers section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -315,7 +343,7 @@ public final class DexFile {
 
     /**
      * Gets the class definitions section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -328,7 +356,7 @@ public final class DexFile {
 
     /**
      * Gets the class data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -341,7 +369,7 @@ public final class DexFile {
 
     /**
      * Gets the type identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of type ids.</p>
@@ -354,7 +382,7 @@ public final class DexFile {
 
     /**
      * Gets the prototype identifiers section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -367,7 +395,7 @@ public final class DexFile {
 
     /**
      * Gets the field identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of field ids.</p>
@@ -380,7 +408,7 @@ public final class DexFile {
 
     /**
      * Gets the method identifiers section.
-     *
+     * <p>
      * <p>This is public in order to allow
      * the various {@link Item} instances to add items to the
      * instance and help early counting of method ids.</p>
@@ -393,7 +421,7 @@ public final class DexFile {
 
     /**
      * Gets the byte data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow
      * the various {@link Item} instances to add items to the
      * instance.</p>
@@ -407,7 +435,7 @@ public final class DexFile {
     /**
      * Gets the first section of the file that is to be considered
      * part of the data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow the header section
      * to query it.</p>
      *
@@ -420,7 +448,7 @@ public final class DexFile {
     /**
      * Gets the last section of the file that is to be considered
      * part of the data section.
-     *
+     * <p>
      * <p>This is package-scope in order to allow the header section
      * to query it.</p>
      *
@@ -485,11 +513,11 @@ public final class DexFile {
      * in a {@link ByteArrayAnnotatedOutput} instance.
      *
      * @param annotate whether or not to keep annotations
-     * @param verbose if annotating, whether to be verbose
+     * @param verbose  if annotating, whether to be verbose
      * @return {@code non-null;} a {@code .dex} file for this instance
      */
     private ByteArrayAnnotatedOutput toDex0(boolean annotate,
-            boolean verbose) {
+                                            boolean verbose) {
         /*
          * The following is ordered so that the prepare() calls which
          * add items happen before the calls to the sections that get
@@ -634,7 +662,7 @@ public final class DexFile {
             int amt = md.digest(bytes, 12, 20);
             if (amt != 20) {
                 throw new RuntimeException("unexpected digest write: " + amt +
-                                           " bytes");
+                        " bytes");
             }
         } catch (DigestException ex) {
             throw new RuntimeException(ex);
@@ -654,8 +682,8 @@ public final class DexFile {
 
         int sum = (int) a32.getValue();
 
-        bytes[8]  = (byte) sum;
-        bytes[9]  = (byte) (sum >> 8);
+        bytes[8] = (byte) sum;
+        bytes[9] = (byte) (sum >> 8);
         bytes[10] = (byte) (sum >> 16);
         bytes[11] = (byte) (sum >> 24);
     }

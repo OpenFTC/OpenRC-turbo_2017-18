@@ -37,19 +37,25 @@ import java.util.Locale;
 /**
  * Instances of {@link MagneticFlux} represent a three-dimensional magnetic strength vector. Units
  * are in tesla (NOT microtesla).
+ *
  * @see <a href="https://en.wikipedia.org/wiki/Tesla_(unit)">https://en.wikipedia.org/wiki/Tesla_(unit)</a>
  */
-public class MagneticFlux
-    {
+public class MagneticFlux {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    /** the flux in the X direction */
+    /**
+     * the flux in the X direction
+     */
     public double x;
-    /** the flux in the Y direction */
+    /**
+     * the flux in the Y direction
+     */
     public double y;
-    /** the flux in the Z direction */
+    /**
+     * the flux in the Z direction
+     */
     public double z;
 
     /**
@@ -62,26 +68,24 @@ public class MagneticFlux
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public MagneticFlux()
-        {
+    public MagneticFlux() {
         this(0, 0, 0, 0);
-        }
+    }
 
-    public MagneticFlux(double x, double y, double z, long acquisitionTime)
-        {
+    public MagneticFlux(double x, double y, double z, long acquisitionTime) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.acquisitionTime = acquisitionTime;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    @Override public String toString()
-        {
+    @Override
+    public String toString() {
         double scale = 1000;
         return String.format(Locale.getDefault(), "(%.3f %.3f %.3f)mT", x * scale, y * scale, z * scale);
-        }
     }
+}

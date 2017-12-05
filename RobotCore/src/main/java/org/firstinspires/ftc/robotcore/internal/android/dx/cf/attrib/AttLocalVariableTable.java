@@ -22,7 +22,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.cf.code.LocalVariable
  * Attribute class for standard {@code LocalVariableTable} attributes.
  */
 public final class AttLocalVariableTable extends BaseLocalVariables {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "LocalVariableTable";
 
     /**

@@ -28,7 +28,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.RegisterMapper;
  * the instance in an instruction array.
  */
 public final class LocalSnapshot extends ZeroSizeInsn {
-    /** {@code non-null;} local state associated with this instance */
+    /**
+     * {@code non-null;} local state associated with this instance
+     */
     private final RegisterSpecSet locals;
 
     /**
@@ -36,7 +38,7 @@ public final class LocalSnapshot extends ZeroSizeInsn {
      * unknown ({@code -1}).
      *
      * @param position {@code non-null;} source position
-     * @param locals {@code non-null;} associated local variable state
+     * @param locals   {@code non-null;} associated local variable state
      */
     public LocalSnapshot(SourcePosition position, RegisterSpecSet locals) {
         super(position);
@@ -48,13 +50,17 @@ public final class LocalSnapshot extends ZeroSizeInsn {
         this.locals = locals;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisterOffset(int delta) {
         return new LocalSnapshot(getPosition(), locals.withOffset(delta));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         return new LocalSnapshot(getPosition(), locals);
@@ -69,13 +75,17 @@ public final class LocalSnapshot extends ZeroSizeInsn {
         return locals;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         return locals.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String listingString0(boolean noteIndices) {
         int sz = locals.size();
@@ -95,9 +105,11 @@ public final class LocalSnapshot extends ZeroSizeInsn {
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withMapper(RegisterMapper mapper) {
-      return new LocalSnapshot(getPosition(), mapper.map(locals));
+        return new LocalSnapshot(getPosition(), mapper.map(locals));
     }
 }

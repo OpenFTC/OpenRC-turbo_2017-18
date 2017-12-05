@@ -39,8 +39,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * Created by bob on 3/25/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FtConstants
-    {
+public class FtConstants {
     // Notable resources include the following:
     //
     // https://felhr85.net/2014/11/11/usbserial-a-serial-port-driver-library-for-android-v2-0/
@@ -59,35 +58,35 @@ public class FtConstants
      * The device is based on the FTDI FT8U100AX chip. It has a DB25 on one side,
      * USB on the other."
      */
-    public static final int FTDI_BREAK_OFF          = 0;
-    public static final int FTDI_BREAK_ON           = 0x4000;
-    public static final int	FTDI_SIO_RESET 		    = 0;	/* Reset the port */
-    public static final int	FTDI_SIO_MODEM_CTRL 	= 1;	/* Set the modem control register */
-    public static final int	FTDI_SIO_SET_FLOW_CTRL	= 2;	/* Set flow control register */
-    public static final int FTDI_SIO_SET_BAUDRATE   = 3;	/* Set baud rate */
-    public static final int	FTDI_SIO_SET_DATA	    = 4;	/* Set the data characteristics of the port */
-    public static final int	FTDI_SIO_GET_STATUS	    = 5;	/* Retrieve current value of status reg */
-    public static final int	FTDI_SIO_SET_EVENT_CHAR	= 6;	/* Set the event character */
-    public static final int	FTDI_SIO_SET_ERROR_CHAR	= 7;	/* Set the error character */
-    public static final int	FTDI_SIO_SET_LATENCY	= 9;	/* Set the latency timer */
-    public static final int	FTDI_SIO_GET_LATENCY	= 10;	/* Read the latency timer */
-    public static final int	FTDI_SIO_SET_BITMODE	= 11;	/* Set the bit bang I/O mode */
-    public static final int	FTDI_SIO_GET_BITMODE	= 12;	/* Read pin states from any mode */
-    public static final int	FTDI_SIO_READ_EEPROM	= 144;	/* Read eeprom word */
-    public static final int	FTDI_SIO_WRITE_EEPROM	= 145;	/* Write eeprom word */
-    public static final int	FTDI_SIO_ERASE_EEPROM	= 146;	/* Erase entire eeprom */
+    public static final int FTDI_BREAK_OFF = 0;
+    public static final int FTDI_BREAK_ON = 0x4000;
+    public static final int FTDI_SIO_RESET = 0;	/* Reset the port */
+    public static final int FTDI_SIO_MODEM_CTRL = 1;	/* Set the modem control register */
+    public static final int FTDI_SIO_SET_FLOW_CTRL = 2;	/* Set flow control register */
+    public static final int FTDI_SIO_SET_BAUDRATE = 3;	/* Set baud rate */
+    public static final int FTDI_SIO_SET_DATA = 4;	/* Set the data characteristics of the port */
+    public static final int FTDI_SIO_GET_STATUS = 5;	/* Retrieve current value of status reg */
+    public static final int FTDI_SIO_SET_EVENT_CHAR = 6;	/* Set the event character */
+    public static final int FTDI_SIO_SET_ERROR_CHAR = 7;	/* Set the error character */
+    public static final int FTDI_SIO_SET_LATENCY = 9;	/* Set the latency timer */
+    public static final int FTDI_SIO_GET_LATENCY = 10;	/* Read the latency timer */
+    public static final int FTDI_SIO_SET_BITMODE = 11;	/* Set the bit bang I/O mode */
+    public static final int FTDI_SIO_GET_BITMODE = 12;	/* Read pin states from any mode */
+    public static final int FTDI_SIO_READ_EEPROM = 144;	/* Read eeprom word */
+    public static final int FTDI_SIO_WRITE_EEPROM = 145;	/* Write eeprom word */
+    public static final int FTDI_SIO_ERASE_EEPROM = 146;	/* Erase entire eeprom */
 
     /* Port Identifier Table */
-    public static final int FTDI_PIT_DEFAULT 	    = 0;	/* SIOA */
-    public static final int FTDI_PIT_SIOA		    = 1;	/* SIOA */
-    public static final int FTDI_PIT_SIOB		    = 2;	/* SIOB */
-    public static final int FTDI_PIT_PARALLEL	    = 3;	/* Parallel */
+    public static final int FTDI_PIT_DEFAULT = 0;	/* SIOA */
+    public static final int FTDI_PIT_SIOA = 1;	/* SIOA */
+    public static final int FTDI_PIT_SIOB = 2;	/* SIOB */
+    public static final int FTDI_PIT_PARALLEL = 3;	/* Parallel */
 
     /* Values for driver_info */
     //public static final int UFTDI_JTAG_IFACE(i)	(1 << i)	/* Flag interface as jtag */
-    public static final int UFTDI_JTAG_IFACES_MAX	= 8;		/* Allow up to 8 jtag intfs */
-    public static final int UFTDI_JTAG_CHECK_STRING	= 0xff;	    /* Check product names table */
-    public static final int UFTDI_JTAG_MASK		    = 0xff;
+    public static final int UFTDI_JTAG_IFACES_MAX = 8;		/* Allow up to 8 jtag intfs */
+    public static final int UFTDI_JTAG_CHECK_STRING = 0xff;	    /* Check product names table */
+    public static final int UFTDI_JTAG_MASK = 0xff;
 
     /*
      * BmRequestType:  0100 0000B
@@ -114,7 +113,7 @@ public class FtConstants
      * The Purge RX and TX buffer commands affect nothing except the buffers
      */
     /* FTDI_SIO_RESET */
-    public static final int FTDI_SIO_RESET_SIO      = 0;
+    public static final int FTDI_SIO_RESET_SIO = 0;
     public static final int FTDI_SIO_RESET_PURGE_RX = 1;
     public static final int FTDI_SIO_RESET_PURGE_TX = 2;
 
@@ -205,15 +204,15 @@ public class FtConstants
      */
     /* FTDI_SIO_SET_DATA */
     // public static final int FTDI_SIO_SET_DATA_BITS(n)    (n)
-    public static final int FTDI_SIO_SET_DATA_PARITY_NONE   = (0x0 << 8);
-    public static final int FTDI_SIO_SET_DATA_PARITY_ODD    = (0x1 << 8);
-    public static final int FTDI_SIO_SET_DATA_PARITY_EVEN   = (0x2 << 8);
-    public static final int FTDI_SIO_SET_DATA_PARITY_MARK   = (0x3 << 8);
-    public static final int FTDI_SIO_SET_DATA_PARITY_SPACE  = (0x4 << 8);
-    public static final int FTDI_SIO_SET_DATA_STOP_BITS_1   = (0x0 << 11);
-    public static final int FTDI_SIO_SET_DATA_STOP_BITS_15  = (0x1 << 11);
-    public static final int FTDI_SIO_SET_DATA_STOP_BITS_2   = (0x2 << 11);
-    public static final int FTDI_SIO_SET_BREAK              = (0x1 << 14);
+    public static final int FTDI_SIO_SET_DATA_PARITY_NONE = (0x0 << 8);
+    public static final int FTDI_SIO_SET_DATA_PARITY_ODD = (0x1 << 8);
+    public static final int FTDI_SIO_SET_DATA_PARITY_EVEN = (0x2 << 8);
+    public static final int FTDI_SIO_SET_DATA_PARITY_MARK = (0x3 << 8);
+    public static final int FTDI_SIO_SET_DATA_PARITY_SPACE = (0x4 << 8);
+    public static final int FTDI_SIO_SET_DATA_STOP_BITS_1 = (0x0 << 11);
+    public static final int FTDI_SIO_SET_DATA_STOP_BITS_15 = (0x1 << 11);
+    public static final int FTDI_SIO_SET_DATA_STOP_BITS_2 = (0x2 << 11);
+    public static final int FTDI_SIO_SET_BREAK = (0x1 << 14);
 
     /*
      * BmRequestType:   0100 0000B
@@ -244,12 +243,12 @@ public class FtConstants
      * B10..15 Reserved
      */
     /* FTDI_SIO_MODEM_CTRL */
-    public static final int FTDI_SIO_SET_DTR_MASK   = 0x1;
-    public static final int FTDI_SIO_SET_DTR_HIGH   = (1 | (FTDI_SIO_SET_DTR_MASK << 8));
-    public static final int FTDI_SIO_SET_DTR_LOW    = (0 | (FTDI_SIO_SET_DTR_MASK << 8));
-    public static final int FTDI_SIO_SET_RTS_MASK   = 0x2;
-    public static final int FTDI_SIO_SET_RTS_HIGH   = (2 | (FTDI_SIO_SET_RTS_MASK << 8));
-    public static final int FTDI_SIO_SET_RTS_LOW    = (0 | (FTDI_SIO_SET_RTS_MASK << 8));
+    public static final int FTDI_SIO_SET_DTR_MASK = 0x1;
+    public static final int FTDI_SIO_SET_DTR_HIGH = (1 | (FTDI_SIO_SET_DTR_MASK << 8));
+    public static final int FTDI_SIO_SET_DTR_LOW = (0 | (FTDI_SIO_SET_DTR_MASK << 8));
+    public static final int FTDI_SIO_SET_RTS_MASK = 0x2;
+    public static final int FTDI_SIO_SET_RTS_HIGH = (2 | (FTDI_SIO_SET_RTS_MASK << 8));
+    public static final int FTDI_SIO_SET_RTS_LOW = (0 | (FTDI_SIO_SET_RTS_MASK << 8));
 
 
     /*
@@ -277,10 +276,10 @@ public class FtConstants
      * XOFF character and the lValue field contains the XON character.
      */
     /* FTDI_SIO_SET_FLOW_CTRL */
-    public static final int FTDI_SIO_DISABLE_FLOW_CTRL  = 0x0;
-    public static final int FTDI_SIO_RTS_CTS_HS         = 0x1;
-    public static final int FTDI_SIO_DTR_DSR_HS         = 0x2;
-    public static final int FTDI_SIO_XON_XOFF_HS        = 0x4;
+    public static final int FTDI_SIO_DISABLE_FLOW_CTRL = 0x0;
+    public static final int FTDI_SIO_RTS_CTS_HS = 0x1;
+    public static final int FTDI_SIO_DTR_DSR_HS = 0x2;
+    public static final int FTDI_SIO_XON_XOFF_HS = 0x4;
 
     /*
      *  BmRequestType:   0100 0000b
@@ -350,10 +349,10 @@ public class FtConstants
      * FTDI_SIO_GET_MODEM_STATUS
      * Retrieve the current value of the modem status register.
      */
-    public static final int FTDI_SIO_CTS_MASK   = 0x10;
-    public static final int FTDI_SIO_DSR_MASK   = 0x20;
-    public static final int FTDI_SIO_RI_MASK    = 0x40;
-    public static final int FTDI_SIO_RLSD_MASK  = 0x80;
+    public static final int FTDI_SIO_CTS_MASK = 0x10;
+    public static final int FTDI_SIO_DSR_MASK = 0x20;
+    public static final int FTDI_SIO_RI_MASK = 0x40;
+    public static final int FTDI_SIO_RLSD_MASK = 0x80;
 
     /*
      * DATA FORMAT
@@ -462,16 +461,16 @@ public class FtConstants
     public static final byte PACKET_SIZE = 64;
     public static final int PACKET_SIZE_HI = 512;
     public static final byte MODEM_STATUS_SIZE = 2;
-    
+
     public static final int CLOCK_RATE = 3000000;
     public static final int CLOCK_RATE_HI = 12000000;
-    public static final int SUB_INT_0_0     = 0;
-    public static final int SUB_INT_0_125   = /*49152*/ 0xC000;
-    public static final int SUB_INT_0_25    = /*32768*/ 0x8000;
-    public static final int SUB_INT_0_5     = /*16384*/ 0x4000;
-    public static final int SUB_INT_MASK    = /*49152*/ 0xC000;
-    public static final int SUB_INT_0_375   = 0;
-    public static final int SUB_INT_0_625   = /*16384*/ 0x4000;
-    public static final int SUB_INT_0_75    = /*32768*/ 0x8000;
-    public static final int SUB_INT_0_875   = /*49152*/ 0xC000;
-    }
+    public static final int SUB_INT_0_0 = 0;
+    public static final int SUB_INT_0_125 = /*49152*/ 0xC000;
+    public static final int SUB_INT_0_25 = /*32768*/ 0x8000;
+    public static final int SUB_INT_0_5 = /*16384*/ 0x4000;
+    public static final int SUB_INT_MASK = /*49152*/ 0xC000;
+    public static final int SUB_INT_0_375 = 0;
+    public static final int SUB_INT_0_625 = /*16384*/ 0x4000;
+    public static final int SUB_INT_0_75 = /*32768*/ 0x8000;
+    public static final int SUB_INT_0_875 = /*49152*/ 0xC000;
+}

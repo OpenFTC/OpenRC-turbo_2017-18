@@ -39,7 +39,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
+
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
+
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
@@ -47,41 +49,32 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * Created by bob on 2016-03-16.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxUsbUtil
-    {
-    public static RobotUsbDevice openUsbDevice(RobotUsbManager robotUsbManager, SerialNumber serialNumber) throws RobotCoreException
-        {
+public class LynxUsbUtil {
+    public static RobotUsbDevice openUsbDevice(RobotUsbManager robotUsbManager, SerialNumber serialNumber) throws RobotCoreException {
         String deviceDescription = "";
         boolean found = false;
         int deviceCount = robotUsbManager.scanForDevices();
 
-        for (int i = 0; i < deviceCount; ++i)
-            {
-            if (serialNumber.equals(robotUsbManager.getDeviceSerialNumberByIndex(i)))
-                {
+        for (int i = 0; i < deviceCount; ++i) {
+            if (serialNumber.equals(robotUsbManager.getDeviceSerialNumberByIndex(i))) {
                 found = true;
                 deviceDescription = robotUsbManager.getDeviceDescriptionByIndex(i) + " [" + serialNumber.getSerialNumber() + "]";
                 break;
-                }
             }
+        }
 
-        if (!found)
-            {
+        if (!found) {
             logMessageAndThrow("unable to find lynx USB device with serial number " + serialNumber.toString());
-            }
+        }
 
         RobotUsbDevice result = null;
-        try
-            {
+        try {
             result = robotUsbManager.openBySerialNumber(serialNumber);
-            }
-        catch (RobotCoreException e)
-            {
+        } catch (RobotCoreException e) {
             logMessageAndThrow("unable to open lynx USB device " + serialNumber + " - " + deviceDescription + ": " + e.getMessage());
-            }
+        }
 
-        try
-            {
+        try {
             // Set BAUD rate for USB comm.
             result.setBaudRate(LynxConstants.USB_BAUD_RATE);
             result.setDataCharacteristics((byte) 8, (byte) 0, (byte) 0);
@@ -92,59 +85,55 @@ public class LynxUsbUtil
             // is what the Modern Robotics USB uses as of current writing) has been observed with
             // a USB packet sniffer to at times be on the order of 5-10ms additional latency.
             result.setLatencyTimer(LynxConstants.LATENCY_TIMER);
-            }
-        catch (RobotUsbException e)
-            {
+        } catch (RobotUsbException e) {
             result.close();
             logMessageAndThrow("Unable to open lynx USB device " + serialNumber + " - " + deviceDescription + ": " + e.getMessage());
-            }
+        }
 
         return result;
-        }
+    }
 
-    private static void logMessageAndThrow(String message) throws RobotCoreException
-        {
+    private static void logMessageAndThrow(String message) throws RobotCoreException {
         System.err.println(message);
         throw new RobotCoreException(message);
-        }
+    }
 
     /**
      * Documents that the value being passed is a dummy, placeholder value which
      * is being returned from a function in lieu of something more reasonable actually
      * being available.
      */
-    public static <T> T makePlaceholderValue(T t)
-        {
+    public static <T> T makePlaceholderValue(T t) {
         return t;
-        }
+    }
 
-    /** A simple utility that helps us understand when we're using placeholders. We don't
-     * log all the time for fear of swamping the log */
-    public static class Placeholder<T>
-        {
+    /**
+     * A simple utility that helps us understand when we're using placeholders. We don't
+     * log all the time for fear of swamping the log
+     */
+    public static class Placeholder<T> {
         private String tag;
         private String message;
         private boolean logged;
-        public Placeholder(String tag, String format, Object... args)
-            {
+
+        public Placeholder(String tag, String format, Object... args) {
             this.tag = tag;
             this.message = String.format("placeholder: %s", String.format(format, args));
             this.logged = false;
-            }
-        public synchronized void reset()
-            {
+        }
+
+        public synchronized void reset() {
             this.logged = false;
-            }
-        public synchronized T log(T t)
-            {
-            if (!logged)
-                {
+        }
+
+        public synchronized T log(T t) {
+            if (!logged) {
                 RobotLog.ee(tag, message);
                 logged = true;
-                }
-            return t;
             }
-
+            return t;
         }
 
     }
+
+}

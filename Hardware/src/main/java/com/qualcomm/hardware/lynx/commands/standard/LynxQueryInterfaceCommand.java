@@ -41,8 +41,7 @@ import java.nio.charset.Charset;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInterfaceResponse>
-    {
+public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInterfaceResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -53,83 +52,70 @@ public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInte
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxQueryInterfaceCommand(LynxModule module)
-        {
+    public LynxQueryInterfaceCommand(LynxModule module) {
         super(module);
         this.response = new LynxQueryInterfaceResponse(module);
-        }
+    }
 
-    public LynxQueryInterfaceCommand(LynxModule module, String interfaceName)
-        {
+    public LynxQueryInterfaceCommand(LynxModule module, String interfaceName) {
         this(module);
         this.interfaceName = interfaceName;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    void setInterfaceName(String interfaceName)
-        {
+    void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
         // remove any terminating null
-        if (this.interfaceName != null && this.interfaceName.length() > 0 && this.interfaceName.charAt(this.interfaceName.length()-1) == '\0')
-            {
-            this.interfaceName = this.interfaceName.substring(0, this.interfaceName.length()-1);
-            }
+        if (this.interfaceName != null && this.interfaceName.length() > 0 && this.interfaceName.charAt(this.interfaceName.length() - 1) == '\0') {
+            this.interfaceName = this.interfaceName.substring(0, this.interfaceName.length() - 1);
         }
+    }
 
-    String getInterfaceName()
-        {
+    String getInterfaceName() {
         return this.interfaceName;
-        }
+    }
 
-    String getNullTerminatedInterfaceName()
-        {
+    String getNullTerminatedInterfaceName() {
         return getInterfaceName() + "\0";
-        }
+    }
 
-    public LynxQueryInterfaceResponse getResponse()
-        {
+    public LynxQueryInterfaceResponse getResponse() {
         return this.response;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_QUERY_INTERFACE;
-        }
-
-    public static Class<? extends LynxResponse> getResponseClass()
-        {
-        return LynxQueryInterfaceResponse.class;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return true;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return this.getNullTerminatedInterfaceName().getBytes(Charset.forName("UTF-8"));
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.setInterfaceName(new String(rgb, Charset.forName("UTF-8")));
-        }
-
     }
+
+    public static Class<? extends LynxResponse> getResponseClass() {
+        return LynxQueryInterfaceResponse.class;
+    }
+
+    @Override
+    public boolean isResponseExpected() {
+        return true;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return this.getNullTerminatedInterfaceName().getBytes(Charset.forName("UTF-8"));
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.setInterfaceName(new String(rgb, Charset.forName("UTF-8")));
+    }
+
+}

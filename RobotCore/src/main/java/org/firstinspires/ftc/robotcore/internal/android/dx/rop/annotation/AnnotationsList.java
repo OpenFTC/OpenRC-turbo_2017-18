@@ -23,7 +23,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.FixedSizeList;
  */
 public final class AnnotationsList
         extends FixedSizeList {
-    /** {@code non-null;} immutable empty instance */
+    /**
+     * {@code non-null;} immutable empty instance
+     */
     public static final AnnotationsList EMPTY = new AnnotationsList(0);
 
     /**
@@ -37,7 +39,7 @@ public final class AnnotationsList
      * @return {@code non-null;} the combination
      */
     public static AnnotationsList combine(AnnotationsList list1,
-            AnnotationsList list2) {
+                                          AnnotationsList list2) {
         int size = list1.size();
 
         if (size != list2.size()) {

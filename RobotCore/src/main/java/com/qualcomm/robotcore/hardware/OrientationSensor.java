@@ -43,10 +43,10 @@ import java.util.Set;
 /**
  * {@link OrientationSensor} provides access to sensors which measure absolute orientation
  */
-public interface OrientationSensor
-    {
+public interface OrientationSensor {
     /**
      * Returns the axes on which the sensor measures angular orientation.
+     *
      * @return the axes on which the sensor measures angular orientation.
      */
     Set<Axis> getAngularOrientationAxes();
@@ -62,4 +62,4 @@ public interface OrientationSensor
      * @see Orientation
      */
     Orientation getAngularOrientation(AxesReference reference, AxesOrder order, AngleUnit angleUnit);
-    }
+}

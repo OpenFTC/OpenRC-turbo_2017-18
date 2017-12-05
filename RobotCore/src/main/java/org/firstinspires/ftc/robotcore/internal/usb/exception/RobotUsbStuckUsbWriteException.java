@@ -40,33 +40,27 @@ import android.hardware.usb.UsbDeviceConnection;
  * reopening the device is worthy of attempting in order to try to get the system back to normal.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbStuckUsbWriteException extends RobotUsbException
-    {
+public class RobotUsbStuckUsbWriteException extends RobotUsbException {
     public UsbDeviceConnection device = null;
 
-    public RobotUsbStuckUsbWriteException(UsbDeviceConnection device, String format, Object... args)
-        {
+    public RobotUsbStuckUsbWriteException(UsbDeviceConnection device, String format, Object... args) {
         this(format, args);
         this.device = device;
-        }
-
-    public RobotUsbStuckUsbWriteException(String message)
-        {
-        super(message);
-        }
-
-    public RobotUsbStuckUsbWriteException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbStuckUsbWriteException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbStuckUsbWriteException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbStuckUsbWriteException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbStuckUsbWriteException(String message) {
+        super(message);
+    }
+
+    public RobotUsbStuckUsbWriteException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbStuckUsbWriteException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbStuckUsbWriteException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbStuckUsbWriteException(String.format(format, args), e);
+    }
+}

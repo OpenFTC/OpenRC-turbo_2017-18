@@ -80,7 +80,9 @@ public class NetworkConnectionHandler {
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected @Nullable WifiManager.WifiLock wifiLock;
+    protected
+    @Nullable
+    WifiManager.WifiLock wifiLock;
     protected boolean setupNeeded = true;
 
     protected Context context;
@@ -91,8 +93,12 @@ public class NetworkConnectionHandler {
     protected ScheduledFuture<?> sendLoopFuture;
     protected SendOnceRunnable sendOnceRunnable;
     protected SetupRunnable setupRunnable;
-    protected @Nullable String connectionOwner;
-    protected @Nullable String connectionOwnerPassword;
+    protected
+    @Nullable
+    String connectionOwner;
+    protected
+    @Nullable
+    String connectionOwnerPassword;
 
     protected NetworkConnection networkConnection = null;
     protected final NetworkConnectionCallbackChainer theNetworkConnectionCallback = new NetworkConnectionCallbackChainer();
@@ -174,7 +180,7 @@ public class NetworkConnectionHandler {
     public boolean connectedWithUnexpectedDevice() {
         if (connectionOwner != null) {
             if (!connectionOwner.equals(networkConnection.getConnectionOwnerMacAddress())) {
-                RobotLog.ee(TAG,"Network Connection - connected to " + networkConnection.getConnectionOwnerMacAddress() + ", expected " + connectionOwner);
+                RobotLog.ee(TAG, "Network Connection - connected to " + networkConnection.getConnectionOwnerMacAddress() + ", expected " + connectionOwner);
                 return true;
             }
         }
@@ -230,7 +236,7 @@ public class NetworkConnectionHandler {
 
     public synchronized CallbackResult handleConnectionInfoAvailable(SocketConnect socketConnect) {
         CallbackResult result = CallbackResult.HANDLED;
-        if (networkConnection.isConnected() && setupNeeded ) {
+        if (networkConnection.isConnected() && setupNeeded) {
             setupNeeded = false;
 
             if (networkConnection.getNetworkType() == NetworkType.SOFTAP) {
@@ -252,16 +258,16 @@ public class NetworkConnectionHandler {
         CallbackResult result = CallbackResult.NOT_HANDLED;
         NetworkType networkType = networkConnection.getNetworkType();
         switch (networkType) {
-        case WIFIDIRECT:
-            result = handleWifiDirectPeersAvailable();
-            break;
-        case SOFTAP:
-            result = handleSoftAPPeersAvailable();
-            break;
-        case LOOPBACK:
-        case UNKNOWN_NETWORK_TYPE:
-            RobotLog.e("Unhandled peers available event: " + networkType.toString());
-            break;
+            case WIFIDIRECT:
+                result = handleWifiDirectPeersAvailable();
+                break;
+            case SOFTAP:
+                result = handleSoftAPPeersAvailable();
+                break;
+            case LOOPBACK:
+            case UNKNOWN_NETWORK_TYPE:
+                RobotLog.e("Unhandled peers available event: " + networkType.toString());
+                break;
         }
         return result;
     }
@@ -298,9 +304,9 @@ public class NetworkConnectionHandler {
 
     public synchronized void updateConnection
             (
-            @NonNull RobocolDatagram packet,
-            @Nullable SendOnceRunnable.Parameters parameters,
-            SendOnceRunnable.ClientCallback clientCallback
+                    @NonNull RobocolDatagram packet,
+                    @Nullable SendOnceRunnable.Parameters parameters,
+                    SendOnceRunnable.ClientCallback clientCallback
             ) throws RobotCoreException {
 
         if (packet.getAddress().equals(remoteAddr)) {
@@ -309,7 +315,7 @@ public class NetworkConnectionHandler {
             return;
         }
 
-        if (parameters==null) parameters = new SendOnceRunnable.Parameters();
+        if (parameters == null) parameters = new SendOnceRunnable.Parameters();
 
         // Actually parse the packet in order to verify Robocol version compatibility
         PeerDiscovery peerDiscovery = PeerDiscovery.forReceive();
@@ -317,9 +323,9 @@ public class NetworkConnectionHandler {
 
         // update remoteAddr with latest address
         remoteAddr = packet.getAddress();
-        RobotLog.vv(PeerDiscovery.TAG,"new remote peer discovered: " + remoteAddr.getHostAddress());
+        RobotLog.vv(PeerDiscovery.TAG, "new remote peer discovered: " + remoteAddr.getHostAddress());
 
-        if (socket==null && setupRunnable != null) {
+        if (socket == null && setupRunnable != null) {
             socket = setupRunnable.getSocket();
         }
 
@@ -333,7 +339,7 @@ public class NetworkConnectionHandler {
             // start send loop, if needed
             if (sendLoopFuture == null || sendLoopFuture.isDone()) {
                 RobotLog.vv(TAG, "starting sending loop");
-                sendOnceRunnable = new SendOnceRunnable(context, clientCallback,  socket, lastRecvPacket, parameters);
+                sendOnceRunnable = new SendOnceRunnable(context, clientCallback, socket, lastRecvPacket, parameters);
                 sendLoopFuture = sendLoopService.scheduleAtFixedRate(sendOnceRunnable, 0, 40, TimeUnit.MILLISECONDS);
             }
 
@@ -365,7 +371,9 @@ public class NetworkConnectionHandler {
         return !command.isInjected();
     }
 
-    /** Inject the indicated command into the reception infrastructure as if it had been transmitted remotely */
+    /**
+     * Inject the indicated command into the reception infrastructure as if it had been transmitted remotely
+     */
     public synchronized void injectReceivedCommand(Command cmd) {
         if (setupRunnable != null) {
             cmd.setIsInjected(true);
@@ -377,7 +385,8 @@ public class NetworkConnectionHandler {
 
     public CallbackResult processAcknowledgments(Command command) throws RobotCoreException {
         if (command.isAcknowledged()) {
-            if (SendOnceRunnable.DEBUG) RobotLog.vv(SendOnceRunnable.TAG, "received ack: %s(%d)", command.getName(), command.getSequenceNumber());
+            if (SendOnceRunnable.DEBUG)
+                RobotLog.vv(SendOnceRunnable.TAG, "received ack: %s(%d)", command.getName(), command.getSequenceNumber());
             removeCommand(command);
             return CallbackResult.HANDLED;
         }
@@ -388,7 +397,7 @@ public class NetworkConnectionHandler {
     }
 
     public synchronized void sendDatagram(RobocolDatagram datagram) {
-        if (socket!=null && socket.getInetAddress()!=null ) socket.send(datagram);
+        if (socket != null && socket.getInetAddress() != null) socket.send(datagram);
     }
 
     public synchronized void clientDisconnect() {
@@ -461,7 +470,8 @@ public class NetworkConnectionHandler {
             }
         }
 
-        @Override public CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event) {
+        @Override
+        public CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event) {
             for (NetworkConnection.NetworkConnectionCallback callback : callbacks) {
                 CallbackResult result = callback.onNetworkConnectionEvent(event);
                 if (result.stopDispatch()) {
@@ -503,7 +513,8 @@ public class NetworkConnectionHandler {
             }
         }
 
-        @Override public CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException {
+        @Override
+        public CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.packetReceived(packet);
                 if (result.stopDispatch()) {
@@ -513,7 +524,8 @@ public class NetworkConnectionHandler {
             return CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException {
+        @Override
+        public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.peerDiscoveryEvent(packet);
                 if (result.stopDispatch()) {
@@ -523,7 +535,8 @@ public class NetworkConnectionHandler {
             return CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException {
+        @Override
+        public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.heartbeatEvent(packet, tReceived);
                 if (result.stopDispatch()) {
@@ -533,15 +546,16 @@ public class NetworkConnectionHandler {
             return CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult commandEvent(Command command) throws RobotCoreException {
+        @Override
+        public CallbackResult commandEvent(Command command) throws RobotCoreException {
             boolean handled = false;
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.commandEvent(command);
                 handled = handled || result.isHandled();
                 if (result.stopDispatch()) {
                     return CallbackResult.HANDLED;
-                    }
                 }
+            }
 
             if (!handled) {
                 // Make an informative trace message as to who was around that all refused to process the command
@@ -555,7 +569,8 @@ public class NetworkConnectionHandler {
             return handled ? CallbackResult.HANDLED : CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException {
+        @Override
+        public CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.telemetryEvent(packet);
                 if (result.stopDispatch()) {
@@ -565,7 +580,8 @@ public class NetworkConnectionHandler {
             return CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
+        @Override
+        public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.gamepadEvent(packet);
                 if (result.stopDispatch()) {
@@ -575,7 +591,8 @@ public class NetworkConnectionHandler {
             return CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException {
+        @Override
+        public CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
                 CallbackResult result = callback.emptyEvent(packet);
                 if (result.stopDispatch()) {
@@ -585,9 +602,10 @@ public class NetworkConnectionHandler {
             return CallbackResult.NOT_HANDLED;
         }
 
-        @Override public CallbackResult reportGlobalError(String error, boolean recoverable) {
+        @Override
+        public CallbackResult reportGlobalError(String error, boolean recoverable) {
             for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
-                CallbackResult result = callback.reportGlobalError(error,  recoverable);
+                CallbackResult result = callback.reportGlobalError(error, recoverable);
                 if (result.stopDispatch()) {
                     return CallbackResult.HANDLED;
                 }

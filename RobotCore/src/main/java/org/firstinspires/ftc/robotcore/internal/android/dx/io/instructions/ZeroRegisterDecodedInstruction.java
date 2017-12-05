@@ -26,16 +26,20 @@ public final class ZeroRegisterDecodedInstruction extends DecodedInstruction {
      * Constructs an instance.
      */
     public ZeroRegisterDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal) {
+                                          int index, IndexType indexType, int target, long literal) {
         super(format, opcode, index, indexType, target, literal);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getRegisterCount() {
         return 0;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public DecodedInstruction withIndex(int newIndex) {
         return new ZeroRegisterDecodedInstruction(
                 getFormat(), getOpcode(), newIndex, getIndexType(),

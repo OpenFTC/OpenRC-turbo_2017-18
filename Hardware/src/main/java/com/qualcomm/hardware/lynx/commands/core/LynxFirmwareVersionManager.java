@@ -47,21 +47,19 @@ import java.util.Map;
 
 /**
  * LynxFirmwareVersionManager
- *
+ * <p>
  * The idea is that we localize all application dependencies to firmware
  * versions within this class.  There should be no branching within other
  * areas of the SDK dependent upon firmware versions.  That should all be
  * here thereby allowing the developer to see at a glance what is supported
  * by which versions of the firmware.
  */
-public class LynxFirmwareVersionManager
-{
+public class LynxFirmwareVersionManager {
     /************************************************************************************************************
      * All classes that need different implementations for varying firmware revisions have a factory method here.
      ***********************************************************************************************************/
 
-    public static LynxI2cDeviceSynch createLynxI2cDeviceSynch(Context context, LynxModule module, int bus)
-    {
+    public static LynxI2cDeviceSynch createLynxI2cDeviceSynch(Context context, LynxModule module, int bus) {
         if (module.isCommandSupported(LynxI2cWriteReadMultipleBytesCommand.class)) {
             RobotLog.i("LynxFirmwareVersionManager: LynxI2cDeviceSynchV2");
             return new LynxI2cDeviceSynchV2(context, module, bus);

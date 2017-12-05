@@ -41,14 +41,13 @@ import com.qualcomm.robotcore.util.RobotLog;
  * system structures at a very early state in the application launch sequence, before
  * any of the rest of our code might have seen them in an uninitialized state.
  */
-public class RobotApplication extends Application
-    {
-    @Override public void onCreate()
-        {
+public class RobotApplication extends Application {
+    @Override
+    public void onCreate() {
         super.onCreate();
 
         AppUtil.onApplicationStart(this);
         RobotLog.onApplicationStart();
         ServiceController.onApplicationStart();
-        }
     }
+}

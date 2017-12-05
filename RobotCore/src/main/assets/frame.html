@@ -9,7 +9,8 @@
 
     <link rel="stylesheet/less" type="text/css" href="/css/frame.less">
     <script type="text/javascript" src="/js/less.min.js"></script>
-    <script type="text/javascript" src="/js/URI.min.js"></script> <!-- http://medialize.github.io/URI.js/docs.html -->
+    <script type="text/javascript" src="/js/URI.min.js"></script>
+    <!-- http://medialize.github.io/URI.js/docs.html -->
     <script>
     // https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
     function getParameterByName(name, url) {
@@ -57,6 +58,7 @@
     }
 
 
+
     </script>
 </head>
 
@@ -69,15 +71,18 @@
 <nav id="theNavBar" class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#theNavBarData">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#theNavBarData">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand navbar-link" href="javascript:void(0);" onclick="navTo(URI_NAV_HOME);">
+            <a class="navbar-brand navbar-link" href="javascript:void(0);"
+               onclick="navTo(URI_NAV_HOME);">
                 <span class="wordmarkandphrase">
-                    <span class="wordmark"><span class="wordmarkfirstword">FIRST</span><span class="trademark">®</span></span>
+                    <span class="wordmark"><span class="wordmarkfirstword">FIRST</span><span
+                            class="trademark">®</span></span>
                     <span class="brandphrase">
                         <span class="brandphraseword">robot</span>
                         <span class="brandphraseword">controller</span>
@@ -85,19 +90,30 @@
                     </span>
                 </span>
             </a>
-            <button id="pingFailure" class="btn navbar-btn btn-warning hidden">robot controller disconnected</button>
+            <button id="pingFailure" class="btn navbar-btn btn-warning hidden">robot controller
+                disconnected
+            </button>
         </div>
         <div id="theNavBarData" class="collapse navbar-collapse">
             <ul id="theNavBarItems" class="nav navbar-nav">
                 <!-- see RobotControllerWebHandlers -->
-                <li role="presentation" id="id_nav_blocks"   ><a href="javascript:void(0);" onclick="navToFromAnchor(this);">Blocks</a></li>
-                <li role="presentation" id="id_nav_onbotjava"><a href="javascript:void(0);" onclick="navToFromAnchor(this);">OnBotJava</a></li>
-                <li role="presentation" id="id_nav_manage"   ><a href="javascript:void(0);" onclick="navToFromAnchor(this);">Manage</a></li>
+                <li role="presentation" id="id_nav_blocks"><a href="javascript:void(0);"
+                                                              onclick="navToFromAnchor(this);">Blocks</a>
+                </li>
+                <li role="presentation" id="id_nav_onbotjava"><a href="javascript:void(0);"
+                                                                 onclick="navToFromAnchor(this);">OnBotJava</a>
+                </li>
+                <li role="presentation" id="id_nav_manage"><a href="javascript:void(0);"
+                                                              onclick="navToFromAnchor(this);">Manage</a>
+                </li>
             </ul>
             <ul id="theNavBarItemsRight" class="nav navbar-nav navbar-right">
-                <li role="presentation" id="id_nav_help"     ><a href="javascript:void(0);" onclick="navToFromAnchor(this);">Help</a></li>
+                <li role="presentation" id="id_nav_help"><a href="javascript:void(0);"
+                                                            onclick="navToFromAnchor(this);">Help</a>
+                </li>
                 <!-- 'exit' is below 'help' (ie: farther from 'manage' etc) so that clumsy fingers will less accidentally hit it -->
-                <li role="presentation" id="id_nav_exit" class="hidden"><a href="javascript:void(0);" onclick="navToFromAnchor(this);">Exit</a></li>
+                <li role="presentation" id="id_nav_exit" class="hidden"><a
+                        href="javascript:void(0);" onclick="navToFromAnchor(this);">Exit</a></li>
             </ul>
         </div>
     </div>
@@ -310,6 +326,7 @@
     less.pageLoadFinished.then(function() {
         console.log("finished loading");
     });
+
 </script>
 
 </body>

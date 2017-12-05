@@ -39,22 +39,20 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * Created by bob on 3/24/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FtDeviceInfo
-    {
-    public int      flags;
-    public short    bcdDevice;
-    public int      type;
-    public byte     iSerialNumber;
-    public int      id;
-    public int      location;
-    public String   serialNumber;
-    public String   description;
-    public int      handle;
-    public int      breakOnParam;
-    public short    modemStatus;
-    public short    lineStatus;
+public class FtDeviceInfo {
+    public int flags;
+    public short bcdDevice;
+    public int type;
+    public byte iSerialNumber;
+    public int id;
+    public int location;
+    public String serialNumber;
+    public String description;
+    public int handle;
+    public int breakOnParam;
+    public short modemStatus;
+    public short lineStatus;
 
-    public FtDeviceInfo()
-        {
-        }
+    public FtDeviceInfo() {
     }
+}

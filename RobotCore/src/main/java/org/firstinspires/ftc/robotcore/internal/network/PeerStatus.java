@@ -39,39 +39,36 @@ import com.qualcomm.robotcore.R;
 /**
  * {@link PeerStatus} enumerates the status of the relationship between two peer apps.
  */
-public enum PeerStatus
-    {
+public enum PeerStatus {
     UNKNOWN(-1),
     DISCONNECTED(0),
     CONNECTED(1);
 
     public final byte bVal;
 
-    PeerStatus(int bVal)
-        {
-        this.bVal = (byte)bVal;
-        }
+    PeerStatus(int bVal) {
+        this.bVal = (byte) bVal;
+    }
 
-    public static PeerStatus fromByte(byte b)
-        {
-        for (PeerStatus status : PeerStatus.values())
-            {
-            if (status.bVal == b)
-                {
+    public static PeerStatus fromByte(byte b) {
+        for (PeerStatus status : PeerStatus.values()) {
+            if (status.bVal == b) {
                 return status;
-                }
             }
-        return UNKNOWN;
         }
+        return UNKNOWN;
+    }
 
-    public String toString(Context context)
-        {
-        switch (this)
-            {
-            case UNKNOWN:       return context.getString(R.string.networkStatusUnknown);
-            case CONNECTED:     return context.getString(R.string.peerStatusConnected);
-            case DISCONNECTED:  return context.getString(R.string.peerStatusDisconnected);
-            default:            return context.getString(R.string.networkStatusInternalError);
-            }
+    public String toString(Context context) {
+        switch (this) {
+            case UNKNOWN:
+                return context.getString(R.string.networkStatusUnknown);
+            case CONNECTED:
+                return context.getString(R.string.peerStatusConnected);
+            case DISCONNECTED:
+                return context.getString(R.string.peerStatusDisconnected);
+            default:
+                return context.getString(R.string.networkStatusInternalError);
         }
     }
+}

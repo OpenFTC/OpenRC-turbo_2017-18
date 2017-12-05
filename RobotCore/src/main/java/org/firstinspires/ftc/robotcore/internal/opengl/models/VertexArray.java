@@ -16,26 +16,23 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class VertexArray
-    {
+public class VertexArray {
     public static final int bytesPerFloat = 4;
 
     private final FloatBuffer vertexBuffer;
 
-    public VertexArray(float[] vertexData)
-        {
+    public VertexArray(float[] vertexData) {
         vertexBuffer = ByteBuffer
                 .allocateDirect(vertexData.length * bytesPerFloat)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer()
                 .put(vertexData);
-        }
+    }
 
-    public void setVertexAttribPointer(int dataOffset, int attributeLocation, int coordinatesPerVertex, int vertexStride)
-        {
+    public void setVertexAttribPointer(int dataOffset, int attributeLocation, int coordinatesPerVertex, int vertexStride) {
         vertexBuffer.position(dataOffset);
         glVertexAttribPointer(attributeLocation, coordinatesPerVertex, GL_FLOAT, false, vertexStride, vertexBuffer);
         glEnableVertexAttribArray(attributeLocation);
         vertexBuffer.position(0);
-        }
     }
+}

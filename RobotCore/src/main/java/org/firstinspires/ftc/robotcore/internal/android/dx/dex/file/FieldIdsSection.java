@@ -45,13 +45,17 @@ public final class FieldIdsSection extends MemberIdsSection {
         fieldIds = new TreeMap<CstFieldRef, FieldIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return fieldIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {

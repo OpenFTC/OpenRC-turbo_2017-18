@@ -53,8 +53,7 @@ import java.util.List;
  * {@link InspectionState} contains the inspection state of either a RC or a DS
  */
 @SuppressWarnings("WeakerAccess")
-public class InspectionState
-    {
+public class InspectionState {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -78,11 +77,11 @@ public class InspectionState
     public String deviceName;
     public double batteryFraction;
     public String zteChannelChangeVersion;
-    public int    ztcChannelChangeVersionCode;
+    public int ztcChannelChangeVersionCode;
     public String robotControllerVersion;
-    public int    robotControllerVersionCode;
+    public int robotControllerVersionCode;
     public String driverStationVersion;
-    public int    driverStationVersionCode;
+    public int driverStationVersionCode;
     public boolean isAppInventorInstalled;
     public boolean channelChangerRequired;
 
@@ -90,20 +89,17 @@ public class InspectionState
     // Construction and initialization
     //----------------------------------------------------------------------------------------------
 
-    public InspectionState()
-        {
-        }
+    public InspectionState() {
+    }
 
-    public void initializeLocal()
-        {
+    public void initializeLocal() {
         DeviceNameManager nameManager = DeviceNameManager.getInstance();
         StartResult startResult = nameManager.start();
         initializeLocal(nameManager);
         nameManager.stop(startResult);
-        }
+    }
 
-    public void initializeLocal(DeviceNameManager nameManager)
-        {
+    public void initializeLocal(DeviceNameManager nameManager) {
         this.manufacturer = Build.MANUFACTURER;
         this.model = Build.MODEL;
         this.osVersion = Build.VERSION.RELEASE;
@@ -117,103 +113,89 @@ public class InspectionState
         this.deviceName = nameManager.getDeviceName();
         this.batteryFraction = getLocalBatteryFraction();
 
-        this.zteChannelChangeVersion        = getPackageVersion(zteChannelChangePackage);
-        this.ztcChannelChangeVersionCode    = getPackageVersionCode(zteChannelChangePackage);
-        this.robotControllerVersion         = getPackageVersion(robotControllerPackage);
-        this.robotControllerVersionCode     = getPackageVersionCode(robotControllerPackage);
-        this.driverStationVersion           = getPackageVersion(driverStationPackage);
-        this.driverStationVersionCode       = getPackageVersionCode(driverStationPackage);
-        this.isAppInventorInstalled         = isAppInventorLocallyInstalled();
+        this.zteChannelChangeVersion = getPackageVersion(zteChannelChangePackage);
+        this.ztcChannelChangeVersionCode = getPackageVersionCode(zteChannelChangePackage);
+        this.robotControllerVersion = getPackageVersion(robotControllerPackage);
+        this.robotControllerVersionCode = getPackageVersionCode(robotControllerPackage);
+        this.driverStationVersion = getPackageVersion(driverStationPackage);
+        this.driverStationVersionCode = getPackageVersionCode(driverStationPackage);
+        this.isAppInventorInstalled = isAppInventorLocallyInstalled();
 
         this.channelChangerRequired = Device.isZteSpeed()
                 && Device.useZteProvidedWifiChannelEditorOnZteSpeeds()
                 && AppUtil.getInstance().isRobotController();
-        }
+    }
 
-    public static boolean isPackageInstalled(String packageVersion) { return !packageVersion.equals(noPackageVersion); }
+    public static boolean isPackageInstalled(String packageVersion) {
+        return !packageVersion.equals(noPackageVersion);
+    }
 
-    public boolean isRobotControllerInstalled()
-        {
+    public boolean isRobotControllerInstalled() {
         return isPackageInstalled(robotControllerVersion);
-        }
-    public boolean isDriverStationInstalled()
-        {
-        return isPackageInstalled(driverStationVersion);
-        }
-    public boolean isChannelChangerInstalled()
-        {
-        return isPackageInstalled(zteChannelChangeVersion);
-        }
-    protected boolean isAppInventorInstalled()
-        {
-        return isAppInventorInstalled;
-        }
+    }
 
-    protected double getLocalBatteryFraction()
-        {
+    public boolean isDriverStationInstalled() {
+        return isPackageInstalled(driverStationVersion);
+    }
+
+    public boolean isChannelChangerInstalled() {
+        return isPackageInstalled(zteChannelChangeVersion);
+    }
+
+    protected boolean isAppInventorInstalled() {
+        return isAppInventorInstalled;
+    }
+
+    protected double getLocalBatteryFraction() {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = AppUtil.getInstance().getApplication().registerReceiver(null, intentFilter);
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         return level / (double) scale;
-        }
+    }
 
-    protected int getPackageVersionCode(String packageName)
-        {
+    protected int getPackageVersionCode(String packageName) {
         PackageManager pm = AppUtil.getDefContext().getPackageManager();
-        try
-            {
+        try {
             return pm.getPackageInfo(packageName, PackageManager.GET_META_DATA).versionCode;
-            }
-        catch (PackageManager.NameNotFoundException e)
-            {
+        } catch (PackageManager.NameNotFoundException e) {
             return 0;
-            }
         }
+    }
 
-    protected String getPackageVersion(String packageName)
-        {
+    protected String getPackageVersion(String packageName) {
         PackageManager pm = AppUtil.getDefContext().getPackageManager();
-        try
-            {
+        try {
             return pm.getPackageInfo(packageName, PackageManager.GET_META_DATA).versionName;
-            }
-        catch (PackageManager.NameNotFoundException e)
-            {
+        } catch (PackageManager.NameNotFoundException e) {
             return noPackageVersion;
-            }
         }
+    }
 
-    protected boolean isAppInventorLocallyInstalled()
-        {
+    protected boolean isAppInventorLocallyInstalled() {
         final PackageManager pm = AppUtil.getDefContext().getPackageManager();
         final List<ApplicationInfo> installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
 
-        if (installedApps != null)
-            {
-            for (ApplicationInfo app : installedApps)
-                {
-                if (app.packageName.startsWith("appinventor.ai_"))
-                    {
+        if (installedApps != null) {
+            for (ApplicationInfo app : installedApps) {
+                if (app.packageName.startsWith("appinventor.ai_")) {
                     return true;
-                    }
                 }
             }
+        }
 
         return false;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization
     //----------------------------------------------------------------------------------------------
 
-    public String serialize()
-        {
+    public String serialize() {
         return SimpleGson.getInstance().toJson(this);
-        }
-
-    public static InspectionState deserialize(String serialized)
-        {
-        return SimpleGson.getInstance().fromJson(serialized, InspectionState.class);
-        }
     }
+
+    public static InspectionState deserialize(String serialized) {
+        return SimpleGson.getInstance().fromJson(serialized, InspectionState.class);
+    }
+}

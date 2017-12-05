@@ -22,82 +22,82 @@ import fi.iki.elonen.NanoHTTPD;
 @SuppressWarnings("WeakerAccess")
 public class RobotControllerWebInfo {
 
-  public static final String TAG = RobotControllerWebInfo.class.getSimpleName();
+    public static final String TAG = RobotControllerWebInfo.class.getSimpleName();
 
-  // NOTE: these names are known to javascript
-  private final String deviceName;
-  private final String networkName;
-  private final String passphrase;
-  private final String serverUrl;
-  private final boolean serverIsAlive;
-  private final long timeServerStartedMillis;
-  private final String timeServerStarted;
-  private final boolean isREVControlHub;
-  private FtcUserAgentCategory ftcUserAgentCategory;
+    // NOTE: these names are known to javascript
+    private final String deviceName;
+    private final String networkName;
+    private final String passphrase;
+    private final String serverUrl;
+    private final boolean serverIsAlive;
+    private final long timeServerStartedMillis;
+    private final String timeServerStarted;
+    private final boolean isREVControlHub;
+    private FtcUserAgentCategory ftcUserAgentCategory;
 
-  public RobotControllerWebInfo(
-      String networkName, String passphrase, String serverUrl,
-      boolean serverIsAlive, long timeServerStartedMillis) {
-    this.deviceName = DeviceNameManager.getInstance().getDeviceName();
-    this.networkName = networkName;
-    this.passphrase = passphrase;
-    this.serverUrl = serverUrl;
-    this.serverIsAlive = serverIsAlive;
-    this.timeServerStartedMillis = timeServerStartedMillis;
-    this.isREVControlHub = LynxConstants.isRevControlHub();
-    this.ftcUserAgentCategory = FtcUserAgentCategory.OTHER;
+    public RobotControllerWebInfo(
+            String networkName, String passphrase, String serverUrl,
+            boolean serverIsAlive, long timeServerStartedMillis) {
+        this.deviceName = DeviceNameManager.getInstance().getDeviceName();
+        this.networkName = networkName;
+        this.passphrase = passphrase;
+        this.serverUrl = serverUrl;
+        this.serverIsAlive = serverIsAlive;
+        this.timeServerStartedMillis = timeServerStartedMillis;
+        this.isREVControlHub = LynxConstants.isRevControlHub();
+        this.ftcUserAgentCategory = FtcUserAgentCategory.OTHER;
 
-    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, h:mm aa", Locale.getDefault());
-    this.timeServerStarted = formatter.format(new Date(timeServerStartedMillis));
-  }
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, h:mm aa", Locale.getDefault());
+        this.timeServerStarted = formatter.format(new Date(timeServerStartedMillis));
+    }
 
-  public String getDeviceName() {
-    return deviceName;
-  }
+    public String getDeviceName() {
+        return deviceName;
+    }
 
-  public String getNetworkName() {
-    return networkName;
-  }
+    public String getNetworkName() {
+        return networkName;
+    }
 
-  public String getPassphrase() {
-    return passphrase;
-  }
+    public String getPassphrase() {
+        return passphrase;
+    }
 
-  public String getServerUrl() {
-    return serverUrl;
-  }
+    public String getServerUrl() {
+        return serverUrl;
+    }
 
-  public boolean isServerAlive() {
-    return serverIsAlive;
-  }
+    public boolean isServerAlive() {
+        return serverIsAlive;
+    }
 
-  public long getTimeServerStartedMillis() {
-    return timeServerStartedMillis;
-  }
+    public long getTimeServerStartedMillis() {
+        return timeServerStartedMillis;
+    }
 
-  public String getTimeServerStarted() {
-    return timeServerStarted;
-  }
+    public String getTimeServerStarted() {
+        return timeServerStarted;
+    }
 
-  public FtcUserAgentCategory getFtcUserAgentCategory() {
-    return ftcUserAgentCategory;
-  }
+    public FtcUserAgentCategory getFtcUserAgentCategory() {
+        return ftcUserAgentCategory;
+    }
 
-  public boolean isREVControlHub() {
-    return isREVControlHub;
-  }
+    public boolean isREVControlHub() {
+        return isREVControlHub;
+    }
 
-  public void setFtcUserAgentCategory(NanoHTTPD.IHTTPSession session) {
-    String userAgent = session.getHeaders().get("user-agent");
-    this.ftcUserAgentCategory =FtcUserAgentCategory.fromUserAgent(userAgent);
-  }
+    public void setFtcUserAgentCategory(NanoHTTPD.IHTTPSession session) {
+        String userAgent = session.getHeaders().get("user-agent");
+        this.ftcUserAgentCategory = FtcUserAgentCategory.fromUserAgent(userAgent);
+    }
 
-  public String toJson() {
-    return SimpleGson.getInstance().toJson(this);
-  }
+    public String toJson() {
+        return SimpleGson.getInstance().toJson(this);
+    }
 
-  public static RobotControllerWebInfo fromJson(String json) {
-    return SimpleGson.getInstance().fromJson(json, RobotControllerWebInfo.class);
-  }
+    public static RobotControllerWebInfo fromJson(String json) {
+        return SimpleGson.getInstance().fromJson(json, RobotControllerWebInfo.class);
+    }
 
 }

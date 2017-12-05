@@ -79,69 +79,75 @@ import com.qualcomm.robotcore.util.TypeConversion;
 
 /**
  * {@link ModernRoboticsI2cColorSensor} provides support for the Modern Robotics Color Sensor.
+ *
  * @see <a href="http://www.modernroboticsinc.com/color-sensor">MR Color Sensor</a>
  */
 public class ModernRoboticsI2cColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch>
-        implements ColorSensor, NormalizedColorSensor, SwitchableLight, I2cAddrConfig
-    {
+        implements ColorSensor, NormalizedColorSensor, SwitchableLight, I2cAddrConfig {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x3C);
 
-    public enum Register
-        {
-            FIRMWARE_REV(0x00),
-            MANUFACTURE_CODE(0x01),
-            SENSOR_ID(0x02),
-            COMMAND(0x03),
-            COLOR_NUMBER(0x04),
+    public enum Register {
+        FIRMWARE_REV(0x00),
+        MANUFACTURE_CODE(0x01),
+        SENSOR_ID(0x02),
+        COMMAND(0x03),
+        COLOR_NUMBER(0x04),
 
-            RED(0x05),
-            GREEN(0x06),
-            BLUE(0x07),
-            ALPHA(0x08),
+        RED(0x05),
+        GREEN(0x06),
+        BLUE(0x07),
+        ALPHA(0x08),
 
-            COLOR_INDEX(0x09),
-            RED_INDEX(0x0a),
-            GREEN_INDEX(0x0b),
-            BLUE_INDEX(0x0c),
+        COLOR_INDEX(0x09),
+        RED_INDEX(0x0a),
+        GREEN_INDEX(0x0b),
+        BLUE_INDEX(0x0c),
 
-            RED_READING(0x0e),
-            GREEN_READING(0x10),
-            BLUE_READING(0x12),
-            ALPHA_READING(0x14),
+        RED_READING(0x0e),
+        GREEN_READING(0x10),
+        BLUE_READING(0x12),
+        ALPHA_READING(0x14),
 
-            NORMALIZED_RED_READING(0x16),
-            NORMALIZED_GREEN_READING(0x18),
-            NORMALIZED_BLUE_READING(0x1a),
-            NORMALIZED_ALPHA_READING(0x1c),
+        NORMALIZED_RED_READING(0x16),
+        NORMALIZED_GREEN_READING(0x18),
+        NORMALIZED_BLUE_READING(0x1a),
+        NORMALIZED_ALPHA_READING(0x1c),
 
-            READ_WINDOW_FIRST(RED.bVal),
-            READ_WINDOW_LAST(NORMALIZED_ALPHA_READING.bVal+1);
+        READ_WINDOW_FIRST(RED.bVal),
+        READ_WINDOW_LAST(NORMALIZED_ALPHA_READING.bVal + 1);
         public byte bVal;
-        Register(int value) { this.bVal = (byte)value; }
-        }
 
-    public enum Command
-        {
-            ACTIVE_LED(0x00),
-            PASSIVE_LED(0x01),
-            HZ50(0x35),
-            HZ60(0x36),
-            CALIBRATE_BLACK(0x042),
-            CALIBRATE_WHITE(0x43);
-        public byte bVal;
-        Command(int value) { this.bVal = (byte)value; }
+        Register(int value) {
+            this.bVal = (byte) value;
         }
+    }
+
+    public enum Command {
+        ACTIVE_LED(0x00),
+        PASSIVE_LED(0x01),
+        HZ50(0x35),
+        HZ60(0x36),
+        CALIBRATE_BLACK(0x042),
+        CALIBRATE_WHITE(0x43);
+        public byte bVal;
+
+        Command(int value) {
+            this.bVal = (byte) value;
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    /** In {@link NormalizedColorSensor} we report the 16-bit sensor-normalized values, not the
-     * 8 bit colors reported through {@link ColorSensor}. */
+    /**
+     * In {@link NormalizedColorSensor} we report the 16-bit sensor-normalized values, not the
+     * 8 bit colors reported through {@link ColorSensor}.
+     */
     protected final float colorNormalizationFactor = 1.0f / 65536.0f;
 
     protected boolean isLightOn = false;
@@ -150,67 +156,61 @@ public class ModernRoboticsI2cColorSensor extends I2cDeviceSynchDevice<I2cDevice
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cColorSensor(I2cDeviceSynch deviceClient)
-        {
+    public ModernRoboticsI2cColorSensor(I2cDeviceSynch deviceClient) {
         super(deviceClient, true);
 
         I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
-              Register.READ_WINDOW_FIRST.bVal,
-              Register.READ_WINDOW_LAST.bVal - Register.READ_WINDOW_FIRST.bVal + 1,
-              I2cDeviceSynch.ReadMode.REPEAT);
+                Register.READ_WINDOW_FIRST.bVal,
+                Register.READ_WINDOW_LAST.bVal - Register.READ_WINDOW_FIRST.bVal + 1,
+                I2cDeviceSynch.ReadMode.REPEAT);
         this.deviceClient.setReadWindow(readWindow);
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
 
         this.registerArmingStateCallback(false);
         this.deviceClient.engage();
-        }
+    }
 
     @Override
-    protected synchronized boolean doInitialize()
-        {
+    protected synchronized boolean doInitialize() {
         enableLed(true);
         return true;
-        }
+    }
 
     @Override
-    public Manufacturer getManufacturer()
-        {
+    public Manufacturer getManufacturer() {
         return Manufacturer.ModernRobotics;
-        }
+    }
 
-    @Override public String getDeviceName()
-        {
+    @Override
+    public String getDeviceName() {
         RobotUsbDevice.FirmwareVersion firmwareVersion = new RobotUsbDevice.FirmwareVersion(this.read8(Register.FIRMWARE_REV));
         return String.format("Modern Robotics I2C Color Sensor %s", firmwareVersion);
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // Utility
     //------------------------------------------------------------------------------------------------
 
-    public byte read8(Register reg)
-        {
+    public byte read8(Register reg) {
         return this.deviceClient.read8(reg.bVal);
-        }
-    public void write8(Register reg, byte value)
-        {
+    }
+
+    public void write8(Register reg, byte value) {
         this.deviceClient.write8(reg.bVal, value);
-        }
+    }
 
-    public int readUnsignedByte(Register register)
-        {
+    public int readUnsignedByte(Register register) {
         return TypeConversion.unsignedByteToInt(read8(register));
-        }
-    public int readUnsignedShort(Register register)
-        {
-        return TypeConversion.unsignedShortToInt(TypeConversion.byteArrayToShort(this.deviceClient.read(register.bVal, 2)));
-        }
+    }
 
-    public void writeCommand(Command command)
-        {
+    public int readUnsignedShort(Register register) {
+        return TypeConversion.unsignedShortToInt(TypeConversion.byteArrayToShort(this.deviceClient.read(register.bVal, 2)));
+    }
+
+    public void writeCommand(Command command) {
         this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);    // avoid overwriting previous command
         this.write8(Register.COMMAND, command.bVal);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
@@ -220,78 +220,71 @@ public class ModernRoboticsI2cColorSensor extends I2cDeviceSynchDevice<I2cDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String toString()
-        {
+    public String toString() {
         return String.format("argb: 0x%08x", argb());
-        }
+    }
 
     @Override
-    public int red()
-        {
+    public int red() {
         return readUnsignedByte(Register.RED);
-        }
+    }
 
     @Override
-    public int green()
-        {
+    public int green() {
         return readUnsignedByte(Register.GREEN);
-        }
+    }
 
     @Override
-    public int blue()
-        {
+    public int blue() {
         return readUnsignedByte(Register.BLUE);
-        }
+    }
 
     @Override
-    public int alpha()
-        {
+    public int alpha() {
         return readUnsignedByte(Register.ALPHA);
-        }
+    }
 
     @Override
-    public @ColorInt int argb()
-        {
+    public
+    @ColorInt
+    int argb() {
         return Color.argb(alpha(), red(), green(), blue());
-        }
+    }
 
-    @Override public NormalizedRGBA getNormalizedColors()
-        {
+    @Override
+    public NormalizedRGBA getNormalizedColors() {
         NormalizedRGBA result = new NormalizedRGBA();
-        result.red   = readUnsignedShort(Register.NORMALIZED_RED_READING)   * colorNormalizationFactor;
+        result.red = readUnsignedShort(Register.NORMALIZED_RED_READING) * colorNormalizationFactor;
         result.green = readUnsignedShort(Register.NORMALIZED_GREEN_READING) * colorNormalizationFactor;
-        result.blue  = readUnsignedShort(Register.NORMALIZED_BLUE_READING)  * colorNormalizationFactor;
+        result.blue = readUnsignedShort(Register.NORMALIZED_BLUE_READING) * colorNormalizationFactor;
         result.alpha = readUnsignedShort(Register.NORMALIZED_ALPHA_READING) * colorNormalizationFactor;
         return result;
-        }
+    }
 
     @Override
-    public synchronized void enableLed(boolean enable)
-        {
+    public synchronized void enableLed(boolean enable) {
         writeCommand(enable ? Command.ACTIVE_LED : Command.PASSIVE_LED);
         this.isLightOn = enable;
-        }
-
-    @Override public void enableLight(boolean enable)
-        {
-        enableLed(enable);
-        }
-
-    @Override public synchronized boolean isLightOn()
-        {
-        return isLightOn;
-        }
+    }
 
     @Override
-    public void setI2cAddress(I2cAddr newAddress)
-        {
+    public void enableLight(boolean enable) {
+        enableLed(enable);
+    }
+
+    @Override
+    public synchronized boolean isLightOn() {
+        return isLightOn;
+    }
+
+    @Override
+    public void setI2cAddress(I2cAddr newAddress) {
         // In light of the existence of I2C multiplexers, we don't *require* a valid Modern Robotics I2cAddr
         this.deviceClient.setI2cAddress(newAddress);
-        }
+    }
 
     @Override
-    public I2cAddr getI2cAddress()
-        {
+    public I2cAddr getI2cAddress() {
         return this.deviceClient.getI2cAddress();
-        }
     }
+}

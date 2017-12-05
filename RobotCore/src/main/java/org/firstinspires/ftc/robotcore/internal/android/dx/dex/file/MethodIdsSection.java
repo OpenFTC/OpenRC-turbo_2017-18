@@ -45,13 +45,17 @@ public final class MethodIdsSection extends MemberIdsSection {
         methodIds = new TreeMap<CstBaseMethodRef, MethodIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return methodIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {

@@ -54,8 +54,7 @@ import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
  * a formal Android system concept).
  */
 @SuppressWarnings("WeakerAccess")
-public final class WebHandlerManager
-{
+public final class WebHandlerManager {
     public static final String TAG = WebHandlerManager.class.getSimpleName();
 
     private final Map<String, WebHandler> handlerMap = new ConcurrentHashMap<>(37);
@@ -77,14 +76,12 @@ public final class WebHandlerManager
                     "Internal Error");
 
     // convenience for error cases
-    public static NanoHTTPD.Response internalErrorResponse(String tag, String format, Object... args)
-    {
+    public static NanoHTTPD.Response internalErrorResponse(String tag, String format, Object... args) {
         String errorString = String.format(format, args);
         return internalErrorResponse(tag, errorString);
     }
 
-    public static NanoHTTPD.Response internalErrorResponse(String tag, String errorString)
-    {
+    public static NanoHTTPD.Response internalErrorResponse(String tag, String errorString) {
         RobotLog.ee(tag, errorString);
         return newFixedLengthResponse(
                 NanoHTTPD.Response.Status.INTERNAL_ERROR,
@@ -95,13 +92,15 @@ public final class WebHandlerManager
     /**
      * ServeAsset.
      */
-    private static class ServeAsset implements WebHandler
-    {
+    private static class ServeAsset implements WebHandler {
         public static final String TAG = ServeAsset.class.getSimpleName();
 
-        /** we serve static assets all with a fixed date stamp for better caching (and because its easy, so why not) */
+        /**
+         * we serve static assets all with a fixed date stamp for better caching (and because its easy, so why not)
+         */
         public static SimpleDateFormat gmtFrmt = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         public static String staticDateStamp;
+
         static {
             gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
             staticDateStamp = gmtFrmt.format(new Date());
@@ -111,8 +110,7 @@ public final class WebHandlerManager
         private final AssetManager assetManager = AppUtil.getInstance().getRootActivity().getAssets();
         private final MimeTypesUtil.TypedPaths typedPaths = new MimeTypesUtil.TypedPaths();
 
-        public ServeAsset()
-        {
+        public ServeAsset() {
             // ".map" is a very generic extension, so for the .maps we have, we look at the whole path instead
             String mimeTypeJson = MimeTypesUtil.getMimeType("json");
             typedPaths.setMimeType("css/bootstrap.min.css.map", mimeTypeJson);
@@ -127,8 +125,7 @@ public final class WebHandlerManager
          * @return an "OK" Response if the asset was found and a "NOT FOUND" response otherwise.
          */
         @Override
-        public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException
-        {
+        public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException {
             final String uri = session.getUri();
             final String path = uri.startsWith("/") ? uri.substring(1) : uri;
             String mimeType = typedPaths.determineMimeType(path);
@@ -152,34 +149,30 @@ public final class WebHandlerManager
     /**
      * Construct a {@link WebHandlerManager}.
      */
-    public WebHandlerManager(WebServer webServer)
-    {
+    public WebHandlerManager(WebServer webServer) {
         this.webServer = webServer;
         RobotControllerWebHandlers.initialize(this);
     }
 
-    public WebServer getWebServer()
-    {
+    public WebServer getWebServer() {
         return webServer;
     }
 
     /**
      * Register a key, value pair. Associate a String command with a {@link WebHandler}.
      *
-     * @param command String a uri that is part of an IHTTPSession
+     * @param command    String a uri that is part of an IHTTPSession
      * @param webHandler RequestHandler
      */
-    public void register(String command, WebHandler webHandler)
-    {
+    public void register(String command, WebHandler webHandler) {
         handlerMap.put(command, webHandler);
     }
-    public WebHandler getRegistered(String command)
-    {
+
+    public WebHandler getRegistered(String command) {
         return handlerMap.get(command);
     }
 
-    public void registerObserver(String key, WebObserver webObserver)
-    {
+    public void registerObserver(String key, WebObserver webObserver) {
         // We don't ourselves here need the key, but it allows replacement for clients
         observersMap.put(key, webObserver);
     }
@@ -190,8 +183,7 @@ public final class WebHandlerManager
      * @param session IHTTPSession to generate a Response from
      * @return Response for the request
      */
-    NanoHTTPD.Response serve(NanoHTTPD.IHTTPSession session)
-    {
+    NanoHTTPD.Response serve(NanoHTTPD.IHTTPSession session) {
         SessionCookie.ensureInSession(session);
 
         for (WebObserver observer : observersMap.values()) {

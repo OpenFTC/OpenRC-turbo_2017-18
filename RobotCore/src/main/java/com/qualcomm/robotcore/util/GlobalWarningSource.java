@@ -38,8 +38,7 @@ package com.qualcomm.robotcore.util;
  *
  * @see RobotLog#registerGlobalWarningSource(GlobalWarningSource)
  */
-public interface GlobalWarningSource
-    {
+public interface GlobalWarningSource {
     /**
      * Returns the current warning associated with this warning source. If the source currently
      * has no warning to contribute, it should return an empty string.
@@ -79,4 +78,4 @@ public interface GlobalWarningSource
      * @see #setGlobalWarning(String)
      */
     void clearGlobalWarning();
-    }
+}

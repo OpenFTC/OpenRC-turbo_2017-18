@@ -23,26 +23,34 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
  * Common exception types.
  */
 public final class Exceptions {
-    /** {@code non-null;} the type {@code java.lang.ArithmeticException} */
+    /**
+     * {@code non-null;} the type {@code java.lang.ArithmeticException}
+     */
     public static final Type TYPE_ArithmeticException =
-        Type.intern("Ljava/lang/ArithmeticException;");
+            Type.intern("Ljava/lang/ArithmeticException;");
 
     /**
      * {@code non-null;} the type
      * {@code java.lang.ArrayIndexOutOfBoundsException}
      */
     public static final Type TYPE_ArrayIndexOutOfBoundsException =
-        Type.intern("Ljava/lang/ArrayIndexOutOfBoundsException;");
+            Type.intern("Ljava/lang/ArrayIndexOutOfBoundsException;");
 
-    /** {@code non-null;} the type {@code java.lang.ArrayStoreException} */
+    /**
+     * {@code non-null;} the type {@code java.lang.ArrayStoreException}
+     */
     public static final Type TYPE_ArrayStoreException =
-        Type.intern("Ljava/lang/ArrayStoreException;");
+            Type.intern("Ljava/lang/ArrayStoreException;");
 
-    /** {@code non-null;} the type {@code java.lang.ClassCastException} */
+    /**
+     * {@code non-null;} the type {@code java.lang.ClassCastException}
+     */
     public static final Type TYPE_ClassCastException =
-        Type.intern("Ljava/lang/ClassCastException;");
+            Type.intern("Ljava/lang/ClassCastException;");
 
-    /** {@code non-null;} the type {@code java.lang.Error} */
+    /**
+     * {@code non-null;} the type {@code java.lang.Error}
+     */
     public static final Type TYPE_Error = Type.intern("Ljava/lang/Error;");
 
     /**
@@ -50,17 +58,23 @@ public final class Exceptions {
      * {@code java.lang.IllegalMonitorStateException}
      */
     public static final Type TYPE_IllegalMonitorStateException =
-        Type.intern("Ljava/lang/IllegalMonitorStateException;");
+            Type.intern("Ljava/lang/IllegalMonitorStateException;");
 
-    /** {@code non-null;} the type {@code java.lang.NegativeArraySizeException} */
+    /**
+     * {@code non-null;} the type {@code java.lang.NegativeArraySizeException}
+     */
     public static final Type TYPE_NegativeArraySizeException =
-        Type.intern("Ljava/lang/NegativeArraySizeException;");
+            Type.intern("Ljava/lang/NegativeArraySizeException;");
 
-    /** {@code non-null;} the type {@code java.lang.NullPointerException} */
+    /**
+     * {@code non-null;} the type {@code java.lang.NullPointerException}
+     */
     public static final Type TYPE_NullPointerException =
-        Type.intern("Ljava/lang/NullPointerException;");
+            Type.intern("Ljava/lang/NullPointerException;");
 
-    /** {@code non-null;} the list {@code [java.lang.Error]} */
+    /**
+     * {@code non-null;} the list {@code [java.lang.Error]}
+     */
     public static final StdTypeList LIST_Error = StdTypeList.make(TYPE_Error);
 
     /**
@@ -68,28 +82,28 @@ public final class Exceptions {
      * java.lang.ArithmeticException]}
      */
     public static final StdTypeList LIST_Error_ArithmeticException =
-        StdTypeList.make(TYPE_Error, TYPE_ArithmeticException);
+            StdTypeList.make(TYPE_Error, TYPE_ArithmeticException);
 
     /**
      * {@code non-null;} the list {@code[java.lang.Error,
      * java.lang.ClassCastException]}
      */
     public static final StdTypeList LIST_Error_ClassCastException =
-        StdTypeList.make(TYPE_Error, TYPE_ClassCastException);
+            StdTypeList.make(TYPE_Error, TYPE_ClassCastException);
 
     /**
      * {@code non-null;} the list {@code [java.lang.Error,
      * java.lang.NegativeArraySizeException]}
      */
     public static final StdTypeList LIST_Error_NegativeArraySizeException =
-        StdTypeList.make(TYPE_Error, TYPE_NegativeArraySizeException);
+            StdTypeList.make(TYPE_Error, TYPE_NegativeArraySizeException);
 
     /**
      * {@code non-null;} the list {@code [java.lang.Error,
      * java.lang.NullPointerException]}
      */
     public static final StdTypeList LIST_Error_NullPointerException =
-        StdTypeList.make(TYPE_Error, TYPE_NullPointerException);
+            StdTypeList.make(TYPE_Error, TYPE_NullPointerException);
 
     /**
      * {@code non-null;} the list {@code [java.lang.Error,
@@ -97,9 +111,9 @@ public final class Exceptions {
      * java.lang.ArrayIndexOutOfBoundsException]}
      */
     public static final StdTypeList LIST_Error_Null_ArrayIndexOutOfBounds =
-        StdTypeList.make(TYPE_Error,
-                      TYPE_NullPointerException,
-                      TYPE_ArrayIndexOutOfBoundsException);
+            StdTypeList.make(TYPE_Error,
+                    TYPE_NullPointerException,
+                    TYPE_ArrayIndexOutOfBoundsException);
 
     /**
      * {@code non-null;} the list {@code [java.lang.Error,
@@ -108,10 +122,10 @@ public final class Exceptions {
      * java.lang.ArrayStoreException]}
      */
     public static final StdTypeList LIST_Error_Null_ArrayIndex_ArrayStore =
-        StdTypeList.make(TYPE_Error,
-                      TYPE_NullPointerException,
-                      TYPE_ArrayIndexOutOfBoundsException,
-                      TYPE_ArrayStoreException);
+            StdTypeList.make(TYPE_Error,
+                    TYPE_NullPointerException,
+                    TYPE_ArrayIndexOutOfBoundsException,
+                    TYPE_ArrayStoreException);
 
     /**
      * {@code non-null;} the list {@code [java.lang.Error,
@@ -119,10 +133,10 @@ public final class Exceptions {
      * java.lang.IllegalMonitorStateException]}
      */
     public static final StdTypeList
-        LIST_Error_Null_IllegalMonitorStateException =
-        StdTypeList.make(TYPE_Error,
-                      TYPE_NullPointerException,
-                      TYPE_IllegalMonitorStateException);
+            LIST_Error_Null_IllegalMonitorStateException =
+            StdTypeList.make(TYPE_Error,
+                    TYPE_NullPointerException,
+                    TYPE_IllegalMonitorStateException);
 
     /**
      * This class is uninstantiable.

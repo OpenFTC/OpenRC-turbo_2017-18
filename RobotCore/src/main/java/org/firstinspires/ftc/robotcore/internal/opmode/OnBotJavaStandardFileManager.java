@@ -49,8 +49,7 @@ import javax.tools.StandardLocation;
  * by adding the configuration information specific to the On-Bot Java environment
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaStandardFileManager extends OnBotJavaDelegatingStandardFileManager
-    {
+public class OnBotJavaStandardFileManager extends OnBotJavaDelegatingStandardFileManager {
     //----------------------------------------------------------------------------------------------
     // Static State
     //----------------------------------------------------------------------------------------------
@@ -61,8 +60,7 @@ public class OnBotJavaStandardFileManager extends OnBotJavaDelegatingStandardFil
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OnBotJavaStandardFileManager(StandardJavaFileManager delegate)
-        {
+    public OnBotJavaStandardFileManager(StandardJavaFileManager delegate) {
         super(delegate);
 
         try {
@@ -71,31 +69,26 @@ public class OnBotJavaStandardFileManager extends OnBotJavaDelegatingStandardFil
             List<File> classPath = new ArrayList<File>();
             classPath.addAll(AppUtil.getInstance().filesIn(OnBotJavaManager.libDir, ".jar"));
 
-            delegate.setLocation(StandardLocation.CLASS_OUTPUT,        Collections.singletonList(OnBotJavaManager.classesOutputDir));
-            delegate.setLocation(StandardLocation.SOURCE_OUTPUT,       Collections.singletonList(OnBotJavaManager.sourceOutputDir));
-            delegate.setLocation(StandardLocation.CLASS_PATH,          classPath);
-            delegate.setLocation(StandardLocation.SOURCE_PATH,         Collections.singletonList(OnBotJavaManager.srcDir)); // will likely get overridden
+            delegate.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(OnBotJavaManager.classesOutputDir));
+            delegate.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singletonList(OnBotJavaManager.sourceOutputDir));
+            delegate.setLocation(StandardLocation.CLASS_PATH, classPath);
+            delegate.setLocation(StandardLocation.SOURCE_PATH, Collections.singletonList(OnBotJavaManager.srcDir)); // will likely get overridden
             delegate.setLocation(StandardLocation.ANNOTATION_PROCESSOR_PATH, Collections.<File>emptyList());                   // we have no external annotation processors
             delegate.setLocation(StandardLocation.PLATFORM_CLASS_PATH, Collections.singletonList(new File(OnBotJavaManager.libDir, OnBotJavaManager.platformClassPathName)));
-            }
-        catch (IOException e)
-            {
+        } catch (IOException e) {
             throw AppUtil.getInstance().unreachable(OnBotJavaManager.TAG, e);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public void setSourcePath(Iterable<? extends File> srcPath)
-        {
+    public void setSourcePath(Iterable<? extends File> srcPath) {
         try {
             delegate.setLocation(StandardLocation.SOURCE_PATH, srcPath);
-            }
-        catch (IOException e)
-            {
+        } catch (IOException e) {
             throw AppUtil.getInstance().unreachable(OnBotJavaManager.TAG, e);
-            }
         }
     }
+}

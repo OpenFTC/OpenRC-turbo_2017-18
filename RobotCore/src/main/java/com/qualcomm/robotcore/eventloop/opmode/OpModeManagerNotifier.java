@@ -41,10 +41,10 @@ import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
 /**
  * {@link OpModeManagerNotifier.Notifications} is an interface by which interested
  * parties can receive notification of the coming and going of opmodes.
+ *
  * @see OpModeManagerImpl#getOpModeManagerOfActivity(Activity)
  */
-public interface OpModeManagerNotifier
-    {
+public interface OpModeManagerNotifier {
     /**
      * {@link Notifications} can be used to receive notifications of the comings
      * and goings of opmodes in the system. These notifications are sent to any
@@ -52,21 +52,27 @@ public interface OpModeManagerNotifier
      * {@link Notifications} interface. Notifications may also be received by objects
      * that register themselves with the OpMode manager.
      */
-    interface Notifications
-        {
-        /** The indicated opmode is just about to be initialized. */
+    interface Notifications {
+        /**
+         * The indicated opmode is just about to be initialized.
+         */
         void onOpModePreInit(OpMode opMode);
 
-        /** The indicated opmode is just about to be started. */
+        /**
+         * The indicated opmode is just about to be started.
+         */
         void onOpModePreStart(OpMode opMode);
 
-        /** The indicated opmode has just been stopped. */
+        /**
+         * The indicated opmode has just been stopped.
+         */
         void onOpModePostStop(OpMode opMode);
-        }
+    }
 
     /**
      * Registers an object as explicitly interested in receiving notifications as
      * to the coming and going of opmodes.
+     *
      * @param listener the object which is to receive notifications
      * @return the currently active opmode at the instant of registration
      * @see #unregisterListener(Notifications)
@@ -76,7 +82,8 @@ public interface OpModeManagerNotifier
     /**
      * Unregisters a previously registered listener. If the provided listener is in
      * fact not currently registered, the call has no effect.
+     *
      * @param listener the listener to be unregistered.
      */
     void unregisterListener(OpModeManagerNotifier.Notifications listener);
-    }
+}

@@ -44,58 +44,49 @@ import java.util.List;
  * channel names
  */
 @SuppressWarnings("WeakerAccess")
-public class WifiDirectChannelAndDescription implements Comparable<WifiDirectChannelAndDescription>
-    {
+public class WifiDirectChannelAndDescription implements Comparable<WifiDirectChannelAndDescription> {
     protected String description;
     protected int channel;
 
-    public static List<WifiDirectChannelAndDescription> load()
-        {
+    public static List<WifiDirectChannelAndDescription> load() {
         String[] strings = AppUtil.getDefContext().getResources().getStringArray(R.array.wifi_direct_channels);
         List<WifiDirectChannelAndDescription> itemsList = new ArrayList<WifiDirectChannelAndDescription>();
-        for (String string : strings)
-            {
+        for (String string : strings) {
             itemsList.add(new WifiDirectChannelAndDescription(string));
-            }
+        }
         return itemsList;
-        }
+    }
 
-    public static String getDescription(int channel)
-        {
-        for (WifiDirectChannelAndDescription channelAndDescription : load())
-            {
-            if (channelAndDescription.getChannel() == channel)
-                {
+    public static String getDescription(int channel) {
+        for (WifiDirectChannelAndDescription channelAndDescription : load()) {
+            if (channelAndDescription.getChannel() == channel) {
                 return channelAndDescription.getDescription();
-                }
             }
-        return AppUtil.getDefContext().getString(R.string.unknown_wifi_direct_channel);
         }
+        return AppUtil.getDefContext().getString(R.string.unknown_wifi_direct_channel);
+    }
 
-    public WifiDirectChannelAndDescription(String displayNameAndChannel)
-        {
+    public WifiDirectChannelAndDescription(String displayNameAndChannel) {
         String[] strings = displayNameAndChannel.split("\\|");
         this.description = strings[0];
         this.channel = Integer.parseInt(strings[1]);
-        }
-
-    public int getChannel()
-        {
-        return channel;
-        }
-
-    public String getDescription()
-        {
-        return description;
-        }
-
-    @Override public String toString()
-        {
-        return getDescription();
-        }
-
-    @Override public int compareTo(WifiDirectChannelAndDescription another)
-        {
-        return this.channel - another.channel;
-        }
     }
+
+    public int getChannel() {
+        return channel;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return getDescription();
+    }
+
+    @Override
+    public int compareTo(WifiDirectChannelAndDescription another) {
+        return this.channel - another.channel;
+    }
+}

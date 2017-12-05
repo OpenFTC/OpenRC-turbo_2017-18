@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dex.Dex;
 import org.firstinspires.ftc.robotcore.internal.android.dex.DexException;
 import org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValue;
 import org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader;
+
 import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader.ENCODED_ANNOTATION;
 import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader.ENCODED_ARRAY;
 import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader.ENCODED_BOOLEAN;
@@ -39,6 +40,7 @@ import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueR
 import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader.ENCODED_SHORT;
 import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader.ENCODED_STRING;
 import static org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader.ENCODED_TYPE;
+
 import org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueCodec;
 import org.firstinspires.ftc.robotcore.internal.android.dex.FieldId;
 import org.firstinspires.ftc.robotcore.internal.android.dex.Leb128;
@@ -47,6 +49,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dex.ProtoId;
 import org.firstinspires.ftc.robotcore.internal.android.dex.TableOfContents;
 import org.firstinspires.ftc.robotcore.internal.android.dex.TypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArrayAnnotatedOutput;
+
 import java.util.HashMap;
 
 /**
@@ -258,68 +261,68 @@ public final class IndexMap {
         public void transform(EncodedValueReader reader) {
             // TODO: extract this into a helper class, EncodedValueWriter
             switch (reader.peek()) {
-            case ENCODED_BYTE:
-                EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_BYTE, reader.readByte());
-                break;
-            case ENCODED_SHORT:
-                EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_SHORT, reader.readShort());
-                break;
-            case ENCODED_INT:
-                EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_INT, reader.readInt());
-                break;
-            case ENCODED_LONG:
-                EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_LONG, reader.readLong());
-                break;
-            case ENCODED_CHAR:
-                EncodedValueCodec.writeUnsignedIntegralValue(out, ENCODED_CHAR, reader.readChar());
-                break;
-            case ENCODED_FLOAT:
-                // Shift value left 32 so that right-zero-extension works.
-                long longBits = ((long) Float.floatToIntBits(reader.readFloat())) << 32;
-                EncodedValueCodec.writeRightZeroExtendedValue(out, ENCODED_FLOAT, longBits);
-                break;
-            case ENCODED_DOUBLE:
-                EncodedValueCodec.writeRightZeroExtendedValue(
-                        out, ENCODED_DOUBLE, Double.doubleToLongBits(reader.readDouble()));
-                break;
-            case ENCODED_STRING:
-                EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_STRING, adjustString(reader.readString()));
-                break;
-            case ENCODED_TYPE:
-                EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_TYPE, adjustType(reader.readType()));
-                break;
-            case ENCODED_FIELD:
-                EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_FIELD, adjustField(reader.readField()));
-                break;
-            case ENCODED_ENUM:
-                EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_ENUM, adjustField(reader.readEnum()));
-                break;
-            case ENCODED_METHOD:
-                EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_METHOD, adjustMethod(reader.readMethod()));
-                break;
-            case ENCODED_ARRAY:
-                writeTypeAndArg(ENCODED_ARRAY, 0);
-                transformArray(reader);
-                break;
-            case ENCODED_ANNOTATION:
-                writeTypeAndArg(ENCODED_ANNOTATION, 0);
-                transformAnnotation(reader);
-                break;
-            case ENCODED_NULL:
-                reader.readNull();
-                writeTypeAndArg(ENCODED_NULL, 0);
-                break;
-            case ENCODED_BOOLEAN:
-                boolean value = reader.readBoolean();
-                writeTypeAndArg(ENCODED_BOOLEAN, value ? 1 : 0);
-                break;
-            default:
-                throw new DexException("Unexpected type: " + Integer.toHexString(reader.peek()));
+                case ENCODED_BYTE:
+                    EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_BYTE, reader.readByte());
+                    break;
+                case ENCODED_SHORT:
+                    EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_SHORT, reader.readShort());
+                    break;
+                case ENCODED_INT:
+                    EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_INT, reader.readInt());
+                    break;
+                case ENCODED_LONG:
+                    EncodedValueCodec.writeSignedIntegralValue(out, ENCODED_LONG, reader.readLong());
+                    break;
+                case ENCODED_CHAR:
+                    EncodedValueCodec.writeUnsignedIntegralValue(out, ENCODED_CHAR, reader.readChar());
+                    break;
+                case ENCODED_FLOAT:
+                    // Shift value left 32 so that right-zero-extension works.
+                    long longBits = ((long) Float.floatToIntBits(reader.readFloat())) << 32;
+                    EncodedValueCodec.writeRightZeroExtendedValue(out, ENCODED_FLOAT, longBits);
+                    break;
+                case ENCODED_DOUBLE:
+                    EncodedValueCodec.writeRightZeroExtendedValue(
+                            out, ENCODED_DOUBLE, Double.doubleToLongBits(reader.readDouble()));
+                    break;
+                case ENCODED_STRING:
+                    EncodedValueCodec.writeUnsignedIntegralValue(
+                            out, ENCODED_STRING, adjustString(reader.readString()));
+                    break;
+                case ENCODED_TYPE:
+                    EncodedValueCodec.writeUnsignedIntegralValue(
+                            out, ENCODED_TYPE, adjustType(reader.readType()));
+                    break;
+                case ENCODED_FIELD:
+                    EncodedValueCodec.writeUnsignedIntegralValue(
+                            out, ENCODED_FIELD, adjustField(reader.readField()));
+                    break;
+                case ENCODED_ENUM:
+                    EncodedValueCodec.writeUnsignedIntegralValue(
+                            out, ENCODED_ENUM, adjustField(reader.readEnum()));
+                    break;
+                case ENCODED_METHOD:
+                    EncodedValueCodec.writeUnsignedIntegralValue(
+                            out, ENCODED_METHOD, adjustMethod(reader.readMethod()));
+                    break;
+                case ENCODED_ARRAY:
+                    writeTypeAndArg(ENCODED_ARRAY, 0);
+                    transformArray(reader);
+                    break;
+                case ENCODED_ANNOTATION:
+                    writeTypeAndArg(ENCODED_ANNOTATION, 0);
+                    transformAnnotation(reader);
+                    break;
+                case ENCODED_NULL:
+                    reader.readNull();
+                    writeTypeAndArg(ENCODED_NULL, 0);
+                    break;
+                case ENCODED_BOOLEAN:
+                    boolean value = reader.readBoolean();
+                    writeTypeAndArg(ENCODED_BOOLEAN, value ? 1 : 0);
+                    break;
+                default:
+                    throw new DexException("Unexpected type: " + Integer.toHexString(reader.peek()));
             }
         }
 

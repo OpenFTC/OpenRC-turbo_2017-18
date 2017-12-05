@@ -41,8 +41,7 @@ import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 
 import java.nio.ByteBuffer;
 
-public class LynxI2cBlockReadConfigCommand extends LynxDekaInterfaceCommand<LynxI2cWriteStatusQueryResponse>
-    {
+public class LynxI2cBlockReadConfigCommand extends LynxDekaInterfaceCommand<LynxI2cWriteStatusQueryResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,48 +58,42 @@ public class LynxI2cBlockReadConfigCommand extends LynxDekaInterfaceCommand<Lynx
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cBlockReadConfigCommand(LynxModuleIntf module)
-        {
+    public LynxI2cBlockReadConfigCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxI2cWriteStatusQueryResponse(module);
-        }
+    }
 
-    public LynxI2cBlockReadConfigCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int i2cStartAddr, int cbToRead, int readInterval)
-        {
+    public LynxI2cBlockReadConfigCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int i2cStartAddr, int cbToRead, int readInterval) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        this.i2cBus = (byte)busZ;
-        this.i2cAddr7Bit = (byte)i2cAddr.get7Bit();
-        this.startAddr = (byte)i2cStartAddr;
-        this.cbToRead = (byte)cbToRead;
-        this.readInterval = (byte)readInterval;
-        }
+        this.i2cBus = (byte) busZ;
+        this.i2cAddr7Bit = (byte) i2cAddr.get7Bit();
+        this.startAddr = (byte) i2cStartAddr;
+        this.cbToRead = (byte) cbToRead;
+        this.readInterval = (byte) readInterval;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxI2cWriteStatusQueryResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public void onResponseReceived(LynxMessage generic)
-        {
+    public void onResponseReceived(LynxMessage generic) {
         super.onResponseReceived(generic);
         // TODO: process the status byte therein
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         buffer.put(this.i2cAddr7Bit);
@@ -108,16 +101,15 @@ public class LynxI2cBlockReadConfigCommand extends LynxDekaInterfaceCommand<Lynx
         buffer.put(this.cbToRead);
         buffer.put(this.readInterval);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
         this.i2cAddr7Bit = buffer.get();
         this.startAddr = buffer.get();
         this.cbToRead = buffer.get();
         this.readInterval = buffer.get();
-        }
     }
+}

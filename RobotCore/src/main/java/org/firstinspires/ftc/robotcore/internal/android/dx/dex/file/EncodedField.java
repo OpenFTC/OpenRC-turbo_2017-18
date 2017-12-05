@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstFieldRef;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.io.PrintWriter;
 
 /**
@@ -29,13 +30,15 @@ import java.io.PrintWriter;
  */
 public final class EncodedField extends EncodedMember
         implements Comparable<EncodedField> {
-    /** {@code non-null;} constant for the field */
+    /**
+     * {@code non-null;} constant for the field
+     */
     private final CstFieldRef field;
 
     /**
      * Constructs an instance.
      *
-     * @param field {@code non-null;} constant for the field
+     * @param field       {@code non-null;} constant for the field
      * @param accessFlags access flags
      */
     public EncodedField(CstFieldRef field, int accessFlags) {
@@ -53,14 +56,18 @@ public final class EncodedField extends EncodedMember
         this.field = field;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int hashCode() {
         return field.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean equals(Object other) {
-        if (! (other instanceof EncodedField)) {
+        if (!(other instanceof EncodedField)) {
             return false;
         }
 
@@ -69,7 +76,7 @@ public final class EncodedField extends EncodedMember
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p><b>Note:</b> This compares the method constants only,
      * ignoring any associated code, because it should never be the
      * case that two different items with the same method constant
@@ -79,7 +86,9 @@ public final class EncodedField extends EncodedMember
         return field.compareTo(other.field);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(100);
@@ -93,25 +102,33 @@ public final class EncodedField extends EncodedMember
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         FieldIdsSection fieldIds = file.getFieldIds();
         fieldIds.intern(field);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CstString getName() {
         return field.getNat().getName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return field.toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void debugPrint(PrintWriter out, boolean verbose) {
         // TODO: Maybe put something better here?
@@ -127,22 +144,24 @@ public final class EncodedField extends EncodedMember
         return field;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int encode(DexFile file, AnnotatedOutput out,
-            int lastIndex, int dumpSeq) {
+                      int lastIndex, int dumpSeq) {
         int fieldIdx = file.getFieldIds().indexOf(field);
         int diff = fieldIdx - lastIndex;
         int accessFlags = getAccessFlags();
 
         if (out.annotates()) {
             out.annotate(0, String.format("  [%x] %s", dumpSeq,
-                            field.toHuman()));
+                    field.toHuman()));
             out.annotate(Leb128.unsignedLeb128Size(diff),
                     "    field_idx:    " + Hex.u4(fieldIdx));
             out.annotate(Leb128.unsignedLeb128Size(accessFlags),
                     "    access_flags: " +
-                    AccessFlags.fieldString(accessFlags));
+                            AccessFlags.fieldString(accessFlags));
         }
 
         out.writeUleb128(diff);

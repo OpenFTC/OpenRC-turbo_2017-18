@@ -24,65 +24,105 @@ import java.util.HashMap;
  * Constants that represent an arbitrary type (reference or primitive).
  */
 public final class CstType extends TypedConstant {
-    /** {@code non-null;} map of interned types */
+    /**
+     * {@code non-null;} map of interned types
+     */
     private static final HashMap<Type, CstType> interns =
-        new HashMap<Type, CstType>(100);
+            new HashMap<Type, CstType>(100);
 
-    /** {@code non-null;} instance corresponding to the class {@code Object} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Object}
+     */
     public static final CstType OBJECT = intern(Type.OBJECT);
 
-    /** {@code non-null;} instance corresponding to the class {@code Boolean} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Boolean}
+     */
     public static final CstType BOOLEAN = intern(Type.BOOLEAN_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Byte} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Byte}
+     */
     public static final CstType BYTE = intern(Type.BYTE_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Character} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Character}
+     */
     public static final CstType CHARACTER = intern(Type.CHARACTER_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Double} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Double}
+     */
     public static final CstType DOUBLE = intern(Type.DOUBLE_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Float} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Float}
+     */
     public static final CstType FLOAT = intern(Type.FLOAT_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Long} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Long}
+     */
     public static final CstType LONG = intern(Type.LONG_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Integer} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Integer}
+     */
     public static final CstType INTEGER = intern(Type.INTEGER_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Short} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Short}
+     */
     public static final CstType SHORT = intern(Type.SHORT_CLASS);
 
-    /** {@code non-null;} instance corresponding to the class {@code Void} */
+    /**
+     * {@code non-null;} instance corresponding to the class {@code Void}
+     */
     public static final CstType VOID = intern(Type.VOID_CLASS);
 
-    /** {@code non-null;} instance corresponding to the type {@code boolean[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code boolean[]}
+     */
     public static final CstType BOOLEAN_ARRAY = intern(Type.BOOLEAN_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code byte[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code byte[]}
+     */
     public static final CstType BYTE_ARRAY = intern(Type.BYTE_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code char[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code char[]}
+     */
     public static final CstType CHAR_ARRAY = intern(Type.CHAR_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code double[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code double[]}
+     */
     public static final CstType DOUBLE_ARRAY = intern(Type.DOUBLE_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code float[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code float[]}
+     */
     public static final CstType FLOAT_ARRAY = intern(Type.FLOAT_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code long[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code long[]}
+     */
     public static final CstType LONG_ARRAY = intern(Type.LONG_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code int[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code int[]}
+     */
     public static final CstType INT_ARRAY = intern(Type.INT_ARRAY);
 
-    /** {@code non-null;} instance corresponding to the type {@code short[]} */
+    /**
+     * {@code non-null;} instance corresponding to the type {@code short[]}
+     */
     public static final CstType SHORT_ARRAY = intern(Type.SHORT_ARRAY);
 
-    /** {@code non-null;} the underlying type */
+    /**
+     * {@code non-null;} the underlying type
+     */
     private final Type type;
 
     /**
@@ -102,15 +142,24 @@ public final class CstType extends TypedConstant {
      */
     public static CstType forBoxedPrimitiveType(Type primitiveType) {
         switch (primitiveType.getBasicType()) {
-            case Type.BT_BOOLEAN: return BOOLEAN;
-            case Type.BT_BYTE:    return BYTE;
-            case Type.BT_CHAR:    return CHARACTER;
-            case Type.BT_DOUBLE:  return DOUBLE;
-            case Type.BT_FLOAT:   return FLOAT;
-            case Type.BT_INT:     return INTEGER;
-            case Type.BT_LONG:    return LONG;
-            case Type.BT_SHORT:   return SHORT;
-            case Type.BT_VOID:    return VOID;
+            case Type.BT_BOOLEAN:
+                return BOOLEAN;
+            case Type.BT_BYTE:
+                return BYTE;
+            case Type.BT_CHAR:
+                return CHARACTER;
+            case Type.BT_DOUBLE:
+                return DOUBLE;
+            case Type.BT_FLOAT:
+                return FLOAT;
+            case Type.BT_INT:
+                return INTEGER;
+            case Type.BT_LONG:
+                return LONG;
+            case Type.BT_SHORT:
+                return SHORT;
+            case Type.BT_VOID:
+                return VOID;
         }
 
         throw new IllegalArgumentException("not primitive: " + primitiveType);
@@ -154,7 +203,9 @@ public final class CstType extends TypedConstant {
         this.descriptor = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof CstType)) {
@@ -164,13 +215,17 @@ public final class CstType extends TypedConstant {
         return type == ((CstType) other).type;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return type.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         String thisDescriptor = type.getDescriptor();
@@ -178,30 +233,40 @@ public final class CstType extends TypedConstant {
         return thisDescriptor.compareTo(otherDescriptor);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "type{" + toHuman() + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.CLASS;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "type";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return type.toHuman();
     }

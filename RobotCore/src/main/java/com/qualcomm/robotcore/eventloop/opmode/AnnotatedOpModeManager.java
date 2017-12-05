@@ -39,8 +39,7 @@ package com.qualcomm.robotcore.eventloop.opmode;
  * @see OpModeManager
  * @see OpModeRegistrar
  */
-public interface AnnotatedOpModeManager extends OpModeManager
-    {
+public interface AnnotatedOpModeManager extends OpModeManager {
     /**
      * Register a class for display on the driver station and availability for game play.
      * New instances of this class will be created as needed. The name used on the driver
@@ -49,10 +48,10 @@ public interface AnnotatedOpModeManager extends OpModeManager
      * If the class lacks both a {@link TeleOp} and a {@link Autonomous} annotation, then
      * no registration takes place.
      *
-     * @param opModeClass   the class of the OpMode to create
+     * @param opModeClass the class of the OpMode to create
      * @see TeleOp
      * @see Autonomous
      * @see #register(String, Class)
      */
     void register(Class opModeClass);
-    }
+}

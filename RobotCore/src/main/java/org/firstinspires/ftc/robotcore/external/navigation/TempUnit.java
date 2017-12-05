@@ -35,8 +35,7 @@ package org.firstinspires.ftc.robotcore.external.navigation;
 /**
  * Instances of {@link TempUnit} enumerate a known different temperature scales
  */
-public enum TempUnit
-    {
+public enum TempUnit {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -46,99 +45,105 @@ public enum TempUnit
 
     public static final double zeroCelsiusK = 273.15;
     public static final double zeroCelsiusF = 32;
-    public static final double CperF        = 5.0 / 9.0;
+    public static final double CperF = 5.0 / 9.0;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    TempUnit(int i)
-        {
-        this.bVal = (byte)i;
-        }
+    TempUnit(int i) {
+        this.bVal = (byte) i;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Primitive operations
     //----------------------------------------------------------------------------------------------
 
-    public double fromCelsius(double celsius)
-        {
-        switch (this)
-            {
+    public double fromCelsius(double celsius) {
+        switch (this) {
             default:
-            case CELSIUS:   return celsius;
-            case KELVIN:    return celsius + zeroCelsiusK;
-            case FARENHEIT: return celsius / CperF + zeroCelsiusF;
-            }
+            case CELSIUS:
+                return celsius;
+            case KELVIN:
+                return celsius + zeroCelsiusK;
+            case FARENHEIT:
+                return celsius / CperF + zeroCelsiusF;
         }
+    }
 
-    public double fromKelvin(double kelvin)
-        {
-        switch (this)
-            {
+    public double fromKelvin(double kelvin) {
+        switch (this) {
             default:
-            case CELSIUS:   return kelvin - zeroCelsiusK;
-            case KELVIN:    return kelvin;
-            case FARENHEIT: return fromCelsius(CELSIUS.fromKelvin(kelvin));
-            }
+            case CELSIUS:
+                return kelvin - zeroCelsiusK;
+            case KELVIN:
+                return kelvin;
+            case FARENHEIT:
+                return fromCelsius(CELSIUS.fromKelvin(kelvin));
         }
+    }
 
-    public double fromFarenheit(double farenheit)
-        {
-        switch (this)
-            {
+    public double fromFarenheit(double farenheit) {
+        switch (this) {
             default:
-            case CELSIUS:   return (farenheit - zeroCelsiusF) * CperF;
-            case KELVIN:    return fromCelsius(CELSIUS.fromFarenheit(farenheit));
-            case FARENHEIT: return farenheit;
-            }
+            case CELSIUS:
+                return (farenheit - zeroCelsiusF) * CperF;
+            case KELVIN:
+                return fromCelsius(CELSIUS.fromFarenheit(farenheit));
+            case FARENHEIT:
+                return farenheit;
         }
+    }
 
-    public double fromUnit(TempUnit him, double his)
-        {
-        switch (him)
-            {
+    public double fromUnit(TempUnit him, double his) {
+        switch (him) {
             default:
-            case CELSIUS:   return this.fromCelsius(his);
-            case KELVIN:    return this.fromKelvin(his);
-            case FARENHEIT: return this.fromFarenheit(his);
-            }
+            case CELSIUS:
+                return this.fromCelsius(his);
+            case KELVIN:
+                return this.fromKelvin(his);
+            case FARENHEIT:
+                return this.fromFarenheit(his);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Derived operations
     //----------------------------------------------------------------------------------------------
 
-    double toCelsius(double inOurUnits)
-        {
-        switch (this)
-            {
+    double toCelsius(double inOurUnits) {
+        switch (this) {
             default:
-            case CELSIUS:   return CELSIUS.fromCelsius(inOurUnits);
-            case KELVIN:    return CELSIUS.fromKelvin(inOurUnits);
-            case FARENHEIT: return CELSIUS.fromFarenheit(inOurUnits);
-            }
-        }
-
-    double toKelvin(double inOurUnits)
-        {
-        switch (this)
-            {
-            default:
-            case CELSIUS:   return KELVIN.fromCelsius(inOurUnits);
-            case KELVIN:    return KELVIN.fromKelvin(inOurUnits);
-            case FARENHEIT: return KELVIN.fromFarenheit(inOurUnits);
-            }
-        }
-
-    double toFarenheit(double inOurUnits)
-        {
-        switch (this)
-            {
-            default:
-            case CELSIUS:   return FARENHEIT.fromCelsius(inOurUnits);
-            case KELVIN:    return FARENHEIT.fromKelvin(inOurUnits);
-            case FARENHEIT: return FARENHEIT.fromFarenheit(inOurUnits);
-            }
+            case CELSIUS:
+                return CELSIUS.fromCelsius(inOurUnits);
+            case KELVIN:
+                return CELSIUS.fromKelvin(inOurUnits);
+            case FARENHEIT:
+                return CELSIUS.fromFarenheit(inOurUnits);
         }
     }
+
+    double toKelvin(double inOurUnits) {
+        switch (this) {
+            default:
+            case CELSIUS:
+                return KELVIN.fromCelsius(inOurUnits);
+            case KELVIN:
+                return KELVIN.fromKelvin(inOurUnits);
+            case FARENHEIT:
+                return KELVIN.fromFarenheit(inOurUnits);
+        }
+    }
+
+    double toFarenheit(double inOurUnits) {
+        switch (this) {
+            default:
+            case CELSIUS:
+                return FARENHEIT.fromCelsius(inOurUnits);
+            case KELVIN:
+                return FARENHEIT.fromKelvin(inOurUnits);
+            case FARENHEIT:
+                return FARENHEIT.fromFarenheit(inOurUnits);
+        }
+    }
+}

@@ -36,24 +36,29 @@ package org.firstinspires.ftc.robotcore.internal.hardware;
  * {@link DragonboardLynxResetPin} allows a dragon board to reset the attached embedded lynx
  */
 @SuppressWarnings("WeakerAccess")
-public class DragonboardLynxResetPin extends DragonboardGPIOPin
-    {
+public class DragonboardLynxResetPin extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxResetPin";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     protected static final DragonboardLynxResetPin theInstance = new DragonboardLynxResetPin();
-    public static DragonboardLynxResetPin getInstance() { return theInstance; }
+
+    public static DragonboardLynxResetPin getInstance() {
+        return theInstance;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected DragonboardLynxResetPin()
-        {
+    protected DragonboardLynxResetPin() {
         super(13, false, Active.LOW);
-        }
     }
+}

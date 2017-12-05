@@ -28,19 +28,21 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
  * Parser for lists of fields in a class file.
  */
 final /*package*/ class FieldListParser extends MemberListParser {
-    /** {@code non-null;} list in progress */
+    /**
+     * {@code non-null;} list in progress
+     */
     private final StdFieldList fields;
 
     /**
      * Constructs an instance.
      *
-     * @param cf {@code non-null;} the class file to parse from
-     * @param definer {@code non-null;} class being defined
-     * @param offset offset in {@code bytes} to the start of the list
+     * @param cf               {@code non-null;} the class file to parse from
+     * @param definer          {@code non-null;} class being defined
+     * @param offset           offset in {@code bytes} to the start of the list
      * @param attributeFactory {@code non-null;} attribute factory to use
      */
     public FieldListParser(DirectClassFile cf, CstType definer, int offset,
-            AttributeFactory attributeFactory) {
+                           AttributeFactory attributeFactory) {
         super(cf, definer, offset, attributeFactory);
         fields = new StdFieldList(getCount());
     }
@@ -55,30 +57,38 @@ final /*package*/ class FieldListParser extends MemberListParser {
         return fields;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String humanName() {
         return "field";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String humanAccessFlags(int accessFlags) {
         return AccessFlags.fieldString(accessFlags);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int getAttributeContext() {
         return AttributeFactory.CTX_FIELD;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Member set(int n, int accessFlags, CstNat nat,
                          AttributeList attributes) {
         StdField field =
-            new StdField(getDefiner(), accessFlags, nat, attributes);
+                new StdField(getDefiner(), accessFlags, nat, attributes);
 
         fields.set(n, field);
         return field;

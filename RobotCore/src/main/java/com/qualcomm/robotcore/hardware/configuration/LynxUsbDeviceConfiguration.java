@@ -45,8 +45,7 @@ import java.util.List;
  * the 'parent'; the others are called 'children'.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModuleConfiguration>
-    {
+public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModuleConfiguration> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -60,49 +59,41 @@ public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModu
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxUsbDeviceConfiguration(String name, List<LynxModuleConfiguration> modules, SerialNumber serialNumber)
-        {
+    public LynxUsbDeviceConfiguration(String name, List<LynxModuleConfiguration> modules, SerialNumber serialNumber) {
         super(name, new LinkedList<LynxModuleConfiguration>(modules), serialNumber, BuiltInConfigurationType.LYNX_USB_DEVICE);
         // Sort in increasing order by module address
-        Collections.sort(this.getModules(), new Comparator<DeviceConfiguration>()
-            {
-            @Override public int compare(DeviceConfiguration lhs, DeviceConfiguration rhs)
-                {
+        Collections.sort(this.getModules(), new Comparator<DeviceConfiguration>() {
+            @Override
+            public int compare(DeviceConfiguration lhs, DeviceConfiguration rhs) {
                 return lhs.getPort() - rhs.getPort();
-                }
-            });
+            }
+        });
 
-        for (LynxModuleConfiguration module : modules)
-            {
-            if (module.isParent())
-                {
+        for (LynxModuleConfiguration module : modules) {
+            if (module.isParent()) {
                 this.setParentModuleAddress(module.getModuleAddress());
                 break;
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public int getParentModuleAddress()
-        {
+    public int getParentModuleAddress() {
         return this.parentModuleAddress;
-        }
-
-    public void setParentModuleAddress(int moduleAddress)
-        {
-        this.parentModuleAddress = moduleAddress;
-        }
-
-    public List<LynxModuleConfiguration> getModules()
-        {
-        return this.getDevices();
-        }
-
-    public void setModules(List<LynxModuleConfiguration> modules)
-        {
-        this.setDevices(modules);
-        }
     }
+
+    public void setParentModuleAddress(int moduleAddress) {
+        this.parentModuleAddress = moduleAddress;
+    }
+
+    public List<LynxModuleConfiguration> getModules() {
+        return this.getDevices();
+    }
+
+    public void setModules(List<LynxModuleConfiguration> modules) {
+        this.setDevices(modules);
+    }
+}

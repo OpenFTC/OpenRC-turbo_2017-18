@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-09-01.
  */
-public class LynxI2cConfigureQueryCommand extends LynxDekaInterfaceCommand<LynxI2cConfigureQueryResponse>
-    {
+public class LynxI2cConfigureQueryCommand extends LynxDekaInterfaceCommand<LynxI2cConfigureQueryResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -56,45 +55,39 @@ public class LynxI2cConfigureQueryCommand extends LynxDekaInterfaceCommand<LynxI
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cConfigureQueryCommand(LynxModuleIntf module)
-        {
+    public LynxI2cConfigureQueryCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxI2cConfigureQueryCommand(LynxModuleIntf module, int busZ)
-        {
+    public LynxI2cConfigureQueryCommand(LynxModuleIntf module, int busZ) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        this.i2cBus = (byte)busZ;
-        }
+        this.i2cBus = (byte) busZ;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxI2cConfigureQueryResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
-        }
     }
+}

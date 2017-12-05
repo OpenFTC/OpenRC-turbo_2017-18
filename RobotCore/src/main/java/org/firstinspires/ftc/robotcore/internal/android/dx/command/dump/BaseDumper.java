@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IndentingWriter;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.TwoColumnOutput;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
@@ -32,16 +33,24 @@ import java.io.StringWriter;
  */
 public abstract class BaseDumper
         implements ParseObserver {
-    /** {@code non-null;} array of data being dumped */
+    /**
+     * {@code non-null;} array of data being dumped
+     */
     private final byte[] bytes;
 
-    /** whether or not to include the raw bytes (in a column on the left) */
+    /**
+     * whether or not to include the raw bytes (in a column on the left)
+     */
     private final boolean rawBytes;
 
-    /** {@code non-null;} where to dump to */
+    /**
+     * {@code non-null;} where to dump to
+     */
     private final PrintStream out;
 
-    /** width of the output in columns */
+    /**
+     * width of the output in columns
+     */
     private final int width;
 
     /**
@@ -50,32 +59,44 @@ public abstract class BaseDumper
      */
     private final String filePath;
 
-    /** whether to be strict about parsing */
+    /**
+     * whether to be strict about parsing
+     */
     private final boolean strictParse;
 
-     /** number of bytes per line in hex dumps */
+    /**
+     * number of bytes per line in hex dumps
+     */
     private final int hexCols;
 
-    /** the current level of indentation */
+    /**
+     * the current level of indentation
+     */
     private int indent;
 
-    /** {@code non-null;} the current column separator string */
+    /**
+     * {@code non-null;} the current column separator string
+     */
     private String separator;
 
-    /** the offset of the next byte to dump */
+    /**
+     * the offset of the next byte to dump
+     */
     private int at;
 
-    /** commandline parsedArgs */
+    /**
+     * commandline parsedArgs
+     */
     protected Args args;
 
     /**
      * Constructs an instance.
      *
-     * @param bytes {@code non-null;} bytes of the (alleged) class file
-     * on the left)
-     * @param out {@code non-null;} where to dump to
+     * @param bytes    {@code non-null;} bytes of the (alleged) class file
+     *                 on the left)
+     * @param out      {@code non-null;} where to dump to
      * @param filePath the file path for the class, excluding any base
-     * directory specification
+     *                 directory specification
      */
     public BaseDumper(byte[] bytes, PrintStream out,
                       String filePath, Args args) {
@@ -102,15 +123,18 @@ public abstract class BaseDumper
     /**
      * Computes the total width, in register-units, of the parameters for
      * this method.
+     *
      * @param meth method to process
      * @return width in register-units
      */
     static int computeParamWidth(ConcreteMethod meth, boolean isStatic) {
         return meth.getEffectiveDescriptor().getParameterTypes().
-            getWordCount();
+                getWordCount();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void changeIndent(int indentDelta) {
         indent += indentDelta;
 
@@ -120,7 +144,9 @@ public abstract class BaseDumper
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void parsed(ByteArray bytes, int offset, int len, String human) {
         offset = bytes.underlyingOffset(offset, getBytes());
 
@@ -140,13 +166,17 @@ public abstract class BaseDumper
         at += len;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void startParsingMember(ByteArray bytes, int offset, String name,
                                    String descriptor) {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void endParsingMember(ByteArray bytes, int offset, String name,
                                  String descriptor, Member member) {
         // This space intentionally left blank.
@@ -165,7 +195,7 @@ public abstract class BaseDumper
     /**
      * Sets the dump cursor to the indicated offset in the given array.
      *
-     * @param arr {@code non-null;} array in question
+     * @param arr    {@code non-null;} array in question
      * @param offset {@code >= 0;} offset into the array
      */
     protected final void setAt(ByteArray arr, int offset) {
@@ -255,7 +285,7 @@ public abstract class BaseDumper
      * Constructs a hex data dump of the given portion of {@link #bytes}.
      *
      * @param offset offset to start dumping at
-     * @param len length to dump
+     * @param len    length to dump
      * @return {@code non-null;} the dump
      */
     protected final String hexDump(int offset, int len) {

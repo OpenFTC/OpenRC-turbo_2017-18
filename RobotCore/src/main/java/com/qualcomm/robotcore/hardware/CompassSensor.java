@@ -36,38 +36,41 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface CompassSensor extends HardwareDevice {
 
-  enum CompassMode {
-    MEASUREMENT_MODE,
-    CALIBRATION_MODE
-  }
+    enum CompassMode {
+        MEASUREMENT_MODE,
+        CALIBRATION_MODE
+    }
 
-  /**
-   * Get the current direction, in degrees, in the range [0, 360). North is zero,
-   * East is 90, South is 180, and West is 270.
-   * @return current direction, in degrees
-   */
-  double getDirection();
+    /**
+     * Get the current direction, in degrees, in the range [0, 360). North is zero,
+     * East is 90, South is 180, and West is 270.
+     *
+     * @return current direction, in degrees
+     */
+    double getDirection();
 
-  /**
-   * Status of this sensor, in string form
-   * @return status
-   */
-  String status();
+    /**
+     * Status of this sensor, in string form
+     *
+     * @return status
+     */
+    String status();
 
-  /**
-   * Change to calibration or measurement mode
-   */
-  void setMode(CompassMode mode);
+    /**
+     * Change to calibration or measurement mode
+     */
+    void setMode(CompassMode mode);
 
-  /**
-   * Check to see whether calibration was successful.
-   * After attempting a calibration, the hardware will (eventually) indicate whether or
-   * not it was unsuccessful. The default is "success", even when the calibration is not
-   * guaranteed to have completed successfully.
-   *
-   * A user should monitor this field for (at least) several seconds to determine success.
-   * @return failure
-   */
-  boolean calibrationFailed();
+    /**
+     * Check to see whether calibration was successful.
+     * After attempting a calibration, the hardware will (eventually) indicate whether or
+     * not it was unsuccessful. The default is "success", even when the calibration is not
+     * guaranteed to have completed successfully.
+     * <p>
+     * A user should monitor this field for (at least) several seconds to determine success.
+     *
+     * @return failure
+     */
+    boolean calibrationFailed();
 
 }

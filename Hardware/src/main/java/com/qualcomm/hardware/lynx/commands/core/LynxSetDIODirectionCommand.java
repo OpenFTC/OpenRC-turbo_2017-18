@@ -44,8 +44,7 @@ import java.nio.ByteBuffer;
  * Set the direction for the specified DIO pin. It is legal to change direction at any time. If
  * direction is changed from input to output, the output value is initially set to 0.
  */
-public class LynxSetDIODirectionCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetDIODirectionCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,58 +58,51 @@ public class LynxSetDIODirectionCommand extends LynxDekaInterfaceCommand<LynxAck
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetDIODirectionCommand(LynxModuleIntf module)
-        {
+    public LynxSetDIODirectionCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetDIODirectionCommand(LynxModuleIntf module, int pin, DigitalChannel.Mode mode)
-        {
+    public LynxSetDIODirectionCommand(LynxModuleIntf module, int pin, DigitalChannel.Mode mode) {
         this(module);
         LynxConstants.validateDigitalIOZ(pin);
         this.pin = pin;
-        this.direction = mode== DigitalChannel.Mode.INPUT ? 0 : 1;
-        }
+        this.direction = mode == DigitalChannel.Mode.INPUT ? 0 : 1;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getPin()
-        {
+    public int getPin() {
         return this.pin;
-        }
+    }
 
-    public DigitalChannel.Mode getMode()
-        {
-        return this.direction==0 ? DigitalChannel.Mode.INPUT : DigitalChannel.Mode.OUTPUT;
-        }
+    public DigitalChannel.Mode getMode() {
+        return this.direction == 0 ? DigitalChannel.Mode.INPUT : DigitalChannel.Mode.OUTPUT;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
-        buffer.put((byte)this.pin);
-        buffer.put((byte)this.direction);
+        buffer.put((byte) this.pin);
+        buffer.put((byte) this.direction);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.pin = buffer.get();
         this.direction = buffer.get();
-        }
-
     }
+
+}

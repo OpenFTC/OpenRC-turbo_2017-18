@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.LocalItem;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegOps;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegisterSpec;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstInteger;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,7 +31,9 @@ import java.util.List;
  */
 public class MoveParamCombiner {
 
-    /** method to process */
+    /**
+     * method to process
+     */
     private final SsaMethod ssaMeth;
 
     /**
@@ -58,11 +61,13 @@ public class MoveParamCombiner {
         final HashSet<SsaInsn> deletedInsns = new HashSet();
 
         ssaMeth.forEachInsn(new SsaInsn.Visitor() {
-            public void visitMoveInsn (NormalSsaInsn insn) {
+            public void visitMoveInsn(NormalSsaInsn insn) {
             }
-            public void visitPhiInsn (PhiInsn phi) {
+
+            public void visitPhiInsn(PhiInsn phi) {
             }
-            public void visitNonMoveInsn (NormalSsaInsn insn) {
+
+            public void visitNonMoveInsn(NormalSsaInsn insn) {
                 if (insn.getOpcode().getOpcode() != RegOps.MOVE_PARAM) {
                     return;
                 }
@@ -145,9 +150,9 @@ public class MoveParamCombiner {
      * @return {@code >=0;} parameter index
      */
     private int getParamIndex(NormalSsaInsn insn) {
-        CstInsn cstInsn = (CstInsn)(insn.getOriginalRopInsn());
+        CstInsn cstInsn = (CstInsn) (insn.getOriginalRopInsn());
 
-        int param = ((CstInteger)cstInsn.getConstant()).getValue();
+        int param = ((CstInteger) cstInsn.getConstant()).getValue();
         return param;
     }
 

@@ -4,115 +4,157 @@
   Author: lizlooney@google.com (Liz Looney)
 -->
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
 
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
-  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
-  <link rel="stylesheet/less" type="text/css" href="/css/FtcSounds.less">
-  <script type="text/javascript" src="/js/less.min.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="/css/FtcSounds.less">
+    <script type="text/javascript" src="/js/less.min.js"></script>
 
-  <title>FTC - My Sounds</title>
+    <title>FTC - My Sounds</title>
 
-  <script type="text/javascript" src="server"></script>
+    <script type="text/javascript" src="server"></script>
 
-  <script type="text/javascript" src="blocks/hardware_util.js"></script>
-  <script type="text/javascript" src="blocks/sound_util.js"></script>
+    <script type="text/javascript" src="blocks/hardware_util.js"></script>
+    <script type="text/javascript" src="blocks/sound_util.js"></script>
 </head>
 
 <body onload="initialize()">
 <table class="top" width="100%">
-  <tr>
-    <td class="blank_td" colspan="2"></td>
-  </tr>
-  <tr>
-    <td class="buttons_td" colspan="2">
-      <table width="100%">
-        <tr>
-          <td>
-            <button id="uploadSoundsButton" onclick="uploadSoundsButtonClicked()">Upload Sounds</button>
-          </td>
-          <td align="right">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <button id="renameSoundButton" disabled="true" onclick="renameSoundButtonClicked()">Rename Selected Sound</button>
-            <button id="copySoundButton" disabled="true" onclick="copySoundButtonClicked()">Copy Selected Sound</button>
-            <button id="deleteSoundsButton" disabled="true" onclick="deleteSoundsButtonClicked()">Delete Selected Sounds</button>
-            <button id="downloadSoundsButton" disabled="true" onclick="downloadSoundsButtonClicked()">Download Selected Sounds</button>
-            <a id="download_link"></a>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td class="blank_td" colspan="2"></td>
-  </tr>
-  <tr>
-    <td class="my_sounds_td" colspan="2">My Sounds</td>
-  </tr>
-  <tr>
-    <td class="blank_td" colspan="2"></td>
-  </tr>
+    <tr>
+        <td class="blank_td" colspan="2"></td>
+    </tr>
+    <tr>
+        <td class="buttons_td" colspan="2">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <button id="uploadSoundsButton" onclick="uploadSoundsButtonClicked()">Upload
+                            Sounds
+                        </button>
+                    </td>
+                    <td align="right">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button id="renameSoundButton" disabled="true"
+                                onclick="renameSoundButtonClicked()">Rename Selected Sound
+                        </button>
+                        <button id="copySoundButton" disabled="true"
+                                onclick="copySoundButtonClicked()">Copy Selected Sound
+                        </button>
+                        <button id="deleteSoundsButton" disabled="true"
+                                onclick="deleteSoundsButtonClicked()">Delete Selected Sounds
+                        </button>
+                        <button id="downloadSoundsButton" disabled="true"
+                                onclick="downloadSoundsButtonClicked()">Download Selected Sounds
+                        </button>
+                        <a id="download_link"></a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="blank_td" colspan="2"></td>
+    </tr>
+    <tr>
+        <td class="my_sounds_td" colspan="2">My Sounds</td>
+    </tr>
+    <tr>
+        <td class="blank_td" colspan="2"></td>
+    </tr>
 </table>
 <div id="soundsTableScroll">
-  <table id="soundsTable" width="100%">
-    <tr class="header_tr">
-      <td><input type="checkbox" id="checkbox_all" onclick="soundCheckAllChanged()"></td>
-      <td width="20%"><div class="header_td" onclick="toggleSortByName()">Sound Name<span id="sortByNameIndicator">&nbsp;</span></div></td>
-      <td width="80%"><div class="header_td" onclick="toggleSortByDateModified()">Date Modified<span id="sortByDateModifiedIndicator">&nbsp;</span></div></td>
-    </tr>
-  </table>
+    <table id="soundsTable" width="100%">
+        <tr class="header_tr">
+            <td><input type="checkbox" id="checkbox_all" onclick="soundCheckAllChanged()"></td>
+            <td width="20%">
+                <div class="header_td" onclick="toggleSortByName()">Sound Name<span
+                        id="sortByNameIndicator">&nbsp;</span></div>
+            </td>
+            <td width="80%">
+                <div class="header_td" onclick="toggleSortByDateModified()">Date Modified<span
+                        id="sortByDateModifiedIndicator">&nbsp;</span></div>
+            </td>
+        </tr>
+    </table>
 </div>
 
-<div id="newSoundNameDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
-  <center>
-  <h3 style="margin-top: 0px" id="newSoundNameDialogTitle"></h3><br>
-  Sound Name:
-  <input type="text" id="newSoundName"><br>
-  <div class="error_message" id="newSoundNameError" style="width: 60ch"></div><br>
-  <table width="100%">
-    <tr>
-      <td align="center"><button onclick="cancelNewSoundNameDialog()">Cancel</button></td>
-      <td align="center"><button onclick="okNewSoundNameDialog()">OK</button></td>
-    </tr>
-  </table>
-  </center>
-</div></div></div>
+<div id="newSoundNameDialog" class="modal_dialog">
+    <div class="modal_dialog_container">
+        <div class="modal_dialog_content">
+            <center>
+                <h3 style="margin-top: 0px" id="newSoundNameDialogTitle"></h3><br>
+                Sound Name:
+                <input type="text" id="newSoundName"><br>
+                <div class="error_message" id="newSoundNameError" style="width: 60ch"></div>
+                <br>
+                <table width="100%">
+                    <tr>
+                        <td align="center">
+                            <button onclick="cancelNewSoundNameDialog()">Cancel</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="okNewSoundNameDialog()">OK</button>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+        </div>
+    </div>
+</div>
 
-<div id="uploadSoundsDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
-  <center>
-  <h3 style="margin-top: 0px" id="uploadSoundsDialogTitle"></h3><br>
-  <input type="file" id="uploadSoundsFileInput" accept="audio/*" multiple><br>
-  <div class="error_message" id="uploadSoundsError" style="width: 60ch"></div><br>
-  <table width="100%">
-    <tr>
-      <td align="center"><button onclick="cancelUploadSoundsDialog()">Cancel</button></td>
-      <td align="center"><button id="uploadSoundsOk" onclick="okUploadSoundsDialog()">OK</button></td>
-    </tr>
-  </table>
-  </center>
-</div></div></div>
+<div id="uploadSoundsDialog" class="modal_dialog">
+    <div class="modal_dialog_container">
+        <div class="modal_dialog_content">
+            <center>
+                <h3 style="margin-top: 0px" id="uploadSoundsDialogTitle"></h3><br>
+                <input type="file" id="uploadSoundsFileInput" accept="audio/*" multiple><br>
+                <div class="error_message" id="uploadSoundsError" style="width: 60ch"></div>
+                <br>
+                <table width="100%">
+                    <tr>
+                        <td align="center">
+                            <button onclick="cancelUploadSoundsDialog()">Cancel</button>
+                        </td>
+                        <td align="center">
+                            <button id="uploadSoundsOk" onclick="okUploadSoundsDialog()">OK</button>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+        </div>
+    </div>
+</div>
 
-<div id="deleteSoundsDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
-  <center>
-  <h3 style="margin-top: 0px">Delete Selected Sounds</h3><br>
-  Are you sure you want to delete these sounds?
-  <table id="deleteSoundsTable">
-  </table>
-  <table width="100%">
-    <tr>
-      <td align="center"><button onclick="noDeleteSoundsDialog()">No</button></td>
-      <td align="center"><button onclick="yesDeleteSoundsDialog()">Yes</button></td>
-    </tr>
-  </table>
-  </center>
-</div></div></div>
+<div id="deleteSoundsDialog" class="modal_dialog">
+    <div class="modal_dialog_container">
+        <div class="modal_dialog_content">
+            <center>
+                <h3 style="margin-top: 0px">Delete Selected Sounds</h3><br>
+                Are you sure you want to delete these sounds?
+                <table id="deleteSoundsTable">
+                </table>
+                <table width="100%">
+                    <tr>
+                        <td align="center">
+                            <button onclick="noDeleteSoundsDialog()">No</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="yesDeleteSoundsDialog()">Yes</button>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
   // The following are generated dynamically in HardwareUtil.fetchJavaScriptForHardware():
@@ -564,6 +606,7 @@
       playSoundFile(soundName);
     }
   }
+
 </script>
 </body>
 </html>

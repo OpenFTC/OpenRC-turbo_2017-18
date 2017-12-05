@@ -33,16 +33,18 @@ package com.qualcomm.robotcore.hardware;
 
 public interface UltrasonicSensor extends HardwareDevice {
 
-  /**
-   * Get the Ultrasonic levels from this sensor
-   * @return ultrasonic levels
-   */
-  double getUltrasonicLevel();
+    /**
+     * Get the Ultrasonic levels from this sensor
+     *
+     * @return ultrasonic levels
+     */
+    double getUltrasonicLevel();
 
-  /**
-   * Status of this sensor, in string form
-   * @return status
-   */
-  String status();
+    /**
+     * Status of this sensor, in string form
+     *
+     * @return status
+     */
+    String status();
 
 }

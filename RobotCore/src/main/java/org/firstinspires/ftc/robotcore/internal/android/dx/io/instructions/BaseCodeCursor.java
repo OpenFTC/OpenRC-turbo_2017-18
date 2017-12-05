@@ -20,10 +20,14 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.io.instructions;
  * Base implementation of {@link CodeCursor}.
  */
 public abstract class BaseCodeCursor implements CodeCursor {
-    /** base address map */
+    /**
+     * base address map
+     */
     private final AddressMap baseAddressMap;
 
-    /** next index within {@link #array} to read from or write to */
+    /**
+     * next index within {@link #array} to read from or write to
+     */
     private int cursor;
 
     /**
@@ -34,18 +38,24 @@ public abstract class BaseCodeCursor implements CodeCursor {
         this.cursor = 0;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public final int cursor() {
         return cursor;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public final int baseAddressForCursor() {
         int mapped = baseAddressMap.get(cursor);
         return (mapped >= 0) ? mapped : cursor;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public final void setBaseAddress(int targetAddress, int baseAddress) {
         baseAddressMap.put(targetAddress, baseAddress);
     }

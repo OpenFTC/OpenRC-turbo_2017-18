@@ -38,7 +38,7 @@ public interface ConstantPool {
      * @param n {@code n >= 0, n < size();} the constant pool index
      * @return {@code non-null;} the corresponding entry
      * @throws IllegalArgumentException thrown if {@code n} is
-     * in-range but invalid
+     *                                  in-range but invalid
      */
     public Constant get(int n);
 
@@ -50,7 +50,7 @@ public interface ConstantPool {
      * @param n {@code n >= 0, n < size();} the constant pool index
      * @return {@code null-ok;} the corresponding entry, if {@code n != 0}
      * @throws IllegalArgumentException thrown if {@code n} is
-     * in-range and non-zero but invalid
+     *                                  in-range and non-zero but invalid
      */
     public Constant get0Ok(int n);
 

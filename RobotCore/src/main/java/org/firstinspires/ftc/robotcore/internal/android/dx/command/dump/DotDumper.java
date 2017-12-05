@@ -72,7 +72,7 @@ public class DotDumper implements ParseObserver {
 
         // Next, reparse it and observe the process.
         DirectClassFile liveCf =
-            new DirectClassFile(ba, filePath, strictParse);
+                new DirectClassFile(ba, filePath, strictParse);
         liveCf.setAttributeFactory(StdAttributeFactory.THE_ONE);
         liveCf.setObserver(this);
         liveCf.getMagic(); // Force parsing to happen.
@@ -94,7 +94,9 @@ public class DotDumper implements ParseObserver {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void startParsingMember(ByteArray bytes, int offset, String name,
                                    String descriptor) {
         // This space intentionally left blank.
@@ -111,11 +113,11 @@ public class DotDumper implements ParseObserver {
         }
 
         ConcreteMethod meth = new ConcreteMethod((Method) member, classFile,
-                                                 true, true);
+                true, true);
 
         TranslationAdvice advice = DexTranslationAdvice.THE_ONE;
         RopMethod rmeth =
-            Ropper.convert(meth, advice, classFile.getMethods());
+                Ropper.convert(meth, advice, classFile.getMethods());
 
         if (optimize) {
             boolean isStatic = AccessFlags.isStatic(meth.getAccessFlags());
@@ -124,7 +126,7 @@ public class DotDumper implements ParseObserver {
                     true, advice);
         }
 
-        System.out.println("digraph "  + name + "{");
+        System.out.println("digraph " + name + "{");
 
         System.out.println("\tfirst -> n"
                 + Hex.u2(rmeth.getFirstLabel()) + ";");
@@ -144,7 +146,7 @@ public class DotDumper implements ParseObserver {
                         + Hex.u2(successors.get(0)) + ";");
             } else {
                 System.out.print("\tn" + Hex.u2(label) + " -> {");
-                for (int j = 0; j < successors.size(); j++ ) {
+                for (int j = 0; j < successors.size(); j++) {
                     int successor = successors.get(j);
 
                     if (successor != bb.getPrimarySuccessor()) {

@@ -44,63 +44,54 @@ import java.nio.charset.Charset;
  * Created by bob on 2/6/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxReadVersionStringResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxReadVersionStringResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    private byte    cbText = 0;
-    private byte[]  rgbText = null;
+    private byte cbText = 0;
+    private byte[] rgbText = null;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxReadVersionStringResponse(LynxModuleIntf module)
-        {
+    public LynxReadVersionStringResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public String getVersionString()
-        {
-        if (rgbText == null)
-            {
+    public String getVersionString() {
+        if (rgbText == null) {
             return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.lynxUnavailableFWVersionString);
-            }
-        else
-            {
+        } else {
             return new String(rgbText, Charset.forName("UTF-8"));
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
-        int cbPayload = 1 + (rgbText ==null ? 0 : rgbText.length);
+    public byte[] toPayloadByteArray() {
+        int cbPayload = 1 + (rgbText == null ? 0 : rgbText.length);
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.cbText);
-        if (this.rgbText != null)
-            {
+        if (this.rgbText != null) {
             buffer.put(this.rgbText);
-            }
-        return buffer.array();
         }
+        return buffer.array();
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.cbText = buffer.get();
         this.rgbText = new byte[this.cbText];
         buffer.get(this.rgbText);
-        }
     }
+}

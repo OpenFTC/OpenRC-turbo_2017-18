@@ -22,18 +22,22 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
  * A local variable item: either a name or a signature or both.
  */
 public class LocalItem implements Comparable<LocalItem> {
-    /** {@code null-ok;} local variable name */
+    /**
+     * {@code null-ok;} local variable name
+     */
     private final CstString name;
 
-    /** {@code null-ok;} local variable signature */
+    /**
+     * {@code null-ok;} local variable signature
+     */
     private final CstString signature;
 
     /**
      * Make a new item. If both name and signature are null, null is returned.
-     *
+     * <p>
      * TODO: intern these
      *
-     * @param name {@code null-ok;} local variable name
+     * @param name      {@code null-ok;} local variable name
      * @param signature {@code null-ok;} local variable signature
      * @return {@code non-null;} appropriate instance.
      */
@@ -42,13 +46,13 @@ public class LocalItem implements Comparable<LocalItem> {
             return null;
         }
 
-        return new LocalItem (name, signature);
+        return new LocalItem(name, signature);
     }
 
     /**
      * Constructs instance.
      *
-     * @param name {@code null-ok;} local variable name
+     * @param name      {@code null-ok;} local variable name
      * @param signature {@code null-ok;} local variable signature
      */
     private LocalItem(CstString name, CstString signature) {
@@ -56,7 +60,9 @@ public class LocalItem implements Comparable<LocalItem> {
         this.signature = signature;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof LocalItem)) {
@@ -87,7 +93,9 @@ public class LocalItem implements Comparable<LocalItem> {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int compareTo(LocalItem local) {
         int ret;
 
@@ -103,14 +111,18 @@ public class LocalItem implements Comparable<LocalItem> {
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return (name == null ? 0 : name.hashCode()) * 31
                 + (signature == null ? 0 : signature.hashCode());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         if (name != null && signature == null) {

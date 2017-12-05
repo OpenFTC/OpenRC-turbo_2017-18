@@ -23,7 +23,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
  * Raw attribute, for holding onto attributes that are unrecognized.
  */
 public final class RawAttribute extends BaseAttribute {
-    /** {@code non-null;} attribute data */
+    /**
+     * {@code non-null;} attribute data
+     */
     private final ByteArray data;
 
     /**
@@ -53,11 +55,11 @@ public final class RawAttribute extends BaseAttribute {
     /**
      * Constructs an instance from a sub-array of a {@link ByteArray}.
      *
-     * @param name {@code non-null;} attribute name
-     * @param data {@code non-null;} array containing the attribute data
+     * @param name   {@code non-null;} attribute name
+     * @param data   {@code non-null;} array containing the attribute data
      * @param offset offset in {@code data} to the attribute data
      * @param length length of the attribute data, in bytes
-     * @param pool {@code null-ok;} constant pool to use for cpi resolution
+     * @param pool   {@code null-ok;} constant pool to use for cpi resolution
      */
     public RawAttribute(String name, ByteArray data, int offset,
                         int length, ConstantPool pool) {
@@ -73,7 +75,9 @@ public final class RawAttribute extends BaseAttribute {
         return data;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int byteLength() {
         return data.size() + 6;
     }

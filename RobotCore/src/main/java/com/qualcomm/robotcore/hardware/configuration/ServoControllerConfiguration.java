@@ -38,19 +38,19 @@ import java.util.List;
 
 public class ServoControllerConfiguration extends ControllerConfiguration<ServoConfiguration> {
 
-  public ServoControllerConfiguration(){
-    super("", new ArrayList<ServoConfiguration>(), new SerialNumber(), BuiltInConfigurationType.SERVO_CONTROLLER);
-  }
+    public ServoControllerConfiguration() {
+        super("", new ArrayList<ServoConfiguration>(), new SerialNumber(), BuiltInConfigurationType.SERVO_CONTROLLER);
+    }
 
-  public ServoControllerConfiguration(String name, List<ServoConfiguration> servos, SerialNumber serialNumber) {
-    super(name, servos, serialNumber, BuiltInConfigurationType.SERVO_CONTROLLER);
-  }
+    public ServoControllerConfiguration(String name, List<ServoConfiguration> servos, SerialNumber serialNumber) {
+        super(name, servos, serialNumber, BuiltInConfigurationType.SERVO_CONTROLLER);
+    }
 
-  public List<ServoConfiguration> getServos() {
-    return super.getDevices();
-  }
+    public List<ServoConfiguration> getServos() {
+        return super.getDevices();
+    }
 
-  public void setServos(List<ServoConfiguration> servos){
-    super.setDevices(servos);
-  }
+    public void setServos(List<ServoConfiguration> servos) {
+        super.setDevices(servos);
+    }
 }

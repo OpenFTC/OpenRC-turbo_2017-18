@@ -24,13 +24,19 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
  */
 public final class CstFloat
         extends CstLiteral32 {
-    /** {@code non-null;} instance representing {@code 0} */
+    /**
+     * {@code non-null;} instance representing {@code 0}
+     */
     public static final CstFloat VALUE_0 = make(Float.floatToIntBits(0.0f));
 
-    /** {@code non-null;} instance representing {@code 1} */
+    /**
+     * {@code non-null;} instance representing {@code 1}
+     */
     public static final CstFloat VALUE_1 = make(Float.floatToIntBits(1.0f));
 
-    /** {@code non-null;} instance representing {@code 2} */
+    /**
+     * {@code non-null;} instance representing {@code 2}
+     */
     public static final CstFloat VALUE_2 = make(Float.floatToIntBits(2.0f));
 
     /**
@@ -56,26 +62,34 @@ public final class CstFloat
         super(bits);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         int bits = getIntBits();
         return "float{0x" + Hex.u4(bits) + " / " +
-            Float.intBitsToFloat(bits) + '}';
+                Float.intBitsToFloat(bits) + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.FLOAT;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "float";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return Float.toString(Float.intBitsToFloat(getIntBits()));
     }

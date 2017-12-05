@@ -3,7 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                tools:context=".FtcLynxModuleAddressUpdateActivity" >
+                tools:context=".FtcLynxModuleAddressUpdateActivity">
 
     <LinearLayout
         android:id="@+id/lynxAddressButtons"
@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
+
             <include layout="@layout/button_list"/>
         </RelativeLayout>
 

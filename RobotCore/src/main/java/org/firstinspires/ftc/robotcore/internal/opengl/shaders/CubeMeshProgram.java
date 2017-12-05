@@ -34,15 +34,13 @@ package org.firstinspires.ftc.robotcore.internal.opengl.shaders;
 
 import android.content.Context;
 
-public class CubeMeshProgram extends ShaderProgram
-    {
+public class CubeMeshProgram extends ShaderProgram {
     public final CubeMeshVertexShader vertex;
     public final CubeMeshFragmentShader fragment;
 
-    public CubeMeshProgram(Context context)
-        {
+    public CubeMeshProgram(Context context) {
         super(context, CubeMeshVertexShader.resourceId, CubeMeshFragmentShader.resourceId);
         this.vertex = new CubeMeshVertexShader(this.program);
         this.fragment = new CubeMeshFragmentShader(this.program);
-        }
     }
+}

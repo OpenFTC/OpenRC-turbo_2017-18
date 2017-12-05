@@ -23,10 +23,14 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
  * All of the parts that make up a method at the rop layer.
  */
 public final class RopMethod {
-    /** {@code non-null;} basic block list of the method */
+    /**
+     * {@code non-null;} basic block list of the method
+     */
     private final BasicBlockList blocks;
 
-    /** {@code >= 0;} label for the block which starts the method */
+    /**
+     * {@code >= 0;} label for the block which starts the method
+     */
     private final int firstLabel;
 
     /**
@@ -44,7 +48,7 @@ public final class RopMethod {
     /**
      * Constructs an instance.
      *
-     * @param blocks {@code non-null;} basic block list of the method
+     * @param blocks     {@code non-null;} basic block list of the method
      * @param firstLabel {@code >= 0;} the label of the first block to execute
      */
     public RopMethod(BasicBlockList blocks, int firstLabel) {
@@ -127,7 +131,7 @@ public final class RopMethod {
      */
     public RopMethod withRegisterOffset(int delta) {
         RopMethod result = new RopMethod(blocks.withRegisterOffset(delta),
-                                         firstLabel);
+                firstLabel);
 
         if (exitPredecessors != null) {
             /*

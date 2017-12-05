@@ -48,8 +48,7 @@ import javax.tools.StandardJavaFileManager;
  * {@link OnBotJavaTracingStandardFileManager} provides tracing to {@link StandardJavaFileManager} methods.
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaTracingStandardFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> implements StandardJavaFileManager
-    {
+public class OnBotJavaTracingStandardFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> implements StandardJavaFileManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -62,153 +61,143 @@ public class OnBotJavaTracingStandardFileManager extends ForwardingJavaFileManag
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OnBotJavaTracingStandardFileManager(StandardJavaFileManager delegate)
-        {
+    public OnBotJavaTracingStandardFileManager(StandardJavaFileManager delegate) {
         super(delegate);
         this.delegate = delegate;
-        }
+    }
 
     //---------------------------------------------------------------------------------------------
     // JavaFileManager
     //----------------------------------------------------------------------------------------------
 
-    @Override public void close() throws IOException
-        {
+    @Override
+    public void close() throws IOException {
         RobotLog.dd(TAG, "close()");
         super.close();
-        }
+    }
 
-    @Override public void flush() throws IOException
-        {
+    @Override
+    public void flush() throws IOException {
         RobotLog.dd(TAG, "flush()");
         super.flush();
-        }
+    }
 
     @Override
-    public ClassLoader getClassLoader(Location location)
-        {
+    public ClassLoader getClassLoader(Location location) {
         RobotLog.dd(TAG, "getClassLoader(%s)", location);
         return super.getClassLoader(location);
-        }
+    }
 
     @Override
-    public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException
-        {
+    public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException {
         FileObject result = super.getFileForInput(location, packageName, relativeName);
         RobotLog.dd(TAG, "getFileForInput(%s, %s, %s) -> %s", location, packageName, relativeName, result);
         return result;
-        }
+    }
 
     @Override
-    public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException
-        {
+    public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException {
         FileObject result = super.getFileForOutput(location, packageName, relativeName, sibling);
         RobotLog.dd(TAG, "getFileForOutput(%s, %s, %s, %s) -> %s", location, packageName, relativeName, sibling, result);
         return result;
-        }
+    }
 
     @Override
-    public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException
-        {
+    public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException {
         JavaFileObject result = super.getJavaFileForInput(location, className, kind);
         RobotLog.dd(TAG, "getJavaFileForInput(%s, %s, %s) -> %s", location, className, kind, result);
         return result;
-        }
+    }
 
     @Override
-    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException
-        {
+    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
         JavaFileObject result = super.getJavaFileForOutput(location, className, kind, sibling);
         RobotLog.dd(TAG, "getJavaFileForOutput(%s, %s, %s, %s) -> %s", location, className, kind, sibling, result);
         return result;
-        }
+    }
 
-    @Override public boolean handleOption(String current, Iterator<String> remaining)
-        {
+    @Override
+    public boolean handleOption(String current, Iterator<String> remaining) {
         RobotLog.dd(TAG, "handleOption(%s, %s)", current, remaining);
         return super.handleOption(current, remaining);
-        }
+    }
 
-    @Override public boolean hasLocation(Location location)
-        {
+    @Override
+    public boolean hasLocation(Location location) {
         boolean result = super.hasLocation(location);
         RobotLog.dd(TAG, "hasLocation(%s) -> %s", location, result);
         return result;
-        }
+    }
 
-    @Override public String inferBinaryName(Location location, JavaFileObject file)
-        {
+    @Override
+    public String inferBinaryName(Location location, JavaFileObject file) {
         String result = super.inferBinaryName(location, file);
         RobotLog.dd(TAG, "inferBinaryName(%s, %s) -> %s", location, file, result);
         return result;
-        }
+    }
 
-    @Override public boolean isSameFile(FileObject a, FileObject b)
-        {
+    @Override
+    public boolean isSameFile(FileObject a, FileObject b) {
         boolean result = super.isSameFile(a, b);
-        RobotLog.dd(TAG, "isSameFile(%s, %s) -> %s", a,b, result);
+        RobotLog.dd(TAG, "isSameFile(%s, %s) -> %s", a, b, result);
         return result;
-        }
+    }
 
-    @Override public int isSupportedOption(String option)
-        {
+    @Override
+    public int isSupportedOption(String option) {
         int result = super.isSupportedOption(option);
         RobotLog.dd(TAG, "isSupportedOption(%s) -> %d", option, result);
         return result;
-        }
+    }
 
     @Override
-    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException
-        {
+    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
         RobotLog.dd(TAG, "list(%s, %s, %s, %s)", location, packageName, kinds, recurse);
         return super.list(location, packageName, kinds, recurse);
-        }
+    }
 
     //---------------------------------------------------------------------------------------------
     // StandardJavaFileManager
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromFiles(Iterable<? extends File> files)
-        {
+    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromFiles(Iterable<? extends File> files) {
         Iterable<? extends JavaFileObject> result = delegate.getJavaFileObjectsFromFiles(files);
         RobotLog.dd(TAG, "getJavaFileObjectsFromFiles(%s) -> %s", files, result);
         return result;
-        }
+    }
 
-    @Override public Iterable<? extends JavaFileObject> getJavaFileObjects(File... files)
-        {
+    @Override
+    public Iterable<? extends JavaFileObject> getJavaFileObjects(File... files) {
         Iterable<? extends JavaFileObject> result = delegate.getJavaFileObjects(files);
         RobotLog.dd(TAG, "getJavaFileObjects(%s) -> %s", files, result);
         return result;
-        }
+    }
 
     @Override
-    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(Iterable<String> names)
-        {
+    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(Iterable<String> names) {
         Iterable<? extends JavaFileObject> result = delegate.getJavaFileObjectsFromStrings(names);
         RobotLog.dd(TAG, "getJavaFileObjectsFromStrings(%s) -> %s", names, result);
         return result;
-        }
+    }
 
-    @Override public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names)
-        {
+    @Override
+    public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names) {
         Iterable<? extends JavaFileObject> result = delegate.getJavaFileObjects(names);
         RobotLog.dd(TAG, "getJavaFileObjects(%s) -> %s", names, result);
         return result;
-        }
+    }
 
     @Override
-    public void setLocation(Location location, Iterable<? extends File> path) throws IOException
-        {
+    public void setLocation(Location location, Iterable<? extends File> path) throws IOException {
         RobotLog.dd(TAG, "setLocation(%s, %s)", location, path);
         delegate.setLocation(location, path);
-        }
+    }
 
-    @Override public Iterable<? extends File> getLocation(Location location)
-        {
+    @Override
+    public Iterable<? extends File> getLocation(Location location) {
         Iterable<? extends File> result = delegate.getLocation(location);
         RobotLog.dd(TAG, "getLocation(%s) -> %s", location, result);
         return result;
-        }
     }
+}

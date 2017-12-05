@@ -25,13 +25,15 @@ public final class CstMethodRef
      * Constructs an instance.
      *
      * @param definingClass {@code non-null;} the type of the defining class
-     * @param nat {@code non-null;} the name-and-type
+     * @param nat           {@code non-null;} the name-and-type
      */
     public CstMethodRef(CstType definingClass, CstNat nat) {
         super(definingClass, nat);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "method";

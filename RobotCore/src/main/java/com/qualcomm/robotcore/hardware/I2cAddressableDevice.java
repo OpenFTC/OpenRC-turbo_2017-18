@@ -35,13 +35,14 @@ package com.qualcomm.robotcore.hardware;
 /**
  * {@link I2cAddressableDevice} provides a means by which the address of a device
  * living on an I2C bus can be retrieved.
+ *
  * @see I2cAddrConfig
  */
-public interface I2cAddressableDevice
-    {
+public interface I2cAddressableDevice {
     /**
      * Returns the I2C address currently in use to communicate with an I2C hardware device
+     *
      * @return the I2C address currently in use
      */
     I2cAddr getI2cAddress();
-    }
+}

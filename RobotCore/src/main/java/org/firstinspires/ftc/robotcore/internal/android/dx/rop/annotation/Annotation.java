@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityControl;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ToHuman;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,19 +33,25 @@ import java.util.TreeMap;
  */
 public final class Annotation extends MutabilityControl
         implements Comparable<Annotation>, ToHuman {
-    /** {@code non-null;} type of the annotation */
+    /**
+     * {@code non-null;} type of the annotation
+     */
     private final CstType type;
 
-    /** {@code non-null;} the visibility of the annotation */
+    /**
+     * {@code non-null;} the visibility of the annotation
+     */
     private final AnnotationVisibility visibility;
 
-    /** {@code non-null;} map from names to {@link NameValuePair} instances */
+    /**
+     * {@code non-null;} map from names to {@link NameValuePair} instances
+     */
     private final TreeMap<CstString, NameValuePair> elements;
 
     /**
      * Construct an instance. It initially contains no elements.
      *
-     * @param type {@code non-null;} type of the annotation
+     * @param type       {@code non-null;} type of the annotation
      * @param visibility {@code non-null;} the visibility of the annotation
      */
     public Annotation(CstType type, AnnotationVisibility visibility) {
@@ -61,24 +68,28 @@ public final class Annotation extends MutabilityControl
         this.elements = new TreeMap<CstString, NameValuePair>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
-        if (! (other instanceof Annotation)) {
+        if (!(other instanceof Annotation)) {
             return false;
         }
 
         Annotation otherAnnotation = (Annotation) other;
 
-        if (! (type.equals(otherAnnotation.type)
-                        && (visibility == otherAnnotation.visibility))) {
+        if (!(type.equals(otherAnnotation.type)
+                && (visibility == otherAnnotation.visibility))) {
             return false;
         }
 
         return elements.equals(otherAnnotation.elements);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int hashCode() {
         int hash = type.hashCode();
         hash = (hash * 31) + elements.hashCode();
@@ -86,7 +97,9 @@ public final class Annotation extends MutabilityControl
         return hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int compareTo(Annotation other) {
         int result = type.compareTo(other.type);
 
@@ -122,13 +135,17 @@ public final class Annotation extends MutabilityControl
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         StringBuilder sb = new StringBuilder();
 

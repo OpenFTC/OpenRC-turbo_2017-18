@@ -14,16 +14,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-public class UiUtils
-{
-    public static void showDsAppInstalledDialog (final Activity activity)
-    {
+public class UiUtils {
+    public static void showDsAppInstalledDialog(final Activity activity) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(activity);
         builder.setCancelable(false);
 
         String test = "<font color='#FF0000'>This device has the FTC Driver Station app installed.</font>" +
-            "<br> <br>You need to uninstall either this Robot Controller (RC) app or the Driver Station (DS) app.";
+                "<br> <br>You need to uninstall either this Robot Controller (RC) app or the Driver Station (DS) app.";
 
         builder.setTitle("Ruh-roh!")
                 .setMessage(Html.fromHtml(test))
@@ -47,9 +45,8 @@ public class UiUtils
                 .show();
     }
 
-    public static void showOpenFtcSummary(final Activity activity)
-    {
-        LayoutInflater inflater= LayoutInflater.from(activity);
+    public static void showOpenFtcSummary(final Activity activity) {
+        LayoutInflater inflater = LayoutInflater.from(activity);
         View view = inflater.inflate(R.layout.about_openftc_layout, null);
 
         AlertDialog.Builder builder;

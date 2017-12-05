@@ -54,107 +54,111 @@ public interface RobocolParsable {
    *    05+ | Payload
    */
 
-  /**
-   * Message Type
-   */
-  public enum MsgType {
-    /*
-     * NOTE: when adding new message types, do not change existing message
-     * type values or you will break backwards capability.
+    /**
+     * Message Type
      */
-    EMPTY(0),
-    HEARTBEAT(1),
-    GAMEPAD(2),
-    PEER_DISCOVERY(3),
-    COMMAND(4),
-    TELEMETRY(5);
+    public enum MsgType {
+        /*
+         * NOTE: when adding new message types, do not change existing message
+         * type values or you will break backwards capability.
+         */
+        EMPTY(0),
+        HEARTBEAT(1),
+        GAMEPAD(2),
+        PEER_DISCOVERY(3),
+        COMMAND(4),
+        TELEMETRY(5);
 
-    private static final MsgType[] VALUES_CACHE = MsgType.values();
-    private final int type;
+        private static final MsgType[] VALUES_CACHE = MsgType.values();
+        private final int type;
+
+        /**
+         * Create a MsgType from a byte
+         *
+         * @param b
+         * @return MsgType
+         */
+        public static MsgType fromByte(byte b) {
+            MsgType t = EMPTY;
+            try {
+                t = VALUES_CACHE[b];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                RobotLog.w(String.format("Cannot convert %d to MsgType: %s", b, e.toString()));
+            }
+            return t;
+        }
+
+        private MsgType(int type) {
+            this.type = type;
+        }
+
+        /**
+         * Return this message type as a byte
+         *
+         * @return message type as byte
+         */
+        public byte asByte() {
+            return (byte) (type);
+        }
+    }
+
+    // A header consists of the 'message type' (1 byte), 'payload size' (2 bytes), and a sequence number (2 bytes)
+    int HEADER_LENGTH = 1 + 2 + 2;
 
     /**
-     * Create a MsgType from a byte
-     * @param b
-     * @return MsgType
+     * Get the Robocol MsgType of this RobocolParsable
+     *
+     * @return message type
      */
-    public static MsgType fromByte(byte b) {
-      MsgType t = EMPTY;
-      try {
-        t = VALUES_CACHE[b];
-      } catch (ArrayIndexOutOfBoundsException e) {
-        RobotLog.w(String.format("Cannot convert %d to MsgType: %s", b, e.toString()));
-      }
-      return t;
-    }
-
-    private MsgType(int type) {
-      this.type = type;
-    }
+    MsgType getRobocolMsgType();
 
     /**
-     * Return this message type as a byte
-     * @return message type as byte
+     * Returns the sequence number of this packet. Newly-created packets are numbered in a monotonically
+     * increasing fashion, independently, on both driver station and robot controller; there are thus
+     * two numbering spaces. Note that though the value here reports as an int, only two bytes are used
+     * to transmit the sequence number. Reported values will thus be in the range of 0..65535.
+     *
+     * @return the sequence number of this packet
      */
-    public byte asByte() {
-      return (byte)(type);
-    }
-  }
+    int getSequenceNumber();
 
-  // A header consists of the 'message type' (1 byte), 'payload size' (2 bytes), and a sequence number (2 bytes)
-  int HEADER_LENGTH = 1 + 2 + 2;
+    /**
+     * Sets/updates the sequence number of the parsable to be the next available value
+     */
+    void setSequenceNumber();
 
-  /**
-   * Get the Robocol MsgType of this RobocolParsable
-   * @return message type
-   */
-  MsgType getRobocolMsgType();
+    /**
+     * Returns whether or not this parsable is due for a (re)transmisison
+     *
+     * @param nanotimeNow the current nanotime on the system clock
+     * @return whether or not a (re)transmission is due
+     */
+    boolean shouldTransmit(long nanotimeNow);
 
-  /**
-   * Returns the sequence number of this packet. Newly-created packets are numbered in a monotonically
-   * increasing fashion, independently, on both driver station and robot controller; there are thus
-   * two numbering spaces. Note that though the value here reports as an int, only two bytes are used
-   * to transmit the sequence number. Reported values will thus be in the range of 0..65535.
-   *
-   * @return the sequence number of this packet
-   */
-  int getSequenceNumber();
+    /**
+     * Serializes the object for the purposes of network transmission, which is assumed will take
+     * place virtually immediately. Internal state regarding the time of last transmission may thus
+     * be updated during this method.
+     *
+     * @return a serialized copy of of the object
+     * @throws RobotCoreException if error
+     */
+    byte[] toByteArrayForTransmission() throws RobotCoreException;
 
-  /**
-   * Sets/updates the sequence number of the parsable to be the next available value
-   */
-  void setSequenceNumber();
+    /**
+     * Serializes the object for the purposes other than network transmission, such as creating
+     * a local copy by a subsequent invocation of fromByteArray() into another instance.
+     *
+     * @return a serialized copy of the object
+     * @throws RobotCoreException
+     */
+    byte[] toByteArray() throws RobotCoreException;
 
-  /**
-   * Returns whether or not this parsable is due for a (re)transmisison
-   * @param nanotimeNow the current nanotime on the system clock
-   * @return whether or not a (re)transmission is due
-   */
-  boolean shouldTransmit(long nanotimeNow);
-
-  /**
-   * Serializes the object for the purposes of network transmission, which is assumed will take
-   * place virtually immediately. Internal state regarding the time of last transmission may thus
-   * be updated during this method.
-   *
-   * @return a serialized copy of of the object
-   * @throws RobotCoreException if error
-   */
-  byte[] toByteArrayForTransmission() throws RobotCoreException;
-
-  /**
-   * Serializes the object for the purposes other than network transmission, such as creating
-   * a local copy by a subsequent invocation of fromByteArray() into another instance.
-   *
-   * @return a serialized copy of the object
-   * @throws RobotCoreException
-   */
-  byte[] toByteArray() throws RobotCoreException;
-
-  /**
-   * Populate the fields of this object based on values of this byte array.
-   * @param byteArray byte array from which to populate this object
-   *
-   * @throws RobotCoreException if unable to parse the byte array.
-   */
-  void fromByteArray(byte[] byteArray) throws RobotCoreException;
+    /**
+     * Populate the fields of this object based on values of this byte array.
+     *
+     * @param byteArray byte array from which to populate this object
+     * @throws RobotCoreException if unable to parse the byte array.
+     */
+    void fromByteArray(byte[] byteArray) throws RobotCoreException;
 }

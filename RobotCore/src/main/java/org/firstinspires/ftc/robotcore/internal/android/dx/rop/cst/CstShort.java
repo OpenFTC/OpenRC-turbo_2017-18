@@ -24,7 +24,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
  */
 public final class CstShort
         extends CstLiteral32 {
-    /** {@code non-null;} the value {@code 0} as an instance of this class */
+    /**
+     * {@code non-null;} the value {@code 0} as an instance of this class
+     */
     public static final CstShort VALUE_0 = make((short) 0);
 
     /**
@@ -66,25 +68,33 @@ public final class CstShort
         super(value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         int value = getIntBits();
         return "short{0x" + Hex.u2(value) + " / " + value + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.SHORT;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "short";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return Integer.toString(getIntBits());
     }

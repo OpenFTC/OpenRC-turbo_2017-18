@@ -29,7 +29,8 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/package org.firstinspires.ftc.ftccommon.internal;
+*/
+package org.firstinspires.ftc.ftccommon.internal;
 
 import android.app.Activity;
 import android.app.Service;
@@ -49,8 +50,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  * that happens.
  */
 @SuppressWarnings("WeakerAccess")
-public class FtcRobotControllerWatchdogService extends Service
-    {
+public class FtcRobotControllerWatchdogService extends Service {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -58,13 +58,11 @@ public class FtcRobotControllerWatchdogService extends Service
     public static final String TAG = "FtcRobotControllerWatchdogService";
 
     // Use of nested class defers initialization (and so class lookup) until activity class is actually referenced
-    protected static class ActivityFinder
-        {
+    protected static class ActivityFinder {
         // This is the actual concrete class which should be launched to (re)start the robot controller
         protected static final Class launchActivityClass = findLaunchActivityClass();
 
-        protected static Class findLaunchActivityClass()
-            {
+        protected static Class findLaunchActivityClass() {
             Class result = null;
 
             // First, to avoid hard-coding class names, try to figure out how the outside actually
@@ -72,129 +70,113 @@ public class FtcRobotControllerWatchdogService extends Service
             try {
                 Context context = AppUtil.getDefContext();
                 result = Class.forName(context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()).getComponent().getClassName());
-                }
-            catch (ClassNotFoundException|RuntimeException e)
-                {
+            } catch (ClassNotFoundException | RuntimeException e) {
                 result = null;
-                }
+            }
 
             // As paranoia, fall back on SOMETHING if that should happen to fail
-            if (result == null)
-                {
+            if (result == null) {
                 try {
                     result = Class.forName("org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity");
-                    }
-                catch (ClassNotFoundException|RuntimeException e)
-                    {
+                } catch (ClassNotFoundException | RuntimeException e) {
                     // Ignore
-                    }
                 }
+            }
 
-            if (result == null)
-                {
+            if (result == null) {
                 throw AppUtil.getInstance().unreachable(TAG);
-                }
+            }
 
             return result;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    @Nullable @Override public IBinder onBind(Intent intent)
-        {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
         return null; // we're not this kind of service: we're a 'startable' one, not a 'bindable' one
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public static boolean isFtcRobotControllerActivity(Activity activity)
-        {
-        return activity!= null && isFtcRobotControllerActivity(activity.getClass());
-        }
-    public static boolean isFtcRobotControllerActivity(Class clazz)
-        {
-        return clazz==ActivityFinder.launchActivityClass;
-        }
+    public static boolean isFtcRobotControllerActivity(Activity activity) {
+        return activity != null && isFtcRobotControllerActivity(activity.getClass());
+    }
+
+    public static boolean isFtcRobotControllerActivity(Class clazz) {
+        return clazz == ActivityFinder.launchActivityClass;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
-    @Override public void onCreate()
-        {
+    @Override
+    public void onCreate() {
         super.onCreate();
         RobotLog.vv(TAG, "onCreate()");
-        }
+    }
 
     /**
      * On restart after crash, intent is always null; when the RC activity starts us, it's never null
      */
-    @Override public int onStartCommand(Intent intent, int flags, int startId)
-        {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         RobotLog.vv(TAG, "onStartCommand() intent=%s flags=0x%x startId=%d", intent, flags, startId);
-        if (AppUtil.getInstance().isRobotController())
-            {
+        if (AppUtil.getInstance().isRobotController()) {
             boolean autoStart = shouldAutoLaunchRobotController();
-            if (null == intent && autoStart)
-                {
+            if (null == intent && autoStart) {
                 launchRobotController(this);
-                }
-            return autoStart ? START_STICKY : START_NOT_STICKY;
             }
-        else
-            {
+            return autoStart ? START_STICKY : START_NOT_STICKY;
+        } else {
             RobotLog.dd(TAG, "onStartCommand(): running on DS: shutting down");
             stopSelf();
             return START_NOT_STICKY;
-            }
         }
+    }
 
-    @Override public void onDestroy()
-        {
+    @Override
+    public void onDestroy() {
         super.onDestroy();
         RobotLog.vv(TAG, "onDestroy()");
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static boolean shouldAutoLaunchRobotController()
-        {
+    public static boolean shouldAutoLaunchRobotController() {
         boolean result = false;
 
-        if (AppUtil.getInstance().isRobotController())
-            {
+        if (AppUtil.getInstance().isRobotController()) {
             // We only *ever* autorun in the embedded, headless lynx case
-            if (LynxConstants.isRevControlHub())
-                {
+            if (LynxConstants.isRevControlHub()) {
                 // But we might be asked to pretend we're not there
-                if (!LynxConstants.disableDragonboard())
-                    {
+                if (!LynxConstants.disableDragonboard()) {
                     // We examine the policy flag
-                    if (LynxConstants.autorunRobotController())
-                        {
+                    if (LynxConstants.autorunRobotController()) {
                         result = true;
-                        }
                     }
                 }
             }
+        }
 
         RobotLog.vv(TAG, "shouldAutoLauchRobotController() result=%s", result);
         return result;
-        }
+    }
 
-    public static void launchRobotController(Context context)
-        {
+    public static void launchRobotController(Context context) {
         RobotLog.vv(TAG, "launchRobotController()");
         Intent openApp = new Intent(context, ActivityFinder.launchActivityClass);
         openApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    // nb: task != process
         context.startActivity(openApp);
-        }
-
     }
+
+}

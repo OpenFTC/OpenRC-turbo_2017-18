@@ -44,59 +44,53 @@ import fi.iki.elonen.NanoHTTPD;
 /**
  * {@link SessionCookie} enhances NanoHTTPD cookies so as to be dynamic to client sessions,
  * rather than client hosts.
- *
+ * <p>
  * Note that 'session cookie' is a technical term in the parlance of HTTP cookie
  * architecture.
  */
 @SuppressWarnings("WeakerAccess")
-public class SessionCookie extends NanoHTTPD.Cookie
-    {
+public class SessionCookie extends NanoHTTPD.Cookie {
     public static final String TAG = SessionCookie.class.getSimpleName();
 
     protected static final String sessionCookieName = "consoleSession";
 
-    public SessionCookie(String name, String value)
-        {
+    public SessionCookie(String name, String value) {
         super(name, value, "");
-        }
+    }
 
-    public static void ensureInSession(NanoHTTPD.IHTTPSession session)
-        {
+    public static void ensureInSession(NanoHTTPD.IHTTPSession session) {
         String sessionCookie = fromSessionInternal(session);
-        if (null == sessionCookie)
-            {
+        if (null == sessionCookie) {
             sessionCookie = UUID.randomUUID().toString();
             session.getCookies().set(new SessionCookie(sessionCookieName, sessionCookie));
             RobotLog.vv(TAG, "added SessionCookie: cookie=%s uri='%s'", sessionCookie, session.getUri());
-            }
         }
+    }
 
-    protected static @Nullable String fromSessionInternal(NanoHTTPD.IHTTPSession session)
-        {
+    protected static
+    @Nullable
+    String fromSessionInternal(NanoHTTPD.IHTTPSession session) {
         return session.getCookies().read(sessionCookieName);
-        }
+    }
 
     // If all is well with the client, in that it honors our session cookies, then
     // this should never return null. But not all clients are well behaved. Sigh.
-    public static @Nullable String fromSession(NanoHTTPD.IHTTPSession session)
-        {
+    public static
+    @Nullable
+    String fromSession(NanoHTTPD.IHTTPSession session) {
         String result = fromSessionInternal(session);
-        if (result == null)
-            {
+        if (result == null) {
             RobotLog.ee(TAG, "session cookie unexpectedly null uri=%s", session.getUri());
-            }
-        return result;
         }
+        return result;
+    }
 
-    @Override public String getHTTPHeader()
-        {
-        if (this.e == null || this.e.length() == 0)
-            {
+    @Override
+    public String getHTTPHeader() {
+        if (this.e == null || this.e.length() == 0) {
             return String.format(Locale.US, "%s=%s", this.n, this.v);
-            }
-        else
-            {
+        } else {
             return super.getHTTPHeader();
-            }
         }
     }
+}

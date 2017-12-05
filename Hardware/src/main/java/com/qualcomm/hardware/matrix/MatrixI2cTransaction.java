@@ -76,8 +76,7 @@ public class MatrixI2cTransaction {
     /*
      * Generic read
      */
-    MatrixI2cTransaction(byte motor, I2cTransactionProperty property)
-    {
+    MatrixI2cTransaction(byte motor, I2cTransactionProperty property) {
         this.motor = motor;
         this.property = property;
         this.state = I2cTransactionState.QUEUED;
@@ -87,8 +86,7 @@ public class MatrixI2cTransaction {
     /*
      * Generic write.
      */
-    MatrixI2cTransaction(byte motor, I2cTransactionProperty property, int value)
-    {
+    MatrixI2cTransaction(byte motor, I2cTransactionProperty property, int value) {
         this.motor = motor;
         this.value = value;
         this.property = property;
@@ -99,8 +97,7 @@ public class MatrixI2cTransaction {
     /*
      * Batched motor write
      */
-    MatrixI2cTransaction(byte motor, byte speed, int target, byte mode)
-    {
+    MatrixI2cTransaction(byte motor, byte speed, int target, byte mode) {
         this.motor = motor;
         this.speed = speed;
         this.target = target;
@@ -113,8 +110,7 @@ public class MatrixI2cTransaction {
     /*
      * Servo write
      */
-    MatrixI2cTransaction(byte servo, byte target, byte speed)
-    {
+    MatrixI2cTransaction(byte servo, byte target, byte speed) {
         this.servo = servo;
         this.speed = speed;
         this.target = target;
@@ -123,29 +119,28 @@ public class MatrixI2cTransaction {
         this.write = true;
     }
 
-    public boolean isEqual(MatrixI2cTransaction transaction)
-    {
+    public boolean isEqual(MatrixI2cTransaction transaction) {
         if (this.property != transaction.property) {
             return false;
         } else {
             switch (this.property) {
-            case PROPERTY_MODE:
-            case PROPERTY_START:
-            case PROPERTY_TIMEOUT:
-            case PROPERTY_TARGET:
-            case PROPERTY_SPEED:
-            case PROPERTY_BATTERY:
-            case PROPERTY_POSITION:
-                return ((this.write == transaction.write) && (this.motor == transaction.motor) && (this.value == transaction.value));
-            case PROPERTY_MOTOR_BATCH:
-                return ((this.write == transaction.write) && (this.motor == transaction.motor) && (this.speed == transaction.speed) && (this.target == transaction.target) && (this.mode == transaction.mode));
-            case PROPERTY_SERVO:
-                return ((this.write == transaction.write) && (this.servo == transaction.servo) && (this.speed == transaction.speed) && (this.target == transaction.target));
-            case PROPERTY_SERVO_ENABLE:
-                return ((this.write == transaction.write) && (this.value == transaction.value));
-            default:
-                RobotLog.e("Can not compare against unknown transaction property " + transaction.toString());
-                return false;
+                case PROPERTY_MODE:
+                case PROPERTY_START:
+                case PROPERTY_TIMEOUT:
+                case PROPERTY_TARGET:
+                case PROPERTY_SPEED:
+                case PROPERTY_BATTERY:
+                case PROPERTY_POSITION:
+                    return ((this.write == transaction.write) && (this.motor == transaction.motor) && (this.value == transaction.value));
+                case PROPERTY_MOTOR_BATCH:
+                    return ((this.write == transaction.write) && (this.motor == transaction.motor) && (this.speed == transaction.speed) && (this.target == transaction.target) && (this.mode == transaction.mode));
+                case PROPERTY_SERVO:
+                    return ((this.write == transaction.write) && (this.servo == transaction.servo) && (this.speed == transaction.speed) && (this.target == transaction.target));
+                case PROPERTY_SERVO_ENABLE:
+                    return ((this.write == transaction.write) && (this.value == transaction.value));
+                default:
+                    RobotLog.e("Can not compare against unknown transaction property " + transaction.toString());
+                    return false;
             }
         }
     }
@@ -155,7 +150,7 @@ public class MatrixI2cTransaction {
         if (property == I2cTransactionProperty.PROPERTY_MOTOR_BATCH) {
             return "Matrix motor transaction: " + property + " motor " + motor + " write " + write + " speed " + speed + " target " + target + " mode " + mode;
         } else if (property == I2cTransactionProperty.PROPERTY_SERVO) {
-            return "Matrix servo transaction: " + property + " servo " + servo + " write " + write + " change rate " + speed + " target " + (int)target;
+            return "Matrix servo transaction: " + property + " servo " + servo + " write " + write + " change rate " + speed + " target " + (int) target;
         } else if (property == I2cTransactionProperty.PROPERTY_SERVO_ENABLE) {
             return "Matrix servo transaction: " + property + " servo " + servo + " write " + write + " value " + value;
         } else {

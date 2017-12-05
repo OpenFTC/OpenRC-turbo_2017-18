@@ -37,17 +37,14 @@ import fi.iki.elonen.NanoHTTPD;
 /**
  * Class used to decorate {@link WebHandler} objects.
  */
-public class WebHandlerDecorator implements WebHandler
-{
+public class WebHandlerDecorator implements WebHandler {
     private final WebHandler delegate;
 
-    public WebHandlerDecorator(WebHandler delegate)
-    {
+    public WebHandlerDecorator(WebHandler delegate) {
         this.delegate = delegate;
     }
 
-    public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-    {
+    public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
         return delegate.getResponse(session);
     }
 }

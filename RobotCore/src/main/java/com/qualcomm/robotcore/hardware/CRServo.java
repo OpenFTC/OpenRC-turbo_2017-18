@@ -35,10 +35,10 @@ package com.qualcomm.robotcore.hardware;
 /**
  * CRServo is the central interface supported by continuous rotation servos
  */
-public interface CRServo extends DcMotorSimple
-    {
+public interface CRServo extends DcMotorSimple {
     /**
      * Returns the underlying servo controller on which this servo is situated.
+     *
      * @return the underlying servo controller on which this servo is situated.
      * @see #getPortNumber()
      */
@@ -46,8 +46,9 @@ public interface CRServo extends DcMotorSimple
 
     /**
      * Returns the port number on the underlying servo controller on which this motor is situated.
+     *
      * @return the port number on the underlying servo controller on which this motor is situated.
      * @see #getController()
      */
     int getPortNumber();
-    }
+}

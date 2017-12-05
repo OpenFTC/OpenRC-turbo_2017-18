@@ -23,7 +23,9 @@ import java.util.NoSuchElementException;
  */
 public class BitIntSet implements IntSet {
 
-    /** also accessed in ListIntSet */
+    /**
+     * also accessed in ListIntSet
+     */
     int[] bits;
 
     /**
@@ -35,7 +37,9 @@ public class BitIntSet implements IntSet {
         bits = Bits.makeBitSet(max);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void add(int value) {
         ensureCapacity(value);
         Bits.set(bits, value, true);
@@ -55,19 +59,25 @@ public class BitIntSet implements IntSet {
         }
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void remove(int value) {
         if (value < Bits.getMax(bits)) {
             Bits.set(bits, value, false);
         }
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public boolean has(int value) {
         return (value < Bits.getMax(bits)) && Bits.get(bits, value);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void merge(IntSet other) {
         if (other instanceof BitIntSet) {
             BitIntSet o = (BitIntSet) other;
@@ -91,12 +101,16 @@ public class BitIntSet implements IntSet {
         }
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int elements() {
         return Bits.bitCount(bits);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public IntIterator iterator() {
         return new IntIterator() {
             private int idx = Bits.findFirst(bits, 0);
@@ -114,14 +128,16 @@ public class BitIntSet implements IntSet {
 
                 int ret = idx;
 
-                idx = Bits.findFirst(bits, idx+1);
+                idx = Bits.findFirst(bits, idx + 1);
 
                 return ret;
             }
         };
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
@@ -129,7 +145,7 @@ public class BitIntSet implements IntSet {
 
         boolean first = true;
         for (int i = Bits.findFirst(bits, 0)
-                ; i >= 0
+             ; i >= 0
                 ; i = Bits.findFirst(bits, i + 1)) {
             if (!first) {
                 sb.append(", ");

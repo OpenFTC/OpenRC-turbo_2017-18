@@ -36,24 +36,20 @@ package com.qualcomm.hardware.lynx;
  * Created by bob on 2/6/2017.
  */
 
-public class LynxUnsupportedCommandNumberException extends Exception
-    {
-    private LynxModule  lynxModule;
-    private int         commandNumber;
+public class LynxUnsupportedCommandNumberException extends Exception {
+    private LynxModule lynxModule;
+    private int commandNumber;
 
-    public LynxUnsupportedCommandNumberException(LynxModule module, int commandNumber)
-        {
+    public LynxUnsupportedCommandNumberException(LynxModule module, int commandNumber) {
         this.lynxModule = module;
         this.commandNumber = commandNumber;
-        }
-
-    public int getCommandNumber()
-        {
-        return commandNumber;
-        }
-
-    public LynxModuleIntf getLynxModule()
-        {
-        return lynxModule;
-        }
     }
+
+    public int getCommandNumber() {
+        return commandNumber;
+    }
+
+    public LynxModuleIntf getLynxModule() {
+        return lynxModule;
+    }
+}

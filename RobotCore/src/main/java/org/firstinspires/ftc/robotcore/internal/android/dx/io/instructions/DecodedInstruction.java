@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.io.IndexType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.OpcodeInfo;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.Opcodes;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.io.EOFException;
 
 /**
@@ -28,7 +29,7 @@ import java.io.EOFException;
  * numeric opcode, an optional index type, and any additional
  * arguments of the instruction. The additional arguments (if any) are
  * represented as uninterpreted data.
- *
+ * <p>
  * <p><b>Note:</b> The names of the arguments are <i>not</i> meant to
  * match the names given in the Dalvik instruction format
  * specification, specification which just names fields (somewhat)
@@ -37,16 +38,24 @@ import java.io.EOFException;
  * consistently named alphabetically.</p>
  */
 public abstract class DecodedInstruction {
-    /** non-null; instruction format / codec */
+    /**
+     * non-null; instruction format / codec
+     */
     private final InstructionCodec format;
 
-    /** opcode number */
+    /**
+     * opcode number
+     */
     private final int opcode;
 
-    /** constant index argument */
+    /**
+     * constant index argument
+     */
     private final int index;
 
-    /** null-ok; index type */
+    /**
+     * null-ok; index type
+     */
     private final IndexType indexType;
 
     /**
@@ -99,7 +108,7 @@ public abstract class DecodedInstruction {
      * Constructs an instance.
      */
     public DecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal) {
+                              int index, IndexType indexType, int target, long literal) {
         if (format == null) {
             throw new NullPointerException("format == null");
         }

@@ -23,7 +23,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.FixedSizeList;
  * {@code LineNumberTable} attributes.
  */
 public final class LineNumberList extends FixedSizeList {
-    /** {@code non-null;} zero-size instance */
+    /**
+     * {@code non-null;} zero-size instance
+     */
     public static final LineNumberList EMPTY = new LineNumberList(0);
 
     /**
@@ -78,7 +80,7 @@ public final class LineNumberList extends FixedSizeList {
     /**
      * Sets the item at the given index.
      *
-     * @param n {@code >= 0, < size();} which element
+     * @param n    {@code >= 0, < size();} which element
      * @param item {@code non-null;} the item
      */
     public void set(int n, Item item) {
@@ -92,8 +94,8 @@ public final class LineNumberList extends FixedSizeList {
     /**
      * Sets the item at the given index.
      *
-     * @param n {@code >= 0, < size();} which element
-     * @param startPc {@code >= 0;} start pc of this item
+     * @param n          {@code >= 0, < size();} which element
+     * @param startPc    {@code >= 0;} start pc of this item
      * @param lineNumber {@code >= 0;} corresponding line number
      */
     public void set(int n, int startPc, int lineNumber) {
@@ -138,16 +140,20 @@ public final class LineNumberList extends FixedSizeList {
      * Item in a line number table.
      */
     public static class Item {
-        /** {@code >= 0;} start pc of this item */
+        /**
+         * {@code >= 0;} start pc of this item
+         */
         private final int startPc;
 
-        /** {@code >= 0;} corresponding line number */
+        /**
+         * {@code >= 0;} corresponding line number
+         */
         private final int lineNumber;
 
         /**
          * Constructs an instance.
          *
-         * @param startPc {@code >= 0;} start pc of this item
+         * @param startPc    {@code >= 0;} start pc of this item
          * @param lineNumber {@code >= 0;} corresponding line number
          */
         public Item(int startPc, int lineNumber) {

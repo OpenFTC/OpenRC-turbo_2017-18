@@ -40,7 +40,7 @@ import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
  * Provides certain functionality to the EventLoopManager from its client
  */
 @SuppressWarnings("WearkAccess")
-public interface EventLoopManagerClient
-    {
-    @NonNull WebServer getWebServer();
-    }
+public interface EventLoopManagerClient {
+    @NonNull
+    WebServer getWebServer();
+}

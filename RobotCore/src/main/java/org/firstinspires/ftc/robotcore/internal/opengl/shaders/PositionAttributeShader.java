@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.opengl.shaders;
 
-public interface PositionAttributeShader
-    {
+public interface PositionAttributeShader {
     int getPositionAttributeLocation();
-    }
+}

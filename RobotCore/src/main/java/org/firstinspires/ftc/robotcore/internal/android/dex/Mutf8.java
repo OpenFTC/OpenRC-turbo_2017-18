@@ -17,15 +17,17 @@
 package org.firstinspires.ftc.robotcore.internal.android.dex;
 
 import org.firstinspires.ftc.robotcore.internal.android.dex.util.ByteInput;
+
 import java.io.UTFDataFormatException;
 
 /**
  * Modified UTF-8 as described in the dex file format spec.
- *
+ * <p>
  * <p>Derived from libcore's MUTF-8 encoder at java.nio.charset.ModifiedUtf8.
  */
 public final class Mutf8 {
-    private Mutf8() {}
+    private Mutf8() {
+    }
 
     /**
      * Decodes bytes from {@code in} into {@code out} until a delimiter 0x00 is

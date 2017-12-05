@@ -45,9 +45,8 @@ import java.util.regex.Pattern;
  * For the js code, {@link FtcUserAgentCategory} distinguishes the RC and DS embedded clients from others
  */
 @SuppressWarnings("WeakerAccess")
-public enum FtcUserAgentCategory
-    {
-        DRIVER_STATION, ROBOT_CONTROLLER, OTHER;
+public enum FtcUserAgentCategory {
+    DRIVER_STATION, ROBOT_CONTROLLER, OTHER;
 
     public static final String TAG = FtcUserAgentCategory.class.getSimpleName();
     private static final String uaRobotController = "FtcRobotController";
@@ -55,43 +54,34 @@ public enum FtcUserAgentCategory
     private static final Pattern patternRobotController = Pattern.compile("[\\s]*" + uaRobotController + "/", 0);
     private static final Pattern patternDriverStation = Pattern.compile("[\\s]*" + uaDriverStation + "/", 0);
 
-    public static FtcUserAgentCategory fromUserAgent(String userAgent)
-        {
+    public static FtcUserAgentCategory fromUserAgent(String userAgent) {
         FtcUserAgentCategory result =
                 (patternRobotController.matcher(userAgent).find())
-                    ? ROBOT_CONTROLLER
-                    : ((patternDriverStation.matcher(userAgent).find())
+                        ? ROBOT_CONTROLLER
+                        : ((patternDriverStation.matcher(userAgent).find())
                         ? DRIVER_STATION
                         : OTHER);
         return result;
-        }
+    }
 
     // https://en.wikipedia.org/wiki/User_agent
-    public static String addToUserAgent(String existingUserAgent)
-        {
+    public static String addToUserAgent(String existingUserAgent) {
         String suffix = "";
         Context context = AppUtil.getDefContext();
         String appVersion;
-        try
-            {
+        try {
             appVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-            }
-        catch (PackageManager.NameNotFoundException e)
-            {
+        } catch (PackageManager.NameNotFoundException e) {
             appVersion = "3.1";
-            }
-
-        if (AppUtil.getInstance().isRobotController())
-            {
-            suffix = String.format(" %s/%s (library:%s)", uaRobotController, appVersion, Version.getLibraryVersion());
-            }
-        else if (AppUtil.getInstance().isDriverStation())
-            {
-            suffix = String.format(" %s/%s (library:%s)", uaDriverStation, appVersion, Version.getLibraryVersion());
-            }
-        return existingUserAgent + suffix;
         }
 
-
-
+        if (AppUtil.getInstance().isRobotController()) {
+            suffix = String.format(" %s/%s (library:%s)", uaRobotController, appVersion, Version.getLibraryVersion());
+        } else if (AppUtil.getInstance().isDriverStation()) {
+            suffix = String.format(" %s/%s (library:%s)", uaDriverStation, appVersion, Version.getLibraryVersion());
+        }
+        return existingUserAgent + suffix;
     }
+
+
+}

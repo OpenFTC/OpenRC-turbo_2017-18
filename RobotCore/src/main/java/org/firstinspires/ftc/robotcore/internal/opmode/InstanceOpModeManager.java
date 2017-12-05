@@ -38,16 +38,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
  * Passed to registrars of instance opmodes
  */
 @SuppressWarnings("WeakerAccess")
-public interface InstanceOpModeManager
-    {
+public interface InstanceOpModeManager {
     /**
      * Register an *instance* of a class for display on the driver station and availability
      * for game play. You won't likely use this method very often.
      *
-     * @param name              metadata regarding the opmode, including the name to show on the driver station menu
-     * @param opModeInstance    the object instance to use for that menu item
-     *
+     * @param name           metadata regarding the opmode, including the name to show on the driver station menu
+     * @param opModeInstance the object instance to use for that menu item
      * @see com.qualcomm.robotcore.eventloop.opmode.OpModeManager#register(OpModeMeta, OpMode)
      */
     void register(OpModeMeta name, OpMode opModeInstance);
-    }
+}

@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.external;
 
-public interface Predicate<T>
-    {
-    boolean	test(T t);
-    }
+public interface Predicate<T> {
+    boolean test(T t);
+}

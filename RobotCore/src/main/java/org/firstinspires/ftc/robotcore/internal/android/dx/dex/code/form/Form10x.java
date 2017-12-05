@@ -26,7 +26,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
  * for details.
  */
 public final class Form10x extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new Form10x();
 
     /**
@@ -37,34 +39,44 @@ public final class Form10x extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         // This format has no arguments.
         return "";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         // This format has no comment.
         return "";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return 1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         return (insn instanceof SimpleInsn) &&
-            (insn.getRegisters().size() == 0);
+                (insn.getRegisters().size() == 0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         write(out, opcodeUnit(insn, 0));

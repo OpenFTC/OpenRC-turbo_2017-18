@@ -48,130 +48,133 @@ import java.util.concurrent.locks.Lock;
  */
 public class HiTechnicNxtUltrasonicSensor extends LegacyModulePortDeviceImpl implements UltrasonicSensor, DistanceSensor, I2cController.I2cPortReadyCallback {
 
-  //------------------------------------------------------------------------------------------------
-  // Constants
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------
 
-  public static final I2cAddr I2C_ADDRESS = I2cAddr.create8bit(2);
-  public static final int ADDRESS_DISTANCE = 0x42;
-  public static final int MAX_PORT = 5;
-  public static final int MIN_PORT = 4;
+    public static final I2cAddr I2C_ADDRESS = I2cAddr.create8bit(2);
+    public static final int ADDRESS_DISTANCE = 0x42;
+    public static final int MAX_PORT = 5;
+    public static final int MIN_PORT = 4;
 
-  protected static final int cmUltrasonicMax = 255;
+    protected static final int cmUltrasonicMax = 255;
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  Lock   readLock;
-  byte[] readBuffer;
+    Lock readLock;
+    byte[] readBuffer;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtUltrasonicSensor(/*not LegacyModule since we verify port*/ ModernRoboticsUsbLegacyModule legacyModule, int physicalPort) {
-    super(legacyModule, physicalPort);
-    throwIfPortIsInvalid(physicalPort);
-    finishConstruction();
-  }
-
-  @Override
-  protected void moduleNowArmedOrPretending() {
-
-    readLock = module.getI2cReadCacheLock(physicalPort);
-    readBuffer = module.getI2cReadCache(physicalPort);
-
-    module.enableI2cReadMode(physicalPort, I2C_ADDRESS, ADDRESS_DISTANCE, 1);
-    module.enable9v(physicalPort, true);
-    module.setI2cPortActionFlag(physicalPort);
-    module.readI2cCacheFromController(physicalPort);
-
-    module.registerForI2cPortReadyCallback(this, physicalPort);
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
-
-  @Override
-  public String toString() {
-    return String.format("Ultrasonic: %6.1f", getUltrasonicLevel());
-  }
-
-  protected byte rawUltrasonic() {
-    byte distance;
-    try {
-      readLock.lock();
-      distance = readBuffer[4];
-    } finally {
-      readLock.unlock();
+    public HiTechnicNxtUltrasonicSensor(/*not LegacyModule since we verify port*/ ModernRoboticsUsbLegacyModule legacyModule, int physicalPort) {
+        super(legacyModule, physicalPort);
+        throwIfPortIsInvalid(physicalPort);
+        finishConstruction();
     }
-    return distance;
-  }
 
-  @Override
-  public double getUltrasonicLevel() {
-    byte distance = rawUltrasonic();
-    return TypeConversion.unsignedByteToDouble(distance);
-  }
+    @Override
+    protected void moduleNowArmedOrPretending() {
 
-  @Override public double getDistance(DistanceUnit unit) {
-    int cm = TypeConversion.unsignedByteToInt(rawUltrasonic());
-    return cm==cmUltrasonicMax
-            ? DistanceSensor.distanceOutOfRange
-            : unit.fromUnit(DistanceUnit.CM, cm);
-  }
+        readLock = module.getI2cReadCacheLock(physicalPort);
+        readBuffer = module.getI2cReadCache(physicalPort);
 
- /*
-  * Callback method, will be called by the Legacy Module when the port is ready, assuming we
-  * registered that call
-  */
-  @Override
-  public void portIsReady(int port) {
-    module.setI2cPortActionFlag(physicalPort);
-    module.writeI2cCacheToController(physicalPort);
-    module.readI2cCacheFromController(physicalPort);
-  }
+        module.enableI2cReadMode(physicalPort, I2C_ADDRESS, ADDRESS_DISTANCE, 1);
+        module.enable9v(physicalPort, true);
+        module.setI2cPortActionFlag(physicalPort);
+        module.readI2cCacheFromController(physicalPort);
 
-  @Override
-  public String status() {
-    return String.format("%s, connected via device %s, port %d",
-            getDeviceName(),
-            module.getSerialNumber().toString(), physicalPort);  }
-
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.Lego;
-  }
-
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeNXTUltrasonicSensor);
-  }
-
-  @Override
-  public String getConnectionInfo() {
-    return module.getConnectionInfo() + "; port " + physicalPort;
-  }
-
-  @Override
-  public int getVersion() {
-    return 1;
-  }
-
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
-
-  @Override
-  public void close() {
-    // take no action
-  }
-
-  private void throwIfPortIsInvalid(int port) {
-    if (port < MIN_PORT || port > MAX_PORT) {
-      throw new IllegalArgumentException(
-          String.format( "Port %d is invalid for " + getDeviceName()+ "; valid ports are %d or %d", port, MIN_PORT, MAX_PORT));
+        module.registerForI2cPortReadyCallback(this, physicalPort);
     }
-  }
+
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return String.format("Ultrasonic: %6.1f", getUltrasonicLevel());
+    }
+
+    protected byte rawUltrasonic() {
+        byte distance;
+        try {
+            readLock.lock();
+            distance = readBuffer[4];
+        } finally {
+            readLock.unlock();
+        }
+        return distance;
+    }
+
+    @Override
+    public double getUltrasonicLevel() {
+        byte distance = rawUltrasonic();
+        return TypeConversion.unsignedByteToDouble(distance);
+    }
+
+    @Override
+    public double getDistance(DistanceUnit unit) {
+        int cm = TypeConversion.unsignedByteToInt(rawUltrasonic());
+        return cm == cmUltrasonicMax
+                ? DistanceSensor.distanceOutOfRange
+                : unit.fromUnit(DistanceUnit.CM, cm);
+    }
+
+    /*
+     * Callback method, will be called by the Legacy Module when the port is ready, assuming we
+     * registered that call
+     */
+    @Override
+    public void portIsReady(int port) {
+        module.setI2cPortActionFlag(physicalPort);
+        module.writeI2cCacheToController(physicalPort);
+        module.readI2cCacheFromController(physicalPort);
+    }
+
+    @Override
+    public String status() {
+        return String.format("%s, connected via device %s, port %d",
+                getDeviceName(),
+                module.getSerialNumber().toString(), physicalPort);
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.Lego;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeNXTUltrasonicSensor);
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return module.getConnectionInfo() + "; port " + physicalPort;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
+
+    @Override
+    public void close() {
+        // take no action
+    }
+
+    private void throwIfPortIsInvalid(int port) {
+        if (port < MIN_PORT || port > MAX_PORT) {
+            throw new IllegalArgumentException(
+                    String.format("Port %d is invalid for " + getDeviceName() + "; valid ports are %d or %d", port, MIN_PORT, MAX_PORT));
+        }
+    }
 }

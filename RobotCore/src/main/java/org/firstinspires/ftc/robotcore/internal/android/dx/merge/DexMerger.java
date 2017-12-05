@@ -48,7 +48,9 @@ public final class DexMerger {
 
     private final Dex.Section headerOut;
 
-    /** All IDs and definitions sections */
+    /**
+     * All IDs and definitions sections
+     */
     private final Dex.Section idsDefsOut;
 
     private final Dex.Section mapListOut;
@@ -65,23 +67,33 @@ public final class DexMerger {
 
     private final Dex.Section encodedArrayOut;
 
-    /** annotations directory on a type */
+    /**
+     * annotations directory on a type
+     */
     private final Dex.Section annotationsDirectoryOut;
 
-    /** sets of annotations on a member, parameter or type */
+    /**
+     * sets of annotations on a member, parameter or type
+     */
     private final Dex.Section annotationSetOut;
 
-    /** parameter lists */
+    /**
+     * parameter lists
+     */
     private final Dex.Section annotationSetRefListOut;
 
-    /** individual annotations, each containing zero or more fields */
+    /**
+     * individual annotations, each containing zero or more fields
+     */
     private final Dex.Section annotationOut;
 
     private final TableOfContents contentsOut;
 
     private final InstructionTransformer instructionTransformer;
 
-    /** minimum number of wasted bytes before it's worthwhile to compact the result */
+    /**
+     * minimum number of wasted bytes before it's worthwhile to compact the result
+     */
     private int compactWasteThreshold = 1024 * 1024; // 1MiB
 
     public DexMerger(Dex[] dexes, CollisionPolicy collisionPolicy)
@@ -90,7 +102,7 @@ public final class DexMerger {
     }
 
     private DexMerger(Dex[] dexes, CollisionPolicy collisionPolicy,
-            WriterSizes writerSizes) throws IOException {
+                      WriterSizes writerSizes) throws IOException {
         this.dexes = dexes;
         this.collisionPolicy = collisionPolicy;
         this.writerSizes = writerSizes;
@@ -194,7 +206,7 @@ public final class DexMerger {
          */
         WriterSizes compactedSizes = new WriterSizes(this);
         int wastedByteCount = writerSizes.size() - compactedSizes.size();
-        if (wastedByteCount >  + compactWasteThreshold) {
+        if (wastedByteCount > +compactWasteThreshold) {
             DexMerger compacter = new DexMerger(
                     new Dex[] {dexOut, new Dex(0)}, CollisionPolicy.FAIL, compactedSizes);
             result = compacter.mergeDexes();
@@ -207,9 +219,9 @@ public final class DexMerger {
         long elapsed = System.nanoTime() - start;
         for (int i = 0; i < dexes.length; i++) {
             System.out.printf("Merged dex #%d (%d defs/%.1fKiB)%n",
-                i + 1,
-                dexes[i].getTableOfContents().classDefs.size,
-                dexes[i].getLength() / 1024f);
+                    i + 1,
+                    dexes[i].getTableOfContents().classDefs.size,
+                    dexes[i].getLength() / 1024f);
         }
         System.out.printf("Result is %d defs/%.1fKiB. Took %.1fs%n",
                 result.getTableOfContents().classDefs.size,
@@ -332,8 +344,11 @@ public final class DexMerger {
         }
 
         abstract TableOfContents.Section getSection(TableOfContents tableOfContents);
+
         abstract T read(Dex.Section in, IndexMap indexMap, int index);
+
         abstract void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex);
+
         abstract void write(T value);
 
         class UnsortedValue implements Comparable<UnsortedValue> {
@@ -370,19 +385,23 @@ public final class DexMerger {
 
     private void mergeStringIds() {
         new IdMerger<String>(idsDefsOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.stringIds;
             }
 
-            @Override String read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            String read(Dex.Section in, IndexMap indexMap, int index) {
                 return in.readString();
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 indexMap.stringIds[oldIndex] = newIndex;
             }
 
-            @Override void write(String value) {
+            @Override
+            void write(String value) {
                 contentsOut.stringDatas.size++;
                 idsDefsOut.writeInt(stringDataOut.getPosition());
                 stringDataOut.writeStringData(value);
@@ -392,23 +411,27 @@ public final class DexMerger {
 
     private void mergeTypeIds() {
         new IdMerger<Integer>(idsDefsOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.typeIds;
             }
 
-            @Override Integer read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            Integer read(Dex.Section in, IndexMap indexMap, int index) {
                 int stringIndex = in.readInt();
                 return indexMap.adjustString(stringIndex);
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 if (newIndex < 0 || newIndex > 0xffff) {
                     throw new DexIndexOverflowException("type ID not in [0, 0xffff]: " + newIndex);
                 }
                 indexMap.typeIds[oldIndex] = (short) newIndex;
             }
 
-            @Override void write(Integer value) {
+            @Override
+            void write(Integer value) {
                 idsDefsOut.writeInt(value);
             }
         }.mergeSorted();
@@ -416,19 +439,23 @@ public final class DexMerger {
 
     private void mergeTypeLists() {
         new IdMerger<TypeList>(typeListOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.typeLists;
             }
 
-            @Override TypeList read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            TypeList read(Dex.Section in, IndexMap indexMap, int index) {
                 return indexMap.adjustTypeList(in.readTypeList());
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 indexMap.putTypeListOffset(offset, typeListOut.getPosition());
             }
 
-            @Override void write(TypeList value) {
+            @Override
+            void write(TypeList value) {
                 typeListOut.writeTypeList(value);
             }
         }.mergeUnsorted();
@@ -436,22 +463,26 @@ public final class DexMerger {
 
     private void mergeProtoIds() {
         new IdMerger<ProtoId>(idsDefsOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.protoIds;
             }
 
-            @Override ProtoId read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            ProtoId read(Dex.Section in, IndexMap indexMap, int index) {
                 return indexMap.adjust(in.readProtoId());
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 if (newIndex < 0 || newIndex > 0xffff) {
                     throw new DexIndexOverflowException("proto ID not in [0, 0xffff]: " + newIndex);
                 }
                 indexMap.protoIds[oldIndex] = (short) newIndex;
             }
 
-            @Override void write(ProtoId value) {
+            @Override
+            void write(ProtoId value) {
                 value.writeTo(idsDefsOut);
             }
         }.mergeSorted();
@@ -459,22 +490,26 @@ public final class DexMerger {
 
     private void mergeFieldIds() {
         new IdMerger<FieldId>(idsDefsOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.fieldIds;
             }
 
-            @Override FieldId read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            FieldId read(Dex.Section in, IndexMap indexMap, int index) {
                 return indexMap.adjust(in.readFieldId());
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 if (newIndex < 0 || newIndex > 0xffff) {
                     throw new DexIndexOverflowException("field ID not in [0, 0xffff]: " + newIndex);
                 }
                 indexMap.fieldIds[oldIndex] = (short) newIndex;
             }
 
-            @Override void write(FieldId value) {
+            @Override
+            void write(FieldId value) {
                 value.writeTo(idsDefsOut);
             }
         }.mergeSorted();
@@ -482,23 +517,27 @@ public final class DexMerger {
 
     private void mergeMethodIds() {
         new IdMerger<MethodId>(idsDefsOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.methodIds;
             }
 
-            @Override MethodId read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            MethodId read(Dex.Section in, IndexMap indexMap, int index) {
                 return indexMap.adjust(in.readMethodId());
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 if (newIndex < 0 || newIndex > 0xffff) {
                     throw new DexIndexOverflowException(
-                        "method ID not in [0, 0xffff]: " + newIndex);
+                            "method ID not in [0, 0xffff]: " + newIndex);
                 }
                 indexMap.methodIds[oldIndex] = (short) newIndex;
             }
 
-            @Override void write(MethodId methodId) {
+            @Override
+            void write(MethodId methodId) {
                 methodId.writeTo(idsDefsOut);
             }
         }.mergeSorted();
@@ -506,19 +545,23 @@ public final class DexMerger {
 
     private void mergeAnnotations() {
         new IdMerger<Annotation>(annotationOut) {
-            @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
+            @Override
+            TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.annotations;
             }
 
-            @Override Annotation read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override
+            Annotation read(Dex.Section in, IndexMap indexMap, int index) {
                 return indexMap.adjust(in.readAnnotation());
             }
 
-            @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
+            @Override
+            void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
                 indexMap.putAnnotationOffset(offset, annotationOut.getPosition());
             }
 
-            @Override void write(Annotation value) {
+            @Override
+            void write(Annotation value) {
                 value.writeTo(annotationOut);
             }
         }.mergeUnsorted();
@@ -579,7 +622,7 @@ public final class DexMerger {
      * it later.
      */
     private void readSortableTypes(SortableType[] sortableTypes, Dex buffer,
-            IndexMap indexMap) {
+                                   IndexMap indexMap) {
         for (ClassDef classDef : buffer.classDefs()) {
             SortableType sortableType = indexMap.adjust(
                     new SortableType(buffer, indexMap, classDef));
@@ -595,7 +638,7 @@ public final class DexMerger {
 
     /**
      * Copy annotation sets from each input to the output.
-     *
+     * <p>
      * TODO: this may write multiple copies of the same annotation set.
      * We should shrink the output by merging rather than unioning
      */
@@ -870,7 +913,7 @@ public final class DexMerger {
     }
 
     private void transformTries(Dex.Section out, Code.Try[] tries,
-            int[] catchHandlerOffsets) {
+                                int[] catchHandlerOffsets) {
         for (Code.Try tryItem : tries) {
             out.writeInt(tryItem.getStartAddress());
             out.writeUnsignedShort(tryItem.getInstructionCount());
@@ -914,48 +957,48 @@ public final class DexMerger {
             debugInfoOut.writeByte(opcode);
 
             switch (opcode) {
-            case DBG_END_SEQUENCE:
-                return;
+                case DBG_END_SEQUENCE:
+                    return;
 
-            case DBG_ADVANCE_PC:
-                addrDiff = in.readUleb128();
-                debugInfoOut.writeUleb128(addrDiff);
-                break;
+                case DBG_ADVANCE_PC:
+                    addrDiff = in.readUleb128();
+                    debugInfoOut.writeUleb128(addrDiff);
+                    break;
 
-            case DBG_ADVANCE_LINE:
-                lineDiff = in.readSleb128();
-                debugInfoOut.writeSleb128(lineDiff);
-                break;
+                case DBG_ADVANCE_LINE:
+                    lineDiff = in.readSleb128();
+                    debugInfoOut.writeSleb128(lineDiff);
+                    break;
 
-            case DBG_START_LOCAL:
-            case DBG_START_LOCAL_EXTENDED:
-                registerNum = in.readUleb128();
-                debugInfoOut.writeUleb128(registerNum);
-                nameIndex = in.readUleb128p1();
-                debugInfoOut.writeUleb128p1(indexMap.adjustString(nameIndex));
-                typeIndex = in.readUleb128p1();
-                debugInfoOut.writeUleb128p1(indexMap.adjustType(typeIndex));
-                if (opcode == DBG_START_LOCAL_EXTENDED) {
-                    sigIndex = in.readUleb128p1();
-                    debugInfoOut.writeUleb128p1(indexMap.adjustString(sigIndex));
-                }
-                break;
+                case DBG_START_LOCAL:
+                case DBG_START_LOCAL_EXTENDED:
+                    registerNum = in.readUleb128();
+                    debugInfoOut.writeUleb128(registerNum);
+                    nameIndex = in.readUleb128p1();
+                    debugInfoOut.writeUleb128p1(indexMap.adjustString(nameIndex));
+                    typeIndex = in.readUleb128p1();
+                    debugInfoOut.writeUleb128p1(indexMap.adjustType(typeIndex));
+                    if (opcode == DBG_START_LOCAL_EXTENDED) {
+                        sigIndex = in.readUleb128p1();
+                        debugInfoOut.writeUleb128p1(indexMap.adjustString(sigIndex));
+                    }
+                    break;
 
-            case DBG_END_LOCAL:
-            case DBG_RESTART_LOCAL:
-                registerNum = in.readUleb128();
-                debugInfoOut.writeUleb128(registerNum);
-                break;
+                case DBG_END_LOCAL:
+                case DBG_RESTART_LOCAL:
+                    registerNum = in.readUleb128();
+                    debugInfoOut.writeUleb128(registerNum);
+                    break;
 
-            case DBG_SET_FILE:
-                nameIndex = in.readUleb128p1();
-                debugInfoOut.writeUleb128p1(indexMap.adjustString(nameIndex));
-                break;
+                case DBG_SET_FILE:
+                    nameIndex = in.readUleb128p1();
+                    debugInfoOut.writeUleb128p1(indexMap.adjustString(nameIndex));
+                    break;
 
-            case DBG_SET_PROLOGUE_END:
-            case DBG_SET_EPILOGUE_BEGIN:
-            default:
-                break;
+                case DBG_SET_PROLOGUE_END:
+                case DBG_SET_EPILOGUE_BEGIN:
+                default:
+                    break;
             }
         }
     }
@@ -992,9 +1035,9 @@ public final class DexMerger {
      * are defined in one of two ways:
      * <ul>
      * <li>By pessimistically guessing how large the union of dex files will be.
-     *     We're pessimistic because we can't predict the amount of duplication
-     *     between dex files, nor can we predict the length of ULEB-encoded
-     *     offsets or indices.
+     * We're pessimistic because we can't predict the amount of duplication
+     * between dex files, nor can we predict the length of ULEB-encoded
+     * offsets or indices.
      * <li>By exactly measuring an existing dex.
      * </ul>
      */
@@ -1125,6 +1168,6 @@ public final class DexMerger {
         System.out.println("Usage: DexMerger <out.dex> <a.dex> <b.dex> ...");
         System.out.println();
         System.out.println(
-            "If a class is defined in several dex, the class found in the first dex will be used.");
+                "If a class is defined in several dex, the class found in the first dex will be used.");
     }
 }

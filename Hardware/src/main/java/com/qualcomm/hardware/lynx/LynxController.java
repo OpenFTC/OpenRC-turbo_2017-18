@@ -53,20 +53,19 @@ import java.util.concurrent.Callable;
  * Created by bob on 2016-03-07.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class LynxController extends LynxCommExceptionHandler implements Engagable, HardwareDevice, HardwareDeviceHealth, RobotArmingStateNotifier.Callback, RobotArmingStateNotifier
-    {
+public abstract class LynxController extends LynxCommExceptionHandler implements Engagable, HardwareDevice, HardwareDeviceHealth, RobotArmingStateNotifier.Callback, RobotArmingStateNotifier {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected abstract String getTag();
 
-    protected Context       context;
-    private   LynxModule    module;
-    protected boolean       isHardwareInitialized;
-    protected boolean       isEngaged;    // does the user want us to connect to the underlying device?
-    protected boolean       isHooked;     // are we presently connected to the underlying device?
-    private   LynxModuleIntf pretendModule;
+    protected Context context;
+    private LynxModule module;
+    protected boolean isHardwareInitialized;
+    protected boolean isEngaged;    // does the user want us to connect to the underlying device?
+    protected boolean isHooked;     // are we presently connected to the underlying device?
+    private LynxModuleIntf pretendModule;
     protected final WeakReferenceSet<Callback> registeredCallbacks = new WeakReferenceSet<Callback>();
     protected final HardwareDeviceHealthImpl hardwareDeviceHealth;
 
@@ -74,31 +73,27 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxController(Context context, LynxModule module)
-        {
+    public LynxController(Context context, LynxModule module) {
         this.context = context;
-        this.module  = module;
+        this.module = module;
         this.isEngaged = true;
-        this.isHooked  = false;
+        this.isHooked = false;
         this.isHardwareInitialized = false;
         this.pretendModule = new PretendLynxModule();
         this.hardwareDeviceHealth = new HardwareDeviceHealthImpl(getTag(), getHealthStatusOverride());
         //
         this.module.noteController(this);
-        }
+    }
 
-    protected void finishConstruction()
-        {
+    protected void finishConstruction() {
         moduleNowArmedOrPretending();
         this.module.registerCallback(this, false);
-        }
+    }
 
     @Override
-    public synchronized void onModuleStateChange(RobotArmingStateNotifier module, RobotUsbModule.ARMINGSTATE state)
-        {
+    public synchronized void onModuleStateChange(RobotArmingStateNotifier module, RobotUsbModule.ARMINGSTATE state) {
         // Adjust ourselves first
-        switch (state)
-            {
+        switch (state) {
             case ARMED:
             case PRETENDING:
                 moduleNowArmedOrPretending();
@@ -106,395 +101,339 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
             case DISARMED:
                 moduleNowDisarmed();
                 break;
-            }
+        }
 
         // THEN tell any of our clients so that they see our status
-        for (Callback callback : registeredCallbacks)
-            {
+        for (Callback callback : registeredCallbacks) {
             callback.onModuleStateChange(this, state);
-            }
         }
+    }
 
-    protected void moduleNowArmedOrPretending()
-        {
+    protected void moduleNowArmedOrPretending() {
         adjustHookingToMatchEngagement();
-        }
+    }
 
-    protected void moduleNowDisarmed()
-        {
-        if (this.isHooked)
-            {
+    protected void moduleNowDisarmed() {
+        if (this.isHooked) {
             this.unhook();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotArmingStateNotifier
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public SerialNumber getSerialNumber()
-        {
+    public SerialNumber getSerialNumber() {
         return this.module.getSerialNumber();
-        }
+    }
 
     @Override
-    public ARMINGSTATE getArmingState()
-        {
+    public ARMINGSTATE getArmingState() {
         return this.module.getArmingState();
-        }
+    }
 
     @Override
-    public void registerCallback(Callback callback, boolean doInitialCallback)
-        {
+    public void registerCallback(Callback callback, boolean doInitialCallback) {
         registeredCallbacks.add(callback);
-        if (doInitialCallback)
-            {
+        if (doInitialCallback) {
             callback.onModuleStateChange(this, this.getArmingState());
-            }
         }
+    }
 
     @Override
-    public void unregisterCallback(Callback callback)
-        {
+    public void unregisterCallback(Callback callback) {
         registeredCallbacks.remove(callback);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override public Manufacturer getManufacturer()
-        {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.Lynx;
-        }
+    }
 
-    @Override public synchronized void close()
-        {
-        if (this.isEngaged())
-            {
+    @Override
+    public synchronized void close() {
+        if (this.isEngaged()) {
             // Float so as to, e.g., de-energize motors and servos
             this.floatHardware();
             this.disengage();
-            }
+        }
         setHealthStatus(HealthStatus.CLOSED);
-        }
+    }
 
-    @Override public String getConnectionInfo()
-        {
+    @Override
+    public String getConnectionInfo() {
         return this.getModule().getConnectionInfo();
-        }
+    }
 
-    @Override public int getVersion()
-        {
+    @Override
+    public int getVersion() {
         return 1;
-        }
+    }
 
-    @Override public abstract String getDeviceName();
+    @Override
+    public abstract String getDeviceName();
 
-    @Override public void resetDeviceConfigurationForOpMode()
-        {
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
         // Before every opmode, we put the device into an expected state so that user
         // level initialization logic should always see the same thing and thus need only
         // explicitly initialize that which is different than same.
         try {
             initializeHardware();
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
-        catch (RobotCoreException e)
-            {
+        } catch (RobotCoreException e) {
             RobotLog.vv(getTag(), e, "exception initializing hardware; ignored");
-            }
         }
+    }
 
-    void initializeHardwareIfNecessary() throws RobotCoreException, InterruptedException
-        {
+    void initializeHardwareIfNecessary() throws RobotCoreException, InterruptedException {
         // Make sure we initialize the hardware at least once: we do so the first
         // time we successfully connect (and thus arm()).
         //
-        if (!this.isHardwareInitialized)
-            {
+        if (!this.isHardwareInitialized) {
             RobotLog.vv(getTag(), "initializeHardware() mod#=%d", getModule().getModuleAddress());
             initializeHardware();
             this.isHardwareInitialized = this.isArmed();    // do this again if only pretending
-            }
         }
+    }
 
-    protected void initializeHardware() throws RobotCoreException, InterruptedException
-        {
+    protected void initializeHardware() throws RobotCoreException, InterruptedException {
         // Subclass hook
-        }
-    protected void floatHardware()
-        {
-        // Subclass hook
-        }
-    public void forgetLastKnown()
-        {
-        // Subclass hook
-        }
+    }
 
-    protected void setHealthyIfArmed()
-        {
-        if (isArmed())
-            {
+    protected void floatHardware() {
+        // Subclass hook
+    }
+
+    public void forgetLastKnown() {
+        // Subclass hook
+    }
+
+    protected void setHealthyIfArmed() {
+        if (isArmed()) {
             setHealthStatus(HealthStatus.HEALTHY);
-            }
         }
+    }
 
     @Override
-    public void setHealthStatus(HealthStatus status)
-        {
+    public void setHealthStatus(HealthStatus status) {
         hardwareDeviceHealth.setHealthStatus(status);
-        }
+    }
 
-    protected Callable<HealthStatus> getHealthStatusOverride()
-        {
-        return new Callable<HealthStatus>()
-            {
-            @Override public HealthStatus call() throws Exception
-                {
-                if (LynxController.this.module.getArmingState() == ARMINGSTATE.PRETENDING)
-                    {
+    protected Callable<HealthStatus> getHealthStatusOverride() {
+        return new Callable<HealthStatus>() {
+            @Override
+            public HealthStatus call() throws Exception {
+                if (LynxController.this.module.getArmingState() == ARMINGSTATE.PRETENDING) {
                     return HealthStatus.UNHEALTHY;
-                    }
-                return HealthStatus.UNKNOWN;
                 }
-            };
-        }
+                return HealthStatus.UNKNOWN;
+            }
+        };
+    }
 
     @Override
-    public HealthStatus getHealthStatus()
-        {
+    public HealthStatus getHealthStatus() {
         return hardwareDeviceHealth.getHealthStatus();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Engagable
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized void engage()
-        {
+    public synchronized void engage() {
         RobotLog.vv(getTag(), "engaging mod#=%d", getModule().getModuleAddress());
         this.isEngaged = true;
         adjustHookingToMatchEngagement();
-        }
+    }
 
     @Override
-    public synchronized void disengage()
-        {
+    public synchronized void disengage() {
         RobotLog.vv(getTag(), "disengage mod#=%d", getModule().getModuleAddress());
         this.isEngaged = false;
         adjustHookingToMatchEngagement();
-        }
+    }
 
     @Override
-    public synchronized boolean isEngaged()
-        {
+    public synchronized boolean isEngaged() {
         return this.isEngaged;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Module comings and goings
     //----------------------------------------------------------------------------------------------
 
-    protected LynxModuleIntf getModule()
-        {
+    protected LynxModuleIntf getModule() {
         // If we're not actually hooked, then don't actually communicate with
         // our underlying module.
         //
         // Note that the present implementation is such that hooking and unhooking should be
         // done very carefully if at all while commands are in flight.
         return this.isHooked ? this.module : this.pretendModule;
-        }
+    }
 
     protected void adjustHookingToMatchEngagement()
     // Make our hook status match our intended hook status (aka engagement status)
-        {
-        if (!this.isHooked && this.isEngaged)
-            {
+    {
+        if (!this.isHooked && this.isEngaged) {
             this.hook();
-            }
-        else if (this.isHooked && !this.isEngaged)
-            {
+        } else if (this.isHooked && !this.isEngaged) {
             this.unhook();
-            }
         }
+    }
 
-    protected void hook()
-        {
+    protected void hook() {
         this.doHook();
         this.isHooked = true;
         try {
             this.initializeHardwareIfNecessary();
-            }
-        catch (InterruptedException ignored)
-            {
+        } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
-            }
-        catch (RobotCoreException e)
-            {
+        } catch (RobotCoreException e) {
             RobotLog.ee(getTag(), e, "exception thrown in LynxController.hook()");
-            }
         }
+    }
 
-    protected void unhook()
-        {
+    protected void unhook() {
         this.doUnhook();
         this.isHooked = false;
-        }
+    }
 
-    protected void doHook()
-        {
+    protected void doHook() {
         // subclass responsibility
-        }
+    }
 
-    protected void doUnhook()
-        {
+    protected void doUnhook() {
         // subclass responsibility
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // Utility
     //------------------------------------------------------------------------------------------------
 
-    protected boolean isArmed()
-        {
-        return this.module.getArmingState()== RobotArmingStateNotifier.ARMINGSTATE.ARMED;
-        }
+    protected boolean isArmed() {
+        return this.module.getArmingState() == RobotArmingStateNotifier.ARMINGSTATE.ARMED;
+    }
 
     //------------------------------------------------------------------------------------------------
     // Types
     //------------------------------------------------------------------------------------------------
 
-    public class PretendLynxModule implements LynxModuleIntf
-        {
+    public class PretendLynxModule implements LynxModuleIntf {
         boolean isEngaged = true;
 
-        @Override public Manufacturer getManufacturer()
-            {
+        @Override
+        public Manufacturer getManufacturer() {
             return Manufacturer.Lynx;
-            }
+        }
 
         @Override
-        public String getDeviceName()
-            {
+        public String getDeviceName() {
             return LynxController.this.module.getDeviceName() + " (pretend)";
-            }
+        }
 
         @Override
-        public String getConnectionInfo()
-            {
+        public String getConnectionInfo() {
             return LynxController.this.module.getConnectionInfo();
-            }
+        }
 
         @Override
-        public int getVersion()
-            {
+        public int getVersion() {
             return 1;
-            }
+        }
 
         @Override
-        public void resetDeviceConfigurationForOpMode()
-            {
-            }
+        public void resetDeviceConfigurationForOpMode() {
+        }
 
         @Override
-        public void close()
-            {
-            }
+        public void close() {
+        }
 
-        @Override public SerialNumber getSerialNumber()
-            {
+        @Override
+        public SerialNumber getSerialNumber() {
             return LynxController.this.module.getSerialNumber();
-            }
+        }
 
         @Override
-        public <T> T acquireI2cLockWhile(Supplier<T> supplier) throws InterruptedException, RobotCoreException, LynxNackException
-            {
+        public <T> T acquireI2cLockWhile(Supplier<T> supplier) throws InterruptedException, RobotCoreException, LynxNackException {
             return supplier.get();
-            }
+        }
 
         @Override
-        public void acquireNetworkTransmissionLock(LynxMessage message) throws InterruptedException
-            {
+        public void acquireNetworkTransmissionLock(LynxMessage message) throws InterruptedException {
             // do nothing
-            }
+        }
 
         @Override
-        public void releaseNetworkTransmissionLock(LynxMessage message) throws InterruptedException
-            {
+        public void releaseNetworkTransmissionLock(LynxMessage message) throws InterruptedException {
             // do nothing
-            }
+        }
 
         @Override
-        public void sendCommand(LynxMessage command) throws InterruptedException, LynxUnsupportedCommandNumberException
-            {
+        public void sendCommand(LynxMessage command) throws InterruptedException, LynxUnsupportedCommandNumberException {
             // do nothing
-            }
+        }
 
         @Override
-        public void retransmit(LynxMessage message) throws InterruptedException
-            {
+        public void retransmit(LynxMessage message) throws InterruptedException {
             // do nothing
-            }
+        }
 
         @Override
-        public void finishedWithMessage(LynxMessage message) throws InterruptedException
-            {
+        public void finishedWithMessage(LynxMessage message) throws InterruptedException {
             // do nothing
-            }
-
-        @Override public void resetPingTimer(@NonNull LynxMessage message)
-            {
-            // do nothing
-            }
+        }
 
         @Override
-        public int getModuleAddress()
-            {
+        public void resetPingTimer(@NonNull LynxMessage message) {
+            // do nothing
+        }
+
+        @Override
+        public int getModuleAddress() {
             return LynxController.this.module.getModuleAddress();
-            }
+        }
 
         @Override
-        public void noteAttentionRequired()
-            {
+        public void noteAttentionRequired() {
             // do nothing
-            }
+        }
 
         @Override
-        public int getInterfaceBaseCommandNumber(String interfaceName)
-            {
+        public int getInterfaceBaseCommandNumber(String interfaceName) {
             return LynxController.this.module.getInterfaceBaseCommandNumber(interfaceName);
-            }
+        }
 
         @Override
-        public boolean isParent()
-            {
+        public boolean isParent() {
             return true;    // pretty arbitrary
-            }
+        }
 
         @Override
-        public void validateCommandNumber(int commandNumber) throws LynxUnsupportedCommandNumberException
-            {
-            }
+        public void validateCommandNumber(int commandNumber) throws LynxUnsupportedCommandNumberException {
+        }
 
-        @Override public boolean isEngaged()
-            {
+        @Override
+        public boolean isEngaged() {
             return this.isEngaged;
-            }
+        }
 
-        @Override public void engage()
-            {
+        @Override
+        public void engage() {
             this.isEngaged = true;
-            }
+        }
 
-        @Override public void disengage()
-            {
+        @Override
+        public void disengage() {
             this.isEngaged = false;
-            }
         }
     }
+}

@@ -24,10 +24,14 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
  * each mapping built up individually and added via addMapping()
  */
 public class BasicRegisterMapper extends RegisterMapper {
-    /** indexed by old register, containing new name */
+    /**
+     * indexed by old register, containing new name
+     */
     private IntList oldToNew;
 
-    /** running count of used registers in new namespace */
+    /**
+     * running count of used registers in new namespace
+     */
     private int runningCountNewRegisters;
 
     /**
@@ -39,13 +43,17 @@ public class BasicRegisterMapper extends RegisterMapper {
         oldToNew = new IntList(countOldRegisters);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNewRegisterCount() {
         return runningCountNewRegisters;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RegisterSpec map(RegisterSpec registerSpec) {
         if (registerSpec == null) {
@@ -81,7 +89,9 @@ public class BasicRegisterMapper extends RegisterMapper {
         return oldToNew.get(oldReg);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         StringBuilder sb = new StringBuilder();
 
@@ -107,8 +117,8 @@ public class BasicRegisterMapper extends RegisterMapper {
      * Adds a mapping to the mapper. If oldReg has already been mapped,
      * overwrites previous mapping with new mapping.
      *
-     * @param oldReg {@code >= 0;} old register
-     * @param newReg {@code >= 0;} new register
+     * @param oldReg   {@code >= 0;} old register
+     * @param newReg   {@code >= 0;} new register
      * @param category {@code 1..2;} width of reg
      */
     public void addMapping(int oldReg, int newReg, int category) {

@@ -42,15 +42,14 @@ import java.util.List;
  * Created by bob on 2016-03-11.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfiguration>
-    {
-    private boolean                   isParent       = false;
-    private List<MotorConfiguration>  motors         = new LinkedList<>();
-    private List<ServoConfiguration>  servos         = new LinkedList<>();
-    private List<DeviceConfiguration> pwmOutputs     = new LinkedList<>();
+public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfiguration> {
+    private boolean isParent = false;
+    private List<MotorConfiguration> motors = new LinkedList<>();
+    private List<ServoConfiguration> servos = new LinkedList<>();
+    private List<DeviceConfiguration> pwmOutputs = new LinkedList<>();
     private List<DeviceConfiguration> digitalDevices = new LinkedList<>();
-    private List<DeviceConfiguration> analogInputs   = new LinkedList<>();
-    private List<LynxI2cDeviceConfiguration> i2cDevices  = new LinkedList<>();
+    private List<DeviceConfiguration> analogInputs = new LinkedList<>();
+    private List<LynxI2cDeviceConfiguration> i2cDevices = new LinkedList<>();
 
     // A note: unlike everything else, we don't have a fixed number of attachable i2c devices.
     // Rather, we have four i2c busses, to each of which may be attached any number of i2c devices
@@ -60,126 +59,106 @@ public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfi
     //
     // This will have consequences for the configuration editor!
 
-    public LynxModuleConfiguration()
-        {
+    public LynxModuleConfiguration() {
         this("");
-        }
+    }
 
-    public LynxModuleConfiguration(String name)
-        {
+    public LynxModuleConfiguration(String name) {
         super(name, new ArrayList<DeviceConfiguration>(), new SerialNumber(), BuiltInConfigurationType.LYNX_MODULE);
-        }
+    }
 
-    public void setModuleAddress(int moduleAddress)
-        {
+    public void setModuleAddress(int moduleAddress) {
         this.setPort(moduleAddress);
-        }
-    public int getModuleAddress()
-        {
+    }
+
+    public int getModuleAddress() {
         return this.getPort();
-        }
+    }
 
-    public void setParent(boolean isParent)
-        {
+    public void setParent(boolean isParent) {
         this.isParent = isParent;
-        }
-    public boolean isParent()
-        {
+    }
+
+    public boolean isParent() {
         return this.isParent;
-        }
+    }
 
-    public List<ServoConfiguration> getServos()
-        {
+    public List<ServoConfiguration> getServos() {
         return servos;
-        }
-    public void setServos(List<ServoConfiguration> servos)
-        {
+    }
+
+    public void setServos(List<ServoConfiguration> servos) {
         this.servos = servos;
-        }
+    }
 
-    public List<MotorConfiguration> getMotors()
-        {
+    public List<MotorConfiguration> getMotors() {
         return motors;
-        }
-    public void setMotors(List<MotorConfiguration> motors)
-        {
+    }
+
+    public void setMotors(List<MotorConfiguration> motors) {
         this.motors = motors;
-        }
+    }
 
-    public List<DeviceConfiguration> getAnalogInputs()
-        {
+    public List<DeviceConfiguration> getAnalogInputs() {
         return this.analogInputs;
-        }
-    public void setAnalogInputs(List<DeviceConfiguration> inputs)
-        {
+    }
+
+    public void setAnalogInputs(List<DeviceConfiguration> inputs) {
         this.analogInputs = inputs;
-        }
+    }
 
-    public List<DeviceConfiguration> getPwmOutputs()
-        {
+    public List<DeviceConfiguration> getPwmOutputs() {
         return this.pwmOutputs;
-        }
-    public void setPwmOutputs(List<DeviceConfiguration> pwmOutputs)
-        {
+    }
+
+    public void setPwmOutputs(List<DeviceConfiguration> pwmOutputs) {
         this.pwmOutputs = pwmOutputs;
-        }
+    }
 
-    public List<LynxI2cDeviceConfiguration> getI2cDevices()
-        {
+    public List<LynxI2cDeviceConfiguration> getI2cDevices() {
         return i2cDevices;
-        }
-    public void setI2cDevices(List<LynxI2cDeviceConfiguration> i2cDevices)
-        {
+    }
+
+    public void setI2cDevices(List<LynxI2cDeviceConfiguration> i2cDevices) {
         this.i2cDevices = new LinkedList<LynxI2cDeviceConfiguration>();
-        for (LynxI2cDeviceConfiguration i2cDevice : i2cDevices)
-            {
-            if (i2cDevice.isEnabled() && i2cDevice.getPort() >= 0 && i2cDevice.getPort() <  0 + LynxConstants.NUMBER_OF_I2C_BUSSES)
-                {
+        for (LynxI2cDeviceConfiguration i2cDevice : i2cDevices) {
+            if (i2cDevice.isEnabled() && i2cDevice.getPort() >= 0 && i2cDevice.getPort() < 0 + LynxConstants.NUMBER_OF_I2C_BUSSES) {
                 this.i2cDevices.add(i2cDevice);
-                }
             }
-        }
-
-    public List<LynxI2cDeviceConfiguration> getI2cDevices(int busZ)
-        {
-        List<LynxI2cDeviceConfiguration> result = new LinkedList<LynxI2cDeviceConfiguration>();
-        for (LynxI2cDeviceConfiguration configuration : this.i2cDevices)
-            {
-            if (configuration.getBus() == busZ)
-                {
-                result.add(configuration);
-                }
-            }
-        return result;
-        }
-
-    public void setI2cDevices(int busZ, List<LynxI2cDeviceConfiguration> devices)
-        {
-        List<LynxI2cDeviceConfiguration> result = new LinkedList<LynxI2cDeviceConfiguration>();
-        for (LynxI2cDeviceConfiguration configuration : this.i2cDevices)
-            {
-            if (configuration.getBus() != busZ)
-                {
-                result.add(configuration);
-                }
-            }
-        for (LynxI2cDeviceConfiguration configuration : devices)
-            {
-            if (configuration.isEnabled())
-                {
-                configuration.setBus(busZ);
-                result.add(configuration);
-                }
-            }
-        this.i2cDevices = result;
-        }
-
-    public List<DeviceConfiguration> getDigitalDevices()
-        {
-        return this.digitalDevices;
-        }
-    public void setDigitalDevices(List<DeviceConfiguration> digitalDevices)
-        {
-        this.digitalDevices = digitalDevices;
         }
     }
+
+    public List<LynxI2cDeviceConfiguration> getI2cDevices(int busZ) {
+        List<LynxI2cDeviceConfiguration> result = new LinkedList<LynxI2cDeviceConfiguration>();
+        for (LynxI2cDeviceConfiguration configuration : this.i2cDevices) {
+            if (configuration.getBus() == busZ) {
+                result.add(configuration);
+            }
+        }
+        return result;
+    }
+
+    public void setI2cDevices(int busZ, List<LynxI2cDeviceConfiguration> devices) {
+        List<LynxI2cDeviceConfiguration> result = new LinkedList<LynxI2cDeviceConfiguration>();
+        for (LynxI2cDeviceConfiguration configuration : this.i2cDevices) {
+            if (configuration.getBus() != busZ) {
+                result.add(configuration);
+            }
+        }
+        for (LynxI2cDeviceConfiguration configuration : devices) {
+            if (configuration.isEnabled()) {
+                configuration.setBus(busZ);
+                result.add(configuration);
+            }
+        }
+        this.i2cDevices = result;
+    }
+
+    public List<DeviceConfiguration> getDigitalDevices() {
+        return this.digitalDevices;
+    }
+
+    public void setDigitalDevices(List<DeviceConfiguration> digitalDevices) {
+        this.digitalDevices = digitalDevices;
+    }
+}

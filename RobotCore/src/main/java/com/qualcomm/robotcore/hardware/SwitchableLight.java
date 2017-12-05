@@ -35,13 +35,14 @@ package com.qualcomm.robotcore.hardware;
 /**
  * {@link SwitchableLight} instances are {@link Light}s whose on/off status can be
  * programmatically manipulated.
+ *
  * @see Light
  */
-public interface SwitchableLight extends Light
-    {
+public interface SwitchableLight extends Light {
     /**
      * Turns the light on or off.
+     *
      * @param enable if true, the light turns on; otherwise the light turns off
      */
     void enableLight(boolean enable);
-    }
+}

@@ -21,5 +21,6 @@ android {
 }
 
 dependencies {
-    api fileTree(include: ['*.jar'], dir: 'libs') //mark as api once we update the Android plugin to 3.0+
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    //mark as api once we update the Android plugin to 3.0+
 }

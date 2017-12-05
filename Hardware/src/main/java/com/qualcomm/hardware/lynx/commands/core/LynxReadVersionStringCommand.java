@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
  * Created by bob on 2/6/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxReadVersionStringCommand extends LynxDekaInterfaceCommand<LynxReadVersionStringResponse>
-    {
+public class LynxReadVersionStringCommand extends LynxDekaInterfaceCommand<LynxReadVersionStringResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,42 +53,37 @@ public class LynxReadVersionStringCommand extends LynxDekaInterfaceCommand<LynxR
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxReadVersionStringCommand(LynxModuleIntf module)
-        {
+    public LynxReadVersionStringCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxReadVersionStringResponse(module);  // support pretendFinish()
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxReadVersionStringResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
-        }
-
-    @Override protected boolean usePretendResponseIfRealModuleDoesntSupport()
-        {
-        return true;
-        }
     }
+
+    @Override
+    protected boolean usePretendResponseIfRealModuleDoesntSupport() {
+        return true;
+    }
+}

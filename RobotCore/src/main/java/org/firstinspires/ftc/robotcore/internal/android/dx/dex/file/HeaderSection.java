@@ -17,6 +17,7 @@
 package org.firstinspires.ftc.robotcore.internal.android.dx.dex.file;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +26,9 @@ import java.util.List;
  * File header section of a {@code .dex} file.
  */
 public final class HeaderSection extends UniformItemSection {
-    /** {@code non-null;} the list of the one item in the section */
+    /**
+     * {@code non-null;} the list of the one item in the section
+     */
     private final List<HeaderItem> list;
 
     /**
@@ -42,19 +45,25 @@ public final class HeaderSection extends UniformItemSection {
         this.list = Collections.singletonList(item);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return list;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         // Nothing to do here.

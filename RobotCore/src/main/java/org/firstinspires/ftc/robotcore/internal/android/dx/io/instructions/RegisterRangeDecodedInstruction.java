@@ -23,35 +23,45 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.io.IndexType;
  * "A" start register and a register count).
  */
 public final class RegisterRangeDecodedInstruction extends DecodedInstruction {
-    /** register argument "A" */
+    /**
+     * register argument "A"
+     */
     private final int a;
 
-    /** register count */
+    /**
+     * register count
+     */
     private final int registerCount;
 
     /**
      * Constructs an instance.
      */
     public RegisterRangeDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal,
-            int a, int registerCount) {
+                                           int index, IndexType indexType, int target, long literal,
+                                           int a, int registerCount) {
         super(format, opcode, index, indexType, target, literal);
 
         this.a = a;
         this.registerCount = registerCount;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getRegisterCount() {
         return registerCount;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getA() {
         return a;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public DecodedInstruction withIndex(int newIndex) {
         return new RegisterRangeDecodedInstruction(
                 getFormat(), getOpcode(), newIndex, getIndexType(),

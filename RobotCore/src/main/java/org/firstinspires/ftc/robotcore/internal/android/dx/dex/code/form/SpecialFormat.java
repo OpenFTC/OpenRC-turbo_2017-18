@@ -29,7 +29,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
  * always returns {@code true}.
  */
 public final class SpecialFormat extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new SpecialFormat();
 
     /**
@@ -40,31 +42,41 @@ public final class SpecialFormat extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         throw new RuntimeException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         throw new RuntimeException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         throw new RuntimeException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         throw new RuntimeException("unsupported");

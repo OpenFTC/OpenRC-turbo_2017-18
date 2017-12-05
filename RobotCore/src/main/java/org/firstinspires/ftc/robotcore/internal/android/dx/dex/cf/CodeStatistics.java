@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.cf;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.dex.code.DalvCode;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RopMethod;
+
 import java.io.PrintStream;
 
 /**
@@ -25,7 +26,9 @@ import java.io.PrintStream;
  * code.
  */
 public final class CodeStatistics {
-    /** set to {@code true} to enable development-time debugging code */
+    /**
+     * set to {@code true} to enable development-time debugging code
+     */
     private static final boolean DEBUG = false;
 
     /**
@@ -40,7 +43,9 @@ public final class CodeStatistics {
      */
     public static int runningDeltaInsns = 0;
 
-    /** running sum of the total number of Rop insns processed */
+    /**
+     * running sum of the total number of Rop insns processed
+     */
     public static int runningTotalInsns = 0;
 
     /**
@@ -62,7 +67,9 @@ public final class CodeStatistics {
      */
     public static int dexRunningTotalInsns = 0;
 
-    /** running sum of original class bytecode bytes */
+    /**
+     * running sum of original class bytecode bytes
+     */
     public static int runningOriginalBytes = 0;
 
     /**
@@ -85,10 +92,10 @@ public final class CodeStatistics {
      * Updates the dex statistics.
      *
      * @param nonOptCode non-optimized code block
-     * @param code optimized code block
+     * @param code       optimized code block
      */
     public static void updateDexStatistics(DalvCode nonOptCode,
-            DalvCode code) {
+                                           DalvCode code) {
         if (DEBUG) {
             System.err.println("dex insns (old/new) "
                     + nonOptCode.getInsns().codeSize()
@@ -100,11 +107,11 @@ public final class CodeStatistics {
         }
 
         dexRunningDeltaInsns
-            += (code.getInsns().codeSize()
+                += (code.getInsns().codeSize()
                 - nonOptCode.getInsns().codeSize());
 
         dexRunningDeltaRegisters
-            += (code.getInsns().getRegistersSize()
+                += (code.getInsns().getRegistersSize()
                 - nonOptCode.getInsns().getRegistersSize());
 
         dexRunningTotalInsns += code.getInsns().codeSize();
@@ -114,10 +121,10 @@ public final class CodeStatistics {
      * Updates the ROP statistics.
      *
      * @param nonOptRmeth non-optimized method
-     * @param rmeth optimized method
+     * @param rmeth       optimized method
      */
     public static void updateRopStatistics(RopMethod nonOptRmeth,
-            RopMethod rmeth) {
+                                           RopMethod rmeth) {
         int oldCountInsns
                 = nonOptRmeth.getBlocks().getEffectiveInstructionCount();
         int oldCountRegs = nonOptRmeth.getBlocks().getRegCount();
@@ -127,17 +134,17 @@ public final class CodeStatistics {
                     + oldCountInsns + "/"
                     + rmeth.getBlocks().getEffectiveInstructionCount()
                     + " regs (o/n):" + oldCountRegs
-                    + "/"  +  rmeth.getBlocks().getRegCount());
+                    + "/" + rmeth.getBlocks().getRegCount());
         }
 
         int newCountInsns
                 = rmeth.getBlocks().getEffectiveInstructionCount();
 
         runningDeltaInsns
-            += (newCountInsns - oldCountInsns);
+                += (newCountInsns - oldCountInsns);
 
         runningDeltaRegisters
-            += (rmeth.getBlocks().getRegCount() - oldCountRegs);
+                += (rmeth.getBlocks().getRegCount() - oldCountRegs);
 
         runningTotalInsns += newCountInsns;
     }
@@ -149,7 +156,7 @@ public final class CodeStatistics {
      */
     public static void dumpStatistics(PrintStream out) {
         out.printf("Optimizer Delta Rop Insns: %d total: %d "
-                + "(%.2f%%) Delta Registers: %d\n",
+                        + "(%.2f%%) Delta Registers: %d\n",
                 runningDeltaInsns,
                 runningTotalInsns,
                 (100.0 * (((float) runningDeltaInsns)
@@ -157,12 +164,12 @@ public final class CodeStatistics {
                 runningDeltaRegisters);
 
         out.printf("Optimizer Delta Dex Insns: Insns: %d total: %d "
-                + "(%.2f%%) Delta Registers: %d\n",
+                        + "(%.2f%%) Delta Registers: %d\n",
                 dexRunningDeltaInsns,
                 dexRunningTotalInsns,
                 (100.0 * (((float) dexRunningDeltaInsns)
                         / (dexRunningTotalInsns
-                                + Math.abs(dexRunningDeltaInsns)))),
+                        + Math.abs(dexRunningDeltaInsns)))),
                 dexRunningDeltaRegisters);
 
         out.printf("Original bytecode byte count: %d\n",

@@ -47,7 +47,7 @@ public final class InsnList
     /**
      * Sets the instruction at the given index.
      *
-     * @param n {@code >= 0, < size();} which index
+     * @param n    {@code >= 0, < size();} which index
      * @param insn {@code non-null;} the instruction to set at {@code n}
      */
     public void set(int n, Insn insn) {

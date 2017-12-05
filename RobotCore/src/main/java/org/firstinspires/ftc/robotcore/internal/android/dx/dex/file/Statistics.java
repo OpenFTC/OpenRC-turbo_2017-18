@@ -17,6 +17,7 @@
 package org.firstinspires.ftc.robotcore.internal.android.dx.dex.file;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -25,7 +26,9 @@ import java.util.TreeMap;
  * Statistics about the contents of a file.
  */
 public final class Statistics {
-    /** {@code non-null;} data about each type of item */
+    /**
+     * {@code non-null;} data about each type of item
+     */
     private final HashMap<String, Data> dataMap;
 
     /**
@@ -108,19 +111,29 @@ public final class Statistics {
      * Statistical data about a particular class.
      */
     private static class Data {
-        /** {@code non-null;} name to use as a label */
+        /**
+         * {@code non-null;} name to use as a label
+         */
         private final String name;
 
-        /** {@code >= 0;} number of instances */
+        /**
+         * {@code >= 0;} number of instances
+         */
         private int count;
 
-        /** {@code >= 0;} total size of instances in bytes */
+        /**
+         * {@code >= 0;} total size of instances in bytes
+         */
         private int totalSize;
 
-        /** {@code >= 0;} largest size of any individual item */
+        /**
+         * {@code >= 0;} largest size of any individual item
+         */
         private int largestSize;
 
-        /** {@code >= 0;} smallest size of any individual item */
+        /**
+         * {@code >= 0;} smallest size of any individual item
+         */
         private int smallestSize;
 
         /**
@@ -177,15 +190,15 @@ public final class Statistics {
             StringBuilder sb = new StringBuilder();
 
             sb.append("  " + name + ": " +
-                         count + " item" + (count == 1 ? "" : "s") + "; " +
-                         totalSize + " bytes total\n");
+                    count + " item" + (count == 1 ? "" : "s") + "; " +
+                    totalSize + " bytes total\n");
 
             if (smallestSize == largestSize) {
                 sb.append("    " + smallestSize + " bytes/item\n");
             } else {
                 int average = totalSize / count;
                 sb.append("    " + smallestSize + ".." + largestSize +
-                             " bytes/item; average " + average + "\n");
+                        " bytes/item; average " + average + "\n");
             }
 
             return sb.toString();

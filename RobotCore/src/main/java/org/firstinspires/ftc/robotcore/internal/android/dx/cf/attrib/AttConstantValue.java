@@ -27,28 +27,32 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.TypedConstant
  * Attribute class for standard {@code ConstantValue} attributes.
  */
 public final class AttConstantValue extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "ConstantValue";
 
-    /** {@code non-null;} the constant value */
+    /**
+     * {@code non-null;} the constant value
+     */
     private final TypedConstant constantValue;
 
     /**
      * Constructs an instance.
      *
      * @param constantValue {@code non-null;} the constant value, which must
-     * be an instance of one of: {@code CstString},
-     * {@code CstInteger}, {@code CstLong},
-     * {@code CstFloat}, or {@code CstDouble}
+     *                      be an instance of one of: {@code CstString},
+     *                      {@code CstInteger}, {@code CstLong},
+     *                      {@code CstFloat}, or {@code CstDouble}
      */
     public AttConstantValue(TypedConstant constantValue) {
         super(ATTRIBUTE_NAME);
 
         if (!((constantValue instanceof CstString) ||
-               (constantValue instanceof CstInteger) ||
-               (constantValue instanceof CstLong) ||
-               (constantValue instanceof CstFloat) ||
-               (constantValue instanceof CstDouble))) {
+                (constantValue instanceof CstInteger) ||
+                (constantValue instanceof CstLong) ||
+                (constantValue instanceof CstFloat) ||
+                (constantValue instanceof CstDouble))) {
             if (constantValue == null) {
                 throw new NullPointerException("constantValue == null");
             }
@@ -58,7 +62,9 @@ public final class AttConstantValue extends BaseAttribute {
         this.constantValue = constantValue;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int byteLength() {
         return 8;
     }

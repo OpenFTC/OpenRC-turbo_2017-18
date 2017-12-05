@@ -22,7 +22,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
  * Constant type to represent a known-{@code null} value.
  */
 public final class CstKnownNull extends CstLiteralBits {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final CstKnownNull THE_ONE = new CstKnownNull();
 
     /**
@@ -33,53 +35,71 @@ public final class CstKnownNull extends CstLiteralBits {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         return (other instanceof CstKnownNull);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return 0x4466757a;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "known-null";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.KNOWN_NULL;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "known-null";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return "null";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean fitsInInt() {
         // See comment in getIntBits().
@@ -88,7 +108,7 @@ public final class CstKnownNull extends CstLiteralBits {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * As "literal bits," a known-null is always represented as the
      * number zero.
      */
@@ -99,7 +119,7 @@ public final class CstKnownNull extends CstLiteralBits {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * As "literal bits," a known-null is always represented as the
      * number zero.
      */

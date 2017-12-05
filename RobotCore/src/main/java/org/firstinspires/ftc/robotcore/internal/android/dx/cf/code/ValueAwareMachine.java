@@ -31,13 +31,15 @@ public class ValueAwareMachine extends BaseMachine {
      * Constructs an instance.
      *
      * @param prototype {@code non-null;} the prototype for the associated
-     * method
+     *                  method
      */
     public ValueAwareMachine(Prototype prototype) {
         super(prototype);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void run(Frame frame, int offset, int opcode) {
         switch (opcode) {
             case ByteOps.NOP:
@@ -190,7 +192,7 @@ public class ValueAwareMachine extends BaseMachine {
             }
             default: {
                 throw new RuntimeException("shouldn't happen: " +
-                                           Hex.u1(opcode));
+                        Hex.u1(opcode));
             }
         }
 

@@ -38,16 +38,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
  */
 public interface AccelerationSensor extends HardwareDevice {
 
-  /**
-   * Acceleration, measured in g's
-   * @return acceleration in g's
-   */
-  Acceleration getAcceleration();
+    /**
+     * Acceleration, measured in g's
+     *
+     * @return acceleration in g's
+     */
+    Acceleration getAcceleration();
 
-  /**
-   * Status of this sensor, in string form
-   * @return status
-   */
-  String status();
+    /**
+     * Status of this sensor, in string form
+     *
+     * @return status
+     */
+    String status();
 
 }

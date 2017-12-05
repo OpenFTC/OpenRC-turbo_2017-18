@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegisterSpec
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstLiteralBits;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.util.BitSet;
 
 /**
@@ -30,7 +31,9 @@ import java.util.BitSet;
  * for details.
  */
 public final class Form31i extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new Form31i();
 
     /**
@@ -41,7 +44,9 @@ public final class Form31i extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -50,26 +55,32 @@ public final class Form31i extends InsnFormat {
         return regs.get(0).regString() + ", " + literalBitsString(value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         CstLiteralBits value = (CstLiteralBits) ((CstInsn) insn).getConstant();
         return literalBitsComment(value, 32);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return 3;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
         if (!((insn instanceof CstInsn) &&
-              (regs.size() == 1) &&
-              unsignedFitsInByte(regs.get(0).getReg()))) {
+                (regs.size() == 1) &&
+                unsignedFitsInByte(regs.get(0).getReg()))) {
             return false;
         }
 
@@ -83,7 +94,9 @@ public final class Form31i extends InsnFormat {
         return ((CstLiteralBits) cst).fitsInInt();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BitSet compatibleRegs(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -93,12 +106,14 @@ public final class Form31i extends InsnFormat {
         return bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
         int value =
-            ((CstLiteralBits) ((CstInsn) insn).getConstant()).getIntBits();
+                ((CstLiteralBits) ((CstInsn) insn).getConstant()).getIntBits();
 
         write(out, opcodeUnit(insn, regs.get(0).getReg()), value);
     }

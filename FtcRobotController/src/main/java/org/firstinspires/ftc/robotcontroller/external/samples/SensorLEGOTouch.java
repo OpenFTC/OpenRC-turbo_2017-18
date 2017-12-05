@@ -46,29 +46,29 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 @Disabled
 public class SensorLEGOTouch extends LinearOpMode {
 
-  TouchSensor touchSensor;  // Hardware Device Object
+    TouchSensor touchSensor;  // Hardware Device Object
 
-  @Override
-  public void runOpMode() {
+    @Override
+    public void runOpMode() {
 
-    // get a reference to our Light Sensor object.
-    touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
-    int counter = 0;
+        // get a reference to our Light Sensor object.
+        touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
+        int counter = 0;
 
-    // wait for the start button to be pressed.
-    waitForStart();
+        // wait for the start button to be pressed.
+        waitForStart();
 
-    // while the op mode is active, loop and read the light levels.
-    // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-    while (opModeIsActive()) {
+        // while the op mode is active, loop and read the light levels.
+        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+        while (opModeIsActive()) {
 
-      // send the info back to driver station using telemetry function.
-      if (touchSensor.isPressed())
-        telemetry.addData("Touch", "Is Pressed");
-      else
-        telemetry.addData("Touch", "Is Not Pressed");
+            // send the info back to driver station using telemetry function.
+            if (touchSensor.isPressed())
+                telemetry.addData("Touch", "Is Pressed");
+            else
+                telemetry.addData("Touch", "Is Not Pressed");
 
-      telemetry.update();
+            telemetry.update();
+        }
     }
-  }
 }

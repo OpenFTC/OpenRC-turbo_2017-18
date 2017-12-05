@@ -39,31 +39,44 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * {@link NormalizedRGBA} instances represent a set of normalized color values.
+ *
  * @see NormalizedColorSensor
  */
-public class NormalizedRGBA
-    {
-    /** normalized red value, in range [0,1) */
+public class NormalizedRGBA {
+    /**
+     * normalized red value, in range [0,1)
+     */
     public float red;
 
-    /** normalized green value, in range [0,1) */
+    /**
+     * normalized green value, in range [0,1)
+     */
     public float green;
 
-    /** normalized blue value, in range [0,1) */
+    /**
+     * normalized blue value, in range [0,1)
+     */
     public float blue;
 
-    /** normalized alpha value, in range [0,1) */
+    /**
+     * normalized alpha value, in range [0,1)
+     */
     public float alpha;
 
-    /** Converts the normalized colors into an Android color integer
-     * @see Color */
-    public @ColorInt int toColor()
-        {
-        float scale = 256; int min = 0, max = 255;
+    /**
+     * Converts the normalized colors into an Android color integer
+     *
+     * @see Color
+     */
+    public
+    @ColorInt
+    int toColor() {
+        float scale = 256;
+        int min = 0, max = 255;
         return Color.argb(
-                Range.clip((int)(alpha * scale), min, max),
-                Range.clip((int)(red   * scale), min, max),
-                Range.clip((int)(green * scale), min, max),
-                Range.clip((int)(blue  * scale), min, max));
-        }
+                Range.clip((int) (alpha * scale), min, max),
+                Range.clip((int) (red * scale), min, max),
+                Range.clip((int) (green * scale), min, max),
+                Range.clip((int) (blue * scale), min, max));
     }
+}

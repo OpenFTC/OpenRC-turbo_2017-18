@@ -1,15 +1,17 @@
 package org.firstinspires.inspection;
 
 
-public class DsInspectionActivity extends InspectionActivity  {
+public class DsInspectionActivity extends InspectionActivity {
 
-    @Override protected boolean inspectingRobotController() {
+    @Override
+    protected boolean inspectingRobotController() {
         return false;
-        }
+    }
 
-    @Override protected boolean useMenu() {
+    @Override
+    protected boolean useMenu() {
         return true;
-        }
+    }
 
     @Override
     protected boolean validateAppsInstalled(InspectionState state) {

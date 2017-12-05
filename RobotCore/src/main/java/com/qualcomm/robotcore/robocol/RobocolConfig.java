@@ -50,107 +50,108 @@ import java.util.Enumeration;
 @SuppressWarnings("unused,WeakerAccess")
 public class RobocolConfig {
 
-  /**
-   * ROBOCOL_VERSION controls the compatibility of the network protocol between driver station
-   * and network controller. If that protocol changes in a non-backward-compatible way, increment
-   * this constant to ensure incompatible apps do not attempt to communicate with each other.
-   */
-  public static final byte ROBOCOL_VERSION = 112;
+    /**
+     * ROBOCOL_VERSION controls the compatibility of the network protocol between driver station
+     * and network controller. If that protocol changes in a non-backward-compatible way, increment
+     * this constant to ensure incompatible apps do not attempt to communicate with each other.
+     */
+    public static final byte ROBOCOL_VERSION = 112;
 
-  // The actual max packet size is the min of this value and whatever the OS says we can use
-  public static final int MAX_MAX_PACKET_SIZE = 65520;  // + 16 bytes overhead == 64k
+    // The actual max packet size is the min of this value and whatever the OS says we can use
+    public static final int MAX_MAX_PACKET_SIZE = 65520;  // + 16 bytes overhead == 64k
 
-  public static final int MS_RECEIVE_TIMEOUT = SendOnceRunnable.MS_HEARTBEAT_TRANSMISSION_INTERVAL * 3;
-  
-  public static final int PORT_NUMBER = 20884;
+    public static final int MS_RECEIVE_TIMEOUT = SendOnceRunnable.MS_HEARTBEAT_TRANSMISSION_INTERVAL * 3;
 
-  public static final int TTL = 3;
+    public static final int PORT_NUMBER = 20884;
 
-  public static final int TIMEOUT = 1000;
+    public static final int TTL = 3;
 
-  public static final int WIFI_P2P_SUBNET_MASK = 0xFFFFFF00; // 255.255.255.0
+    public static final int TIMEOUT = 1000;
 
-  /**
-   * Find a bind address. If no bind address can be found, return the loopback
-   * address
-   * @param destAddress destination address
-   * @return address to bind to
-   */
-  public static InetAddress determineBindAddress(InetAddress destAddress) {
-    ArrayList<InetAddress> localIpAddresses = Network.getLocalIpAddresses();
-    localIpAddresses = Network.removeLoopbackAddresses(localIpAddresses);
-    localIpAddresses = Network.removeIPv6Addresses(localIpAddresses);
+    public static final int WIFI_P2P_SUBNET_MASK = 0xFFFFFF00; // 255.255.255.0
 
-    // if an iface has the destAddress, pick that one
-    for (InetAddress address : localIpAddresses) {
-      try {
-        NetworkInterface iface = NetworkInterface.getByInetAddress(address);
-        Enumeration<InetAddress> ifaceAddresses = iface.getInetAddresses();
-        while (ifaceAddresses.hasMoreElements()) {
-          InetAddress ifaceAddress = ifaceAddresses.nextElement();
-          if (ifaceAddress.equals(destAddress)) {
-            return ifaceAddress; // we found a match
-          }
+    /**
+     * Find a bind address. If no bind address can be found, return the loopback
+     * address
+     *
+     * @param destAddress destination address
+     * @return address to bind to
+     */
+    public static InetAddress determineBindAddress(InetAddress destAddress) {
+        ArrayList<InetAddress> localIpAddresses = Network.getLocalIpAddresses();
+        localIpAddresses = Network.removeLoopbackAddresses(localIpAddresses);
+        localIpAddresses = Network.removeIPv6Addresses(localIpAddresses);
+
+        // if an iface has the destAddress, pick that one
+        for (InetAddress address : localIpAddresses) {
+            try {
+                NetworkInterface iface = NetworkInterface.getByInetAddress(address);
+                Enumeration<InetAddress> ifaceAddresses = iface.getInetAddresses();
+                while (ifaceAddresses.hasMoreElements()) {
+                    InetAddress ifaceAddress = ifaceAddresses.nextElement();
+                    if (ifaceAddress.equals(destAddress)) {
+                        return ifaceAddress; // we found a match
+                    }
+                }
+            } catch (SocketException e) {
+                RobotLog.v(String.format("socket exception while trying to get network interface of %s",
+                        address.getHostAddress()));
+            }
         }
-      } catch (SocketException e) {
-        RobotLog.v(String.format("socket exception while trying to get network interface of %s",
-            address.getHostAddress()));
-      }
+
+        return determineBindAddressBasedOnWifiP2pSubnet(localIpAddresses, destAddress);
     }
 
-    return determineBindAddressBasedOnWifiP2pSubnet(localIpAddresses, destAddress);
-  }
+    /**
+     * Find a bind address that is in the Wifi P2P subnet. If no bind address
+     * can be found, return the loopback address.
+     *
+     * @param destAddress destination address
+     * @return address to bind to
+     */
+    public static InetAddress determineBindAddressBasedOnWifiP2pSubnet(ArrayList<InetAddress> localIpAddresses, InetAddress destAddress) {
+        int destAddrInt = TypeConversion.byteArrayToInt(destAddress.getAddress());
 
-  /**
-   * Find a bind address that is in the Wifi P2P subnet. If no bind address
-   * can be found, return the loopback address.
-   *
-   * @param destAddress destination address
-   * @return address to bind to
-   */
-  public static InetAddress determineBindAddressBasedOnWifiP2pSubnet(ArrayList<InetAddress> localIpAddresses, InetAddress destAddress) {
-    int destAddrInt = TypeConversion.byteArrayToInt(destAddress.getAddress());
+        // pick the first address where the destAddress is in the same subnet as an IP address assigned to a local network interface
+        for (InetAddress address : localIpAddresses) {
+            int addrInt = TypeConversion.byteArrayToInt(address.getAddress());
+            if ((addrInt & WIFI_P2P_SUBNET_MASK) == (destAddrInt & WIFI_P2P_SUBNET_MASK)) {
+                // we found a match
+                return address;
+            }
+        }
 
-    // pick the first address where the destAddress is in the same subnet as an IP address assigned to a local network interface
-    for (InetAddress address : localIpAddresses) {
-      int addrInt = TypeConversion.byteArrayToInt(address.getAddress());
-      if ((addrInt & WIFI_P2P_SUBNET_MASK) == (destAddrInt & WIFI_P2P_SUBNET_MASK)) {
-        // we found a match
-        return address;
-      }
+        // We couldn't find a match
+        return Network.getLoopbackAddress();
     }
 
-    // We couldn't find a match
-    return Network.getLoopbackAddress();
-  }
 
-
-   /**
-    * Find a bind address that can reach the destAddress. If no bind address
-    * can be found, return the loopback address. The InetAddress.isReachable()
-    * method is used to determine if the address is reachable.
-    *
-    * @param destAddress destination address
-    * @return address to bind to
-    */
-   public static InetAddress determineBindAddressBasedOnIsReachable(ArrayList<InetAddress> localIpAddresses, InetAddress destAddress) {
-     // pick the first address where the destAddress is reachable
-      for (InetAddress address : localIpAddresses) {
-        try {
-          NetworkInterface iface = NetworkInterface.getByInetAddress(address);
-          if (address.isReachable(iface, TTL, TIMEOUT)) {
-            return address; // we found a match
-          }
-        } catch (SocketException e) {
-          RobotLog.v(String.format("socket exception while trying to get network interface of %s",
-              address.getHostAddress()));
-        } catch (IOException e) {
-          RobotLog.v(String.format("IO exception while trying to determine if %s is reachable via %s",
-              destAddress.getHostAddress(), address.getHostAddress()));
+    /**
+     * Find a bind address that can reach the destAddress. If no bind address
+     * can be found, return the loopback address. The InetAddress.isReachable()
+     * method is used to determine if the address is reachable.
+     *
+     * @param destAddress destination address
+     * @return address to bind to
+     */
+    public static InetAddress determineBindAddressBasedOnIsReachable(ArrayList<InetAddress> localIpAddresses, InetAddress destAddress) {
+        // pick the first address where the destAddress is reachable
+        for (InetAddress address : localIpAddresses) {
+            try {
+                NetworkInterface iface = NetworkInterface.getByInetAddress(address);
+                if (address.isReachable(iface, TTL, TIMEOUT)) {
+                    return address; // we found a match
+                }
+            } catch (SocketException e) {
+                RobotLog.v(String.format("socket exception while trying to get network interface of %s",
+                        address.getHostAddress()));
+            } catch (IOException e) {
+                RobotLog.v(String.format("IO exception while trying to determine if %s is reachable via %s",
+                        destAddress.getHostAddress(), address.getHostAddress()));
+            }
         }
-      }
 
-      // We couldn't find a match
-      return Network.getLoopbackAddress();
-   }
+        // We couldn't find a match
+        return Network.getLoopbackAddress();
+    }
 }

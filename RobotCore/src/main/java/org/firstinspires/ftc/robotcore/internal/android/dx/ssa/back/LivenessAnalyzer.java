@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.PhiInsn;
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaBasicBlock;
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaInsn;
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaMethod;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * From Appel "Modern Compiler Implementation in Java" algorithm 19.17
  * Calculate the live ranges for register {@code reg}.<p>
- *
+ * <p>
  * v = regV <p>
  * s = insn <p>
  * M = visitedBlocks <p>
@@ -52,27 +53,39 @@ public class LivenessAnalyzer {
      */
     private final int regV;
 
-    /** method to process */
+    /**
+     * method to process
+     */
     private final SsaMethod ssaMeth;
 
-    /** interference graph being updated */
+    /**
+     * interference graph being updated
+     */
     private final InterferenceGraph interference;
 
-    /** block "n" in Appel 19.17 */
+    /**
+     * block "n" in Appel 19.17
+     */
     private SsaBasicBlock blockN;
 
-    /** index of statement {@code s} in {@code blockN} */
+    /**
+     * index of statement {@code s} in {@code blockN}
+     */
     private int statementIndex;
 
-    /** the next function to call */
+    /**
+     * the next function to call
+     */
     private NextFunction nextFunction;
 
-    /** constants for {@link #nextFunction} */
+    /**
+     * constants for {@link #nextFunction}
+     */
     private static enum NextFunction {
         LIVE_IN_AT_STATEMENT,
-            LIVE_OUT_AT_STATEMENT,
-            LIVE_OUT_AT_BLOCK,
-            DONE;
+        LIVE_OUT_AT_STATEMENT,
+        LIVE_OUT_AT_BLOCK,
+        DONE;
     }
 
     /**
@@ -101,14 +114,13 @@ public class LivenessAnalyzer {
     /**
      * Makes liveness analyzer instance for specific register.
      *
-     * @param ssaMeth {@code non-null;} method to process
-     * @param reg register whose liveness to analyze
+     * @param ssaMeth      {@code non-null;} method to process
+     * @param reg          register whose liveness to analyze
      * @param interference {@code non-null;} indexed by SSA reg in
-     * both dimensions; graph to update
-     *
+     *                     both dimensions; graph to update
      */
     private LivenessAnalyzer(SsaMethod ssaMeth, int reg,
-            InterferenceGraph interference) {
+                             InterferenceGraph interference) {
         int blocksSz = ssaMeth.getBlocks().size();
 
         this.ssaMeth = ssaMeth;
@@ -160,7 +172,7 @@ public class LivenessAnalyzer {
                 PhiInsn phi = (PhiInsn) insn;
 
                 for (SsaBasicBlock pred :
-                         phi.predBlocksForReg(regV, ssaMeth)) {
+                        phi.predBlocksForReg(regV, ssaMeth)) {
                     blockN = pred;
 
                     nextFunction = NextFunction.LIVE_OUT_AT_BLOCK;
@@ -193,7 +205,7 @@ public class LivenessAnalyzer {
      * "v is live-out at n."
      */
     private void liveOutAtBlock() {
-        if (! visitedBlocks.get(blockN.getIndex())) {
+        if (!visitedBlocks.get(blockN.getIndex())) {
             visitedBlocks.set(blockN.getIndex());
 
             blockN.addLiveOut(regV);
@@ -251,11 +263,11 @@ public class LivenessAnalyzer {
      * as the result of another phi, and the phi removal move scheduler may
      * generate moves that over-write the live result.
      *
-     * @param ssaMeth {@code non-null;} method to pricess
+     * @param ssaMeth      {@code non-null;} method to pricess
      * @param interference {@code non-null;} interference graph
      */
     private static void coInterferePhis(SsaMethod ssaMeth,
-            InterferenceGraph interference) {
+                                        InterferenceGraph interference) {
         for (SsaBasicBlock b : ssaMeth.getBlocks()) {
             List<SsaInsn> phis = b.getPhiInsns();
 
@@ -268,7 +280,7 @@ public class LivenessAnalyzer {
                     }
 
                     interference.add(phis.get(i).getResult().getReg(),
-                        phis.get(j).getResult().getReg());
+                            phis.get(j).getResult().getReg());
                 }
             }
         }

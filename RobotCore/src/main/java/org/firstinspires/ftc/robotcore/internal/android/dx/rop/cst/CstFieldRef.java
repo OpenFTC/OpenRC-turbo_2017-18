@@ -41,13 +41,15 @@ public final class CstFieldRef extends CstMemberRef {
      * Constructs an instance.
      *
      * @param definingClass {@code non-null;} the type of the defining class
-     * @param nat {@code non-null;} the name-and-type
+     * @param nat           {@code non-null;} the name-and-type
      */
     public CstFieldRef(CstType definingClass, CstNat nat) {
         super(definingClass, nat);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "field";
@@ -62,7 +64,9 @@ public final class CstFieldRef extends CstMemberRef {
         return getNat().getFieldType();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         int cmp = super.compareTo0(other);

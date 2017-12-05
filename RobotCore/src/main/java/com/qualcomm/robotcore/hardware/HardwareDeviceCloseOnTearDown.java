@@ -33,10 +33,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.robotcore.hardware;
 
 /**
- * Instances of {@link HardwareDeviceCloseOnTearDown} are those which should be 
+ * Instances of {@link HardwareDeviceCloseOnTearDown} are those which should be
  * automatically closed when we we 'teardown' a robot
  */
-public interface HardwareDeviceCloseOnTearDown
-    {
+public interface HardwareDeviceCloseOnTearDown {
     void close();
-    }
+}

@@ -40,60 +40,59 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
  * a piece of hardware such as a motor or servo controller. The object can be transitioned
  * amongst a series of states in which various degrees of functionality are available. The
  * states are as follows:
- *
+ * <p>
  * armed:       the object controlling the hardware is fully functional in its intended, usual way.
- *              In this state, the object 'owns' full control of the hardware it represents.
- *
+ * In this state, the object 'owns' full control of the hardware it represents.
+ * <p>
  * disarmed:    the object is quiescent, not manipulating or controlling the hardware. In this state,
- *              it is conceivable that some *other* object instance might be created and then be
- *              successfully armed on the same underlying hardware. In contrast, it is not expected
- *              that two object instances may be simultaneously armed against the same piece of
- *              hardware.
- *
+ * it is conceivable that some *other* object instance might be created and then be
+ * successfully armed on the same underlying hardware. In contrast, it is not expected
+ * that two object instances may be simultaneously armed against the same piece of
+ * hardware.
+ * <p>
  * pretending:  the object pretends as best it can to act as if it were armed on an actual
- *              underlying piece of hardware, but in reality the object is just making it all up:
- *              writes may be sent to the bit-bucket, reads might always return zeros, and so on.
- *              Though this may sound odd, having a hardware-controlling object function in this mode
- *              might minimize impact on upper software layers in the event that the desired actual
- *              hardware is disconnected or otherwise unavailable.
- *
+ * underlying piece of hardware, but in reality the object is just making it all up:
+ * writes may be sent to the bit-bucket, reads might always return zeros, and so on.
+ * Though this may sound odd, having a hardware-controlling object function in this mode
+ * might minimize impact on upper software layers in the event that the desired actual
+ * hardware is disconnected or otherwise unavailable.
+ * <p>
  * closed:      this is much like disarmed, but more serious and permanent shutdown steps might
- *              be taken as an object transitions to the closed state.
- *
+ * be taken as an object transitions to the closed state.
+ * <p>
  * Transient 'toX' states are also present. The legal state transitions are as follows:
- *
- *              disarmed -> toArmed
- *              toArmed -> armed
- *
- *              disarmed -> toPretending
- *              toPretending -> pretending
- *
- *              armed -> toDisarmed
- *              toArmed -> toDisarmed
- *              pretending -> toDisarmed
- *              toPretending -> toDisarmed
- *              toDisarmed -> disarmed
- *
- *              armed -> closed
- *              toArmed -> closed
- *              pretending -> closed
- *              toPretending -> closed
- *              toDisarmed -> closed
- *              disarmed -> closed
-  *
+ * <p>
+ * disarmed -> toArmed
+ * toArmed -> armed
+ * <p>
+ * disarmed -> toPretending
+ * toPretending -> pretending
+ * <p>
+ * armed -> toDisarmed
+ * toArmed -> toDisarmed
+ * pretending -> toDisarmed
+ * toPretending -> toDisarmed
+ * toDisarmed -> disarmed
+ * <p>
+ * armed -> closed
+ * toArmed -> closed
+ * pretending -> closed
+ * toPretending -> closed
+ * toDisarmed -> closed
+ * disarmed -> closed
+ * <p>
  * Notice that once closed, no further state transitions are possible. Conversely, it is possible
  * to close from any state and to disarm from any state except from closed. In particular, it is
  * possible to close or disarm from the transitional toArmed and toPretending states:
  * implementations *must* take care to ensure this is always possible.
- *
+ * <p>
  * Typically, when first instantiated, an object is in the disarmed state.
- *
+ * <p>
  * Objects should, generally, minimize the time they are in the disarmed state, as to many clients
  * they will appear dysfunctional and error prone in that state, since those clients may not have
  * been coded correctly to deal with an object that doesn't service read()s or write()s *at*all*.
  */
-public interface RobotUsbModule extends RobotArmingStateNotifier
-    {
+public interface RobotUsbModule extends RobotArmingStateNotifier {
     /**
      * Causes the module to attempt to enter the armed state. If the module is already
      * armed, this method has no effect.
@@ -133,4 +132,4 @@ public interface RobotUsbModule extends RobotArmingStateNotifier
      * @see RobotUsbModule
      */
     void close();
-    }
+}

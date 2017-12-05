@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader;
 import org.firstinspires.ftc.robotcore.internal.android.dex.MethodId;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.CodeReader;
 import org.firstinspires.ftc.robotcore.internal.android.dx.io.instructions.DecodedInstruction;
+
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,12 +56,12 @@ public final class Grep {
     private void readArray(EncodedValueReader reader) {
         for (int i = 0, size = reader.readArray(); i < size; i++) {
             switch (reader.peek()) {
-            case EncodedValueReader.ENCODED_STRING:
-                encounterString(reader.readString());
-                break;
-            case EncodedValueReader.ENCODED_ARRAY:
-                readArray(reader);
-                break;
+                case EncodedValueReader.ENCODED_STRING:
+                    encounterString(reader.readString());
+                    break;
+                case EncodedValueReader.ENCODED_ARRAY:
+                    readArray(reader);
+                    break;
             }
         }
     }

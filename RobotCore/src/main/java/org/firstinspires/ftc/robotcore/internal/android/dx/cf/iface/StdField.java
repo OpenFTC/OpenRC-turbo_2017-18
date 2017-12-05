@@ -30,20 +30,22 @@ public final class StdField extends StdMember implements Field {
      * Constructs an instance.
      *
      * @param definingClass {@code non-null;} the defining class
-     * @param accessFlags access flags
-     * @param nat {@code non-null;} member name and type (descriptor)
-     * @param attributes {@code non-null;} list of associated attributes
+     * @param accessFlags   access flags
+     * @param nat           {@code non-null;} member name and type (descriptor)
+     * @param attributes    {@code non-null;} list of associated attributes
      */
     public StdField(CstType definingClass, int accessFlags, CstNat nat,
                     AttributeList attributes) {
         super(definingClass, accessFlags, nat, attributes);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public TypedConstant getConstantValue() {
         AttributeList attribs = getAttributes();
         AttConstantValue cval = (AttConstantValue)
-            attribs.findFirst(AttConstantValue.ATTRIBUTE_NAME);
+                attribs.findFirst(AttConstantValue.ATTRIBUTE_NAME);
 
         if (cval == null) {
             return null;

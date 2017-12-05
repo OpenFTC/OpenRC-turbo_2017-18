@@ -20,7 +20,8 @@ package org.firstinspires.ftc.robotcore.internal.android.dex.util;
  * Unsigned arithmetic over Java's signed types.
  */
 public final class Unsigned {
-    private Unsigned() {}
+    private Unsigned() {
+    }
 
     public static int compare(short ushortA, short ushortB) {
         if (ushortA == ushortB) {

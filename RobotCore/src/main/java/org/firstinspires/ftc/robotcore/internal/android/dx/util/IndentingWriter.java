@@ -27,30 +27,42 @@ import java.io.Writer;
  * line.
  */
 public final class IndentingWriter extends FilterWriter {
-    /** {@code null-ok;} optional prefix for every line */
+    /**
+     * {@code null-ok;} optional prefix for every line
+     */
     private final String prefix;
 
-    /** {@code > 0;} the maximum output width */
+    /**
+     * {@code > 0;} the maximum output width
+     */
     private final int width;
 
-    /** {@code > 0;} the maximum indent */
+    /**
+     * {@code > 0;} the maximum indent
+     */
     private final int maxIndent;
 
-    /** {@code >= 0;} current output column (zero-based) */
+    /**
+     * {@code >= 0;} current output column (zero-based)
+     */
     private int column;
 
-    /** whether indent spaces are currently being collected */
+    /**
+     * whether indent spaces are currently being collected
+     */
     private boolean collectingIndent;
 
-    /** {@code >= 0;} current indent amount */
+    /**
+     * {@code >= 0;} current indent amount
+     */
     private int indent;
 
     /**
      * Constructs an instance.
      *
-     * @param out {@code non-null;} writer to send final output to
-     * @param width {@code >= 0;} the maximum output width (not including
-     * {@code prefix}), or {@code 0} for no maximum
+     * @param out    {@code non-null;} writer to send final output to
+     * @param width  {@code >= 0;} the maximum output width (not including
+     *               {@code prefix}), or {@code 0} for no maximum
      * @param prefix {@code non-null;} the prefix for each line
      */
     public IndentingWriter(Writer out, int width, String prefix) {
@@ -78,15 +90,17 @@ public final class IndentingWriter extends FilterWriter {
     /**
      * Constructs a no-prefix instance.
      *
-     * @param out {@code non-null;} writer to send final output to
+     * @param out   {@code non-null;} writer to send final output to
      * @param width {@code >= 0;} the maximum output width (not including
-     * {@code prefix}), or {@code 0} for no maximum
+     *              {@code prefix}), or {@code 0} for no maximum
      */
     public IndentingWriter(Writer out, int width) {
         this(out, width, "");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(int c) throws IOException {
         synchronized (lock) {
@@ -134,7 +148,9 @@ public final class IndentingWriter extends FilterWriter {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
         synchronized (lock) {
@@ -146,7 +162,9 @@ public final class IndentingWriter extends FilterWriter {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(String str, int off, int len) throws IOException {
         synchronized (lock) {

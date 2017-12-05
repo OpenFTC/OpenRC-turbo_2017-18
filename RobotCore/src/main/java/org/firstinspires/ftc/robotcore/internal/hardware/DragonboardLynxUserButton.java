@@ -35,31 +35,36 @@ package org.firstinspires.ftc.robotcore.internal.hardware;
 /**
  * {@link DragonboardLynxUserButton} provides access to the user push button on the Lynx module
  * used with the Lynx / Dragonboard combo.
- *
+ * <p>
  * This button is on GPIO pin #17. Quiescent, it is low; when pressed, it is high.
- *
+ * <p>
  * The manual lm80-p0436-20_gpio_mpp_usage_low_speed_connector_appnote.pdf describes how
  * to access the GPIO pins. See Section 2.1 therein. Also: AOSP/kernel/documentation/gpio.txt
  */
 @SuppressWarnings("WeakerAccess,DefaultLocale")
-public class DragonboardLynxUserButton extends DragonboardGPIOPin
-    {
+public class DragonboardLynxUserButton extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxUserButton";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     protected static final DragonboardLynxUserButton theInstance = new DragonboardLynxUserButton();
-    public static DragonboardLynxUserButton getInstance() { return theInstance; }
+
+    public static DragonboardLynxUserButton getInstance() {
+        return theInstance;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected DragonboardLynxUserButton()
-        {
+    protected DragonboardLynxUserButton() {
         super(17);
-        }
     }
+}

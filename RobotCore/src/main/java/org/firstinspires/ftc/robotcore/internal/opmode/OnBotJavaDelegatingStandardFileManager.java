@@ -45,8 +45,7 @@ import javax.tools.StandardJavaFileManager;
  * additional StandardJavaFileManager methods.
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaDelegatingStandardFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> implements StandardJavaFileManager
-    {
+public class OnBotJavaDelegatingStandardFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> implements StandardJavaFileManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -57,46 +56,42 @@ public class OnBotJavaDelegatingStandardFileManager extends ForwardingJavaFileMa
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OnBotJavaDelegatingStandardFileManager(StandardJavaFileManager delegate)
-        {
+    public OnBotJavaDelegatingStandardFileManager(StandardJavaFileManager delegate) {
         super(delegate);
         this.delegate = delegate;
-        }
+    }
 
     //---------------------------------------------------------------------------------------------
     // StandardJavaFileManager
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromFiles(Iterable<? extends File> files)
-        {
+    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromFiles(Iterable<? extends File> files) {
         return delegate.getJavaFileObjectsFromFiles(files);
-        }
-
-    @Override public Iterable<? extends JavaFileObject> getJavaFileObjects(File... files)
-        {
-        return delegate.getJavaFileObjects(files);
-        }
-
-    @Override
-    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(Iterable<String> names)
-        {
-        return delegate.getJavaFileObjectsFromStrings(names);
-        }
-
-    @Override public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names)
-        {
-        return delegate.getJavaFileObjects(names);
-        }
-
-    @Override
-    public void setLocation(Location location, Iterable<? extends File> path) throws IOException
-        {
-        delegate.setLocation(location, path);
-        }
-
-    @Override public Iterable<? extends File> getLocation(Location location)
-        {
-        return delegate.getLocation(location);
-        }
     }
+
+    @Override
+    public Iterable<? extends JavaFileObject> getJavaFileObjects(File... files) {
+        return delegate.getJavaFileObjects(files);
+    }
+
+    @Override
+    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(Iterable<String> names) {
+        return delegate.getJavaFileObjectsFromStrings(names);
+    }
+
+    @Override
+    public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names) {
+        return delegate.getJavaFileObjects(names);
+    }
+
+    @Override
+    public void setLocation(Location location, Iterable<? extends File> path) throws IOException {
+        delegate.setLocation(location, path);
+    }
+
+    @Override
+    public Iterable<? extends File> getLocation(Location location) {
+        return delegate.getLocation(location);
+    }
+}

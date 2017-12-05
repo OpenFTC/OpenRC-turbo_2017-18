@@ -59,7 +59,8 @@ public final class MethodId implements Comparable<MethodId> {
         out.writeInt(nameIndex);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         if (dex == null) {
             return declaringClassIndex + " " + protoIndex + " " + nameIndex;
         }

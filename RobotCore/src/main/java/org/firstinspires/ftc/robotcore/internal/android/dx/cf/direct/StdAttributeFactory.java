@@ -55,6 +55,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.TypedConstant
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.io.IOException;
 
 /**
@@ -62,10 +63,12 @@ import java.io.IOException;
  * all the standard attribute types.
  */
 public class StdAttributeFactory
-    extends AttributeFactory {
-    /** {@code non-null;} shared instance of this class */
+        extends AttributeFactory {
+    /**
+     * {@code non-null;} shared instance of this class
+     */
     public static final StdAttributeFactory THE_ONE =
-        new StdAttributeFactory();
+            new StdAttributeFactory();
 
     /**
      * Constructs an instance.
@@ -74,10 +77,12 @@ public class StdAttributeFactory
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Attribute parse0(DirectClassFile cf, int context, String name,
-            int offset, int length, ParseObserver observer) {
+                               int offset, int length, ParseObserver observer) {
         switch (context) {
             case CTX_CLASS: {
                 if (name == AttDeprecated.ATTRIBUTE_NAME) {
@@ -192,13 +197,13 @@ public class StdAttributeFactory
      * Parses an {@code AnnotationDefault} attribute.
      */
     private Attribute annotationDefault(DirectClassFile cf,
-            int offset, int length, ParseObserver observer) {
+                                        int offset, int length, ParseObserver observer) {
         if (length < 2) {
             throwSeverelyTruncated();
         }
 
         AnnotationParser ap =
-            new AnnotationParser(cf, offset, length, observer);
+                new AnnotationParser(cf, offset, length, observer);
         Constant cst = ap.parseValueAttribute();
 
         return new AttAnnotationDefault(cst, length);
@@ -208,7 +213,7 @@ public class StdAttributeFactory
      * Parses a {@code Code} attribute.
      */
     private Attribute code(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                           ParseObserver observer) {
         if (length < 12) {
             return throwSeverelyTruncated();
         }
@@ -222,11 +227,11 @@ public class StdAttributeFactory
 
         if (observer != null) {
             observer.parsed(bytes, offset, 2,
-                            "max_stack: " + Hex.u2(maxStack));
+                    "max_stack: " + Hex.u2(maxStack));
             observer.parsed(bytes, offset + 2, 2,
-                            "max_locals: " + Hex.u2(maxLocals));
+                    "max_locals: " + Hex.u2(maxLocals));
             observer.parsed(bytes, offset + 4, 4,
-                            "code_length: " + Hex.u4(codeLength));
+                    "code_length: " + Hex.u4(codeLength));
         }
 
         offset += 8;
@@ -240,8 +245,8 @@ public class StdAttributeFactory
         offset += codeLength;
         length -= codeLength;
         BytecodeArray code =
-            new BytecodeArray(bytes.slice(codeOffset, codeOffset + codeLength),
-                              pool);
+                new BytecodeArray(bytes.slice(codeOffset, codeOffset + codeLength),
+                        pool);
         if (observer != null) {
             code.forEach(new CodeObserver(code.getBytes(), observer));
         }
@@ -249,12 +254,12 @@ public class StdAttributeFactory
         // u2 exception_table_length
         int exceptionTableLength = bytes.getUnsignedShort(offset);
         ByteCatchList catches = (exceptionTableLength == 0) ?
-            ByteCatchList.EMPTY :
-            new ByteCatchList(exceptionTableLength);
+                ByteCatchList.EMPTY :
+                new ByteCatchList(exceptionTableLength);
 
         if (observer != null) {
             observer.parsed(bytes, offset, 2,
-                            "exception_table_length: " +
+                    "exception_table_length: " +
                             Hex.u2(exceptionTableLength));
         }
 
@@ -278,10 +283,10 @@ public class StdAttributeFactory
             catches.set(i, startPc, endPc, handlerPc, catchType);
             if (observer != null) {
                 observer.parsed(bytes, offset, 8,
-                                Hex.u2(startPc) + "build/generated/source/aidl" + Hex.u2(endPc) +
+                        Hex.u2(startPc) + "build/generated/source/aidl" + Hex.u2(endPc) +
                                 " -> " + Hex.u2(handlerPc) + " " +
                                 ((catchType == null) ? "<any>" :
-                                 catchType.toHuman()));
+                                        catchType.toHuman()));
             }
             offset += 8;
             length -= 8;
@@ -294,7 +299,7 @@ public class StdAttributeFactory
         catches.setImmutable();
 
         AttributeListParser parser =
-            new AttributeListParser(cf, CTX_CODE, offset, this);
+                new AttributeListParser(cf, CTX_CODE, offset, this);
         parser.setObserver(observer);
 
         StdAttributeList attributes = parser.getList();
@@ -312,7 +317,7 @@ public class StdAttributeFactory
      * Parses a {@code ConstantValue} attribute.
      */
     private Attribute constantValue(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                    ParseObserver observer) {
         if (length != 2) {
             return throwBadLength(2);
         }
@@ -334,7 +339,7 @@ public class StdAttributeFactory
      * Parses a {@code Deprecated} attribute.
      */
     private Attribute deprecated(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                 ParseObserver observer) {
         if (length != 0) {
             return throwBadLength(0);
         }
@@ -346,7 +351,7 @@ public class StdAttributeFactory
      * Parses an {@code EnclosingMethod} attribute.
      */
     private Attribute enclosingMethod(DirectClassFile cf, int offset,
-            int length, ParseObserver observer) {
+                                      int length, ParseObserver observer) {
         if (length != 4) {
             throwBadLength(4);
         }
@@ -365,7 +370,7 @@ public class StdAttributeFactory
         if (observer != null) {
             observer.parsed(bytes, offset, 2, "class: " + type);
             observer.parsed(bytes, offset + 2, 2, "method: " +
-                            DirectClassFile.stringOrNone(method));
+                    DirectClassFile.stringOrNone(method));
         }
 
         return result;
@@ -375,7 +380,7 @@ public class StdAttributeFactory
      * Parses an {@code Exceptions} attribute.
      */
     private Attribute exceptions(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                 ParseObserver observer) {
         if (length < 2) {
             return throwSeverelyTruncated();
         }
@@ -385,7 +390,7 @@ public class StdAttributeFactory
 
         if (observer != null) {
             observer.parsed(bytes, offset, 2,
-                            "number_of_exceptions: " + Hex.u2(count));
+                    "number_of_exceptions: " + Hex.u2(count));
         }
 
         offset += 2;
@@ -403,7 +408,7 @@ public class StdAttributeFactory
      * Parses an {@code InnerClasses} attribute.
      */
     private Attribute innerClasses(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                   ParseObserver observer) {
         if (length < 2) {
             return throwSeverelyTruncated();
         }
@@ -414,7 +419,7 @@ public class StdAttributeFactory
 
         if (observer != null) {
             observer.parsed(bytes, offset, 2,
-                            "number_of_classes: " + Hex.u2(count));
+                    "number_of_classes: " + Hex.u2(count));
         }
 
         offset += 2;
@@ -437,16 +442,16 @@ public class StdAttributeFactory
             list.set(i, innerClass, outerClass, name, accessFlags);
             if (observer != null) {
                 observer.parsed(bytes, offset, 2,
-                                "inner_class: " +
+                        "inner_class: " +
                                 DirectClassFile.stringOrNone(innerClass));
                 observer.parsed(bytes, offset + 2, 2,
-                                "  outer_class: " +
+                        "  outer_class: " +
                                 DirectClassFile.stringOrNone(outerClass));
                 observer.parsed(bytes, offset + 4, 2,
-                                "  name: " +
+                        "  name: " +
                                 DirectClassFile.stringOrNone(name));
                 observer.parsed(bytes, offset + 6, 2,
-                                "  access_flags: " +
+                        "  access_flags: " +
                                 AccessFlags.innerClassString(accessFlags));
             }
             offset += 8;
@@ -460,7 +465,7 @@ public class StdAttributeFactory
      * Parses a {@code LineNumberTable} attribute.
      */
     private Attribute lineNumberTable(DirectClassFile cf, int offset,
-            int length, ParseObserver observer) {
+                                      int length, ParseObserver observer) {
         if (length < 2) {
             return throwSeverelyTruncated();
         }
@@ -470,7 +475,7 @@ public class StdAttributeFactory
 
         if (observer != null) {
             observer.parsed(bytes, offset, 2,
-                            "line_number_table_length: " + Hex.u2(count));
+                    "line_number_table_length: " + Hex.u2(count));
         }
 
         offset += 2;
@@ -488,7 +493,7 @@ public class StdAttributeFactory
             list.set(i, startPc, lineNumber);
             if (observer != null) {
                 observer.parsed(bytes, offset, 4,
-                                Hex.u2(startPc) + " " + lineNumber);
+                        Hex.u2(startPc) + " " + lineNumber);
             }
             offset += 4;
         }
@@ -501,7 +506,7 @@ public class StdAttributeFactory
      * Parses a {@code LocalVariableTable} attribute.
      */
     private Attribute localVariableTable(DirectClassFile cf, int offset,
-            int length, ParseObserver observer) {
+                                         int length, ParseObserver observer) {
         if (length < 2) {
             return throwSeverelyTruncated();
         }
@@ -524,7 +529,7 @@ public class StdAttributeFactory
      * Parses a {@code LocalVariableTypeTable} attribute.
      */
     private Attribute localVariableTypeTable(DirectClassFile cf, int offset,
-            int length, ParseObserver observer) {
+                                             int length, ParseObserver observer) {
         if (length < 2) {
             return throwSeverelyTruncated();
         }
@@ -547,16 +552,16 @@ public class StdAttributeFactory
      * Parse the table part of either a {@code LocalVariableTable}
      * or a {@code LocalVariableTypeTable}.
      *
-     * @param bytes {@code non-null;} bytes to parse, which should <i>only</i>
-     * contain the table data (no header)
-     * @param pool {@code non-null;} constant pool to use
-     * @param count {@code >= 0;} the number of entries
+     * @param bytes     {@code non-null;} bytes to parse, which should <i>only</i>
+     *                  contain the table data (no header)
+     * @param pool      {@code non-null;} constant pool to use
+     * @param count     {@code >= 0;} the number of entries
      * @param typeTable {@code true} iff this is for a type table
      * @return {@code non-null;} the constructed list
      */
     private LocalVariableList parseLocalVariables(ByteArray bytes,
-            ConstantPool pool, ParseObserver observer, int count,
-            boolean typeTable) {
+                                                  ConstantPool pool, ParseObserver observer, int count,
+                                                  boolean typeTable) {
         if (bytes.size() != (count * 10)) {
             // "+ 2" is for the count.
             throwBadLength((count * 10) + 2);
@@ -605,15 +610,15 @@ public class StdAttributeFactory
      * Parses a {@code RuntimeInvisibleAnnotations} attribute.
      */
     private Attribute runtimeInvisibleAnnotations(DirectClassFile cf,
-            int offset, int length, ParseObserver observer) {
+                                                  int offset, int length, ParseObserver observer) {
         if (length < 2) {
             throwSeverelyTruncated();
         }
 
         AnnotationParser ap =
-            new AnnotationParser(cf, offset, length, observer);
+                new AnnotationParser(cf, offset, length, observer);
         Annotations annotations =
-            ap.parseAnnotationAttribute(AnnotationVisibility.BUILD);
+                ap.parseAnnotationAttribute(AnnotationVisibility.BUILD);
 
         return new AttRuntimeInvisibleAnnotations(annotations, length);
     }
@@ -622,15 +627,15 @@ public class StdAttributeFactory
      * Parses a {@code RuntimeVisibleAnnotations} attribute.
      */
     private Attribute runtimeVisibleAnnotations(DirectClassFile cf,
-            int offset, int length, ParseObserver observer) {
+                                                int offset, int length, ParseObserver observer) {
         if (length < 2) {
             throwSeverelyTruncated();
         }
 
         AnnotationParser ap =
-            new AnnotationParser(cf, offset, length, observer);
+                new AnnotationParser(cf, offset, length, observer);
         Annotations annotations =
-            ap.parseAnnotationAttribute(AnnotationVisibility.RUNTIME);
+                ap.parseAnnotationAttribute(AnnotationVisibility.RUNTIME);
 
         return new AttRuntimeVisibleAnnotations(annotations, length);
     }
@@ -639,15 +644,15 @@ public class StdAttributeFactory
      * Parses a {@code RuntimeInvisibleParameterAnnotations} attribute.
      */
     private Attribute runtimeInvisibleParameterAnnotations(DirectClassFile cf,
-            int offset, int length, ParseObserver observer) {
+                                                           int offset, int length, ParseObserver observer) {
         if (length < 2) {
             throwSeverelyTruncated();
         }
 
         AnnotationParser ap =
-            new AnnotationParser(cf, offset, length, observer);
+                new AnnotationParser(cf, offset, length, observer);
         AnnotationsList list =
-            ap.parseParameterAttribute(AnnotationVisibility.BUILD);
+                ap.parseParameterAttribute(AnnotationVisibility.BUILD);
 
         return new AttRuntimeInvisibleParameterAnnotations(list, length);
     }
@@ -656,15 +661,15 @@ public class StdAttributeFactory
      * Parses a {@code RuntimeVisibleParameterAnnotations} attribute.
      */
     private Attribute runtimeVisibleParameterAnnotations(DirectClassFile cf,
-            int offset, int length, ParseObserver observer) {
+                                                         int offset, int length, ParseObserver observer) {
         if (length < 2) {
             throwSeverelyTruncated();
         }
 
         AnnotationParser ap =
-            new AnnotationParser(cf, offset, length, observer);
+                new AnnotationParser(cf, offset, length, observer);
         AnnotationsList list =
-            ap.parseParameterAttribute(AnnotationVisibility.RUNTIME);
+                ap.parseParameterAttribute(AnnotationVisibility.RUNTIME);
 
         return new AttRuntimeVisibleParameterAnnotations(list, length);
     }
@@ -673,7 +678,7 @@ public class StdAttributeFactory
      * Parses a {@code Signature} attribute.
      */
     private Attribute signature(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                ParseObserver observer) {
         if (length != 2) {
             throwBadLength(2);
         }
@@ -695,7 +700,7 @@ public class StdAttributeFactory
      * Parses a {@code SourceFile} attribute.
      */
     private Attribute sourceFile(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                 ParseObserver observer) {
         if (length != 2) {
             throwBadLength(2);
         }
@@ -717,7 +722,7 @@ public class StdAttributeFactory
      * Parses a {@code Synthetic} attribute.
      */
     private Attribute synthetic(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                                ParseObserver observer) {
         if (length != 0) {
             return throwBadLength(0);
         }
@@ -757,6 +762,6 @@ public class StdAttributeFactory
      */
     private static Attribute throwBadLength(int expected) {
         throw new ParseException("bad attribute length; expected length " +
-                                 Hex.u4(expected));
+                Hex.u4(expected));
     }
 }

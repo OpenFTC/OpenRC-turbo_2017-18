@@ -3,6 +3,7 @@
 package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
+
 import com.qualcomm.robotcore.util.RobotLog;
 
 /**
@@ -11,22 +12,22 @@ import com.qualcomm.robotcore.util.RobotLog;
  * @author lizlooney@google.com (Liz Looney)
  */
 abstract class Access {
-  private final BlocksOpMode blocksOpMode;
-  private final String identifier;
+    private final BlocksOpMode blocksOpMode;
+    private final String identifier;
 
-  protected Access(BlocksOpMode blocksOpMode, String identifier) {
-    this.blocksOpMode = blocksOpMode;
-    this.identifier = identifier;
-  }
+    protected Access(BlocksOpMode blocksOpMode, String identifier) {
+        this.blocksOpMode = blocksOpMode;
+        this.identifier = identifier;
+    }
 
-  protected final void checkIfStopRequested() {
-    blocksOpMode.checkIfStopRequested();
-  }
+    protected final void checkIfStopRequested() {
+        blocksOpMode.checkIfStopRequested();
+    }
 
-  /**
-   * The close method should be overridden in classes that need to clean up when the OpMode has
-   * finished running.
-   */
-  void close() {
-  }
+    /**
+     * The close method should be overridden in classes that need to clean up when the OpMode has
+     * finished running.
+     */
+    void close() {
+    }
 }

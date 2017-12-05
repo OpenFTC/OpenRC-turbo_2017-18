@@ -39,35 +39,32 @@ import com.qualcomm.robotcore.R;
 
 import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
 
-public class CubeMeshVertexShader extends SimpleVertexShader
-    {
+public class CubeMeshVertexShader extends SimpleVertexShader {
     protected final int a_vertexNormal;
     protected final int a_vertexTexCoord;
 
-    @RawRes public static final int resourceId = R.raw.cube_mesh_vertex_shader;
+    @RawRes
+    public static final int resourceId = R.raw.cube_mesh_vertex_shader;
 
-    public CubeMeshVertexShader(int programId)
-        {
+    public CubeMeshVertexShader(int programId) {
         super(programId);
         a_vertexNormal = GLES20.glGetAttribLocation(programId, "vertexNormal");
         a_vertexTexCoord = GLES20.glGetAttribLocation(programId, "vertexTexCoord");
-        }
+    }
 
-    public void setCoordinates(MeshObject meshObject)
-        {
+    public void setCoordinates(MeshObject meshObject) {
         GLES20.glVertexAttribPointer(a_vertexPosition, 3, GLES20.GL_FLOAT, false, 0, meshObject.getVertices());
-        GLES20.glVertexAttribPointer(a_vertexNormal,   3, GLES20.GL_FLOAT, false, 0, meshObject.getNormals());
+        GLES20.glVertexAttribPointer(a_vertexNormal, 3, GLES20.GL_FLOAT, false, 0, meshObject.getNormals());
         GLES20.glVertexAttribPointer(a_vertexTexCoord, 2, GLES20.GL_FLOAT, false, 0, meshObject.getTexCoords());
 
         GLES20.glEnableVertexAttribArray(a_vertexPosition);
         GLES20.glEnableVertexAttribArray(a_vertexNormal);
         GLES20.glEnableVertexAttribArray(a_vertexTexCoord);
-        }
+    }
 
-    public void disableAttributes()
-        {
+    public void disableAttributes() {
         super.disableAttributes();
         GLES20.glDisableVertexAttribArray(a_vertexNormal);
         GLES20.glDisableVertexAttribArray(a_vertexTexCoord);
-        }
     }
+}

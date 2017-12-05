@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.cf.iface.Attribute;
 import org.firstinspires.ftc.robotcore.internal.android.dx.cf.iface.AttributeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.annotation.Annotation;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
+
 import java.io.File;
 import java.lang.annotation.ElementType;
 import java.util.HashSet;
@@ -42,91 +43,99 @@ class AnnotationLister {
      */
     private static final String PACKAGE_INFO = "package-info";
 
-    /** current match configuration */
+    /**
+     * current match configuration
+     */
     private final Main.Arguments args;
 
-    /** Set of classes whose inner classes should be considered matched */
+    /**
+     * Set of classes whose inner classes should be considered matched
+     */
     HashSet<String> matchInnerClassesOf = new HashSet<String>();
 
-    /** set of packages whose classes should be considered matched */
+    /**
+     * set of packages whose classes should be considered matched
+     */
     HashSet<String> matchPackages = new HashSet<String>();
 
-    AnnotationLister (Main.Arguments args) {
+    AnnotationLister(Main.Arguments args) {
         this.args = args;
     }
 
-    /** Processes based on configuration specified in constructor. */
+    /**
+     * Processes based on configuration specified in constructor.
+     */
     void process() {
         for (String path : args.files) {
             ClassPathOpener opener;
 
             opener = new ClassPathOpener(path, true,
                     new ClassPathOpener.Consumer() {
-                public boolean processFileBytes(String name, long lastModified, byte[] bytes) {
-                    if (!name.endsWith(".class")) {
-                        return true;
-                    }
+                        public boolean processFileBytes(String name, long lastModified, byte[] bytes) {
+                            if (!name.endsWith(".class")) {
+                                return true;
+                            }
 
-                    ByteArray ba = new ByteArray(bytes);
-                    DirectClassFile cf
-                        = new DirectClassFile(ba, name, true);
+                            ByteArray ba = new ByteArray(bytes);
+                            DirectClassFile cf
+                                    = new DirectClassFile(ba, name, true);
 
-                    cf.setAttributeFactory(StdAttributeFactory.THE_ONE);
-                    AttributeList attributes = cf.getAttributes();
-                    Attribute att;
+                            cf.setAttributeFactory(StdAttributeFactory.THE_ONE);
+                            AttributeList attributes = cf.getAttributes();
+                            Attribute att;
 
-                    String cfClassName
-                            = cf.getThisClass().getClassType().getClassName();
+                            String cfClassName
+                                    = cf.getThisClass().getClassType().getClassName();
 
-                    if (cfClassName.endsWith(PACKAGE_INFO)) {
-                        att = attributes.findFirst(
-                                AttRuntimeInvisibleAnnotations.ATTRIBUTE_NAME);
+                            if (cfClassName.endsWith(PACKAGE_INFO)) {
+                                att = attributes.findFirst(
+                                        AttRuntimeInvisibleAnnotations.ATTRIBUTE_NAME);
 
-                        for (;att != null; att = attributes.findNext(att)) {
-                            BaseAnnotations ann = (BaseAnnotations)att;
-                            visitPackageAnnotation(cf, ann);
+                                for (; att != null; att = attributes.findNext(att)) {
+                                    BaseAnnotations ann = (BaseAnnotations) att;
+                                    visitPackageAnnotation(cf, ann);
+                                }
+
+                                att = attributes.findFirst(
+                                        AttRuntimeVisibleAnnotations.ATTRIBUTE_NAME);
+
+                                for (; att != null; att = attributes.findNext(att)) {
+                                    BaseAnnotations ann = (BaseAnnotations) att;
+                                    visitPackageAnnotation(cf, ann);
+                                }
+                            } else if (isMatchingInnerClass(cfClassName)
+                                    || isMatchingPackage(cfClassName)) {
+                                printMatch(cf);
+                            } else {
+                                att = attributes.findFirst(
+                                        AttRuntimeInvisibleAnnotations.ATTRIBUTE_NAME);
+
+                                for (; att != null; att = attributes.findNext(att)) {
+                                    BaseAnnotations ann = (BaseAnnotations) att;
+                                    visitClassAnnotation(cf, ann);
+                                }
+
+                                att = attributes.findFirst(
+                                        AttRuntimeVisibleAnnotations.ATTRIBUTE_NAME);
+
+                                for (; att != null; att = attributes.findNext(att)) {
+                                    BaseAnnotations ann = (BaseAnnotations) att;
+                                    visitClassAnnotation(cf, ann);
+                                }
+                            }
+
+                            return true;
                         }
 
-                        att = attributes.findFirst(
-                                AttRuntimeVisibleAnnotations.ATTRIBUTE_NAME);
-
-                        for (;att != null; att = attributes.findNext(att)) {
-                            BaseAnnotations ann = (BaseAnnotations)att;
-                            visitPackageAnnotation(cf, ann);
-                        }
-                    } else if (isMatchingInnerClass(cfClassName)
-                            || isMatchingPackage(cfClassName)) {
-                        printMatch(cf);
-                    } else {
-                        att = attributes.findFirst(
-                                AttRuntimeInvisibleAnnotations.ATTRIBUTE_NAME);
-
-                        for (;att != null; att = attributes.findNext(att)) {
-                            BaseAnnotations ann = (BaseAnnotations)att;
-                            visitClassAnnotation(cf, ann);
+                        public void onException(Exception ex) {
+                            throw new RuntimeException(ex);
                         }
 
-                        att = attributes.findFirst(
-                                AttRuntimeVisibleAnnotations.ATTRIBUTE_NAME);
+                        public void onProcessArchiveStart(File file) {
 
-                        for (;att != null; att = attributes.findNext(att)) {
-                            BaseAnnotations ann = (BaseAnnotations)att;
-                            visitClassAnnotation(cf, ann);
                         }
-                    }
 
-                    return true;
-                }
-
-                public void onException(Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                public void onProcessArchiveStart(File file) {
-
-                }
-
-            });
+                    });
 
             opener.process();
         }
@@ -135,11 +144,11 @@ class AnnotationLister {
     /**
      * Inspects a class annotation.
      *
-     * @param cf {@code non-null;} class file
+     * @param cf  {@code non-null;} class file
      * @param ann {@code non-null;} annotation
      */
     private void visitClassAnnotation(DirectClassFile cf,
-            BaseAnnotations ann) {
+                                      BaseAnnotations ann) {
 
         if (!args.eTypes.contains(ElementType.TYPE)) {
             return;
@@ -157,7 +166,7 @@ class AnnotationLister {
     /**
      * Inspects a package annotation
      *
-     * @param cf {@code non-null;} class file of "package-info" pseudo-class
+     * @param cf  {@code non-null;} class file of "package-info" pseudo-class
      * @param ann {@code non-null;} annotation
      */
     private void visitPackageAnnotation(
@@ -204,7 +213,7 @@ class AnnotationLister {
                     matchPackages.add(packageName);
                     break;
                 case PACKAGE:
-                    System.out.println(packageName.replace('/','.'));
+                    System.out.println(packageName.replace('/', '.'));
                     break;
             }
         }
@@ -222,8 +231,8 @@ class AnnotationLister {
                 case CLASS:
                     String classname;
                     classname =
-                        cf.getThisClass().getClassType().getClassName();
-                    classname = classname.replace('/','.');
+                            cf.getThisClass().getClassType().getClassName();
+                    classname = classname.replace('/', '.');
                     System.out.println(classname);
                     break;
                 case INNERCLASS:

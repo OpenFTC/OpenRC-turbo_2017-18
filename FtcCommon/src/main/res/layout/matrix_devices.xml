@@ -4,7 +4,7 @@
         android:id="@+id/row_port"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="2dip" >
+        android:padding="2dip">
 
         <TextView
             android:id="@+id/port_number"

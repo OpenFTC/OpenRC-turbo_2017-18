@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Zeroes;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArrayAnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Writers;
+
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -37,25 +38,39 @@ import java.util.HashMap;
  * {@code dex} file, as opposed to a random-access form.
  */
 public final class ClassDataItem extends OffsettedItem {
-    /** {@code non-null;} what class this data is for, just for listing generation */
+    /**
+     * {@code non-null;} what class this data is for, just for listing generation
+     */
     private final CstType thisClass;
 
-    /** {@code non-null;} list of static fields */
+    /**
+     * {@code non-null;} list of static fields
+     */
     private final ArrayList<EncodedField> staticFields;
 
-    /** {@code non-null;} list of initial values for static fields */
+    /**
+     * {@code non-null;} list of initial values for static fields
+     */
     private final HashMap<EncodedField, Constant> staticValues;
 
-    /** {@code non-null;} list of instance fields */
+    /**
+     * {@code non-null;} list of instance fields
+     */
     private final ArrayList<EncodedField> instanceFields;
 
-    /** {@code non-null;} list of direct methods */
+    /**
+     * {@code non-null;} list of direct methods
+     */
     private final ArrayList<EncodedMethod> directMethods;
 
-    /** {@code non-null;} list of virtual methods */
+    /**
+     * {@code non-null;} list of virtual methods
+     */
     private final ArrayList<EncodedMethod> virtualMethods;
 
-    /** {@code null-ok;} static initializer list; set in {@link #addContents} */
+    /**
+     * {@code null-ok;} static initializer list; set in {@link #addContents}
+     */
     private CstArray staticValuesConstant;
 
     /**
@@ -69,7 +84,7 @@ public final class ClassDataItem extends OffsettedItem {
      * empty.
      *
      * @param thisClass {@code non-null;} what class this data is for, just
-     * for listing generation
+     *                  for listing generation
      */
     public ClassDataItem(CstType thisClass) {
         super(1, -1);
@@ -87,13 +102,17 @@ public final class ClassDataItem extends OffsettedItem {
         this.staticValuesConstant = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_CLASS_DATA_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return toString();
@@ -107,7 +126,7 @@ public final class ClassDataItem extends OffsettedItem {
      */
     public boolean isEmpty() {
         return staticFields.isEmpty() && instanceFields.isEmpty()
-            && directMethods.isEmpty() && virtualMethods.isEmpty();
+                && directMethods.isEmpty() && virtualMethods.isEmpty();
     }
 
     /**
@@ -191,7 +210,7 @@ public final class ClassDataItem extends OffsettedItem {
      * Prints out the contents of this instance, in a debugging-friendly
      * way.
      *
-     * @param out {@code non-null;} where to output to
+     * @param out     {@code non-null;} where to output to
      * @param verbose whether to be verbose with the output
      */
     public void debugPrint(Writer out, boolean verbose) {
@@ -220,7 +239,9 @@ public final class ClassDataItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         if (!staticFields.isEmpty()) {
@@ -318,7 +339,9 @@ public final class ClassDataItem extends OffsettedItem {
         return new CstArray(list);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void place0(Section addedTo, int offset) {
         // Encode the data and note the size.
@@ -334,7 +357,7 @@ public final class ClassDataItem extends OffsettedItem {
      * Writes out the encoded form of this instance.
      *
      * @param file {@code non-null;} file this instance is part of
-     * @param out {@code non-null;} where to write to
+     * @param out  {@code non-null;} where to write to
      */
     private void encodeOutput(DexFile file, AnnotatedOutput out) {
         boolean annotates = out.annotates();
@@ -363,16 +386,16 @@ public final class ClassDataItem extends OffsettedItem {
      * Helper for {@link #encodeOutput}, which writes out the given
      * size value, annotating it as well (if annotations are enabled).
      *
-     * @param file {@code non-null;} file this instance is part of
-     * @param out {@code non-null;} where to write to
+     * @param file  {@code non-null;} file this instance is part of
+     * @param out   {@code non-null;} where to write to
      * @param label {@code non-null;} the label for the purposes of annotation
-     * @param size {@code >= 0;} the size to write
+     * @param size  {@code >= 0;} the size to write
      */
     private static void encodeSize(DexFile file, AnnotatedOutput out,
-            String label, int size) {
+                                   String label, int size) {
         if (out.annotates()) {
             out.annotate(String.format("  %-21s %08x", label + "_size:",
-                            size));
+                    size));
         }
 
         out.writeUleb128(size);
@@ -383,13 +406,13 @@ public final class ClassDataItem extends OffsettedItem {
      * list. It also annotates the items (if any and if annotations
      * are enabled).
      *
-     * @param file {@code non-null;} file this instance is part of
-     * @param out {@code non-null;} where to write to
+     * @param file  {@code non-null;} file this instance is part of
+     * @param out   {@code non-null;} where to write to
      * @param label {@code non-null;} the label for the purposes of annotation
-     * @param list {@code non-null;} the list in question
+     * @param list  {@code non-null;} the list in question
      */
     private static void encodeList(DexFile file, AnnotatedOutput out,
-            String label, ArrayList<? extends EncodedMember> list) {
+                                   String label, ArrayList<? extends EncodedMember> list) {
         int size = list.size();
         int lastIndex = 0;
 
@@ -406,7 +429,9 @@ public final class ClassDataItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo0(DexFile file, AnnotatedOutput out) {
         boolean annotates = out.annotates();

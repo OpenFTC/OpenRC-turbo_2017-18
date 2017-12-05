@@ -41,17 +41,16 @@ package org.firstinspires.ftc.robotcore.external.navigation;
  * @see AxesOrder
  * @see <a href="https://en.wikipedia.org/wiki/Euler_angles">Euler Angles</a>
  */
-public enum AxesReference
-    {
+public enum AxesReference {
     EXTRINSIC, INTRINSIC;
 
-    public AxesReference reverse()
-        {
-        switch (this)
-            {
+    public AxesReference reverse() {
+        switch (this) {
             default:
-            case EXTRINSIC: return INTRINSIC;
-            case INTRINSIC: return EXTRINSIC;
-            }
+            case EXTRINSIC:
+                return INTRINSIC;
+            case INTRINSIC:
+                return EXTRINSIC;
         }
     }
+}

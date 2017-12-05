@@ -76,7 +76,7 @@ public final class HexParser {
                 int alleged = Integer.parseInt(atStr, 16);
                 if (alleged != outAt) {
                     throw new RuntimeException("bogus offset marker: " +
-                                               atStr);
+                            atStr);
                 }
             }
 
@@ -103,7 +103,7 @@ public final class HexParser {
                 if (c == '\"') {
                     if (value != -1) {
                         throw new RuntimeException("spare digit around " +
-                                                   "offset " + Hex.u4(outAt));
+                                "offset " + Hex.u4(outAt));
                     }
                     quoteMode = true;
                     continue;
@@ -112,7 +112,7 @@ public final class HexParser {
                 int digVal = Character.digit(c, 16);
                 if (digVal == -1) {
                     throw new RuntimeException("bogus digit character: \"" +
-                                               c + "\"");
+                            c + "\"");
                 }
                 if (value == -1) {
                     value = digVal;
@@ -125,12 +125,12 @@ public final class HexParser {
 
             if (value != -1) {
                 throw new RuntimeException("spare digit around offset " +
-                                           Hex.u4(outAt));
+                        Hex.u4(outAt));
             }
 
             if (quoteMode) {
                 throw new RuntimeException("unterminated quote around " +
-                                           "offset " + Hex.u4(outAt));
+                        "offset " + Hex.u4(outAt));
             }
         }
 

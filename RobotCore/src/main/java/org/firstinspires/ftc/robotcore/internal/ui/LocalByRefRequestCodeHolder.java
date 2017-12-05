@@ -44,8 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * keyed by its (dynamic) request code.
  */
 @SuppressWarnings("WeakerAccess")
-public class LocalByRefRequestCodeHolder<T>
-    {
+public class LocalByRefRequestCodeHolder<T> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -63,33 +62,30 @@ public class LocalByRefRequestCodeHolder<T>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LocalByRefRequestCodeHolder(int userRequestCode, T target)
-        {
+    public LocalByRefRequestCodeHolder(int userRequestCode, T target) {
         this.actualRequestCode = requestCodeGenerator.getAndIncrement();
         this.userRequestCode = userRequestCode;
         this.target = target;
         mapRequestCodeToHolder.put(this.actualRequestCode, this);
-        }
+    }
 
-    public int getActualRequestCode()
-        {
+    public int getActualRequestCode() {
         return this.actualRequestCode;
-        }
+    }
 
-    public int getUserRequestCode()
-        {
+    public int getUserRequestCode() {
         return this.userRequestCode;
-        }
+    }
 
-    public T getTargetAndForget()
-        {
+    public T getTargetAndForget() {
         mapRequestCodeToHolder.remove(this.actualRequestCode);
         return target;
-        }
-
-    public static @Nullable LocalByRefRequestCodeHolder from(int actualRequestCode)
-        {
-        return mapRequestCodeToHolder.get(actualRequestCode);
-        }
-
     }
+
+    public static
+    @Nullable
+    LocalByRefRequestCodeHolder from(int actualRequestCode) {
+        return mapRequestCodeToHolder.get(actualRequestCode);
+    }
+
+}

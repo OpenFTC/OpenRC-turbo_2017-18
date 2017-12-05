@@ -39,8 +39,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi.eeprom;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EEPROM_2232D extends FT_EEPROM
-    {
+public class FT_EEPROM_2232D extends FT_EEPROM {
     public boolean A_UART = false;
     public boolean B_UART = false;
     public boolean A_HighIO = false;
@@ -56,7 +55,6 @@ public class FT_EEPROM_2232D extends FT_EEPROM
     public boolean A_LoadD2XX = false;
     public boolean B_LoadD2XX = false;
 
-    public FT_EEPROM_2232D()
-        {
-        }
+    public FT_EEPROM_2232D() {
     }
+}

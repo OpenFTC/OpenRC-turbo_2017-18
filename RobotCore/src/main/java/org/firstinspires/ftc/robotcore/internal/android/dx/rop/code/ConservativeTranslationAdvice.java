@@ -22,9 +22,11 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.rop.code;
  */
 public final class ConservativeTranslationAdvice
         implements TranslationAdvice {
-    /** {@code non-null;} standard instance of this class */
+    /**
+     * {@code non-null;} standard instance of this class
+     */
     public static final ConservativeTranslationAdvice THE_ONE =
-        new ConservativeTranslationAdvice();
+            new ConservativeTranslationAdvice();
 
     /**
      * This class is not publicly instantiable. Use {@link #THE_ONE}.
@@ -33,19 +35,25 @@ public final class ConservativeTranslationAdvice
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasConstantOperation(Rop opcode,
-            RegisterSpec sourceA, RegisterSpec sourceB) {
+                                        RegisterSpec sourceA, RegisterSpec sourceB) {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean requiresSourcesInOrder(Rop opcode,
-            RegisterSpecList sources) {
+                                          RegisterSpecList sources) {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getMaxOptimalRegisterCount() {
         return Integer.MAX_VALUE;
     }

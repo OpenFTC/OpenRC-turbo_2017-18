@@ -19,6 +19,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.command.dump;
 import org.firstinspires.ftc.robotcore.internal.android.dex.util.FileUtils;
 import org.firstinspires.ftc.robotcore.internal.android.dx.cf.iface.ParseException;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.HexParser;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -109,7 +110,7 @@ public class Main {
     /**
      * Processes one file.
      *
-     * @param name {@code non-null;} name of the file
+     * @param name  {@code non-null;} name of the file
      * @param bytes {@code non-null;} contents of the file
      */
     private static void processOne(String name, byte[] bytes) {

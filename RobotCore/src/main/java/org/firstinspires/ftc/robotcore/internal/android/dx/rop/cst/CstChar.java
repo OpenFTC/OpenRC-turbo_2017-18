@@ -24,7 +24,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
  */
 public final class CstChar
         extends CstLiteral32 {
-    /** {@code non-null;} the value {@code 0} as an instance of this class */
+    /**
+     * {@code non-null;} the value {@code 0} as an instance of this class
+     */
     public static final CstChar VALUE_0 = make((char) 0);
 
     /**
@@ -65,25 +67,33 @@ public final class CstChar
         super(value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         int value = getIntBits();
         return "char{0x" + Hex.u2(value) + " / " + value + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.CHAR;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "char";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return Integer.toString(getIntBits());
     }

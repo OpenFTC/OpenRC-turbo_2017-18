@@ -37,36 +37,31 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 /**
  * {@link ProgressParameters} is a utility class for passing information regarding progress
  * towards completing a task.
+ *
  * @see AppUtil#showProgress(UILocation, String, double)
  */
 @SuppressWarnings("WeakerAccess")
-public class ProgressParameters
-    {
+public class ProgressParameters {
     public int cur = 0;
     public int max = 100;
 
-    public ProgressParameters()
-        {
-        }
+    public ProgressParameters() {
+    }
 
-    public ProgressParameters(int cur, int max)
-        {
+    public ProgressParameters(int cur, int max) {
         this.cur = cur;
         this.max = max;
-        }
-
-    public double fractionComplete()
-        {
-        return (double)cur / (double)max;
-        }
-
-    public static ProgressParameters fromFraction(double fractionComplete, int max)
-        {
-        return new ProgressParameters((int)Math.round(fractionComplete * max), max);
-        }
-
-    public static ProgressParameters fromFraction(double fractionComplete)
-        {
-        return fromFraction(fractionComplete, 100);
-        }
     }
+
+    public double fractionComplete() {
+        return (double) cur / (double) max;
+    }
+
+    public static ProgressParameters fromFraction(double fractionComplete, int max) {
+        return new ProgressParameters((int) Math.round(fractionComplete * max), max);
+    }
+
+    public static ProgressParameters fromFraction(double fractionComplete) {
+        return fromFraction(fractionComplete, 100);
+    }
+}

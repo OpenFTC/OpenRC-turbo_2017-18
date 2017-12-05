@@ -31,17 +31,21 @@ public class DexOptions {
      */
     public static final boolean ALIGN_64BIT_REGS_SUPPORT = true;
 
-   /**
-    * Does final processing of 64-bit alignment into output finisher to gets output as
-    * {@link DalvInsnList} with 64-bit registers aligned at best. Disabled the final processing is
-    * required for tools such as Dasm to avoid modifying user inputs.
-    */
+    /**
+     * Does final processing of 64-bit alignment into output finisher to gets output as
+     * {@link DalvInsnList} with 64-bit registers aligned at best. Disabled the final processing is
+     * required for tools such as Dasm to avoid modifying user inputs.
+     */
     public boolean ALIGN_64BIT_REGS_IN_OUTPUT_FINISHER = ALIGN_64BIT_REGS_SUPPORT;
 
-    /** target API level */
+    /**
+     * target API level
+     */
     public int targetApiLevel = DexFormat.API_NO_EXTENDED_OPCODES;
 
-    /** force generation of jumbo opcodes */
+    /**
+     * force generation of jumbo opcodes
+     */
     public boolean forceJumbo = false;
 
     /**

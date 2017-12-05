@@ -38,9 +38,8 @@ import com.qualcomm.robotcore.hardware.configuration.MotorType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 
-@MotorType(xmlTag="NeveRest20Gearmotor", name="NeveRest 20 Gearmotor", ticksPerRev=560, gearing=20, maxRPM=315, orientation=Rotation.CW)
-@DistributorInfo(distributor="AndyMark", model="am-3102", url="http://www.andymark.com/NeveRest-20-12V-Gearmotor-p/am-3102.htm")
-@ModernRoboticsMotorControllerParams(P=160, I=32, D=112, ratio=25)
-public interface NeveRest20Gearmotor
-    {
-    }
+@MotorType(xmlTag = "NeveRest20Gearmotor", name = "NeveRest 20 Gearmotor", ticksPerRev = 560, gearing = 20, maxRPM = 315, orientation = Rotation.CW)
+@DistributorInfo(distributor = "AndyMark", model = "am-3102", url = "http://www.andymark.com/NeveRest-20-12V-Gearmotor-p/am-3102.htm")
+@ModernRoboticsMotorControllerParams(P = 160, I = 32, D = 112, ratio = 25)
+public interface NeveRest20Gearmotor {
+}

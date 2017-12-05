@@ -20,7 +20,9 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.cf.attrib;
  * Attribute class for standard {@code Deprecated} attributes.
  */
 public final class AttDeprecated extends BaseAttribute {
-    /** {@code non-null;} attribute name for attributes of this type */
+    /**
+     * {@code non-null;} attribute name for attributes of this type
+     */
     public static final String ATTRIBUTE_NAME = "Deprecated";
 
     /**
@@ -30,7 +32,9 @@ public final class AttDeprecated extends BaseAttribute {
         super(ATTRIBUTE_NAME);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int byteLength() {
         return 6;
     }

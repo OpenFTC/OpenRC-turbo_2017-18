@@ -44,49 +44,53 @@ import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 
 public class FtcRobotControllerSettingsActivity extends ThemedActivity {
 
-  @Override public String getTag() { return this.getClass().getSimpleName(); }
-
-  public static class SettingsFragment extends PreferenceFragment {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-
-      // Load the settings from an XML resource
-      addPreferencesFromResource(R.xml.app_settings);
-
-      Preference prefViewLogs = findPreference(getString(R.string.pref_launch_viewlogs));
-      prefViewLogs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-        @Override public boolean onPreferenceClick(Preference preference) {
-          Intent viewLogsIntent = new Intent(AppUtil.getDefContext(), ViewLogsActivity.class);
-          viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(getActivity()));
-          startActivity(viewLogsIntent);
-          return true;
-          }
-        });
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 
-    @Override
-    public void onActivityResult(int request, int result, Intent intent) {
-	  // We test both for historical reasons only
-	  if (request == LaunchActivityConstantsList.RequestCode.CONFIGURE_ROBOT_CONTROLLER.ordinal() ||
-          request == LaunchActivityConstantsList.RequestCode.SETTINGS_ROBOT_CONTROLLER.ordinal()) {
-        if (result == RESULT_OK) {
-          getActivity().setResult(RESULT_OK, intent);
+    public static class SettingsFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the settings from an XML resource
+            addPreferencesFromResource(R.xml.app_settings);
+
+            Preference prefViewLogs = findPreference(getString(R.string.pref_launch_viewlogs));
+            prefViewLogs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent viewLogsIntent = new Intent(AppUtil.getDefContext(), ViewLogsActivity.class);
+                    viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(getActivity()));
+                    startActivity(viewLogsIntent);
+                    return true;
+                }
+            });
         }
-      }
+
+        @Override
+        public void onActivityResult(int request, int result, Intent intent) {
+            // We test both for historical reasons only
+            if (request == LaunchActivityConstantsList.RequestCode.CONFIGURE_ROBOT_CONTROLLER.ordinal() ||
+                    request == LaunchActivityConstantsList.RequestCode.SETTINGS_ROBOT_CONTROLLER.ordinal()) {
+                if (result == RESULT_OK) {
+                    getActivity().setResult(RESULT_OK, intent);
+                }
+            }
+        }
     }
-  }
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    // Always make sure we have a real device name before we launch
-    DeviceNameManager.getInstance().initializeDeviceNameIfNecessary();
+        // Always make sure we have a real device name before we launch
+        DeviceNameManager.getInstance().initializeDeviceNameIfNecessary();
 
-    // Display the fragment as the main content.
-    getFragmentManager().beginTransaction()
-        .replace(android.R.id.content, new SettingsFragment())
-        .commit();
-  }
+        // Display the fragment as the main content.
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new SettingsFragment())
+                .commit();
+    }
 }

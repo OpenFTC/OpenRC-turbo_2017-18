@@ -16,23 +16,37 @@
         <h1>Robot Controller Name</h1>
         <p>Change the name of the robot controller.</p>
         <p>
-            <input id="id_rc_name" class="centered-feedback" type="text" value="(name)"><button id="id_change_name_button" class="aligned-select-button" onclick="onRenameRC()">Change Name</button>
+            <input id="id_rc_name" class="centered-feedback" type="text" value="(name)">
+            <button id="id_change_name_button" class="aligned-select-button" onclick="onRenameRC()">
+                Change Name
+            </button>
         </p>
     </div>
     <div id="id_download_logs">
         <h1>Download Robot Controller Logs</h1>
-        <p>Examination of activity logs from the robot controller can sometimes help diagnose problems and bugs.</p>
-        <p><button onclick="javascript:onDownloadLogsClicked()">Download Logs<span id="id_log_count"></span></button></p>
+        <p>Examination of activity logs from the robot controller can sometimes help diagnose
+            problems and bugs.</p>
+        <p>
+            <button onclick="javascript:onDownloadLogsClicked()">Download Logs<span
+                    id="id_log_count"></span></button>
+        </p>
     </div>
     <div id="id_upload_firmware">
         <h1>Upload Expansion Hub Firmware</h1>
-        <p>Upload firmware for the REV Expansion Hub to the robot controller. Once uploaded, the firmware can be 
-        installed on Expansion Hubs using the Advanced Settings menu on the robot controller or driver station.</p>
+        <p>Upload firmware for the REV Expansion Hub to the robot controller. Once uploaded, the
+            firmware can be
+            installed on Expansion Hubs using the Advanced Settings menu on the robot controller or
+            driver station.</p>
         <div>
             <p>
                 <input id="id_input_file_firmware" type="file" class="hidden hidden-input-file">
-                <input id="id_firmware_feedback" readonly class="upload-feedback" type="text" value="(firmware)"><button id="id_firmware_button" class="aligned-select-button" >Select Firmware...</button>
-                <button id="id_action_firmware" class="aligned-action-button" onclick="uploadFirmware();">Upload</button>
+                <input id="id_firmware_feedback" readonly class="upload-feedback" type="text"
+                       value="(firmware)">
+                <button id="id_firmware_button" class="aligned-select-button">Select Firmware...
+                </button>
+                <button id="id_action_firmware" class="aligned-action-button"
+                        onclick="uploadFirmware();">Upload
+                </button>
             </p>
             <p id="id_firmware_upload_complete" class="text-ok"></p>
             <div class="progress hidden">
@@ -46,12 +60,17 @@
     <div id="id_update_robot_controller_application">
         <h1>Update Robot Controller App &amp; Reboot</h1>
         <p>Upload and install a new Robot Controller App to the REV Control Hub. Once the
-            upload completes, the Control Hub will be rebooted to allow the new app to complete installation.</p>
+            upload completes, the Control Hub will be rebooted to allow the new app to complete
+            installation.</p>
         <div>
             <p>
                 <input id="id_input_file_apk" type="file" class="hidden hidden-input-file">
-                <input id="id_apk_feedback" readonly class="upload-feedback" type="text" value="(apk)"><button id="id_apk_button" class="aligned-select-button">Select App...</button>
-                <button id="id_action_apk" class="aligned-action-button" onclick="updateApk();">Update &amp; Reboot</button>
+                <input id="id_apk_feedback" readonly class="upload-feedback" type="text"
+                       value="(apk)">
+                <button id="id_apk_button" class="aligned-select-button">Select App...</button>
+                <button id="id_action_apk" class="aligned-action-button" onclick="updateApk();">
+                    Update &amp; Reboot
+                </button>
             </p>
             <div class="progress hidden">
                 <div id="id_apk_progress" class="progress-bar" role="progressbar"
@@ -59,7 +78,7 @@
                     30%
                 </div>
             </div>
-         </div>
+        </div>
     </div>
 </div>
 
@@ -252,6 +271,7 @@
         anchor.click();
         document.body.removeChild(anchor);
     }
+
 
 </script>
 

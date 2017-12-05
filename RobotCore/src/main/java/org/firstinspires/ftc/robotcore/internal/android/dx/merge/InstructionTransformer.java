@@ -41,7 +41,7 @@ final class InstructionTransformer {
 
     public short[] transform(IndexMap indexMap, short[] encodedInstructions) throws DexException {
         DecodedInstruction[] decodedInstructions =
-            DecodedInstruction.decodeAll(encodedInstructions);
+                DecodedInstruction.decodeAll(encodedInstructions);
         int size = decodedInstructions.length;
 
         this.indexMap = indexMap;
@@ -109,7 +109,7 @@ final class InstructionTransformer {
     private static void jumboCheck(boolean isJumbo, int newIndex) {
         if (!isJumbo && (newIndex > 0xffff)) {
             throw new DexIndexOverflowException("Cannot merge new index " + newIndex +
-                                   " into a non-jumbo instruction!");
+                    " into a non-jumbo instruction!");
         }
     }
 }

@@ -17,7 +17,8 @@
 package org.firstinspires.ftc.robotcore.internal.android.dex;
 
 public final class SizeOf {
-    private SizeOf() {}
+    private SizeOf() {
+    }
 
     public static final int UBYTE = 1;
     public static final int USHORT = 2;

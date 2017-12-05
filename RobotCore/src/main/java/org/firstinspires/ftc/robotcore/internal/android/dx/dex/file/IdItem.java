@@ -32,7 +32,7 @@ public abstract class IdItem extends IndexedItem {
      * Constructs an instance.
      *
      * @param type {@code non-null;} the type constant for the defining
-     * class of the reference
+     *             class of the reference
      */
     public IdItem(CstType type) {
         if (type == null) {
@@ -42,7 +42,9 @@ public abstract class IdItem extends IndexedItem {
         this.type = type;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         TypeIdsSection typeIds = file.getTypeIds();

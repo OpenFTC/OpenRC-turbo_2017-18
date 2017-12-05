@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.dex.code.SimpleInsn;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegisterSpec;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegisterSpecList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.util.BitSet;
 
 /**
@@ -29,7 +30,9 @@ import java.util.BitSet;
  * for details.
  */
 public final class Form12x extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new Form12x();
 
     /**
@@ -40,7 +43,9 @@ public final class Form12x extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -53,23 +58,29 @@ public final class Form12x extends InsnFormat {
          */
 
         return regs.get(sz - 2).regString() + ", " +
-            regs.get(sz - 1).regString();
+                regs.get(sz - 1).regString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         // This format has no comment.
         return "";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return 1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         if (!(insn instanceof SimpleInsn)) {
@@ -104,10 +115,12 @@ public final class Form12x extends InsnFormat {
         }
 
         return unsignedFitsInNibble(rs1.getReg()) &&
-            unsignedFitsInNibble(rs2.getReg());
+                unsignedFitsInNibble(rs2.getReg());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BitSet compatibleRegs(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -116,33 +129,35 @@ public final class Form12x extends InsnFormat {
         int r1 = regs.get(1).getReg();
 
         switch (regs.size()) {
-          case 2: {
-            bits.set(0, unsignedFitsInNibble(r0));
-            bits.set(1, unsignedFitsInNibble(r1));
-            break;
-          }
-          case 3: {
-            if (r0 != r1) {
-                bits.set(0, false);
-                bits.set(1, false);
-            } else {
-                boolean dstRegComp = unsignedFitsInNibble(r1);
-                bits.set(0, dstRegComp);
-                bits.set(1, dstRegComp);
+            case 2: {
+                bits.set(0, unsignedFitsInNibble(r0));
+                bits.set(1, unsignedFitsInNibble(r1));
+                break;
             }
+            case 3: {
+                if (r0 != r1) {
+                    bits.set(0, false);
+                    bits.set(1, false);
+                } else {
+                    boolean dstRegComp = unsignedFitsInNibble(r1);
+                    bits.set(0, dstRegComp);
+                    bits.set(1, dstRegComp);
+                }
 
-            bits.set(2, unsignedFitsInNibble(regs.get(2).getReg()));
-            break;
-          }
-          default: {
-            throw new AssertionError();
-          }
+                bits.set(2, unsignedFitsInNibble(regs.get(2).getReg()));
+                break;
+            }
+            default: {
+                throw new AssertionError();
+            }
         }
 
         return bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -155,7 +170,7 @@ public final class Form12x extends InsnFormat {
          */
 
         write(out, opcodeUnit(insn,
-                              makeByte(regs.get(sz - 2).getReg(),
-                                       regs.get(sz - 1).getReg())));
+                makeByte(regs.get(sz - 2).getReg(),
+                        regs.get(sz - 1).getReg())));
     }
 }

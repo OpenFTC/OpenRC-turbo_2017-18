@@ -37,16 +37,14 @@ package org.firstinspires.ftc.robotcore.internal.network;
  * to indicate whether the function processed the result (and so chain propagation should
  * cease) or not.
  */
-public enum CallbackResult
-    {
-        NOT_HANDLED, HANDLED, HANDLED_CONTINUE;
+public enum CallbackResult {
+    NOT_HANDLED, HANDLED, HANDLED_CONTINUE;
 
-        public boolean isHandled()
-            {
-            return this != NOT_HANDLED;
-            }
-        public boolean stopDispatch()
-            {
-            return this == HANDLED;
-            }
+    public boolean isHandled() {
+        return this != NOT_HANDLED;
     }
+
+    public boolean stopDispatch() {
+        return this == HANDLED;
+    }
+}

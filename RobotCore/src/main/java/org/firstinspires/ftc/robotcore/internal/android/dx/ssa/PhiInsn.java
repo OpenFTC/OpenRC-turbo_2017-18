@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.SourcePositi
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeBearer;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,14 +48,16 @@ public final class PhiInsn extends SsaInsn {
      */
     private final ArrayList<Operand> operands = new ArrayList<Operand>();
 
-    /** {@code null-ok;} source registers; constructed lazily */
+    /**
+     * {@code null-ok;} source registers; constructed lazily
+     */
     private RegisterSpecList sources;
 
     /**
      * Constructs a new phi insn with no operands.
      *
      * @param resultReg the result reg for this phi insn
-     * @param block block containing this insn.
+     * @param block     block containing this insn.
      */
     public PhiInsn(RegisterSpec resultReg, SsaBasicBlock block) {
         super(resultReg, block);
@@ -65,7 +68,7 @@ public final class PhiInsn extends SsaInsn {
      * Makes a phi insn with a void result type.
      *
      * @param resultReg the result register for this phi insn.
-     * @param block block containing this insn.
+     * @param block     block containing this insn.
      */
     public PhiInsn(final int resultReg, final SsaBasicBlock block) {
         /*
@@ -76,7 +79,9 @@ public final class PhiInsn extends SsaInsn {
         ropResultReg = resultReg;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PhiInsn clone() {
         throw new UnsupportedOperationException("can't clone phi");
@@ -86,7 +91,7 @@ public final class PhiInsn extends SsaInsn {
      * Updates the TypeBearers of all the sources (phi operands) to be
      * the current TypeBearer of the register-defining instruction's result.
      * This is used during phi-type resolution.<p>
-     *
+     * <p>
      * Note that local association of operands are preserved in this step.
      *
      * @param ssaMeth method that contains this insn
@@ -94,7 +99,7 @@ public final class PhiInsn extends SsaInsn {
     public void updateSourcesToDefinitions(SsaMethod ssaMeth) {
         for (Operand o : operands) {
             RegisterSpec def
-                = ssaMeth.getDefinitionForRegister(
+                    = ssaMeth.getDefinitionForRegister(
                     o.regSpec.getReg()).getResult();
 
             o.regSpec = o.regSpec.withType(def.getType());
@@ -106,12 +111,12 @@ public final class PhiInsn extends SsaInsn {
     /**
      * Changes the result type. Used during phi type resolution
      *
-     * @param type {@code non-null;} new TypeBearer
+     * @param type  {@code non-null;} new TypeBearer
      * @param local {@code null-ok;} new local info, if available
      */
     public void changeResultType(TypeBearer type, LocalItem local) {
         setResult(RegisterSpec.makeLocalOptional(
-                          getResult().getReg(), type, local));
+                getResult().getReg(), type, local));
     }
 
     /**
@@ -127,10 +132,10 @@ public final class PhiInsn extends SsaInsn {
      * Adds an operand to this phi instruction.
      *
      * @param registerSpec register spec, including type and reg of operand
-     * @param predBlock predecessor block to be associated with this operand
+     * @param predBlock    predecessor block to be associated with this operand
      */
     public void addPhiOperand(RegisterSpec registerSpec,
-            SsaBasicBlock predBlock) {
+                              SsaBasicBlock predBlock) {
         operands.add(new Operand(registerSpec, predBlock.getIndex(),
                 predBlock.getRopLabel()));
 
@@ -170,7 +175,7 @@ public final class PhiInsn extends SsaInsn {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Always returns null for {@code PhiInsn}s.
      */
     @Override
@@ -180,7 +185,7 @@ public final class PhiInsn extends SsaInsn {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Always returns null for {@code PhiInsn}s.
      */
     @Override
@@ -190,7 +195,7 @@ public final class PhiInsn extends SsaInsn {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Always returns false for {@code PhiInsn}s.
      */
     @Override
@@ -228,7 +233,9 @@ public final class PhiInsn extends SsaInsn {
         return sources;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRegASource(int reg) {
         /*
@@ -249,7 +256,7 @@ public final class PhiInsn extends SsaInsn {
      * @return true if all operands use the same register
      */
     public boolean areAllOperandsEqual() {
-        if (operands.size() == 0 ) {
+        if (operands.size() == 0) {
             // This should never happen.
             return true;
         }
@@ -264,7 +271,9 @@ public final class PhiInsn extends SsaInsn {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void mapSourceRegisters(RegisterMapper mapper) {
         for (Operand o : operands) {
@@ -293,7 +302,7 @@ public final class PhiInsn extends SsaInsn {
      * Returns the list of predecessor blocks associated with all operands
      * that have {@code reg} as an operand register.
      *
-     * @param reg register to look up
+     * @param reg     register to look up
      * @param ssaMeth method we're operating on
      * @return list of predecessor blocks, empty if none
      */
@@ -309,25 +318,33 @@ public final class PhiInsn extends SsaInsn {
         return ret;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isPhiOrMove() {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasSideEffect() {
         return Optimizer.getPreserveLocals() && getLocalAssignment() != null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(SsaInsn.Visitor v) {
         v.visitPhiInsn(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return toHumanWithInline(null);
     }
@@ -370,7 +387,7 @@ public final class PhiInsn extends SsaInsn {
                 sb.append(" ");
                 sb.append(sources.get(i).toHuman()
                         + "[b="
-                        + Hex.u2(operands.get(i).ropLabel)  + "]");
+                        + Hex.u2(operands.get(i).ropLabel) + "]");
             }
         }
 

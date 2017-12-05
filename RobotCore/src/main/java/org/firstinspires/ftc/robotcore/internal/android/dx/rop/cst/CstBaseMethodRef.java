@@ -22,13 +22,15 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeBearer;
 
 /**
  * Base class for constants of "methodish" type.
- *
+ * <p>
  * <p><b>Note:</b> As a {@link TypeBearer}, this class bears the return type
  * of the method.</p>
  */
 public abstract class CstBaseMethodRef
         extends CstMemberRef {
-    /** {@code non-null;} the raw prototype for this method */
+    /**
+     * {@code non-null;} the raw prototype for this method
+     */
     private final Prototype prototype;
 
     /**
@@ -41,7 +43,7 @@ public abstract class CstBaseMethodRef
      * Constructs an instance.
      *
      * @param definingClass {@code non-null;} the type of the defining class
-     * @param nat {@code non-null;} the name-and-type
+     * @param nat           {@code non-null;} the name-and-type
      */
     /*package*/ CstBaseMethodRef(CstType definingClass, CstNat nat) {
         super(definingClass, nat);
@@ -84,7 +86,9 @@ public abstract class CstBaseMethodRef
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final int compareTo0(Constant other) {
         int cmp = super.compareTo0(other);
@@ -99,7 +103,7 @@ public abstract class CstBaseMethodRef
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * In this case, this method returns the <i>return type</i> of this method.
      *
      * @return {@code non-null;} the method's return type

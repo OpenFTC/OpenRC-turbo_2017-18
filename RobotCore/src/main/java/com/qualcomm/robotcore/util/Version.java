@@ -32,15 +32,15 @@ package com.qualcomm.robotcore.util;
 
 public class Version {
 
-  /**
-   * BUILD_VERSION for library
-   *
-   * This variable will be changed by the release script (see RobotCore/build.gradle/updateVersion).
-   */
-  public static final String LIBRARY_VERSION = "17.04.13";
+    /**
+     * BUILD_VERSION for library
+     * <p>
+     * This variable will be changed by the release script (see RobotCore/build.gradle/updateVersion).
+     */
+    public static final String LIBRARY_VERSION = "17.04.13";
 
-  public static String getLibraryVersion() {
-    return LIBRARY_VERSION;
-  }
+    public static String getLibraryVersion() {
+        return LIBRARY_VERSION;
+    }
 
 }

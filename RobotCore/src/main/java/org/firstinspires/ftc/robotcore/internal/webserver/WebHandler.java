@@ -37,8 +37,7 @@ import fi.iki.elonen.NanoHTTPD;
  * Interface for implementing how a request is handled, and subsequently what response is returned.
  */
 
-public interface WebHandler
-{
+public interface WebHandler {
     /**
      * Return a Response from a request.
      *

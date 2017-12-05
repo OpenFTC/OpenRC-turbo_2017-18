@@ -26,7 +26,7 @@ public final class Code {
     private final CatchHandler[] catchHandlers;
 
     public Code(int registersSize, int insSize, int outsSize, int debugInfoOffset,
-            short[] instructions, Try[] tries, CatchHandler[] catchHandlers) {
+                short[] instructions, Try[] tries, CatchHandler[] catchHandlers) {
         this.registersSize = registersSize;
         this.insSize = insSize;
         this.outsSize = outsSize;

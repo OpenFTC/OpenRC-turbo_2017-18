@@ -35,41 +35,48 @@ import android.content.Context;
 import com.qualcomm.robotcore.R;
 
 public enum RobotState {
-  UNKNOWN(-1),
-  NOT_STARTED(0),
-  INIT(1),
-  RUNNING(2),
-  STOPPED(3),
-  EMERGENCY_STOP(4);
+    UNKNOWN(-1),
+    NOT_STARTED(0),
+    INIT(1),
+    RUNNING(2),
+    STOPPED(3),
+    EMERGENCY_STOP(4);
 
-  private int robotState;
+    private int robotState;
 
-  RobotState(int state) {
-    this.robotState = (byte)state;
-  }
-
-  public byte asByte() {
-    return (byte) robotState;
-  }
-
-  public static RobotState fromByte(int b) {
-    for (RobotState robotState : RobotState.values()) {
-      if (robotState.robotState == b) {
-        return robotState;
-      }
+    RobotState(int state) {
+        this.robotState = (byte) state;
     }
-    return UNKNOWN;
-  }
 
-  public String toString(Context context) {
-    switch (this) {
-      case UNKNOWN:             return context.getString(R.string.robotStateUnknown);
-      case NOT_STARTED:         return context.getString(R.string.robotStateNotStarted);
-      case INIT:                return context.getString(R.string.robotStateInit);
-      case RUNNING:             return context.getString(R.string.robotStateRunning);
-      case STOPPED:             return context.getString(R.string.robotStateStopped);
-      case EMERGENCY_STOP:      return context.getString(R.string.robotStateEmergencyStop);
-      default:                  return context.getString(R.string.robotStateInternalError);
+    public byte asByte() {
+        return (byte) robotState;
     }
-  }
+
+    public static RobotState fromByte(int b) {
+        for (RobotState robotState : RobotState.values()) {
+            if (robotState.robotState == b) {
+                return robotState;
+            }
+        }
+        return UNKNOWN;
+    }
+
+    public String toString(Context context) {
+        switch (this) {
+            case UNKNOWN:
+                return context.getString(R.string.robotStateUnknown);
+            case NOT_STARTED:
+                return context.getString(R.string.robotStateNotStarted);
+            case INIT:
+                return context.getString(R.string.robotStateInit);
+            case RUNNING:
+                return context.getString(R.string.robotStateRunning);
+            case STOPPED:
+                return context.getString(R.string.robotStateStopped);
+            case EMERGENCY_STOP:
+                return context.getString(R.string.robotStateEmergencyStop);
+            default:
+                return context.getString(R.string.robotStateInternalError);
+        }
+    }
 }

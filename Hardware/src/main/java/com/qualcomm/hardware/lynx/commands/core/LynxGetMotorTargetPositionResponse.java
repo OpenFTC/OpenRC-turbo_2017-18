@@ -41,8 +41,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetMotorTargetPositionResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetMotorTargetPositionResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -56,42 +55,38 @@ public class LynxGetMotorTargetPositionResponse extends LynxDekaInterfaceRespons
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorTargetPositionResponse(LynxModuleIntf module)
-        {
+    public LynxGetMotorTargetPositionResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getTarget()
-        {
+    public int getTarget() {
         return this.target;
-        }
-    public int getTolerance()
-        {
+    }
+
+    public int getTolerance() {
         return TypeConversion.unsignedShortToInt(this.tolerance);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.putInt(this.target);
         buffer.putShort(this.tolerance);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.target = buffer.getInt();
         this.tolerance = buffer.getShort();
-        }
     }
+}

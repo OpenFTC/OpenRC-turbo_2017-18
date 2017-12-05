@@ -24,17 +24,19 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityExcept
  * and {@code LocalVariableTypeTable} attributes.
  */
 public abstract class BaseLocalVariables extends BaseAttribute {
-    /** {@code non-null;} list of local variable entries */
+    /**
+     * {@code non-null;} list of local variable entries
+     */
     private final LocalVariableList localVariables;
 
     /**
      * Constructs an instance.
      *
-     * @param name {@code non-null;} attribute name
+     * @param name           {@code non-null;} attribute name
      * @param localVariables {@code non-null;} list of local variable entries
      */
     public BaseLocalVariables(String name,
-            LocalVariableList localVariables) {
+                              LocalVariableList localVariables) {
         super(name);
 
         try {
@@ -49,7 +51,9 @@ public abstract class BaseLocalVariables extends BaseAttribute {
         this.localVariables = localVariables;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final int byteLength() {
         return 8 + localVariables.size() * 10;
     }

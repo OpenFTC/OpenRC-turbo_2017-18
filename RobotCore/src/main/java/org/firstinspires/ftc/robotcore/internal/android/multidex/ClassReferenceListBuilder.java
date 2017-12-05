@@ -51,6 +51,7 @@ public class ClassReferenceListBuilder {
     /**
      * Kept for compatibility with the gradle integration, this method just forwards to
      * {@link MainDexListBuilder#main(String[])}.
+     *
      * @deprecated use {@link MainDexListBuilder#main(String[])} instead.
      */
     @Deprecated
@@ -60,13 +61,13 @@ public class ClassReferenceListBuilder {
 
     /**
      * @param jarOfRoots Archive containing the class files resulting of the tracing, typically
-     * this is the result of running ProGuard.
+     *                   this is the result of running ProGuard.
      */
     public void addRoots(ZipFile jarOfRoots) throws IOException {
 
         // keep roots
         for (Enumeration<? extends ZipEntry> entries = jarOfRoots.entries();
-                entries.hasMoreElements();) {
+             entries.hasMoreElements(); ) {
             ZipEntry entry = entries.nextElement();
             String name = entry.getName();
             if (name.endsWith(CLASS_EXTENSION)) {
@@ -76,7 +77,7 @@ public class ClassReferenceListBuilder {
 
         // keep direct references of roots (+ direct references hierarchy)
         for (Enumeration<? extends ZipEntry> entries = jarOfRoots.entries();
-                entries.hasMoreElements();) {
+             entries.hasMoreElements(); ) {
             ZipEntry entry = entries.nextElement();
             String name = entry.getName();
             if (name.endsWith(CLASS_EXTENSION)) {
@@ -110,32 +111,32 @@ public class ClassReferenceListBuilder {
         FieldList fields = classFile.getFields();
         int nbField = fields.size();
         for (int i = 0; i < nbField; i++) {
-          checkDescriptor(fields.get(i).getDescriptor().getString());
+            checkDescriptor(fields.get(i).getDescriptor().getString());
         }
 
         MethodList methods = classFile.getMethods();
         int nbMethods = methods.size();
         for (int i = 0; i < nbMethods; i++) {
-          checkPrototype(Prototype.intern(methods.get(i).getDescriptor().getString()));
+            checkPrototype(Prototype.intern(methods.get(i).getDescriptor().getString()));
         }
     }
 
     private void checkPrototype(Prototype proto) {
-      checkDescriptor(proto.getReturnType().getDescriptor());
-      StdTypeList args = proto.getParameterTypes();
-      for (int i = 0; i < args.size(); i++) {
-          checkDescriptor(args.get(i).getDescriptor());
-      }
+        checkDescriptor(proto.getReturnType().getDescriptor());
+        StdTypeList args = proto.getParameterTypes();
+        for (int i = 0; i < args.size(); i++) {
+            checkDescriptor(args.get(i).getDescriptor());
+        }
     }
 
     private void checkDescriptor(String typeDescriptor) {
         if (typeDescriptor.endsWith(";")) {
             int lastBrace = typeDescriptor.lastIndexOf('[');
             if (lastBrace < 0) {
-                addClassWithHierachy(typeDescriptor.substring(1, typeDescriptor.length()-1));
+                addClassWithHierachy(typeDescriptor.substring(1, typeDescriptor.length() - 1));
             } else {
                 assert typeDescriptor.length() > lastBrace + 3
-                && typeDescriptor.charAt(lastBrace + 1) == 'L';
+                        && typeDescriptor.charAt(lastBrace + 1) == 'L';
                 addClassWithHierachy(typeDescriptor.substring(lastBrace + 2,
                         typeDescriptor.length() - 1));
             }

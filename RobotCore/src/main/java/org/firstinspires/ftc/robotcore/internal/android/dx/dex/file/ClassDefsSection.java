@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -36,7 +37,9 @@ public final class ClassDefsSection extends UniformItemSection {
      */
     private final TreeMap<Type, ClassDefItem> classDefs;
 
-    /** {@code null-ok;} ordered list of classes; set in {@link #orderItems} */
+    /**
+     * {@code null-ok;} ordered list of classes; set in {@link #orderItems}
+     */
     private ArrayList<ClassDefItem> orderedDefs;
 
     /**
@@ -51,7 +54,9 @@ public final class ClassDefsSection extends UniformItemSection {
         orderedDefs = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         if (orderedDefs != null) {
@@ -61,7 +66,9 @@ public final class ClassDefsSection extends UniformItemSection {
         return classDefs.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {
@@ -125,7 +132,9 @@ public final class ClassDefsSection extends UniformItemSection {
         classDefs.put(type, clazz);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int sz = classDefs.size();
@@ -148,10 +157,10 @@ public final class ClassDefsSection extends UniformItemSection {
      * Helper for {@link #orderItems}, which recursively assigns indices
      * to classes.
      *
-     * @param type {@code null-ok;} type ref to assign, if any
-     * @param idx {@code >= 0;} the next index to assign
+     * @param type     {@code null-ok;} type ref to assign, if any
+     * @param idx      {@code >= 0;} the next index to assign
      * @param maxDepth maximum recursion depth; if negative, this will
-     * throw an exception indicating class definition circularity
+     *                 throw an exception indicating class definition circularity
      * @return {@code >= 0;} the next index to assign
      */
     private int orderItems0(Type type, int idx, int maxDepth) {
