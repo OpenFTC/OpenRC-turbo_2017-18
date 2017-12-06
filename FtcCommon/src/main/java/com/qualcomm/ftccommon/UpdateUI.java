@@ -176,7 +176,9 @@ public class UpdateUI {
             if (UpdateUI.this.networkStatus != networkStatus) {
                 UpdateUI.this.networkStatus = networkStatus;
                 UpdateUI.this.networkStatusExtra = null;
-                if (stateMonitor != null) stateMonitor.updateNetworkStatus(networkStatus, null);
+                if (stateMonitor != null) {
+                    stateMonitor.updateNetworkStatus(networkStatus, null);
+                }
                 refreshNetworkStatus();
             }
         }
@@ -185,7 +187,9 @@ public class UpdateUI {
             if (UpdateUI.this.networkStatus != networkStatus || !extra.equals(UpdateUI.this.networkStatusExtra)) {
                 UpdateUI.this.networkStatus = networkStatus;
                 UpdateUI.this.networkStatusExtra = extra;
-                if (stateMonitor != null) stateMonitor.updateNetworkStatus(networkStatus, extra);
+                if (stateMonitor != null) {
+                    stateMonitor.updateNetworkStatus(networkStatus, extra);
+                }
                 refreshNetworkStatus();
             }
         }
@@ -193,7 +197,9 @@ public class UpdateUI {
         public void updatePeerStatus(final PeerStatus peerStatus) {
             if (UpdateUI.this.peerStatus != peerStatus) {
                 UpdateUI.this.peerStatus = peerStatus;
-                if (stateMonitor != null) stateMonitor.updatePeerStatus(peerStatus);
+                if (stateMonitor != null) {
+                    stateMonitor.updatePeerStatus(peerStatus);
+                }
                 refreshNetworkStatus();
             }
         }
@@ -205,7 +211,9 @@ public class UpdateUI {
             final String message = String.format(format, strNetworkStatus, strPeerStatus);
 
             // Log if changed
-            if (DEBUG || !message.equals(UpdateUI.this.networkStatusMessage)) RobotLog.v(message);
+            if (DEBUG || !message.equals(UpdateUI.this.networkStatusMessage)) {
+                RobotLog.v(message);
+            }
             UpdateUI.this.networkStatusMessage = message;
 
             activity.runOnUiThread(new Runnable() {
@@ -218,13 +226,17 @@ public class UpdateUI {
 
         public void updateRobotStatus(@NonNull final RobotStatus status) {
             robotStatus = status;
-            if (stateMonitor != null) stateMonitor.updateRobotStatus(robotStatus);
+            if (stateMonitor != null) {
+                stateMonitor.updateRobotStatus(robotStatus);
+            }
             refreshStateStatus();
         }
 
         public void updateRobotState(@NonNull final RobotState state) {
             robotState = state;
-            if (stateMonitor != null) stateMonitor.updateRobotState(robotState);
+            if (stateMonitor != null) {
+                stateMonitor.updateRobotState(robotState);
+            }
             refreshStateStatus();
         }
 
@@ -235,7 +247,9 @@ public class UpdateUI {
             final String message = String.format(format, state, status);
 
             // Log if changed
-            if (DEBUG || !message.equals(UpdateUI.this.stateStatusMessage)) RobotLog.v(message);
+            if (DEBUG || !message.equals(UpdateUI.this.stateStatusMessage)) {
+                RobotLog.v(message);
+            }
             UpdateUI.this.stateStatusMessage = message;
 
             activity.runOnUiThread(new Runnable() {
@@ -266,12 +280,16 @@ public class UpdateUI {
                     String message = activity.getString(R.string.error_text_error, trimTextErrorMessage(errorMessage));
                     setText(textErrorMessage, message);
                     textErrorMessage.setTextColor(AppUtil.getInstance().getColor(R.color.text_error));
-                    if (stateMonitor != null) stateMonitor.updateErrorMessage(message);
+                    if (stateMonitor != null) {
+                        stateMonitor.updateErrorMessage(message);
+                    }
                 } else {
                     String message = activity.getString(R.string.error_text_warning, trimTextErrorMessage(warningMessage));
                     setText(textErrorMessage, message);
                     textErrorMessage.setTextColor(AppUtil.getInstance().getColor(R.color.text_warning));
-                    if (stateMonitor != null) stateMonitor.updateWarningMessage(message);
+                    if (stateMonitor != null) {
+                        stateMonitor.updateWarningMessage(message);
+                    }
                 }
                 dimmer.longBright();
             } else {

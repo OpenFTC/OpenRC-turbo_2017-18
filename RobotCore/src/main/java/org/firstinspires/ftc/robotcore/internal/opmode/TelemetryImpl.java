@@ -110,12 +110,19 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal {
 
         protected String compose() {
             if (format != null) {
-                if (this.formatArgs != null) return String.format(this.format, this.formatArgs);
-                if (this.valueProducer != null)
+                if (this.formatArgs != null) {
+                    return String.format(this.format, this.formatArgs);
+                }
+                if (this.valueProducer != null) {
                     return String.format(this.format, this.valueProducer.value());
+                }
             } else {
-                if (this.value != null) return this.value.toString();
-                if (this.valueProducer != null) return this.valueProducer.value().toString();
+                if (this.value != null) {
+                    return this.value.toString();
+                }
+                if (this.valueProducer != null) {
+                    return this.valueProducer.value().toString();
+                }
             }
 
             return "";
@@ -209,16 +216,19 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal {
                         if (line.lineables.isEmpty()) {
                             list.remove(i);
                             result = true;
-                        } else
+                        } else {
                             i++;
+                        }
                     } else if (cur instanceof ItemImpl) {
                         if (predicate.apply((ItemImpl) cur)) {
                             list.remove(i);
                             result = true;
-                        } else
+                        } else {
                             i++;
-                    } else
+                        }
+                    } else {
                         i++;
+                    }
                 }
                 return result;
             }

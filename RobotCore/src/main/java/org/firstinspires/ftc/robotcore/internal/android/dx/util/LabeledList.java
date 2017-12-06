@@ -67,8 +67,9 @@ public class LabeledList extends FixedSizeList {
         // Gobble any deleted labels that may be at the end.
         int i;
         for (i = sz - 1; (i >= 0) && (labelToIndex.get(i) < 0); i--)
-            /*empty*/
+            /*empty*/ {
             ;
+        }
 
         int newSize = i + 1;
 

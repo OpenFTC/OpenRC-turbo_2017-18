@@ -77,7 +77,7 @@ public class LynxGetModuleLEDPatternCommand extends LynxStandardCommand<LynxGetM
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {};
+        return new byte[]{};
     }
 
     @Override

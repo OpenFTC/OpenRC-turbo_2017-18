@@ -294,7 +294,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
             public void run() {
                 try {
                     ScannedDevices scannedDevices = future.await();
-                    if (scannedDevices == null) scannedDevices = new ScannedDevices();
+                    if (scannedDevices == null) {
+                        scannedDevices = new ScannedDevices();
+                    }
 
                     // Package up the raw scanned device info and send that back to the DS
                     String data = usbScanManager.packageCommandResponse(scannedDevices);
@@ -324,7 +326,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
             public void run() {
                 try {
                     LynxModuleMetaList lynxModules = future.await();
-                    if (lynxModules == null) lynxModules = new LynxModuleMetaList(serialNumber);
+                    if (lynxModules == null) {
+                        lynxModules = new LynxModuleMetaList(serialNumber);
+                    }
 
                     // Package up the raw module list and send that back to the DS
                     String data = usbScanManager.packageCommandResponse(lynxModules);
@@ -350,8 +354,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
         super.sendUIState();
 
         EventLoopManager manager = ftcEventLoopHandler.getEventLoopManager();
-        if (manager != null)
+        if (manager != null) {
             manager.refreshSystemTelemetryNow(); // null check is paranoia, need isn't verified
+        }
     }
 
     protected void handleCommandInitOpMode(String extra) {
@@ -427,8 +432,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
         } catch (RuntimeException | FtDeviceIOException e) {  // RuntimeException is paranoia
             // ignored
         } finally {
-            if (ftDevice != null)
+            if (ftDevice != null) {
                 ftDevice.close();
+            }
         }
         return serialNumber;
     }
@@ -479,15 +485,17 @@ public class FtcEventLoop extends FtcEventLoopBase {
     public void handleUsbModuleDetach(RobotUsbModule module) throws RobotCoreException, InterruptedException {
         // Called on the event loop thread
         UsbModuleAttachmentHandler handler = this.usbModuleAttachmentHandler;
-        if (handler != null)
+        if (handler != null) {
             handler.handleUsbModuleDetach(module);
+        }
     }
 
     public void handleUsbModuleAttach(RobotUsbModule module) throws RobotCoreException, InterruptedException {
         // Called on the event loop thread
         UsbModuleAttachmentHandler handler = this.usbModuleAttachmentHandler;
-        if (handler != null)
+        if (handler != null) {
             handler.handleUsbModuleAttach(module);
+        }
     }
 
     public class DefaultUsbModuleAttachmentHandler implements UsbModuleAttachmentHandler {

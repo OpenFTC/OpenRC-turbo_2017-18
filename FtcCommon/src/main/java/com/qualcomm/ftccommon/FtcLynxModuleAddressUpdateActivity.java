@@ -168,7 +168,9 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity {
                 Assert.assertTrue(module.getModuleAddress() != 0);  // these should be pruned by sender (if any)
 
                 // We always need a free module address. Make sure we leave one available
-                if (size() + 1 >= addresses.size() - 1) break;
+                if (size() + 1 >= addresses.size() - 1) {
+                    break;
+                }
 
                 this.add(module, addresses);
             }

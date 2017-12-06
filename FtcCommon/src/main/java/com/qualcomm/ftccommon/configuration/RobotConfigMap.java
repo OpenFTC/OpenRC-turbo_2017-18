@@ -244,8 +244,9 @@ public class RobotConfigMap implements Serializable {
         if (!(type == BuiltInConfigurationType.MOTOR_CONTROLLER
                 || type == BuiltInConfigurationType.SERVO_CONTROLLER
                 || type == BuiltInConfigurationType.DEVICE_INTERFACE_MODULE
-                || type == BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER))
+                || type == BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER)) {
             return result;
+        }
 
         if (target.getSerialNumber().isFake()) {
             return result;
@@ -255,10 +256,15 @@ public class RobotConfigMap implements Serializable {
         for (ControllerConfiguration other : this.controllerConfigurations()) {
             SerialNumber serialNumber = other.getSerialNumber();
 
-            if (serialNumber.isFake()) continue;
-            if (serialNumber.equals(target.getSerialNumber())) continue;
-            if (containsSerialNumber(result, serialNumber))
+            if (serialNumber.isFake()) {
+                continue;
+            }
+            if (serialNumber.equals(target.getSerialNumber())) {
+                continue;
+            }
+            if (containsSerialNumber(result, serialNumber)) {
                 continue;   // shouldn't need this test, but it's harmless
+            }
             if (other.getConfigurationType() == target.getConfigurationType()) {
                 result.add(other);
             }
@@ -268,9 +274,15 @@ public class RobotConfigMap implements Serializable {
         for (Map.Entry<SerialNumber, DeviceManager.DeviceType> entry : scannedDevices.entrySet()) {
             SerialNumber serialNumber = entry.getKey();
 
-            if (serialNumber.isFake()) continue;
-            if (serialNumber.equals(target.getSerialNumber())) continue;
-            if (containsSerialNumber(result, serialNumber)) continue;
+            if (serialNumber.isFake()) {
+                continue;
+            }
+            if (serialNumber.equals(target.getSerialNumber())) {
+                continue;
+            }
+            if (containsSerialNumber(result, serialNumber)) {
+                continue;
+            }
             if (entry.getValue() == target.toUSBDeviceType()) {
                 String name = generateName(context, target.getConfigurationType(), result);
                 ControllerConfiguration controllerConfiguration = ControllerConfiguration.forType(name, entry.getKey(), target.getConfigurationType());
@@ -297,10 +309,14 @@ public class RobotConfigMap implements Serializable {
 
     protected boolean nameExists(String name, List<ControllerConfiguration> resultSoFar) {
         for (ControllerConfiguration controllerConfiguration : resultSoFar) {
-            if (controllerConfiguration.getName().equalsIgnoreCase(name)) return true;
+            if (controllerConfiguration.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
         }
         for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations()) {
-            if (controllerConfiguration.getName().equalsIgnoreCase(name)) return true;
+            if (controllerConfiguration.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
         }
         return false;
     }

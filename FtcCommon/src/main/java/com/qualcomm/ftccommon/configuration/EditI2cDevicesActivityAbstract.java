@@ -107,9 +107,15 @@ public abstract class EditI2cDevicesActivityAbstract<ITEM_T extends DeviceConfig
             @Override
             public int compare(ConfigurationType lhs, ConfigurationType rhs) {
                 // Make sure 'nothing' is first
-                if (lhs == rhs) return 0;
-                if (lhs == BuiltInConfigurationType.NOTHING) return -1;
-                if (rhs == BuiltInConfigurationType.NOTHING) return 1;
+                if (lhs == rhs) {
+                    return 0;
+                }
+                if (lhs == BuiltInConfigurationType.NOTHING) {
+                    return -1;
+                }
+                if (rhs == BuiltInConfigurationType.NOTHING) {
+                    return 1;
+                }
                 return 0;   // they'll be distinguished using an outer level comparator
             }
         };

@@ -45,8 +45,12 @@ public enum GamepadUser {
     }
 
     public static GamepadUser from(int user) {
-        if (user == 1) return ONE;
-        if (user == 2) return TWO;
+        if (user == 1) {
+            return ONE;
+        }
+        if (user == 2) {
+            return TWO;
+        }
         return null;
     }
 }

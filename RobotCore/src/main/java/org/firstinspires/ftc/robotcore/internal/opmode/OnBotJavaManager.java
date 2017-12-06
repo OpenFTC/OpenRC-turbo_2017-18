@@ -153,7 +153,7 @@ public class OnBotJavaManager implements Closeable {
 
     public static final File assetRoot = new File("java");
     public static final String platformClassPathName = "android.jar";
-    public static final String[] ftcLibNames = new String[] {"Blocks-classes.jar", "FtcCommon-classes.jar", "Hardware-classes.jar", "Inspection-classes.jar", "RobotCore-classes.jar"};
+    public static final String[] ftcLibNames = new String[]{"Blocks-classes.jar", "FtcCommon-classes.jar", "Hardware-classes.jar", "Inspection-classes.jar", "RobotCore-classes.jar"};
 
     //----------------------------------------------------------------------------------------------
     // State

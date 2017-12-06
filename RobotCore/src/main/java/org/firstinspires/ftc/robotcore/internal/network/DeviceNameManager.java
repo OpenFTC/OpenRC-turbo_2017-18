@@ -386,8 +386,9 @@ public class DeviceNameManager extends WifiStartStoppable {
                 int msWaitQuantum = 100;
                 ElapsedTime timer = new ElapsedTime();
                 for (; ; ) {
-                    if (wifiDirectName != null)
+                    if (wifiDirectName != null) {
                         break;
+                    }
                     if (timer.milliseconds() >= msTimeout) {
                         RobotLog.vv(TAG, "timeout in waitForWifiDirectName()");
                         throw new TimeoutException("timeout in waitForWifiDirectName()");

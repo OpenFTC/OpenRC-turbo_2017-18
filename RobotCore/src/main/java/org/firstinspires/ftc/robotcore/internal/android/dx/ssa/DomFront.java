@@ -157,7 +157,9 @@ public class DomFront {
         for (int i = 0; i < szNodes; i++) {
             DomInfo info = domInfos[i];
 
-            if (info.idom == -1) continue;
+            if (info.idom == -1) {
+                continue;
+            }
 
             SsaBasicBlock domParent = nodes.get(info.idom);
             domParent.addDomChild(nodes.get(i));
@@ -188,7 +190,9 @@ public class DomFront {
                          * added label to, since we must be at a part
                          * of the dom tree we have seen before.
                          */
-                        if (runnerIndex == -1) break;
+                        if (runnerIndex == -1) {
+                            break;
+                        }
 
                         DomInfo runnerInfo = domInfos[runnerIndex];
 

@@ -176,8 +176,9 @@ public class Orientation {
                     angleUnit.fromUnit(this.angleUnit, secondAngle),
                     angleUnit.fromUnit(this.angleUnit, thirdAngle),
                     this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 
     /**
@@ -196,8 +197,9 @@ public class Orientation {
             Assert.assertTrue(axesReference == this.axesReference.reverse());
             return new Orientation(this.axesReference.reverse(), this.axesOrder.reverse(), this.angleUnit,
                     this.thirdAngle, this.secondAngle, this.firstAngle, this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 
     /**
@@ -209,8 +211,9 @@ public class Orientation {
     public Orientation toAxesOrder(AxesOrder axesOrder) {
         if (this.axesOrder != axesOrder) {
             return Orientation.getOrientation(this.getRotationMatrix(), this.axesReference, axesOrder, this.angleUnit);
-        } else
+        } else {
             return this;
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -219,10 +222,11 @@ public class Orientation {
 
     @Override
     public String toString() {
-        if (this.angleUnit == AngleUnit.DEGREES)
+        if (this.angleUnit == AngleUnit.DEGREES) {
             return String.format("{%s %s %.0f %.0f %.0f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
-        else
+        } else {
             return String.format("{%s %s %.3f %.3f %.3f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
+        }
     }
 
     //----------------------------------------------------------------------------------------------

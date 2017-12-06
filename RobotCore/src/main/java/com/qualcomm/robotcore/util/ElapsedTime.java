@@ -240,10 +240,11 @@ public class ElapsedTime {
      * @return the resolution of the timer
      */
     public Resolution getResolution() {
-        if (this.resolution == MILLIS_IN_NANO)
+        if (this.resolution == MILLIS_IN_NANO) {
             return Resolution.MILLISECONDS;
-        else
+        } else {
             return Resolution.SECONDS;
+        }
     }
 
     //------------------------------------------------------------------------------------------------

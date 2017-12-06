@@ -246,7 +246,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
                 // tell current loop that we want it to exit
                 running = false;
 
-                while (!shutdownComplete) Thread.yield(); // busy wait for shutdown
+                while (!shutdownComplete) {
+                    Thread.yield(); // busy wait for shutdown
+                }
             }
         }
     }
@@ -285,8 +287,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
             runningInterlock.await();
         } catch (InterruptedException ignored) {
             // Can't wait that way; spin instead until run() advances to the point we expect
-            while (runningInterlock.getCount() != 0)
+            while (runningInterlock.getCount() != 0) {
                 Thread.yield();
+            }
             // Ok, NOW we can propagate the interrupt
             Thread.currentThread().interrupt();
         }
@@ -315,8 +318,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     public void run() {
 
         // Paranoia: avoid re-execution, as we weren't designed for that
-        if (shutdownComplete)
+        if (shutdownComplete) {
             return;
+        }
 
         ThreadPool.logThreadLifeCycle(String.format("r/w loop: %s", HardwareFactory.getDeviceDisplayName(context, serialNumber)), new Runnable() {
             @Override
@@ -361,8 +365,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
                         doWriteCycle();
 
                         usbHandler.throwIfTooManySequentialCommErrors();
-                        if (!robotUsbDevice.isOpen())
+                        if (!robotUsbDevice.isOpen()) {
                             throw new RobotUsbDeviceClosedException("%s: closed", robotUsbDevice.getSerialNumber());
+                        }
 
                     } // end loop
 
@@ -427,8 +432,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
                         try {
                             segment.getReadLock().lock();
                             System.arraycopy(readBuffer, 0, segment.getReadBuffer(), 0, segment.getReadBuffer().length);
-                            if (DEBUG_SEGMENTS)
+                            if (DEBUG_SEGMENTS) {
                                 dumpBuffers("segment " + segment.getAddress() + " read", readBuffer);
+                            }
                         } finally {
                             segment.getReadLock().unlock();
                         }
@@ -443,7 +449,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
             }
         }
 
-        if (debugLogging) dumpBuffers("read", localDeviceReadCache);
+        if (debugLogging) {
+            dumpBuffers("read", localDeviceReadCache);
+        }
         callback.readComplete();
     }
 
@@ -491,7 +499,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
             RobotLog.w(String.format("could not write to %s: %s", HardwareFactory.getDeviceDisplayName(context, serialNumber), e.getMessage()));
         }
 
-        if (debugLogging) dumpBuffers("write", localDeviceWriteCache);
+        if (debugLogging) {
+            dumpBuffers("write", localDeviceWriteCache);
+        }
         callback.writeComplete();
     }
 
@@ -545,7 +555,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
         StringBuilder s = new StringBuilder(MAX_BUFFER_SIZE * 4);
         for (int i = 0; i < startAddress + monitorLength; i++) {
             s.append(String.format(" %02x", TypeConversion.unsignedByteToInt(byteArray[i])));
-            if ((i + 1) % 16 == 0) s.append("\n");
+            if ((i + 1) % 16 == 0) {
+                s.append("\n");
+            }
         }
 
         RobotLog.v(s.toString());

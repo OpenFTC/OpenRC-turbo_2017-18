@@ -89,10 +89,10 @@ public interface RobotUsbDevice {
 
         // See also device_filter.xml
         private static final int vendorIdFTDI = 0x0403;
-        private static final Set<Integer> productIdsModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[] {0x6001}));
-        private static final Set<Integer> bcdDevicesModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[] {0x0600}));
-        private static final Set<Integer> productIdsLynx = new HashSet<Integer>(Arrays.asList(new Integer[] {0x6015}));
-        private static final Set<Integer> bcdDevicesLynx = new HashSet<Integer>(Arrays.asList(new Integer[] {0x1000}));
+        private static final Set<Integer> productIdsModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[]{0x6001}));
+        private static final Set<Integer> bcdDevicesModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[]{0x0600}));
+        private static final Set<Integer> productIdsLynx = new HashSet<Integer>(Arrays.asList(new Integer[]{0x6015}));
+        private static final Set<Integer> bcdDevicesLynx = new HashSet<Integer>(Arrays.asList(new Integer[]{0x1000}));
 
         public boolean isModernRoboticsDevice() {
             return this.vendorId == vendorIdFTDI

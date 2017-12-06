@@ -231,7 +231,9 @@ public class AboutActivity extends ThemedActivity {
         addrs = Network.removeLoopbackAddresses(addrs);
         addrs = Network.removeIPv6Addresses(addrs);
 
-        if (addrs.size() < 1) return "unavailable";
+        if (addrs.size() < 1) {
+            return "unavailable";
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append(addrs.get(0).getHostAddress());

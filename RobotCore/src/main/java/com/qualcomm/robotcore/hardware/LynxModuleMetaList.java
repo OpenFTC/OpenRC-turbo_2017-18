@@ -150,7 +150,9 @@ public class LynxModuleMetaList implements Iterable<LynxModuleMeta> {
         boolean first = true;
         result.append("[");
         for (LynxModuleMeta module : this.modules) {
-            if (!first) result.append(" ");
+            if (!first) {
+                result.append(" ");
+            }
             result.append(String.format(Locale.getDefault(), "%d(%s)", module.getModuleAddress(), module.isParent()));
             first = false;
         }

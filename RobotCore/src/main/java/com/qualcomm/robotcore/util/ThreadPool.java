@@ -209,8 +209,9 @@ public class ThreadPool {
             SingletonResult<T> result = getResult();
             if (result != null) {
                 return result.await(ms);
-            } else
+            } else {
                 return null;
+            }
         }
 
         public
@@ -219,8 +220,9 @@ public class ThreadPool {
             SingletonResult<T> result = getResult();
             if (result != null) {
                 return result.await();
-            } else
+            } else {
                 return null;
+            }
         }
     }
 
@@ -333,7 +335,9 @@ public class ThreadPool {
     public static ExecutorService newSingleThreadExecutor(@Nullable String nameRoot) {
         RecordingThreadPool result = new RecordingThreadPool(1, 1,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
     }
@@ -347,7 +351,9 @@ public class ThreadPool {
     public static ExecutorService newFixedThreadPool(int numberOfThreads, @Nullable String nameRoot) {
         RecordingThreadPool result = new RecordingThreadPool(numberOfThreads, numberOfThreads,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
     }
@@ -361,7 +367,9 @@ public class ThreadPool {
     public static ExecutorService newCachedThreadPool(@Nullable String nameRoot) {
         RecordingThreadPool result = new RecordingThreadPool(0, Integer.MAX_VALUE,
                 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
     }
@@ -375,7 +383,9 @@ public class ThreadPool {
      */
     public static RecordingScheduledExecutor newScheduledExecutor(int maxWorkerThreadCount, @Nullable String nameRoot) {
         RecordingScheduledExecutor result = new RecordingScheduledExecutor(maxWorkerThreadCount);
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
     }
@@ -455,7 +465,9 @@ public class ThreadPool {
             }
 
             // If we're past our due date, then we're not going to wait any longer
-            if (deadline.hasExpired()) break;
+            if (deadline.hasExpired()) {
+                break;
+            }
 
             // It's taking a while. Log that fact
             RobotLog.vv(TAG, "awaiting shutdown: thread pool=\"%s\" attempt=%d", serviceName, iAttempt + 1);
@@ -509,8 +521,9 @@ public class ThreadPool {
             ContainerOfThreads container = (ContainerOfThreads) executorService;
             for (Thread thread : container) {
                 if (thread.isAlive()) {
-                    if (thread.getId() == Thread.currentThread().getId())
+                    if (thread.getId() == Thread.currentThread().getId()) {
                         RobotLog.vv(TAG, "interrupting current thread");
+                    }
                     thread.interrupt();
                 }
             }

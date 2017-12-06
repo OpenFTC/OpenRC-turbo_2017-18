@@ -69,7 +69,7 @@ public class LynxDatagram {
     /**
      * Two particular bytes identify the start of a valid Controller Module data packet
      */
-    public static final byte[] frameBytes = new byte[] {0x44, 0x4b};
+    public static final byte[] frameBytes = new byte[]{0x44, 0x4b};
 
     /**
      * Does the indicated data begin with the framing bytes?
@@ -315,7 +315,9 @@ public class LynxDatagram {
         buffer.order(LYNX_ENDIAN);
 
         try {
-            if (!beginsWithFraming(buffer)) throw illegalDatagram();
+            if (!beginsWithFraming(buffer)) {
+                throw illegalDatagram();
+            }
             this.packetLength = buffer.getShort();
             this.destModuleAddress = buffer.get();
             this.sourceModuleAddress = buffer.get();

@@ -55,10 +55,13 @@ public class PeerDiscoveryManager {
         @Override
         public void run() {
             try {
-                if (DEBUG)
+                if (DEBUG) {
                     RobotLog.vv(TAG, "sending peer discovery packet(%d)", message.getSequenceNumber());
+                }
                 RobocolDatagram packet = new RobocolDatagram(message);
-                if (socket.getInetAddress() == null) packet.setAddress(peerDiscoveryDevice);
+                if (socket.getInetAddress() == null) {
+                    packet.setAddress(peerDiscoveryDevice);
+                }
                 socket.send(packet);
             } catch (RobotCoreException e) {
                 RobotLog.ee(TAG, "Unable to send peer discovery packet: " + e.toString());

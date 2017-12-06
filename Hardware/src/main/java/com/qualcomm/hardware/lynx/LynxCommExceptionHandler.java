@@ -65,13 +65,13 @@ public class LynxCommExceptionHandler {
     //----------------------------------------------------------------------------------------------
 
     protected void handleException(Exception e) {
-        if (e instanceof InterruptedException)
+        if (e instanceof InterruptedException) {
             handleSpecificException((InterruptedException) e);
-        else if (e instanceof LynxNackException)
+        } else if (e instanceof LynxNackException) {
             handleSpecificException((LynxNackException) e);
-        else if (e instanceof RuntimeException)
+        } else if (e instanceof RuntimeException) {
             handleSpecificException((RuntimeException) e);
-        else {
+        } else {
             RobotLog.ee(getTag(), e, "unexpected exception thrown during lynx communication");
         }
     }

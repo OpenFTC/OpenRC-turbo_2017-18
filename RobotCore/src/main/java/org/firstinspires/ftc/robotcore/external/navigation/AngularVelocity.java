@@ -108,7 +108,8 @@ public class AngularVelocity {
                     unit.fromUnit(this.unit, yRotationRate),
                     unit.fromUnit(this.unit, zRotationRate),
                     this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 }

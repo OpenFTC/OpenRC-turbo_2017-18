@@ -98,8 +98,9 @@ public class SavedMeshObject extends MeshObject {
             textCoords.rewind();
 
         } finally {
-            if (is != null)
+            if (is != null) {
                 is.close();
+            }
         }
     }
 

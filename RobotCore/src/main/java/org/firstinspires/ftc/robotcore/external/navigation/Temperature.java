@@ -69,8 +69,9 @@ public class Temperature {
             return new Temperature(tempUnit,
                     tempUnit.fromUnit(this.unit, temperature),
                     this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 
 }

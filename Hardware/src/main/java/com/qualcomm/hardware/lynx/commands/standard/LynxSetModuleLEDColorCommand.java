@@ -82,7 +82,7 @@ public class LynxSetModuleLEDColorCommand extends LynxStandardCommand<LynxAck> {
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {red, green, blue};
+        return new byte[]{red, green, blue};
     }
 
     @Override

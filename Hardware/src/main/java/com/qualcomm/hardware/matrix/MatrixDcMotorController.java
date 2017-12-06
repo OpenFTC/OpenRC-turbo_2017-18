@@ -265,8 +265,9 @@ public class MatrixDcMotorController implements DcMotorController {
     @Override
     public synchronized void setMotorZeroPowerBehavior(int motor, DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         throwIfMotorIsInvalid(motor);
-        if (zeroPowerBehavior == DcMotor.ZeroPowerBehavior.UNKNOWN)
+        if (zeroPowerBehavior == DcMotor.ZeroPowerBehavior.UNKNOWN) {
             throw new IllegalArgumentException("zeroPowerBehavior may not be UNKNOWN");
+        }
 
         motorCache[motor].zeroPowerBehavior = zeroPowerBehavior;
 

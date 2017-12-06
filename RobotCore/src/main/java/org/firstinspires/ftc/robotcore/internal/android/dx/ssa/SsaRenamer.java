@@ -355,7 +355,9 @@ public class SsaRenamer implements Runnable {
              */
             @Override
             public RegisterSpec map(RegisterSpec registerSpec) {
-                if (registerSpec == null) return null;
+                if (registerSpec == null) {
+                    return null;
+                }
 
                 int reg = registerSpec.getReg();
 

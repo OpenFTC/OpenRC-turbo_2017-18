@@ -67,8 +67,9 @@ public class LynxSetMotorTargetPositionCommand extends LynxDekaInterfaceCommand<
     public LynxSetMotorTargetPositionCommand(LynxModuleIntf module, int motorZ, int target, int tolerance) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        if (tolerance < apiToleranceFirst || tolerance > apiToleranceLast)
+        if (tolerance < apiToleranceFirst || tolerance > apiToleranceLast) {
             throw new IllegalArgumentException(String.format("illegal tolerance: %d", tolerance));
+        }
         this.motor = (byte) motorZ;
         this.target = target;
         this.tolerance = (short) tolerance;

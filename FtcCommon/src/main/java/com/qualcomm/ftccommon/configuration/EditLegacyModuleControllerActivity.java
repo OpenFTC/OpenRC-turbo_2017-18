@@ -112,8 +112,9 @@ public class EditLegacyModuleControllerActivity extends EditUSBDeviceActivity {
 
         for (int i = 0; i < devices.size(); i++) {
             DeviceConfiguration device = devices.get(i);
-            if (DEBUG)
+            if (DEBUG) {
                 RobotLog.e("[onStart] device name: " + device.getName() + ", port: " + device.getPort() + ", type: " + device.getConfigurationType());
+            }
             populatePort(findViewByPort(i), device);
         }
     }
@@ -236,8 +237,9 @@ public class EditLegacyModuleControllerActivity extends EditUSBDeviceActivity {
         nameText.addTextChangedListener(new UsefulTextWatcher(findViewByPort(port)));
         nameText.setText(name);
 
-        if (DEBUG)
+        if (DEBUG) {
             RobotLog.e("[populatePort] name: " + name + ", port: " + port + ", type: " + device.getConfigurationType());
+        }
     }
 
     /**

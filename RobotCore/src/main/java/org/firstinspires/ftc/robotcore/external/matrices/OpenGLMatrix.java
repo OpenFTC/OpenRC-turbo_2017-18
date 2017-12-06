@@ -73,7 +73,9 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
     public OpenGLMatrix(float[] data) {
         super(4, 4);
         this.data = data;
-        if (this.data.length != 4 * 4) throw dimensionsError();
+        if (this.data.length != 4 * 4) {
+            throw dimensionsError();
+        }
     }
 
     public OpenGLMatrix(Matrix44F matrix) {
@@ -88,7 +90,9 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
      */
     public OpenGLMatrix(MatrixF him) {
         this();
-        if (him.numRows > 4 || him.numCols > 4) throw him.dimensionsError();
+        if (him.numRows > 4 || him.numCols > 4) {
+            throw him.dimensionsError();
+        }
         for (int i = 0; i < Math.min(4, him.numRows); i++) {
             for (int j = 0; j < Math.min(4, him.numCols); j++) {
                 this.put(i, j, him.get(i, j));
@@ -98,10 +102,11 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
 
     @Override
     public MatrixF emptyMatrix(int numRows, int numCols) {
-        if (numRows == 4 && numCols == 4)
+        if (numRows == 4 && numCols == 4) {
             return new OpenGLMatrix();
-        else
+        } else {
             return new GeneralMatrixF(numRows, numCols);
+        }
     }
 
     /**
@@ -244,8 +249,9 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
     public MatrixF multiplied(MatrixF him) {
         if (him instanceof OpenGLMatrix) {
             return this.multiplied((OpenGLMatrix) him);
-        } else
+        } else {
             return super.multiplied(him);
+        }
     }
 
     /**
@@ -268,7 +274,8 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
     public void multiply(MatrixF him) {
         if (him instanceof OpenGLMatrix) {
             this.multiply((OpenGLMatrix) him);
-        } else
+        } else {
             super.multiply(him);
+        }
     }
 }

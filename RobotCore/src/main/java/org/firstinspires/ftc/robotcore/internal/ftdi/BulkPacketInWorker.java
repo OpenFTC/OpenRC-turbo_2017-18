@@ -111,8 +111,9 @@ public class BulkPacketInWorker extends FtConstants implements Runnable {
                     // Log any errors
                     if (cbRead < 0) {
                         this.errorReporter.ee(cbRead, TAG, "%s: bulkTransfer() error: %d", ftDevice.getSerialNumber(), cbRead);
-                    } else
+                    } else {
                         this.errorReporter.reset();
+                    }
                 }
             }
             while (!Thread.interrupted());

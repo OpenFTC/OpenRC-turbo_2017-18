@@ -349,7 +349,9 @@ public class HardwareDeviceManager implements DeviceManager {
                     DeviceType type = getLynxDeviceType(dev);
                     Assert.assertTrue(type == DeviceType.LYNX_USB_DEVICE);
                 } catch (RobotCoreException | RuntimeException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 }
                 return dev;
@@ -383,7 +385,9 @@ public class HardwareDeviceManager implements DeviceManager {
                     }
                     dev.setFirmwareVersion(getModernRoboticsFirmwareVersion(deviceHeader));
                 } catch (RobotCoreException | RuntimeException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 }
                 return dev;
@@ -430,10 +434,14 @@ public class HardwareDeviceManager implements DeviceManager {
                     }
                     dev.setFirmwareVersion(getModernRoboticsFirmwareVersion(deviceHeader));
                 } catch (RobotCoreException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 } catch (RuntimeException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 }
                 return dev;
@@ -486,10 +494,14 @@ public class HardwareDeviceManager implements DeviceManager {
                     }
                     dev.setFirmwareVersion(getModernRoboticsFirmwareVersion(deviceHeader));
                 } catch (RobotCoreException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 } catch (RuntimeException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 }
                 return dev;
@@ -524,10 +536,14 @@ public class HardwareDeviceManager implements DeviceManager {
                     }
                     dev.setFirmwareVersion(getModernRoboticsFirmwareVersion(deviceHeader));
                 } catch (RobotCoreException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 } catch (RuntimeException e) {
-                    if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                    if (dev != null) {
+                        dev.close(); // avoid leakage of open FT_Devices
+                    }
                     throw e;
                 }
                 return dev;

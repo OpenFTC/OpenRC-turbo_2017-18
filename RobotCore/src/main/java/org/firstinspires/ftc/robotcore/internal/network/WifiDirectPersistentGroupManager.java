@@ -206,7 +206,7 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
         // Dynamically create an implementation of WifiP2pManager$PersistentGroupInfoListener
         return java.lang.reflect.Proxy.newProxyInstance(
                 classPersistentGroupInfoListener.getClassLoader(),
-                new Class[] {classPersistentGroupInfoListener},
+                new Class[]{classPersistentGroupInfoListener},
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

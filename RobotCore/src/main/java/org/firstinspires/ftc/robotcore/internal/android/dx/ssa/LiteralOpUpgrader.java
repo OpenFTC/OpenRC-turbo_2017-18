@@ -100,7 +100,9 @@ public class LiteralOpUpgrader {
                 RegisterSpecList sources = insn.getSources();
 
                 // Replace insns with constant results with const insns
-                if (tryReplacingWithConstant(insn)) return;
+                if (tryReplacingWithConstant(insn)) {
+                    return;
+                }
 
                 if (sources.size() != 2) {
                     // We're only dealing with two-source insns here.

@@ -70,8 +70,9 @@ public class LastKnown<T> {
 
     public static <X> LastKnown<X>[] createArray(int length) {
         LastKnown<X>[] result = new LastKnown[length];
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++) {
             result[i] = new LastKnown<X>();
+        }
         return result;
     }
 
@@ -143,10 +144,11 @@ public class LastKnown<T> {
         T prevValue = this.value;
         this.value = value;
         this.isValid = true;
-        if (null == value)
+        if (null == value) {
             invalidate();
-        else
+        } else {
             this.timer.reset();
+        }
         return prevValue;
     }
 
@@ -158,10 +160,11 @@ public class LastKnown<T> {
      * @return whether the last known value is both valid and equal to the value indicated
      */
     public boolean isValue(T valueQ) {
-        if (this.isValid())
+        if (this.isValid()) {
             return this.value.equals(valueQ);
-        else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -175,8 +178,9 @@ public class LastKnown<T> {
         if (!isValue(valueQ)) {
             setValue(valueQ);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
 }

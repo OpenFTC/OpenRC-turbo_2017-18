@@ -40,8 +40,9 @@ public abstract class MeshObject {
         // Each float takes 4 bytes
         ByteBuffer bb = ByteBuffer.allocateDirect(4 * array.length);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        for (double d : array)
+        for (double d : array) {
             bb.putFloat((float) d);
+        }
         bb.rewind();
 
         return bb;
@@ -51,8 +52,9 @@ public abstract class MeshObject {
         // Each float takes 4 bytes
         ByteBuffer bb = ByteBuffer.allocateDirect(4 * array.length);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        for (float d : array)
+        for (float d : array) {
             bb.putFloat(d);
+        }
         bb.rewind();
 
         return bb;
@@ -62,8 +64,9 @@ public abstract class MeshObject {
         // Each short takes 2 bytes
         ByteBuffer bb = ByteBuffer.allocateDirect(2 * array.length);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        for (short s : array)
+        for (short s : array) {
             bb.putShort(s);
+        }
         bb.rewind();
 
         return bb;

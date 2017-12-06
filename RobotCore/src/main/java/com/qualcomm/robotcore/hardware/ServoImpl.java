@@ -165,7 +165,9 @@ public class ServoImpl implements Servo {
      */
     synchronized public void setPosition(double position) {
         position = Range.clip(position, MIN_POSITION, MAX_POSITION);
-        if (direction == Direction.REVERSE) position = reverse(position);
+        if (direction == Direction.REVERSE) {
+            position = reverse(position);
+        }
         double scaled = Range.scale(position, MIN_POSITION, MAX_POSITION, limitPositionMin, limitPositionMax);
         internalSetPosition(scaled);
     }
@@ -184,7 +186,9 @@ public class ServoImpl implements Servo {
      */
     synchronized public double getPosition() {
         double position = controller.getServoPosition(portNumber);
-        if (direction == Direction.REVERSE) position = reverse(position);
+        if (direction == Direction.REVERSE) {
+            position = reverse(position);
+        }
         double scaled = Range.scale(position, limitPositionMin, limitPositionMax, MIN_POSITION, MAX_POSITION);
         return Range.clip(scaled, MIN_POSITION, MAX_POSITION);
     }

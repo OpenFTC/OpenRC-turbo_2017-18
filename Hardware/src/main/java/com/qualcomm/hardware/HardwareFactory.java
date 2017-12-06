@@ -200,7 +200,9 @@ public class HardwareFactory {
     }
 
     private void mapUsbMotorController(HardwareMap map, DeviceManager deviceMgr, MotorControllerConfiguration ctrlConf) throws RobotCoreException, InterruptedException {
-        if (!ctrlConf.isEnabled()) return;
+        if (!ctrlConf.isEnabled()) {
+            return;
+        }
         ModernRoboticsUsbDcMotorController dcMotorController = (ModernRoboticsUsbDcMotorController) deviceMgr.createUsbDcMotorController(ctrlConf.getSerialNumber(), ctrlConf.getName());
         map.dcMotorController.put(ctrlConf.getName(), dcMotorController);
         for (MotorConfiguration motorConf : ctrlConf.getMotors()) {
@@ -212,7 +214,9 @@ public class HardwareFactory {
     }
 
     private void mapUsbServoController(HardwareMap map, DeviceManager deviceMgr, ServoControllerConfiguration ctrlConf) throws RobotCoreException, InterruptedException {
-        if (!ctrlConf.isEnabled()) return;
+        if (!ctrlConf.isEnabled()) {
+            return;
+        }
         ServoController servoController = deviceMgr.createUsbServoController(ctrlConf.getSerialNumber(), ctrlConf.getName());
         map.servoController.put(ctrlConf.getName(), servoController);
         for (DeviceConfiguration servoConf : ctrlConf.getDevices()) {
@@ -221,13 +225,17 @@ public class HardwareFactory {
     }
 
     private void mapMotor(HardwareMap map, DeviceManager deviceMgr, MotorConfiguration motorConf, DcMotorController dcMotorController) {
-        if (!motorConf.isEnabled()) return;
+        if (!motorConf.isEnabled()) {
+            return;
+        }
         DcMotor dcMotor = deviceMgr.createDcMotor(dcMotorController, motorConf.getPort(), motorConf.getMotorType(), motorConf.getName());
         map.dcMotor.put(motorConf.getName(), dcMotor);
     }
 
     private void mapServo(HardwareMap map, DeviceManager deviceMgr, DeviceConfiguration servoConf, ServoController servoController) {
-        if (!servoConf.isEnabled()) return;
+        if (!servoConf.isEnabled()) {
+            return;
+        }
         if (servoConf.getConfigurationType() == BuiltInConfigurationType.SERVO) {
             Servo s = deviceMgr.createServo(servoController, servoConf.getPort(), servoConf.getName());
             map.servo.put(servoConf.getName(), s);
@@ -250,7 +258,9 @@ public class HardwareFactory {
     }
 
     private void mapCoreInterfaceDeviceModule(HardwareMap map, DeviceManager deviceMgr, DeviceInterfaceModuleConfiguration ctrlConf) throws RobotCoreException, InterruptedException {
-        if (!ctrlConf.isEnabled()) return;
+        if (!ctrlConf.isEnabled()) {
+            return;
+        }
         DeviceInterfaceModule deviceInterfaceModule = deviceMgr.createDeviceInterfaceModule(ctrlConf.getSerialNumber(), ctrlConf.getName());
         map.deviceInterfaceModule.put(ctrlConf.getName(), deviceInterfaceModule);
 
@@ -402,7 +412,9 @@ public class HardwareFactory {
     }
 
     private void mapUsbLegacyModule(HardwareMap map, DeviceManager deviceMgr, LegacyModuleControllerConfiguration ctrlConf) throws RobotCoreException, InterruptedException {
-        if (!ctrlConf.isEnabled()) return;
+        if (!ctrlConf.isEnabled()) {
+            return;
+        }
         LegacyModule legacyModule = deviceMgr.createUsbLegacyModule(ctrlConf.getSerialNumber(), ctrlConf.getName());
         map.legacyModule.put(ctrlConf.getName(), legacyModule);
 
@@ -441,55 +453,73 @@ public class HardwareFactory {
     }
 
     private void mapIrSeekerV3Device(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         IrSeekerSensor irSeekerSensor = deviceMgr.createMRI2cIrSeekerSensorV3(i2cController, devConf.getI2cChannel(), devConf.getName());
         map.irSeekerSensor.put(devConf.getName(), irSeekerSensor);
     }
 
     private void mapIrSeekerV3Device(HardwareMap map, DeviceManager deviceMgr, LynxModule module, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         IrSeekerSensor irSeekerSensor = deviceMgr.createMRI2cIrSeekerSensorV3(module, devConf.getI2cChannel(), devConf.getName());
         map.irSeekerSensor.put(devConf.getName(), irSeekerSensor);
     }
 
     private void mapDigitalDevice(HardwareMap map, DeviceManager deviceMgr, DigitalChannelController digitalChannelController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         DigitalChannel digitalChannel = deviceMgr.createDigitalChannelDevice(digitalChannelController, devConf.getPort(), devConf.getName());
         map.digitalChannel.put(devConf.getName(), digitalChannel);
     }
 
     private void mapTouchSensor(HardwareMap map, DeviceManager deviceMgr, DigitalChannelController digitalChannelController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         TouchSensor touchSensor = deviceMgr.createMRDigitalTouchSensor(digitalChannelController, devConf.getPort(), devConf.getName());
         map.touchSensor.put(devConf.getName(), touchSensor);
     }
 
     private void mapAnalogTouchSensor(HardwareMap map, DeviceManager deviceMgr, AnalogInputController analogInputController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         TouchSensor touchSensor = deviceMgr.createMRAnalogTouchSensor(analogInputController, devConf.getPort(), devConf.getName());
         map.touchSensor.put(devConf.getName(), touchSensor);
     }
 
     private void mapAnalogInputDevice(HardwareMap map, DeviceManager deviceMgr, AnalogInputController analogInputController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         AnalogInput analogInput = deviceMgr.createAnalogInputDevice(analogInputController, devConf.getPort(), devConf.getName());
         map.analogInput.put(devConf.getName(), analogInput);
     }
 
     private void mapPwmOutputDevice(HardwareMap map, DeviceManager deviceMgr, PWMOutputController pwmOutputController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         PWMOutput pwmOutput = deviceMgr.createPwmOutputDevice(pwmOutputController, devConf.getPort(), devConf.getName());
         map.pwmOutput.put(devConf.getName(), pwmOutput);
     }
 
     private void mapI2cDevice(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         I2cDevice i2cDevice = deviceMgr.createI2cDevice(i2cController, devConf.getI2cChannel(), devConf.getName());
         map.i2cDevice.put(devConf.getName(), i2cDevice);
     }
 
     private void mapI2cDeviceSynch(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         I2cDevice i2cDevice = deviceMgr.createI2cDevice(i2cController, devConf.getI2cChannel(), devConf.getName());
         I2cDeviceSynch i2cDeviceSynch = new I2cDeviceSynchImpl(i2cDevice, true);
         map.i2cDeviceSynch.put(devConf.getName(), i2cDeviceSynch);
@@ -501,7 +531,9 @@ public class HardwareFactory {
     }
 
     private void mapUserI2cDevice(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         UserI2cSensorType userType = (UserI2cSensorType) devConf.getConfigurationType();
         HardwareDevice hardwareDevice = deviceMgr.createUserI2cDevice(i2cController, devConf.getI2cChannel(), userType, devConf.getName());
         if (hardwareDevice != null) {
@@ -524,7 +556,9 @@ public class HardwareFactory {
     }
 
     private void mapUserI2cDevice(HardwareMap map, DeviceManager deviceMgr, LynxModule lynxModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         UserI2cSensorType userType = (UserI2cSensorType) devConf.getConfigurationType();
         HardwareDevice hardwareDevice = deviceMgr.createUserI2cDevice(lynxModule, devConf.getI2cChannel(), userType, devConf.getName());
         if (hardwareDevice != null) {
@@ -534,73 +568,97 @@ public class HardwareFactory {
     }
 
     private void mapAnalogOutputDevice(HardwareMap map, DeviceManager deviceMgr, AnalogOutputController analogOutputController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         AnalogOutput analogOutput = deviceMgr.createAnalogOutputDevice(analogOutputController, devConf.getPort(), devConf.getName());
         map.analogOutput.put(devConf.getName(), analogOutput);
     }
 
     private void mapOpticalDistanceSensor(HardwareMap map, DeviceManager deviceMgr, AnalogInputController analogInputController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         OpticalDistanceSensor opticalDistanceSensor = deviceMgr.createMRAnalogOpticalDistanceSensor(analogInputController, devConf.getPort(), devConf.getName());
         map.opticalDistanceSensor.put(devConf.getName(), opticalDistanceSensor);
     }
 
     private void mapNxtTouchSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         TouchSensor nxtTouchSensor = deviceMgr.createNxtTouchSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.touchSensor.put(devConf.getName(), nxtTouchSensor);
     }
 
     private void mapNxtTouchSensorMultiplexer(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         TouchSensorMultiplexer nxtTouchSensorMultiplexer = deviceMgr.createHTTouchSensorMultiplexer(legacyModule, devConf.getPort(), devConf.getName());
         map.touchSensorMultiplexer.put(devConf.getName(), nxtTouchSensorMultiplexer);
     }
 
     private void mapSonarSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         UltrasonicSensor sonarSensor = deviceMgr.createNxtUltrasonicSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.ultrasonicSensor.put(devConf.getName(), sonarSensor);
     }
 
     private void mapNxtColorSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         ColorSensor colorSensor = deviceMgr.createHTColorSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.colorSensor.put(devConf.getName(), colorSensor);
     }
 
     private void mapNxtGyroSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         GyroSensor gyro = deviceMgr.createHTGyroSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.gyroSensor.put(devConf.getName(), gyro);
     }
 
     private void mapNxtCompassSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         CompassSensor compass = deviceMgr.createHTCompassSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.compassSensor.put(devConf.getName(), compass);
     }
 
     private void mapNxtIrSeekerSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         IrSeekerSensor irSeeker = deviceMgr.createHTIrSeekerSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.irSeekerSensor.put(devConf.getName(), irSeeker);
     }
 
     private void mapNxtLightSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         LightSensor light = deviceMgr.createHTLightSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.lightSensor.put(devConf.getName(), light);
     }
 
     private void mapNxtAccelerationSensor(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         AccelerationSensor accel = deviceMgr.createHTAccelerationSensor(legacyModule, devConf.getPort(), devConf.getName());
         map.accelerationSensor.put(devConf.getName(), accel);
     }
 
     private void mapNxtDcMotorController(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration ctrlConf) {
-        if (!ctrlConf.isEnabled()) return;
+        if (!ctrlConf.isEnabled()) {
+            return;
+        }
         HiTechnicNxtDcMotorController dcMotorController = (HiTechnicNxtDcMotorController) deviceMgr.createHTDcMotorController(legacyModule, ctrlConf.getPort(), ctrlConf.getName());
         map.dcMotorController.put(ctrlConf.getName(), dcMotorController);
         for (MotorConfiguration motorConf : ((MotorControllerConfiguration) ctrlConf).getMotors()) {
@@ -612,7 +670,9 @@ public class HardwareFactory {
     }
 
     private void mapNxtServoController(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         ServoController sc = deviceMgr.createHTServoController(legacyModule, devConf.getPort(), devConf.getName());
         map.servoController.put(devConf.getName(), sc);
         for (DeviceConfiguration servoConf : ((ServoControllerConfiguration) devConf).getServos()) {
@@ -621,7 +681,9 @@ public class HardwareFactory {
     }
 
     private void mapLynxUsbDevice(HardwareMap map, DeviceManager deviceMgr, LynxUsbDeviceConfiguration lynxUsbDeviceConfiguration) throws RobotCoreException, InterruptedException {
-        if (!lynxUsbDeviceConfiguration.isEnabled()) return;
+        if (!lynxUsbDeviceConfiguration.isEnabled()) {
+            return;
+        }
         // Make a new LynxUsbDevice
         LynxUsbDevice lynxUsbDevice = (LynxUsbDevice) deviceMgr.createLynxUsbDevice(lynxUsbDeviceConfiguration.getSerialNumber(), lynxUsbDeviceConfiguration.getName());
         try {
@@ -720,7 +782,9 @@ public class HardwareFactory {
             LynxModule module = connectedModules.get(moduleConfiguration.getPort());
 
             // Ignore modules that ultimately didn't connect
-            if (module == null) continue;
+            if (module == null) {
+                continue;
+            }
 
             LynxModuleConfiguration lynxModuleConfiguration = (LynxModuleConfiguration) moduleConfiguration;
 
@@ -766,7 +830,9 @@ public class HardwareFactory {
     }
 
     private void mapMatrixController(HardwareMap map, DeviceManager deviceMgr, LegacyModule legacyModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         MatrixMasterController master = new MatrixMasterController((ModernRoboticsUsbLegacyModule) legacyModule, devConf.getPort());
 
         DcMotorController mc = new MatrixDcMotorController(master);
@@ -785,7 +851,9 @@ public class HardwareFactory {
     }
 
     private void mapAdafruitColorSensor(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         ColorSensor colorSensor = deviceMgr.createAdafruitI2cColorSensor(i2cController, devConf.getI2cChannel(), devConf.getName());
         map.colorSensor.put(devConf.getName(), colorSensor);
     }
@@ -802,31 +870,41 @@ public class HardwareFactory {
     }
 
     private void mapLED(HardwareMap map, DeviceManager deviceMgr, DigitalChannelController digitalChannelController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         LED led = deviceMgr.createLED(digitalChannelController, devConf.getPort(), devConf.getName());
         map.led.put(devConf.getName(), led);
     }
 
     private void mapModernRoboticsColorSensor(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         ColorSensor colorSensor = deviceMgr.createModernRoboticsI2cColorSensor(i2cController, devConf.getI2cChannel(), devConf.getName());
         map.colorSensor.put(devConf.getName(), colorSensor);
     }
 
     private void mapModernRoboticsColorSensor(HardwareMap map, DeviceManager deviceMgr, LynxModule lynxModule, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         ColorSensor colorSensor = deviceMgr.createModernRoboticsI2cColorSensor(lynxModule, devConf.getI2cChannel(), devConf.getName());
         map.colorSensor.put(devConf.getName(), colorSensor);
     }
 
     private void mapModernRoboticsGyro(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         GyroSensor gyroSensor = deviceMgr.createModernRoboticsI2cGyroSensor(i2cController, devConf.getI2cChannel(), devConf.getName());
         map.gyroSensor.put(devConf.getName(), gyroSensor);
     }
 
     private void mapModernRoboticsGyro(HardwareMap map, DeviceManager deviceMgr, LynxModule module, DeviceConfiguration devConf) {
-        if (!devConf.isEnabled()) return;
+        if (!devConf.isEnabled()) {
+            return;
+        }
         GyroSensor gyroSensor = deviceMgr.createModernRoboticsI2cGyroSensor(module, devConf.getI2cChannel(), devConf.getName());
         map.gyroSensor.put(devConf.getName(), gyroSensor);
     }

@@ -84,8 +84,9 @@ public abstract class LynxMessage {
         int prohibitedModifiers = Modifier.ABSTRACT;
         if (((method.getModifiers() & requiredModifiers) == requiredModifiers && (method.getModifiers() & prohibitedModifiers) == 0)) {
             return method.invoke(null);
-        } else
+        } else {
             throw new IllegalAccessException("incorrect modifiers");
+        }
     }
 
     //----------------------------------------------------------------------------------------------

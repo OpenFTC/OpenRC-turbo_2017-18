@@ -364,7 +364,9 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
 
     private String indent(int count, String target) {
         String indent = "";
-        for (int i = 0; i < count; i++) indent += " ";
+        for (int i = 0; i < count; i++) {
+            indent += " ";
+        }
         return indent + target.replace("\n", "\n" + indent);
     }
 

@@ -52,7 +52,7 @@ public class Network {
      */
     public static InetAddress getLoopbackAddress() {
         try {
-            return InetAddress.getByAddress(new byte[] {127, 0, 0, 1});
+            return InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
         } catch (UnknownHostException e) {
             // since we don't expect a failure here, return null
             return null;
@@ -170,7 +170,9 @@ public class Network {
 
         for (InetAddress addr : addresses) {
             String host = addr.getHostAddress();
-            if (host.contains("%")) host = host.substring(0, host.indexOf('%'));
+            if (host.contains("%")) {
+                host = host.substring(0, host.indexOf('%'));
+            }
             hostnames.add(host);
         }
 

@@ -1369,7 +1369,9 @@ public final class Ropper {
      */
     private boolean isSubroutineCaller(BasicBlock bb) {
         IntList successors = bb.getSuccessors();
-        if (successors.size() < 2) return false;
+        if (successors.size() < 2) {
+            return false;
+        }
 
         int subLabel = successors.get(1);
 

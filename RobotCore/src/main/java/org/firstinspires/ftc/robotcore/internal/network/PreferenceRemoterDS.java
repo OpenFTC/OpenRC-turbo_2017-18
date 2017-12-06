@@ -60,7 +60,9 @@ public class PreferenceRemoterDS extends PreferenceRemoter {
     protected static PreferenceRemoterDS theInstance = null;
 
     public synchronized static PreferenceRemoterDS getInstance() {
-        if (null == theInstance) theInstance = new PreferenceRemoterDS();
+        if (null == theInstance) {
+            theInstance = new PreferenceRemoterDS();
+        }
         return theInstance;
     }
 
@@ -158,8 +160,9 @@ public class PreferenceRemoterDS extends PreferenceRemoter {
             // our wifi). It'll all be fine when we reboot, but until then, we've got to keep the
             // names straight.
             String groupOwner = preferencesHelper.readString(context.getString(R.string.pref_wifip2p_groupowner_connectedto), "");
-            if (groupOwner.isEmpty())
+            if (groupOwner.isEmpty()) {
                 groupOwner = preferencesHelper.readString(context.getString(R.string.pref_wifip2p_groupowner_lastconnectedto), "");
+            }
 
             if (!groupOwner.isEmpty()) {
                 String now = (String) rcPrefAndValue.getValue();

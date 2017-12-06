@@ -86,11 +86,15 @@ public final class InsnList
      * @return true in the case described above.
      */
     public boolean contentEquals(InsnList b) {
-        if (b == null) return false;
+        if (b == null) {
+            return false;
+        }
 
         int sz = size();
 
-        if (sz != b.size()) return false;
+        if (sz != b.size()) {
+            return false;
+        }
 
         for (int i = 0; i < sz; i++) {
             if (!get(i).contentEquals(b.get(i))) {

@@ -114,9 +114,13 @@ public class RecvLoopRunnable implements Runnable {
                     Command command = commandsToProcess.takeFirst();
                     commandProcessingTimer.reset();
                     //
-                    if (DEBUG) RobotLog.vv(TAG, "command=%s...", command.getName());
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "command=%s...", command.getName());
+                    }
                     callback.commandEvent(command);
-                    if (DEBUG) RobotLog.vv(TAG, "...command=%s", command.getName());
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "...command=%s", command.getName());
+                    }
                     //
                     double seconds = commandProcessingTimer.seconds();
                     if (seconds > sProcessingTimerReportingThreshold) {
@@ -164,7 +168,9 @@ public class RecvLoopRunnable implements Runnable {
                         Thread.yield();
                         continue;
                     }
-                    if (lastRecvPacket != null) lastRecvPacket.reset();
+                    if (lastRecvPacket != null) {
+                        lastRecvPacket.reset();
+                    }
 
                     try {
                         packetProcessingTimer.reset();

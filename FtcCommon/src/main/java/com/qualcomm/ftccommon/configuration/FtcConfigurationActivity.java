@@ -330,10 +330,12 @@ public class FtcConfigurationActivity extends EditActivity implements RecvLoopRu
     }
 
     private boolean carryOver(SerialNumber serialNumber, RobotConfigMap existingControllers) {
-        if (existingControllers == null)
+        if (existingControllers == null) {
             return false;
-        if (!existingControllers.contains(serialNumber))
+        }
+        if (!existingControllers.contains(serialNumber)) {
             return false;
+        }
         if (existingControllers.get(serialNumber).isSystemSynthetic()) {
             RobotLog.vv(TAG, "not carrying over synthetic controller: serial=%s", serialNumber);
             return false;
@@ -409,7 +411,9 @@ public class FtcConfigurationActivity extends EditActivity implements RecvLoopRu
 
         try {
             XmlPullParser xmlPullParser = currentCfgFile.getXml();
-            if (xmlPullParser == null) throw new RobotCoreException("can't access configuration");
+            if (xmlPullParser == null) {
+                throw new RobotCoreException("can't access configuration");
+            }
             //
             ReadXMLFileHandler parser = new ReadXMLFileHandler();
             List<ControllerConfiguration> controllerList = parser.parse(xmlPullParser);

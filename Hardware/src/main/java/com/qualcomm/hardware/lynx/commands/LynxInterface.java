@@ -77,8 +77,9 @@ public class LynxInterface {
         for (int i = 0; i < this.commands.length; i++) {
             Class<? extends LynxInterfaceCommand> commandClass = this.commands[i];
 
-            if (commandClass == null)
+            if (commandClass == null) {
                 continue;   // filler
+            }
 
             // Remember the index of this command
             this.commandIndices.put(commandClass, i);

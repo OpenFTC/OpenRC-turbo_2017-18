@@ -163,9 +163,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             synchronized (callbackLock) {
                 ElapsedTime timer = null;
                 while (getWriteCacheStatus() != WRITE_CACHE_STATUS.IDLE) {
-                    if (timer == null) timer = new ElapsedTime();
-                    if (timer.milliseconds() > msCallbackLockAbandon)
+                    if (timer == null) {
+                        timer = new ElapsedTime();
+                    }
+                    if (timer.milliseconds() > msCallbackLockAbandon) {
                         throw new InterruptedException();
+                    }
                     callbackLock.wait(msCallbackLockWaitQuantum);
                 }
                 return nanoTimeIdle;
@@ -261,8 +264,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         if (this.controller instanceof RobotUsbModule) {
             this.robotUsbModule = (RobotUsbModule) this.controller;
             this.robotUsbModule.registerCallback(this.callback, false);
-        } else
+        } else {
             throw new IllegalArgumentException("I2cController must also be a RobotUsbModule");
+        }
 
         this.i2cDevice.registerForPortReadyBeginEndCallback(this.callback);
     }
@@ -319,7 +323,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                 //
                 this.i2cAddr = i2cAddr;
                 //
-                if (wasHooked) this.engage();
+                if (wasHooked) {
+                    this.engage();
+                }
             }
         }
     }
@@ -373,10 +379,11 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     /* adjust the hooking state to reflect the user's engagement intent */
     protected void adjustHooking() {
         synchronized (this.engagementLock) {
-            if (!this.isHooked && this.isEngaged)
+            if (!this.isHooked && this.isEngaged) {
                 this.hook();
-            else if (this.isHooked && !this.isEngaged)
+            } else if (this.isHooked && !this.isEngaged) {
                 this.unhook();
+            }
         }
     }
 
@@ -479,8 +486,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             }
         }
 
-        if (interrupted)
+        if (interrupted) {
             Thread.currentThread().interrupt();
+        }
 
         assertTrue(readerWriterCount.get() == 0);
         enableReadsAndWrites();
@@ -505,8 +513,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                 callbackLock.notifyAll();
             }
 
-            if (exitLoop)
+            if (exitLoop) {
                 break;
+            }
 
             try {
                 // Note: we can't hold the concurrentClientLock or the callbackLock as
@@ -524,8 +533,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             }
         }
 
-        if (interrupted)
+        if (interrupted) {
             Thread.currentThread().interrupt();
+        }
 
         // This assert has been observed to (inexplicably) fail. The circumstance at the time
         // involved the unplugging of a CDIM from the phone.
@@ -567,8 +577,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
 
         this.disengage();
 
-        if (this.isI2cDeviceOwned)
+        if (this.isI2cDeviceOwned) {
             this.i2cDevice.close();
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -678,8 +689,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             // Take the readerWriterLock so that others will be able to track when reads and writes have drained
             acquireReaderLockShared();
             try {
-                if (!this.isOpenForReading())
+                if (!this.isOpenForReading()) {
                     return TimestampedI2cData.makeFakeData(null, getI2cAddress(), ireg, creg);
+                }
 
                 synchronized (this.concurrentClientLock) {
                     synchronized (this.callbackLock) {
@@ -757,8 +769,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                             // If that was a one-time read, invalidate the data so we won't read it again a second time.
                             // Note that this is the only place outside of the callback that we ever update
                             // readCacheStatus or writeCacheStatus
-                            if (this.readCacheStatus == READ_CACHE_STATUS.VALID_ONLYONCE)
+                            if (this.readCacheStatus == READ_CACHE_STATUS.VALID_ONLYONCE) {
                                 this.readCacheStatus = READ_CACHE_STATUS.IDLE;
+                            }
 
                             // Restore any read window that we may have disturbed
                             if (this.readWindow != prevReadWindow) {
@@ -813,12 +826,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
      */
     @Override
     public void write8(int ireg, int data) {
-        this.write(ireg, new byte[] {(byte) data});
+        this.write(ireg, new byte[]{(byte) data});
     }
 
     @Override
     public void write8(int ireg, int data, I2cWaitControl waitControl) {
-        this.write(ireg, new byte[] {(byte) data}, waitControl);
+        this.write(ireg, new byte[]{(byte) data}, waitControl);
     }
 
     /*
@@ -838,12 +851,14 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             // Take the readerWriterLock so that others will be able to track when reads and writes have drained
             acquireReaderLockShared();
             try {
-                if (!isOpenForWriting())
+                if (!isOpenForWriting()) {
                     return; // Ignore the write
+                }
 
                 synchronized (this.concurrentClientLock) {
-                    if (data.length > ReadWindow.WRITE_REGISTER_COUNT_MAX)
+                    if (data.length > ReadWindow.WRITE_REGISTER_COUNT_MAX) {
                         throw new IllegalArgumentException(String.format("write request of %d bytes is too large; max is %d", data.length, ReadWindow.WRITE_REGISTER_COUNT_MAX));
+                    }
 
                     synchronized (this.callbackLock) {
                         // If there's already a pending write, can we coalesce?
@@ -964,9 +979,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     protected void waitForValidReadCache() throws InterruptedException {
         ElapsedTime timer = null;
         while (!readCacheIsValid()) {
-            if (timer == null) timer = new ElapsedTime();
-            if (timer.milliseconds() > msCallbackLockAbandon)
+            if (timer == null) {
+                timer = new ElapsedTime();
+            }
+            if (timer.milliseconds() > msCallbackLockAbandon) {
                 throw new InterruptedException();
+            }
             this.callbackLock.wait(msCallbackLockWaitQuantum);
         }
     }
@@ -1214,8 +1232,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                     if (arming) {
                         enableReadsAndWrites();
                         doModuleIsArmedWorkEnabledWrites = true;
-                    } else
+                    } else {
                         doModuleIsArmedWorkEnabledWrites = false;
+                    }
 
                     haveSeenModuleIsArmedWork = true;
                 }
@@ -1231,11 +1250,13 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             try {
                 log(Log.VERBOSE, "onPortIsReadyCallbacksEnd ...");
 
-                if (isClosing)
+                if (isClosing) {
                     return; // ignore
+                }
 
-                if (!haveSeenModuleIsArmedWork)
+                if (!haveSeenModuleIsArmedWork) {
                     return; // ReadWriteRunnable started then suddenly stopped before owner finished arming
+                }
 
                 synchronized (engagementLock) {
                     if (doModuleIsArmedWorkEnabledWrites) {
@@ -1270,7 +1291,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
 
             setActionFlag = true;      // causes an I2C read to happen
             queueFullWrite = true;     // write the bytes that enableI2cReadMode() set
-            if (!isControllerLegacy) queueRead = true; // read the results of the I2C read
+            if (!isControllerLegacy) {
+                queueRead = true; // read the results of the I2C read
+            }
         }
 
         protected void issueWrite() {
@@ -1308,8 +1331,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                 // Keep track of controller port mode states. The rule, we understand, is that after we request
                 // a switch to read mode, once we get the 'port is ready' callback, then read mode is in fact
                 // enabled. Note that SWITCHINGTOREADMODE is only ever used on Legacy Modules.
-                if (controllerPortMode == CONTROLLER_PORT_MODE.SWITCHINGTOREADMODE)
+                if (controllerPortMode == CONTROLLER_PORT_MODE.SWITCHINGTOREADMODE) {
                     controllerPortMode = CONTROLLER_PORT_MODE.READ;
+                }
 
                 //----------------------------------------------------------------------------------
                 // Deal with the fact that we've completed any previous queueing operation
@@ -1516,10 +1540,11 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                 //----------------------------------------------------------------------------------
                 // Read, set action flag and / or queue to module as requested
 
-                if (setActionFlag)
+                if (setActionFlag) {
                     i2cDevice.setI2cPortActionFlag();
-                else
+                } else {
                     i2cDevice.clearI2cPortActionFlag();
+                }
 
                 if (setActionFlag && !queueFullWrite) {
                     i2cDevice.writeI2cPortFlagOnlyToController();
@@ -1545,9 +1570,15 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                     if (setActionFlag || queueFullWrite || queueRead) {
                         trivial = false;
                         message.append("|");
-                        if (setActionFlag) message.append("f");
-                        if (queueFullWrite) message.append("w");
-                        if (queueRead) message.append("r");
+                        if (setActionFlag) {
+                            message.append("f");
+                        }
+                        if (queueFullWrite) {
+                            message.append("w");
+                        }
+                        if (queueRead) {
+                            message.append("r");
+                        }
                     }
 
                     if (readCacheStatus != prevReadCacheStatus) {
@@ -1567,9 +1598,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
                         message.append(String.format("| read(0x%02x,%d)", readWindow.getRegisterFirst(), readWindow.getRegisterCount()));
                     }
 
-                    if (!trivial)
+                    if (!trivial) {
                         message.append(String.format("| port=%s", controllerPortMode.toString()));
-                    if (!trivial) log(Log.DEBUG, message.toString());
+                    }
+                    if (!trivial) {
+                        log(Log.DEBUG, message.toString());
+                    }
                 }
 
                 //----------------------------------------------------------------------------------

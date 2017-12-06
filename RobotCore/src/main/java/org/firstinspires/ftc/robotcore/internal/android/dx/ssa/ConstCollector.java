@@ -176,12 +176,16 @@ public class ConstCollector {
         for (int i = 0; i < regSz; i++) {
             SsaInsn insn = ssaMeth.getDefinitionForRegister(i);
 
-            if (insn == null || insn.getOpcode() == null) continue;
+            if (insn == null || insn.getOpcode() == null) {
+                continue;
+            }
 
             RegisterSpec result = insn.getResult();
             TypeBearer typeBearer = result.getTypeBearer();
 
-            if (!typeBearer.isConstant()) continue;
+            if (!typeBearer.isConstant()) {
+                continue;
+            }
 
             TypedConstant cst = (TypedConstant) typeBearer;
 
@@ -347,7 +351,9 @@ public class ConstCollector {
             final RegisterSpec origReg = insn.getResult();
             TypeBearer typeBearer = insn.getResult().getTypeBearer();
 
-            if (!typeBearer.isConstant()) continue;
+            if (!typeBearer.isConstant()) {
+                continue;
+            }
 
             TypedConstant cst = (TypedConstant) typeBearer;
             final RegisterSpec newReg = newRegs.get(cst);

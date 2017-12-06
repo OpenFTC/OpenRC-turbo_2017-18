@@ -122,7 +122,9 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
 
         public static Command fromByte(byte b) {
             for (Command command : values()) {
-                if (command.bVal == b) return command;
+                if (command.bVal == b) {
+                    return command;
+                }
             }
             return UNKNOWN;
         }

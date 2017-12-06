@@ -194,7 +194,9 @@ public class USBScanManager {
                             lynxUsbDevice = deviceManager.createLynxUsbDevice(serialNumber, null);
                             localResult = lynxUsbDevice.discoverModules();
                         } finally {
-                            if (lynxUsbDevice != null) lynxUsbDevice.close();
+                            if (lynxUsbDevice != null) {
+                                lynxUsbDevice.close();
+                            }
                         }
                     } catch (RobotCoreException e) {
                         RobotLog.ee(TAG, "discovering lynx modules threw exception: " + e.toString());

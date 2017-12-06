@@ -166,18 +166,26 @@ public class RobotUsbDeviceTty extends RobotUsbDeviceImplBase implements RobotUs
                     int cbReadOnce = this.serialPort.getInputStream().read(data, ibFirst + cbRead, cbToRead - cbRead);
 
                     // Adjust for Java's odd EOF behavior
-                    if (cbReadOnce == -1) cbReadOnce = 0;
+                    if (cbReadOnce == -1) {
+                        cbReadOnce = 0;
+                    }
 
                     // Do our bookkeeping based on what we've got; return if we're done
                     Assert.assertTrue(cbReadOnce >= 0);
                     cbRead += cbReadOnce;
-                    if (cbRead == cbToRead) break;
+                    if (cbRead == cbToRead) {
+                        break;
+                    }
 
                     // Did we hit the timeout?
-                    if (timer.milliseconds() > msTimeout) break;
+                    if (timer.milliseconds() > msTimeout) {
+                        break;
+                    }
 
                     // Behave ourselves, then go around the loop again
-                    if (Thread.interrupted()) throw new InterruptedException();
+                    if (Thread.interrupted()) {
+                        throw new InterruptedException();
+                    }
                     Thread.yield();
                 }
 

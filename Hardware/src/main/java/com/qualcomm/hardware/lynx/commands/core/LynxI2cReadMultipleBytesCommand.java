@@ -67,8 +67,9 @@ public class LynxI2cReadMultipleBytesCommand extends LynxDekaInterfaceCommand<Ly
     public LynxI2cReadMultipleBytesCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int cbToRead) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        if (cbToRead < cbPayloadFirst || cbToRead > cbPayloadLast)
+        if (cbToRead < cbPayloadFirst || cbToRead > cbPayloadLast) {
             throw new IllegalArgumentException(String.format("illegal payload length: %d", cbToRead));
+        }
         this.i2cBus = (byte) busZ;
         this.i2cAddr7Bit = (byte) i2cAddr.get7Bit();
         this.cbToRead = (byte) cbToRead;

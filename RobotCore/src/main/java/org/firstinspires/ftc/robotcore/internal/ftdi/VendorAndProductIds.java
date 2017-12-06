@@ -56,10 +56,11 @@ public class VendorAndProductIds {
     }
 
     public static VendorAndProductIds from(UsbDevice dev) {
-        if (dev == null)
+        if (dev == null) {
             return new VendorAndProductIds();
-        else
+        } else {
             return new VendorAndProductIds(dev.getVendorId(), dev.getProductId());
+        }
     }
 
     public void setVendorId(int vid) {

@@ -205,10 +205,11 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
     private void doArmOrPretend(boolean isArm) throws RobotCoreException, InterruptedException {
         RobotLog.d("arming modern servo controller %s%s...", HardwareFactory.getDeviceDisplayName(context, this.serialNumber), (isArm ? "" : " (pretend)"));
 
-        if (isArm)
+        if (isArm) {
             this.armDevice();
-        else
+        } else {
             this.pretendDevice();
+        }
 
         RobotLog.d("...arming modern servo controller %s complete", HardwareFactory.getDeviceDisplayName(context, this.serialNumber));
     }
@@ -336,7 +337,8 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
     private void validateApiPosition(double position) {
         if (apiPositionMin <= position && position <= apiPositionMax) {
             // all is well
-        } else
+        } else {
             throw new IllegalArgumentException(String.format("illegal servo position %f; must be in interval [%f,%f]", position, apiPositionMin, apiPositionMax));
+        }
     }
 }

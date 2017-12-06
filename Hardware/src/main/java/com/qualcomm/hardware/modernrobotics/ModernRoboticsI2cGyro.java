@@ -128,7 +128,9 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
 
         public static Register fromByte(byte bVal) {
             for (Register register : values()) {
-                if (register.bVal == bVal) return register;
+                if (register.bVal == bVal) {
+                    return register;
+                }
             }
             return UNKNOWN;
         }
@@ -149,7 +151,9 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
 
         public static Command fromByte(byte bVal) {
             for (Command command : values()) {
-                if (command.bVal == bVal) return command;
+                if (command.bVal == bVal) {
+                    return command;
+                }
             }
             return UNKNOWN;
         }

@@ -74,13 +74,17 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse {
         appendBit(builder, bitFailSafe, "FailSafe");
         appendBit(builder, bitControllerOverTemp, "Temp");
         String message = builder.toString();
-        if (message.length() > 0) message = ": " + message;
+        if (message.length() > 0) {
+            message = ": " + message;
+        }
         return String.format("LynxGetModuleStatusResponse(status=0x%02x alerts=0x%02x%s)", status, motorAlerts, message);
     }
 
     protected void appendBit(StringBuilder builder, int bit, String message) {
         if (testBitsOn(bit)) {
-            if (builder.length() > 0) builder.append("|");
+            if (builder.length() > 0) {
+                builder.append("|");
+            }
             builder.append(message);
         }
     }
@@ -148,7 +152,7 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse {
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {this.status, this.motorAlerts};
+        return new byte[]{this.status, this.motorAlerts};
     }
 
     @Override

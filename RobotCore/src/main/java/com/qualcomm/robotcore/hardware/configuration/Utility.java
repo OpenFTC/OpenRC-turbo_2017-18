@@ -81,8 +81,12 @@ public class Utility {
         TextView text1 = (TextView) parent.findViewById(idMessage);
         Button buttonDismiss = (Button) parent.findViewById(idButtonDismiss);
 
-        if (text0 != null) text0.setText(title);
-        if (text1 != null) text1.setText(message);
+        if (text0 != null) {
+            text0.setText(title);
+        }
+        if (text1 != null) {
+            text1.setText(message);
+        }
         if (buttonDismiss != null) {
             buttonDismiss.setOnClickListener(new View.OnClickListener() {
                                                  @Override
@@ -111,9 +115,11 @@ public class Utility {
 
         boolean text0Null = text0 == null || text0.getText().length() == 0;
         boolean text1Null = text1 == null || text1.getText().length() == 0;
-        if (text0Null && text1Null) return null;
+        if (text0Null && text1Null) {
+            return null;
+        }
 
-        return new CharSequence[] {text0 == null ? "" : text0.getText(), text1 == null ? "" : text1.getText()};
+        return new CharSequence[]{text0 == null ? "" : text0.getText(), text1 == null ? "" : text1.getText()};
     }
 
     //********************** Alert Dialog helpers ***********************//

@@ -161,8 +161,9 @@ public class FileBasedLock {
     }
 
     protected void lock(long timeout, TimeUnit timeUnit) throws TimeoutException, InterruptedException {
-        if (timeout < 0)
+        if (timeout < 0) {
             throw new IllegalArgumentException(String.format("timeout must be >= 0: %d", timeout));
+        }
 
         // Create the file we will use to carry out our lock attempt. The timestamp on this file
         // will be the time at which we intend to give up the lock. When renamed to 'lockFile',

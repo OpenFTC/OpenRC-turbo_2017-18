@@ -421,7 +421,9 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
                 lastSystemTelemetryNanoTime = now;
                 //
                 this.buildAndSendTelemetry(key, message);
-                if (callback != null) callback.onTelemetryTransmitted();
+              if (callback != null) {
+                callback.onTelemetryTransmitted();
+              }
             }
         }
     }
@@ -621,7 +623,9 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
     private void changeState(@NonNull RobotState state) {
         this.state = state;
         RobotLog.v("EventLoopManager state is " + state.toString());
-        if (callback != null) callback.onStateChange(state);
+      if (callback != null) {
+        callback.onStateChange(state);
+      }
         // Keep the DS informed of robot state in a timely way. See also Heartbeat & TelemetryMessage
         networkConnectionHandler.sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_ROBOT_STATE, Integer.toString(state.asByte())));
     }
@@ -632,7 +636,9 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
 
     @Override
     public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
-        if (DEBUG) RobotLog.vv(RobocolDatagram.TAG, "processing gamepad event");
+      if (DEBUG) {
+        RobotLog.vv(RobocolDatagram.TAG, "processing gamepad event");
+      }
         Gamepad gamepad = new Gamepad();
         gamepad.fromByteArray(packet.getData());
 

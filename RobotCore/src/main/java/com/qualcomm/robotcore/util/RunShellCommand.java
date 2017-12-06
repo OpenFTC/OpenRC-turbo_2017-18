@@ -69,9 +69,13 @@ public class RunShellCommand {
      * @return the commands output
      */
     public String run(String cmd) {
-        if (logging) RobotLog.v("running command: " + cmd);
+        if (logging) {
+            RobotLog.v("running command: " + cmd);
+        }
         String output = runCommand(cmd, false);
-        if (logging) RobotLog.v("         output: " + output);
+        if (logging) {
+            RobotLog.v("         output: " + output);
+        }
         return output;
     }
 
@@ -82,9 +86,13 @@ public class RunShellCommand {
      * @return the commands output
      */
     public String runAsRoot(String cmd) {
-        if (logging) RobotLog.v("running command: " + cmd);
+        if (logging) {
+            RobotLog.v("running command: " + cmd);
+        }
         String output = runCommand(cmd, true);
-        if (logging) RobotLog.v("         output: " + output);
+        if (logging) {
+            RobotLog.v("         output: " + output);
+        }
         return output;
     }
 
@@ -109,14 +117,18 @@ public class RunShellCommand {
             //OutputStreamWriter out = new OutputStreamWriter(process.getOutputStream());
 
             length = in.read(buffer);
-            if (length > 0) output = new String(buffer, 0, length);
+            if (length > 0) {
+                output = new String(buffer, 0, length);
+            }
 
         } catch (IOException e) {
             RobotLog.logStacktrace(e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            if (process != null) process.destroy();
+            if (process != null) {
+                process.destroy();
+            }
         }
         return output;
     }

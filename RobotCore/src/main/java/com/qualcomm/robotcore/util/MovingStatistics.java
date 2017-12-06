@@ -54,8 +54,9 @@ public class MovingStatistics {
     //----------------------------------------------------------------------------------------------
 
     public MovingStatistics(int capacity) {
-        if (capacity <= 0)
+        if (capacity <= 0) {
             throw new IllegalArgumentException("MovingStatistics capacity must be positive");
+        }
         this.statistics = new Statistics();
         this.capacity = capacity;
         this.samples = new LinkedList<Double>();

@@ -174,8 +174,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
                             .multiplied(pose.inverted())
                             .multiplied(phoneLocationOnRobotInverted);
             return result;
-        } else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -214,8 +215,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
         if (this.newLocationAvailable) {
             this.newLocationAvailable = false;
             return getRobotLocation();
-        } else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -255,8 +257,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
             OpenGLMatrix result = new VuforiaPoseMatrix(this.currentPose).toOpenGL();
             // RobotLog.vv(TAG, "rawPose -> %s", result.toString());
             return result;
-        } else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -272,8 +275,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
         if (this.newPoseAvailable) {
             this.newPoseAvailable = false;
             return getRawPose();
-        } else
+        } else {
             return null;
+        }
     }
 
     /**

@@ -703,7 +703,9 @@ public class SCCP {
              * Prune branches that have already been handled and ones that no
              * longer have constant conditions (no nonexecutable successors)
              */
-            if (successorSize != 2 || oldSuccessor == -1) continue;
+            if (successorSize != 2 || oldSuccessor == -1) {
+                continue;
+            }
 
             // Replace branch with goto
             Insn originalRopInsn = insn.getOriginalRopInsn();

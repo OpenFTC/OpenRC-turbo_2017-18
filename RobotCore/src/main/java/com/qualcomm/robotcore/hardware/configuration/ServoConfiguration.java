@@ -36,8 +36,9 @@ public class ServoConfiguration extends DeviceConfiguration {
 
     public ServoConfiguration(int port, ConfigurationType type, String name, boolean enabled) {
         super(port, type, name, enabled);
-        if (type == BuiltInConfigurationType.SERVO || type == BuiltInConfigurationType.CONTINUOUS_ROTATION_SERVO)
+        if (type == BuiltInConfigurationType.SERVO || type == BuiltInConfigurationType.CONTINUOUS_ROTATION_SERVO) {
             return;
+        }
         throw new IllegalArgumentException(String.format("ServoConfiguration: illegal servo type: %s", type.toString()));
     }
 

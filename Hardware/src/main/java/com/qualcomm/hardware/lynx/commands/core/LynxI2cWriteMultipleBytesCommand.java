@@ -69,8 +69,9 @@ public class LynxI2cWriteMultipleBytesCommand extends LynxDekaInterfaceCommand<L
     public LynxI2cWriteMultipleBytesCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, byte[] payload) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        if (payload.length < cbPayloadFirst || payload.length > cbPayloadLast)
+        if (payload.length < cbPayloadFirst || payload.length > cbPayloadLast) {
             throw new IllegalArgumentException(String.format("illegal payload length: %d", payload.length));
+        }
         this.i2cBus = (byte) busZ;
         this.i2cAddr7Bit = (byte) i2cAddr.get7Bit();
         this.payload = Arrays.copyOf(payload, payload.length);

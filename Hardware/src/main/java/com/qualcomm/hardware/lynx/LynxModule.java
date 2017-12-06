@@ -755,7 +755,9 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
      */
     public boolean isCommandSupported(Class<? extends LynxInterfaceCommand> clazz) {
         for (MessageClassAndCtor pair : this.commandClasses.values()) {
-            if (pair.clazz == clazz) return true;
+            if (pair.clazz == clazz) {
+                return true;
+            }
         }
         return false;
     }
@@ -822,14 +824,16 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     public int getInterfaceBaseCommandNumber(String interfaceName) {
         synchronized (this.interfacesQueried) {
             LynxInterface anInterface = this.interfacesQueried.get(interfaceName);
-            if (anInterface == null)
+            if (anInterface == null) {
                 return LynxInterface.ERRONEOUS_COMMAND_NUMBER;  // we never queried. why? shutdown?
+            }
 
             int baseCommandNumber = anInterface.getBaseCommandNumber();
             if (!anInterface.wasNacked()) {
                 return anInterface.getBaseCommandNumber();
-            } else
+            } else {
                 throw new IllegalArgumentException(String.format("interface \"%s\" not supported", interfaceName));
+            }
         }
     }
 
@@ -950,8 +954,9 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
         public static DebugGroup fromInt(int b) {
             for (DebugGroup debugGroup : DebugGroup.values()) {
-                if (debugGroup.bVal == (byte) b)
+                if (debugGroup.bVal == (byte) b) {
                     return debugGroup;
+                }
             }
             return NONE;
         }
@@ -968,8 +973,9 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
         public static DebugVerbosity fromInt(int b) {
             for (DebugVerbosity verbosity : DebugVerbosity.values()) {
-                if (verbosity.bVal == (byte) b)
+                if (verbosity.bVal == (byte) b) {
                     return verbosity;
+                }
             }
             return OFF;
         }
@@ -1033,10 +1039,11 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     }
 
     public void finishedWithMessage(LynxMessage message) throws InterruptedException {
-        if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_FINISH)
+        if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_FINISH) {
             RobotLog.vv(TAG, "finishing mod=%d msg#=%d",
                     message.getModuleAddress(),
                     message.getMessageNumber());
+        }
         //
         int messageNumber = message.getMessageNumber();
         this.unfinishedCommands.remove(messageNumber);
@@ -1068,8 +1075,9 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                     incomingMessage.setSerialization(datagram);
                     incomingMessage.loadFromSerialization();
 
-                    if (LynxUsbDeviceImpl.DEBUG_LOG_MESSAGES)
+                    if (LynxUsbDeviceImpl.DEBUG_LOG_MESSAGES) {
                         RobotLog.vv(TAG, "rec'd: mod=%d cmd=0x%02x(%s) msg#=%d ref#=%d", datagram.getSourceModuleAddress(), datagram.getPacketId(), incomingMessage.getClass().getSimpleName(), incomingMessage.getMessageNumber(), incomingMessage.getReferenceNumber());
+                    }
 
                     // Acks&nacks are processed differently than responses
                     if (incomingMessage.isAck() || incomingMessage.isNack()) {

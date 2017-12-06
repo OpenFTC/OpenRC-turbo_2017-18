@@ -66,8 +66,9 @@ public class LynxSetMotorConstantPowerCommand extends LynxDekaInterfaceCommand<L
     public LynxSetMotorConstantPowerCommand(LynxModuleIntf module, int motorZ, int power) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        if (power < apiPowerFirst || power > apiPowerLast)
+        if (power < apiPowerFirst || power > apiPowerLast) {
             throw new IllegalArgumentException(String.format("illegal power: %d", power));
+        }
         this.motor = (byte) motorZ;
         this.power = (short) power;
     }

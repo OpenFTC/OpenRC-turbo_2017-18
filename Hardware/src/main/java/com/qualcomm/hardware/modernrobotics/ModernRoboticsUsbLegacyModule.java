@@ -668,7 +668,9 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
     public void readComplete() throws InterruptedException {
         // since this method is a callback, it might be called before
         // the class is fully initialized
-        if (portReadyCallback == null) return;
+        if (portReadyCallback == null) {
+            return;
+        }
 
         byte bufferStatusByte = read8(ADDRESS_BUFFER_STATUS);
         for (int i = 0; i < NUMBER_OF_PORTS; i++) {

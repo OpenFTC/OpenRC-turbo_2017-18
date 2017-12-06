@@ -77,8 +77,9 @@ public class Position {
                     distanceUnit.fromUnit(this.unit, y),
                     distanceUnit.fromUnit(this.unit, z),
                     this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 
     //----------------------------------------------------------------------------------------------

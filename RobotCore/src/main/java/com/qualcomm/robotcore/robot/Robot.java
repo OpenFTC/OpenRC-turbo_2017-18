@@ -60,7 +60,8 @@ public class Robot {
     }
 
     public void shutdown() {
-        if (eventLoopManager != null)
+        if (eventLoopManager != null) {
             eventLoopManager.shutdown();
+        }
     }
 }

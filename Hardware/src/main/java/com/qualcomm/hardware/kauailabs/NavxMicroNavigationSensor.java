@@ -509,7 +509,9 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
 
         public static Register fromByte(byte bVal) {
             for (Register register : values()) {
-                if (register.bVal == bVal) return register;
+                if (register.bVal == bVal) {
+                    return register;
+                }
             }
             return UNKNOWN;
         }

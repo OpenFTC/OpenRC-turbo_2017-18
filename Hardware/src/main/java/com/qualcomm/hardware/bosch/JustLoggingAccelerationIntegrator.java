@@ -77,8 +77,9 @@ public class JustLoggingAccelerationIntegrator implements BNO055IMU.Acceleration
                 if (parameters.loggingEnabled) {
                     RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime) * 1e-9, acceleration);
                 }
-            } else
+            } else {
                 acceleration = linearAcceleration;
+            }
         }
     }
 }

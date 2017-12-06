@@ -70,7 +70,9 @@ public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice {
         this.serialNumber = serialNumber;
 
         this.deviceType = deviceTypes.get(this.serialNumber);
-        if (this.deviceType == null) this.deviceType = DeviceManager.DeviceType.UNKNOWN_DEVICE;
+        if (this.deviceType == null) {
+            this.deviceType = DeviceManager.DeviceType.UNKNOWN_DEVICE;
+        }
 
         Assert.assertFalse(extantDevices.contains(serialNumber));
         extantDevices.put(serialNumber, this);

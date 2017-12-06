@@ -200,10 +200,11 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         this.fillSurfaceParent = parameters.fillCameraMonitorViewParent;
         setFrameQueueCapacity(0);
         registerLifeCycleCallbacks();
-        if (parameters.cameraMonitorViewParent != null)
+        if (parameters.cameraMonitorViewParent != null) {
             setMonitorViewParent(parameters.cameraMonitorViewParent);
-        else
+        } else {
             setMonitorViewParent(parameters.cameraMonitorViewIdParent);
+        }
         makeLoadingIndicator();
         loadTextures();
         startAR();
@@ -436,8 +437,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             }
             while (initProgress >= 0 && initProgress < 100);
 
-            if (initProgress < 0)
+            if (initProgress < 0) {
                 throwFailure("Vuforia initialization failed: %s", getInitializationErrorString(initProgress));
+            }
 
             initTracker();
             Vuforia.registerCallback(VuforiaLocalizerImpl.this.vuforiaCallback);
@@ -614,8 +616,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         startTracker();
 
         if (!CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_CONTINUOUSAUTO)) {
-            if (!CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_TRIGGERAUTO))
+            if (!CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_TRIGGERAUTO)) {
                 CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_NORMAL);
+            }
         }
 
         this.isCameraRunning = true;
@@ -624,8 +627,12 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected synchronized void stopCamera() {
         if (this.isCameraRunning) {
             stopTracker();
-            if (this.isCameraStarted) CameraDevice.getInstance().stop();
-            if (this.isCameraInited) CameraDevice.getInstance().deinit();
+            if (this.isCameraStarted) {
+                CameraDevice.getInstance().stop();
+            }
+            if (this.isCameraInited) {
+                CameraDevice.getInstance().deinit();
+            }
             this.isCameraInited = false;
             this.isCameraStarted = false;
             this.isCameraRunning = false;
@@ -633,8 +640,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     }
 
     protected void configureVideoBackground() {
-        if (glSurface == null)
+        if (glSurface == null) {
             return;
+        }
 
         // What screen real estate do we have to draw on?
         PointF view = new PointF(glSurface.getWidth(), glSurface.getHeight());
@@ -804,8 +812,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     }
 
     protected void renderFrame() {
-        if (glSurface == null)
+        if (glSurface == null) {
             return;
+        }
 
         renderCount++;
 
@@ -822,10 +831,11 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         // Handle face culling, we need to detect if we are using reflection to determine the direction of the culling
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_BACK);
-        if (Renderer.getInstance().getVideoBackgroundConfig().getReflection() == VIDEO_BACKGROUND_REFLECTION.VIDEO_BACKGROUND_REFLECTION_ON)
+        if (Renderer.getInstance().getVideoBackgroundConfig().getReflection() == VIDEO_BACKGROUND_REFLECTION.VIDEO_BACKGROUND_REFLECTION_ON) {
             GLES20.glFrontFace(GLES20.GL_CW); // Front camera
-        else
+        } else {
             GLES20.glFrontFace(GLES20.GL_CCW); // Back camera
+        }
 
         // did we find any trackables this frame?
         for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++) {
@@ -884,7 +894,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
 
             // Yes, it's odd that we scale, then translate, and only finally rotate. But
             // this works (finally) so we're not incented to change it.
-            if (rx != 0 || ry != 0 || rz != 0) Matrix.rotateM(poseMatrix, 0, 90f, rx, ry, rz);
+            if (rx != 0 || ry != 0 || rz != 0) {
+                Matrix.rotateM(poseMatrix, 0, 90f, rx, ry, rz);
+            }
             Matrix.translateM(poseMatrix, 0, dx * axesScale, dy * axesScale, dz * axesScale);
 
             Matrix.scaleM(poseMatrix, 0, axesScale, axesScale, axesScale);
@@ -1042,12 +1054,15 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
                                 if (vuforiaTrackable instanceof VuforiaTrackableNotify) {
                                     ((VuforiaTrackableNotify) vuforiaTrackable).noteTracked(trackableResult);
                                 }
-                            } else
+                            } else {
                                 RobotLog.vv(TAG, "vuforiaTrackable unexpectedly null: %s", trackableResult.getClass().getSimpleName());
-                        } else
+                            }
+                        } else {
                             RobotLog.vv(TAG, "trackable unexpectedly null: %s", trackableResult.getClass().getSimpleName());
-                    } else
+                        }
+                    } else {
                         RobotLog.vv(TAG, "unexpected TrackableResult: %s", trackableResult.getClass().getSimpleName());
+                    }
                 }
 
                 for (VuforiaTrackable vuforiaTrackable : notVisible) {

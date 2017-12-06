@@ -224,7 +224,9 @@ public class WebServer {
             builder.append(prefix).append(String.format("param('%s')=[", param.getKey()));
             boolean first = true;
             for (String value : param.getValue()) {
-                if (!first) builder.append(", ");
+                if (!first) {
+                    builder.append(", ");
+                }
                 builder.append(String.format("'%s'", value));
                 first = false;
             }

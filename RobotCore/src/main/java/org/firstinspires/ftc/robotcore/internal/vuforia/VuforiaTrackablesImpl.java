@@ -132,10 +132,11 @@ public class VuforiaTrackablesImpl extends AbstractList<VuforiaTrackable> implem
     public void adjustExtendedTracking(boolean isExtendedTrackingActive) {
         if (isActive) {
             for (VuforiaTrackableImpl trackable : this.trackables) {
-                if (isExtendedTrackingActive)
+                if (isExtendedTrackingActive) {
                     trackable.getTrackable().startExtendedTracking();
-                else
+                } else {
                     trackable.getTrackable().stopExtendedTracking();
+                }
             }
         }
     }

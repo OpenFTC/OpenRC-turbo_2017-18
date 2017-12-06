@@ -60,7 +60,9 @@ public class ScannedDevices extends HashMap<SerialNumber, DeviceManager.DeviceTy
     public String toSerializationString() {
         StringBuilder result = new StringBuilder();
         for (Entry<SerialNumber, DeviceManager.DeviceType> entry : this.entrySet()) {
-            if (result.length() > 0) result.append(pairSeparatorWrite);
+            if (result.length() > 0) {
+                result.append(pairSeparatorWrite);
+            }
             result.append(entry.getKey().toString());
             result.append(keyValueSeparatorWrite);
             result.append(entry.getValue().toString());

@@ -66,8 +66,9 @@ public class LynxSetPWMPulseWidthCommand extends LynxDekaInterfaceCommand<LynxAc
     public LynxSetPWMPulseWidthCommand(LynxModuleIntf module, int channelZ, int usPulseWidth) {
         this(module);
         LynxConstants.validatePwmChannelZ(channelZ);
-        if (usPulseWidth < apiPulseWidthFirst || usPulseWidth > apiPulseWidthLast)
+        if (usPulseWidth < apiPulseWidthFirst || usPulseWidth > apiPulseWidthLast) {
             throw new IllegalArgumentException(String.format("illegal pulse width: %d", usPulseWidth));
+        }
         this.channel = (byte) channelZ;
         this.pulseWidth = (short) usPulseWidth;
     }

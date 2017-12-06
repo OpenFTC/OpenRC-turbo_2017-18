@@ -294,7 +294,9 @@ public abstract class AMSColorSensorImpl extends I2cDeviceSynchDeviceWithParamet
 
         // 3782 must set bit 5 as 1. On 3472, that must be written as zero. Ugh.
         // We believe this ensures that the 'IR Diode' is in use.
-        if (is3782()) control |= 0x20;
+        if (is3782()) {
+            control |= 0x20;
+        }
 
         control = (control & ~mask) | (value & mask);
         write8(Register.CONTROL, control);
@@ -357,7 +359,9 @@ public abstract class AMSColorSensorImpl extends I2cDeviceSynchDeviceWithParamet
             data = read(Register.STATUS, cbRead);
 
             // Is the data valid? Carry on if so
-            if (testBits(data[0], Status.AVALID.bVal)) break;
+            if (testBits(data[0], Status.AVALID.bVal)) {
+                break;
+            }
 
             // Get out of here if we should; otherwise, briefly wait then try again
             if (Thread.currentThread().isInterrupted() || !isConnectedAndEnabled() || deadline.hasExpired()) {

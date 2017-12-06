@@ -261,12 +261,12 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
 
     @Override
     public synchronized void write8(int ireg, int bVal) {
-        internalWrite(ireg, new byte[] {(byte) bVal}, I2cWaitControl.ATOMIC);
+        internalWrite(ireg, new byte[]{(byte) bVal}, I2cWaitControl.ATOMIC);
     }
 
     @Override
     public synchronized void write8(int ireg, int bVal, I2cWaitControl waitControl) {
-        internalWrite(ireg, new byte[] {(byte) bVal}, waitControl);
+        internalWrite(ireg, new byte[]{(byte) bVal}, waitControl);
     }
 
     @Override
@@ -278,7 +278,7 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
         if (data.length > 0) // paranoia, but safe
         {
             // For register-based I2c devices: convention: first byte in a write is the initial register number
-            byte[] payload = Util.concatenateByteArrays(new byte[] {(byte) ireg}, data);
+            byte[] payload = Util.concatenateByteArrays(new byte[]{(byte) ireg}, data);
 
             // We use the single-byte case when we can out of paranoia about the LynxI2cWriteMultipleBytesCommand
             // not being able to handle a byte count of one (that has not been verified with the firmware

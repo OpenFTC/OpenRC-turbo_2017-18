@@ -111,8 +111,12 @@ public class SerialNumber implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null) return false;
-        if (object == this) return true;
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
 
         if (object instanceof SerialNumber) {
             return serialNumber.equals(((SerialNumber) object).serialNumber);

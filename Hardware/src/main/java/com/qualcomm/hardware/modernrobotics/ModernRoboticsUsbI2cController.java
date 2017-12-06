@@ -92,8 +92,9 @@ public abstract class ModernRoboticsUsbI2cController extends ModernRoboticsUsbDe
     public synchronized void registerForPortReadyBeginEndCallback(I2cPortReadyBeginEndNotifications callback, int port) {
         // Validate arguments
         throwIfI2cPortIsInvalid(port);
-        if (callback == null)
+        if (callback == null) {
             throw new IllegalArgumentException(String.format("illegal null: registerForI2cNotificationsCallback(null,%d)", port));
+        }
 
         // Tear down anyone who's there
         this.deregisterForPortReadyBeginEndCallback(port);

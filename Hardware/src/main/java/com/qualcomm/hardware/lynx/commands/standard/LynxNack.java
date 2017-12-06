@@ -79,11 +79,16 @@ public class LynxNack extends LynxMessage {
 
         public static ReasonCode fromInt(int i) {
             // handle a couple specially, for speed
-            if (i == I2C_OPERATION_IN_PROGRESS.getValue()) return I2C_OPERATION_IN_PROGRESS;
-            if (i == I2C_MASTER_BUSY.getValue()) return I2C_MASTER_BUSY;
+            if (i == I2C_OPERATION_IN_PROGRESS.getValue()) {
+                return I2C_OPERATION_IN_PROGRESS;
+            }
+            if (i == I2C_MASTER_BUSY.getValue()) {
+                return I2C_MASTER_BUSY;
+            }
             for (ReasonCode reasonCode : ReasonCode.values()) {
-                if (i == reasonCode.getValue())
+                if (i == reasonCode.getValue()) {
                     return reasonCode;
+                }
             }
             return PACKET_TYPE_ID_UNKNOWN;
         }
@@ -148,7 +153,7 @@ public class LynxNack extends LynxMessage {
     @Override
     public byte[] toPayloadByteArray() {
         Assert.assertTrue((byte) this.nackReasonCode == this.nackReasonCode);
-        return new byte[] {(byte) this.nackReasonCode};
+        return new byte[]{(byte) this.nackReasonCode};
     }
 
     @Override

@@ -148,7 +148,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
 
     protected void shutdown() {
         if (this.executorService != null) {
-            if (looper != null) looper.quit();
+            if (looper != null) {
+                looper.quit();
+            }
             this.executorService.shutdownNow();
             ThreadPool.awaitTerminationOrExitApplication(this.executorService, 5, TimeUnit.SECONDS, "SoundPool", "internal error");
             this.executorService = null;
@@ -181,7 +183,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
      */
     synchronized public void play(final Context context, @RawRes final int resId, final boolean waitForCompletion) {
         // Ignore impossible ids
-        if (resId == 0) return;
+        if (resId == 0) {
+            return;
+        }
 
         this.executorService.execute(new Runnable() {
             @Override
@@ -218,10 +222,13 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
                     soundInfo = new SoundInfo(resourceId, sampleId, msDuration);
                     loadedSounds.put(resourceId, soundInfo);
 
-                    if (DEBUG)
+                    if (DEBUG) {
                         RobotLog.vv(TAG, "loadAndPlay(res=0x%08x samp=%d)...", resourceId, sampleId);
+                    }
                     waitForLoadCompletion();
-                    if (DEBUG) RobotLog.vv(TAG, "...loaded");
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "...loaded");
+                    }
 
                     // Play the sound
                     playLoadedSound(soundInfo, waitForCompletion);
@@ -244,7 +251,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
         MediaPlayer mediaPlayer = MediaPlayer.create(context, resourceId);
         int msDuration = mediaPlayer.getDuration();
         mediaPlayer.release();
-        if (DEBUG) RobotLog.vv(TAG, "duration(res=0x%08x)=%d", resourceId, msDuration);
+        if (DEBUG) {
+            RobotLog.vv(TAG, "duration(res=0x%08x)=%d", resourceId, msDuration);
+        }
         return msDuration;
     }
 
@@ -257,7 +266,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
 
     protected void playLoadedSound(SoundInfo soundInfo, boolean waitForCompletion) {
         if (soundInfo != null) {
-            if (DEBUG) RobotLog.vv(TAG, "playLoadedSound(%d)", soundInfo.sampleId);
+            if (DEBUG) {
+                RobotLog.vv(TAG, "playLoadedSound(%d)", soundInfo.sampleId);
+            }
 
             boolean soundOn = sharedPreferences.getBoolean(context.getString(R.string.pref_sound_on_off), true);
             float volume = soundOn ? soundOnLevel : soundOffLevel;
@@ -318,8 +329,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
      */
     @Override
     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-        if (DEBUG)
+        if (DEBUG) {
             RobotLog.vv(TAG, "onLoadComplete(res=0x%08x samp=%d)=%d", currentlyLoading, sampleId, status);
+        }
         currentlyLoading = 0;
     }
 
@@ -385,7 +397,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
             SoundInfo soundInfo = super.remove(key);
             if (unloadOnRemove) {
                 if (soundInfo != null) {
-                    if (DEBUG) RobotLog.vv(TAG, "unloading sound 0x%08x", (Integer) key);
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "unloading sound 0x%08x", (Integer) key);
+                    }
                     soundPool.unload(soundInfo.sampleId);
                 }
             }

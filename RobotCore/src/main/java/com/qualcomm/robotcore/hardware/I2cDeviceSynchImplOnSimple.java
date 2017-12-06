@@ -161,10 +161,11 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     /* adjust the hooking state to reflect the user's engagement intent */
     protected void adjustHooking() {
         synchronized (this.engagementLock) {
-            if (!this.isHooked && this.isEngaged)
+            if (!this.isHooked && this.isEngaged) {
                 this.hook();
-            else if (this.isHooked && !this.isEngaged)
+            } else if (this.isHooked && !this.isEngaged) {
                 this.unhook();
+            }
         }
     }
 
@@ -367,10 +368,11 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
 
     @Override
     public void setHistoryQueueCapacity(int capacity) {
-        if (i2cDeviceSynchSimpleHistory == null)
+        if (i2cDeviceSynchSimpleHistory == null) {
             super.setHistoryQueueCapacity(capacity);
-        else
+        } else {
             i2cDeviceSynchSimpleHistory.setHistoryQueueCapacity(capacity);
+        }
     }
 
     @Override
@@ -382,9 +384,9 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
 
     @Override
     public void addToHistoryQueue(TimestampedI2cData data) {
-        if (i2cDeviceSynchSimpleHistory == null)
+        if (i2cDeviceSynchSimpleHistory == null) {
             super.addToHistoryQueue(data);
-        else {
+        } else {
             // We don't keep our own history: our wrappee does it for us instead
         }
     }
@@ -438,8 +440,9 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     @Override
     public TimestampedData readTimeStamped(int ireg, int creg) {
         synchronized (concurrentClientLock) {
-            if (!this.isOpenForReading())
+            if (!this.isOpenForReading()) {
                 return TimestampedI2cData.makeFakeData(null, getI2cAddress(), ireg, creg);
+            }
 
             this.iregReadLast = ireg;
             this.cregReadLast = creg;
@@ -482,7 +485,7 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
 
     @Override
     public void write8(int ireg, int bVal, I2cWaitControl waitControl) {
-        write(ireg, new byte[] {(byte) bVal}, waitControl);
+        write(ireg, new byte[]{(byte) bVal}, waitControl);
     }
 
     @Override
@@ -493,8 +496,9 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     @Override
     public void write(int ireg, byte[] data, I2cWaitControl waitControl) {
         synchronized (concurrentClientLock) {
-            if (!isOpenForWriting())
+            if (!isOpenForWriting()) {
                 return; // Ignore the write
+            }
 
             this.iregWriteLast = ireg;
             this.rgbWriteLast = Arrays.copyOf(data, data.length);

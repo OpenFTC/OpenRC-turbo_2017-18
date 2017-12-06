@@ -209,7 +209,9 @@ public class AppUtil {
         while (!root.equals(child)) {
             File parent = child.getParentFile();
             result = new File(new File(child.getName()), result.getPath());
-            if (parent == null) break;
+            if (parent == null) {
+                break;
+            }
             child = parent;
         }
         return result;
@@ -368,7 +370,9 @@ public class AppUtil {
         byte[] buffer = new byte[cbBuffer];
         for (; ; ) {
             int cbRead = inputStream.read(buffer);
-            if (cbRead <= 0) break;
+            if (cbRead <= 0) {
+                break;
+            }
             outputStream.write(buffer, 0, cbRead);
         }
     }
@@ -485,21 +489,23 @@ public class AppUtil {
     }
 
     public String getAppName() {
-        if (isRobotController())
+        if (isRobotController()) {
             return getDefContext().getString(R.string.appNameRobotController);
-        else if (isDriverStation())
+        } else if (isDriverStation()) {
             return getDefContext().getString(R.string.appNameDriverStation);
-        else
+        } else {
             return getDefContext().getString(R.string.appNameUnknown);
+        }
     }
 
     public String getRemoteAppName() {
-        if (isRobotController())
+        if (isRobotController()) {
             return getDefContext().getString(R.string.appNameDriverStation);
-        else if (isDriverStation())
+        } else if (isDriverStation()) {
             return getDefContext().getString(R.string.appNameRobotController);
-        else
+        } else {
             return getDefContext().getString(R.string.appNameUnknown);
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -763,12 +769,15 @@ public class AppUtil {
                         // https://stackoverflow.com/questions/10903754/input-text-dialog-android
                         dialogContext.input = new EditText(activity);
                         dialogContext.input.setInputType(InputType.TYPE_CLASS_TEXT);
-                        if (defaultValue != null) dialogContext.input.setText(defaultValue);
+                        if (defaultValue != null) {
+                            dialogContext.input.setText(defaultValue);
+                        }
                         builder.setView(dialogContext.input);
                         // fall through
                     case CONFIRM:
-                        if (uiLocation != UILocation.ONLY_LOCAL)
+                        if (uiLocation != UILocation.ONLY_LOCAL) {
                             throw new IllegalArgumentException("remote confirmation dialogs not yet supported");
+                        }
                         builder.setPositiveButton(R.string.buttonNameOK, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

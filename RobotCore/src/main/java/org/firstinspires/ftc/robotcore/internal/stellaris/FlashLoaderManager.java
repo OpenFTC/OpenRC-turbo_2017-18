@@ -111,9 +111,11 @@ public class FlashLoaderManager {
 
     protected void doAutobaud() throws IOException, InterruptedException, FlashLoaderProtocolException {
         for (int i = 0; i < retryCount; i++) {
-            if (i > 0) Thread.sleep(msRetryPause);
+            if (i > 0) {
+                Thread.sleep(msRetryPause);
+            }
 
-            write(new byte[] {0x55, 0x55});
+            write(new byte[]{0x55, 0x55});
             if (readAckOrNack()) {
                 return;
             }
@@ -127,7 +129,9 @@ public class FlashLoaderManager {
      */
     protected byte readStatus() throws IOException, TimeoutException, FlashLoaderProtocolException, InterruptedException {
         for (int i = 0; i < retryCount; i++) {
-            if (i > 0) Thread.sleep(msRetryPause);
+            if (i > 0) {
+                Thread.sleep(msRetryPause);
+            }
 
             FlashLoaderGetStatusCommand command = new FlashLoaderGetStatusCommand();
             sendWithRetries(command);
@@ -165,7 +169,9 @@ public class FlashLoaderManager {
         command.updateChecksum();
 
         for (int i = 0; i < retryCount; i++) {
-            if (i > 0) Thread.sleep(msRetryPause);
+            if (i > 0) {
+                Thread.sleep(msRetryPause);
+            }
 
             write(command.data);
             if (readAckOrNack()) {
@@ -177,11 +183,11 @@ public class FlashLoaderManager {
     }
 
     protected void sendAck() throws IOException, InterruptedException {
-        write(new byte[] {FlashLoaderDatagram.ACK});
+        write(new byte[]{FlashLoaderDatagram.ACK});
     }
 
     protected void sendNak() throws IOException, InterruptedException {
-        write(new byte[] {FlashLoaderDatagram.NAK});
+        write(new byte[]{FlashLoaderDatagram.NAK});
     }
 
     protected boolean readAckOrNack() {
@@ -215,7 +221,9 @@ public class FlashLoaderManager {
     }
 
     protected void write(byte[] data) throws IOException, InterruptedException {
-        if (DEBUG) RobotLog.logBytes(TAG, "sent", data, data.length);
+        if (DEBUG) {
+            RobotLog.logBytes(TAG, "sent", data, data.length);
+        }
         try {
             robotUsbDevice.write(data);
         } catch (RobotUsbException e) {
@@ -228,7 +236,9 @@ public class FlashLoaderManager {
         if (data.length > 0) {
             try {
                 int cbRead = robotUsbDevice.read(data, 0, data.length, msReadTimeout, null);
-                if (DEBUG) RobotLog.logBytes(TAG, "received", data, cbRead);
+                if (DEBUG) {
+                    RobotLog.logBytes(TAG, "received", data, cbRead);
+                }
 
                 if (cbRead == 0) {
                     throw new TimeoutException(makeExceptionMessage("unable to read %d bytes from flash loader", data.length));

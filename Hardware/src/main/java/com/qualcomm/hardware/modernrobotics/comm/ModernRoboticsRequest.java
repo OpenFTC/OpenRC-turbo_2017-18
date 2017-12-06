@@ -44,7 +44,7 @@ public class ModernRoboticsRequest extends ModernRoboticsDatagram {
     // State
     //----------------------------------------------------------------------------------------------
 
-    public static final byte[] syncBytes = new byte[] {(byte) 0x55, (byte) 0xAA};
+    public static final byte[] syncBytes = new byte[]{(byte) 0x55, (byte) 0xAA};
 
     protected final AllocationContext<ModernRoboticsRequest> allocationContext;
 

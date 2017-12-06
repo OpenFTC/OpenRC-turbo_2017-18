@@ -115,8 +115,9 @@ public class OpModeMeta {
     public boolean equals(Object o) {
         if (o instanceof OpModeMeta) {
             return this.name.equals(((OpModeMeta) o).name);
-        } else
+        } else {
             return false;
+        }
     }
 
     @Override

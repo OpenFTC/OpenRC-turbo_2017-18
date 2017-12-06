@@ -128,8 +128,9 @@ public class RobotUsbManagerCombining implements RobotUsbManager {
         ManagerInfo info = enumeratedSerialNumbers.get(serialNumber);
         if (info != null) {
             RobotUsbDevice device = info.manager.openBySerialNumber(serialNumber);
-            if (device != null)
+            if (device != null) {
                 return device;
+            }
         }
         throw new RobotCoreException("Combiner unable to open device with serialNumber = " + serialNumber.toString());
     }

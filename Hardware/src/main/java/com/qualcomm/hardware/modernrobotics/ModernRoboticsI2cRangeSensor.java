@@ -185,8 +185,9 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
         int rawOptical = rawOptical(); // the very low readings are quite noisy
         if (rawOptical >= rawOpticalMinValid) {
             return cmFromOptical(rawOptical);
-        } else
+        } else {
             return DistanceSensor.distanceOutOfRange;
+        }
     }
 
     //----------------------------------------------------------------------------------------------

@@ -375,7 +375,9 @@ public interface AMSColorSensor extends ColorSensor, NormalizedColorSensor {
 
         public static Gain fromByte(byte byteVal) {
             for (Gain value : values()) {
-                if (value.bVal == byteVal) return value;
+                if (value.bVal == byteVal) {
+                    return value;
+                }
             }
             return UNKNOWN;
         }

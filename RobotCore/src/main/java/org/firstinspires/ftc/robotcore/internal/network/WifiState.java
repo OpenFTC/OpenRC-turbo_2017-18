@@ -46,7 +46,9 @@ public enum WifiState {
 
     public static WifiState from(int state) {
         for (WifiState e : values()) {
-            if (e.state == state) return e;
+            if (e.state == state) {
+                return e;
+            }
         }
         return UNKNOWN;
     }

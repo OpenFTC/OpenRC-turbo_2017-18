@@ -109,7 +109,7 @@ public class LynxDiscoveryResponse extends LynxStandardResponse {
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {this.parentIndicator};
+        return new byte[]{this.parentIndicator};
     }
 
     @Override

@@ -208,8 +208,9 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
 
             // NaN is an indicator to use the default interval, whereas zero will
             // cause immediate transmission.
-            if (Double.isNaN(requestedInterval))
+            if (Double.isNaN(requestedInterval)) {
                 requestedInterval = userTelemetryInterval;
+            }
 
             // We'll do a transmission just to see the user's new data if a sufficient interval
             // has elapsed since the last time we did.
@@ -280,7 +281,9 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
     private String buildRobotBatteryMsg() {
 
         // Don't do anything if we're really early in the construction cycle
-        if (this.hardwareMap == null) return null;
+        if (this.hardwareMap == null) {
+            return null;
+        }
 
         double minBatteryLevel = Double.POSITIVE_INFINITY;
 

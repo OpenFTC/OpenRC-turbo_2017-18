@@ -89,7 +89,9 @@ public class CircularLongBuffer {
     }
 
     public long get(int index) {
-        if (index >= size || index < 0) throw new IndexOutOfBoundsException("get(" + index + ")");
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("get(" + index + ")");
+        }
         return buffer[mod(readIndex + index)];
     }
 
@@ -102,7 +104,9 @@ public class CircularLongBuffer {
     }
 
     public void put(int index, long value) {
-        if (index >= size || index < 0) throw new IndexOutOfBoundsException("put(" + index + ")");
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("put(" + index + ")");
+        }
         buffer[mod(readIndex + index)] = value;
     }
 
@@ -111,7 +115,9 @@ public class CircularLongBuffer {
     //----------------------------------------------------------------------------------------------
 
     public long removeFirst() {
-        if (isEmpty()) throw new IndexOutOfBoundsException("removeFirst");
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException("removeFirst");
+        }
 
         long result = buffer[readIndex];
         readIndex = mod(readIndex + 1);
@@ -124,8 +130,9 @@ public class CircularLongBuffer {
     }
 
     public int read(long[] output, int index, int countToRead) {
-        if (countToRead < 0)
+        if (countToRead < 0) {
             throw new IllegalArgumentException("count must be non-negative: " + countToRead);
+        }
 
         // Read the first stretch from what's remaining in the trailing part of the buffer
         int countFirst = min(countToRead, size, allocated() - readIndex);
@@ -147,8 +154,9 @@ public class CircularLongBuffer {
     }
 
     public int skip(int countToSkip) {
-        if (countToSkip < 0)
+        if (countToSkip < 0) {
             throw new IllegalArgumentException("count must be non-negative: " + countToSkip);
+        }
 
         // Read the first stretch from what's remaining in the trailing part of the buffer
         int countFirst = min(countToSkip, size, allocated() - readIndex);
@@ -197,8 +205,9 @@ public class CircularLongBuffer {
     }
 
     public int write(long[] input, int indexFrom, int countToWrite) {
-        if (countToWrite < 0)
+        if (countToWrite < 0) {
             throw new IllegalArgumentException("count must be non-negative: " + countToWrite);
+        }
 
         int sizeNeeded = size + countToWrite;
         if (sizeNeeded > capacity) {
@@ -210,7 +219,9 @@ public class CircularLongBuffer {
         }
 
         // Small perf optimization; useful in the case where we commonly drain the buffer fully
-        if (size == 0) readIndex = 0;
+        if (size == 0) {
+            readIndex = 0;
+        }
 
         // Find first free byte
         int indexWrite = readIndex + size;

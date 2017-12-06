@@ -105,10 +105,11 @@ public class RobotUsbDeviceFtdi extends RobotUsbDeviceImplBase implements RobotU
 
     @Override
     public void setBreak(boolean enable) throws RobotUsbException {
-        if (enable)
+        if (enable) {
             device.setBreakOn();
-        else
+        } else {
             device.setBreakOff();
+        }
     }
 
     @Override
@@ -136,7 +137,9 @@ public class RobotUsbDeviceFtdi extends RobotUsbDeviceImplBase implements RobotU
                 //
                 if (cbRead == cbToRead) {
                     // got the data we were looking for
-                    if (DEBUG) dumpBytesReceived(data, ibFirst, cbRead);
+                    if (DEBUG) {
+                        dumpBytesReceived(data, ibFirst, cbRead);
+                    }
                     return cbRead;
 
                 } else if (cbRead < 0) {

@@ -118,8 +118,9 @@ public class ArrayRunQueue<E> {
 
     public void addLast(@NonNull E element, int count) {
         try {
-            if (count < 0)
+            if (count < 0) {
                 throw new IllegalArgumentException(String.format("count must be >= 0: %d", count));
+            }
             if (count > 0) {
                 int sizeAfter = size() + count;
                 if (!isEmpty() && same(elements.getLast(), element)) {
@@ -152,10 +153,12 @@ public class ArrayRunQueue<E> {
      */
     public E removeFirstCount(int countToRemove) {
         try {
-            if (countToRemove < 0)
+            if (countToRemove < 0) {
                 throw new IllegalArgumentException(String.format("count must be >= 0: %d", countToRemove));
-            if (countToRemove > size)
+            }
+            if (countToRemove > size) {
                 throw new NoSuchElementException(String.format("count must be <= size: count=%d size=%d", countToRemove, size));
+            }
 
             E elementLastRemoved = null;
             if (countToRemove > 0) {

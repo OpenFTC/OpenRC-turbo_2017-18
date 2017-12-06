@@ -273,7 +273,9 @@ public class FtDevice extends FtConstants {
     protected String getStringDescriptor(int index) throws RobotUsbException {
         byte[] buffer = new byte[255];
         int cbRead = getDescriptor(UsbDescriptorType.STRING.value, index, buffer);
-        if (cbRead < 0) return "<unknown string>";
+        if (cbRead < 0) {
+            return "<unknown string>";
+        }
         return new UsbStringDescriptor(buffer).string;
     }
 
@@ -489,8 +491,9 @@ public class FtDevice extends FtConstants {
         synchronized (openCloseLock)  // not 'this' because our threads need to access us to shutdown
         {
             boolean wasOpen = isOpen();
-            if (wasOpen)
+            if (wasOpen) {
                 RobotLog.vv(TAG, "vv********************%s closing********************vv 0x%08x", getSerialNumber(), hashCode());
+            }
 
             /**
              * We set ourselves closed *before* doing other work so as to mirror the
@@ -535,8 +538,9 @@ public class FtDevice extends FtConstants {
             }
 
             this.mBulkPacketInWorker = null;
-            if (wasOpen)
+            if (wasOpen) {
                 RobotLog.vv(TAG, "^^********************%s closed ********************^^", getSerialNumber());
+            }
         }
     }
 
@@ -559,8 +563,9 @@ public class FtDevice extends FtConstants {
         ReadBufferManager readBufferManager = mReadBufferManager;
         if (readBufferManager != null) {
             return readBufferManager.mightBeAtUsbPacketStart();
-        } else
+        } else {
             return true;
+        }
     }
 
     public void skipToLikelyUsbPacketStart() {
@@ -732,8 +737,9 @@ public class FtDevice extends FtConstants {
                 if (status != 0) {
                     throw new RobotUsbUnspecifiedException("setBaudRate: status=%d", status);
                 }
-            } else
+            } else {
                 throw new RobotUsbUnspecifiedException("setBaudRate: rc=%d", rc);
+            }
         }
     }
 
@@ -1052,8 +1058,9 @@ public class FtDevice extends FtConstants {
             int status = vendorCmdSet(FTDI_SIO_SET_LATENCY, wValue);
             if (status == 0) {
                 this.mLatencyTimer = latency;
-            } else
+            } else {
                 throwIfStatus(status, "setLatencyTimer");
+            }
         }
     }
 

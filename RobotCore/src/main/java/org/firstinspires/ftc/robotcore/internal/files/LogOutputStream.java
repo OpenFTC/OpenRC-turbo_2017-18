@@ -98,7 +98,7 @@ public class LogOutputStream extends OutputStream {
 
     @Override
     public synchronized void write(int oneByte) throws IOException {
-        byteBuffer.write(new byte[] {(byte) oneByte});
+        byteBuffer.write(new byte[]{(byte) oneByte});
         if (oneByte == '\n') {
             writeToLog();
         }

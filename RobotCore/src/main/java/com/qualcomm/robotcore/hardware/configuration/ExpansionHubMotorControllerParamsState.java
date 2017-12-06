@@ -112,8 +112,9 @@ public class ExpansionHubMotorControllerParamsState implements Serializable, Clo
         if (o instanceof ExpansionHubMotorControllerParamsState) {
             ExpansionHubMotorControllerParamsState them = (ExpansionHubMotorControllerParamsState) o;
             return this.mode == them.mode && this.p == them.p && this.i == them.i && this.d == them.d;
-        } else
+        } else {
             return false;
+        }
     }
 
     @Override

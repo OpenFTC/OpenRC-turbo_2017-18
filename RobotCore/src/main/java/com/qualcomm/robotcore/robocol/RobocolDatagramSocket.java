@@ -83,7 +83,9 @@ public class RobocolDatagramSocket {
         synchronized (this.bindCloseLock) {
             state = State.CLOSED;
 
-            if (socket != null) socket.close();
+            if (socket != null) {
+                socket.close();
+            }
 
             RobotLog.dd(TAG, "RobocolDatagramSocket is closed");
         }
@@ -98,10 +100,13 @@ public class RobocolDatagramSocket {
                 if (message.getLength() > sendBufferSize) {
                     throw new RuntimeException(String.format("send packet too large: size=%d max=%d", message.getLength(), sendBufferSize));
                 }
-                if (VERBOSE_DEBUG) RobotLog.vv(TAG, "calling socket.send()");
+                if (VERBOSE_DEBUG) {
+                    RobotLog.vv(TAG, "calling socket.send()");
+                }
                 socket.send(message.getPacket());
-                if (DEBUG)
+                if (DEBUG) {
                     RobotLog.vv(TAG, String.format("sent packet to=%s len=%d", message.getPacket().getAddress().toString(), message.getPayloadLength()));
+                }
 
             } catch (RuntimeException e) {
                 RobotLog.logExceptionHeader(TAG, e, "exception sending datagram");
@@ -132,13 +137,18 @@ public class RobocolDatagramSocket {
             try {
                 // We have seen rare situations where recv() is called before the socket is bound.
                 // Thus guards against same.
-                if (socket == null) return null;
+                if (socket == null) {
+                    return null;
+                }
 
                 // Block until a packet is received or a timeout occurs
-                if (VERBOSE_DEBUG) RobotLog.vv(TAG, "calling socket.receive()");
+                if (VERBOSE_DEBUG) {
+                    RobotLog.vv(TAG, "calling socket.receive()");
+                }
                 socket.receive(packetRecv);
-                if (DEBUG)
+                if (DEBUG) {
                     RobotLog.vv(TAG, String.format("received packet from=%s len=%d", packetRecv.getAddress().toString(), result.getPayloadLength()));
+                }
 
             } catch (SocketException | SocketTimeoutException e) {
                 if (!recvErrorReported) {
@@ -161,13 +171,17 @@ public class RobocolDatagramSocket {
     }
 
     public InetAddress getInetAddress() {
-        if (socket == null) return null;
+        if (socket == null) {
+            return null;
+        }
 
         return socket.getInetAddress();
     }
 
     public InetAddress getLocalAddress() {
-        if (socket == null) return null;
+        if (socket == null) {
+            return null;
+        }
 
         return socket.getLocalAddress();
     }

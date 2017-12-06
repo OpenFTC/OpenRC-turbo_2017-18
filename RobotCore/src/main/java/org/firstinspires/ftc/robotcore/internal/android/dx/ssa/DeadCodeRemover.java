@@ -135,7 +135,9 @@ public class DeadCodeRemover {
         ssaMeth.computeReachability();
 
         for (SsaBasicBlock block : ssaMeth.getBlocks()) {
-            if (block.isReachable()) continue;
+            if (block.isReachable()) {
+                continue;
+            }
 
             // Prune instructions from unreachable blocks
             for (int i = 0; i < block.getInsns().size(); i++) {
@@ -156,7 +158,9 @@ public class DeadCodeRemover {
 
                 // Remove this instruction result from the sources of any phis
                 RegisterSpec result = insn.getResult();
-                if (result == null) continue;
+                if (result == null) {
+                    continue;
+                }
                 for (SsaInsn use : useList[result.getReg()]) {
                     if (use instanceof PhiInsn) {
                         PhiInsn phiUse = (PhiInsn) use;

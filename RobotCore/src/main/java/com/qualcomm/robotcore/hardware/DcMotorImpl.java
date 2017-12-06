@@ -298,12 +298,16 @@ public class DcMotorImpl implements DcMotor {
     }
 
     protected int adjustPosition(int position) {
-        if (getOperationalDirection() == Direction.REVERSE) position = -position;
+        if (getOperationalDirection() == Direction.REVERSE) {
+            position = -position;
+        }
         return position;
     }
 
     protected double adjustPower(double power) {
-        if (getOperationalDirection() == Direction.REVERSE) power = -power;
+        if (getOperationalDirection() == Direction.REVERSE) {
+            power = -power;
+        }
         return power;
     }
 

@@ -93,9 +93,10 @@ public class TimestampedI2cData extends TimestampedData {
     }
 
     public static void suppressNewHealthWarnings(boolean suppress) {
-        if (suppress)
+        if (suppress) {
             healthStatusSuppressionCount.getAndIncrement();
-        else
+        } else {
             healthStatusSuppressionCount.getAndDecrement();
+        }
     }
 }

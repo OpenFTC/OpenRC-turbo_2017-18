@@ -337,7 +337,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
 
             this.hasShutdownAbnormally = false;
-            if (eventLoopManager != null) eventLoopManager.registerSyncdDevice(this);
+            if (eventLoopManager != null) {
+                eventLoopManager.registerSyncdDevice(this);
+            }
             resetNetworkTransmissionLock();
             startPollingForIncomingDatagrams();
             pingAndQueryKnownInterfaces();
@@ -366,7 +368,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
 
             resetNetworkTransmissionLock();
-            if (eventLoopManager != null) eventLoopManager.unregisterSyncdDevice(this);
+            if (eventLoopManager != null) {
+                eventLoopManager.unregisterSyncdDevice(this);
+            }
 
             RobotLog.vv(TAG, "...done disarmDevice()");
         }
@@ -626,7 +630,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         boolean wasEngaged = incomingDatagramPoller != null;
 
         // Make sure the FTDI layer interrupts reads etc
-        if (this.robotUsbDevice != null) this.robotUsbDevice.requestReadInterrupt(true);
+        if (this.robotUsbDevice != null) {
+            this.robotUsbDevice.requestReadInterrupt(true);
+        }
 
         if (incomingDatagramPoller != null) {
             RobotLog.vv(TAG, "shutting down incoming datagrams");
@@ -636,7 +642,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
 
         // Clear the forced interrupt so we can re-engage later, maybe // TODO review
-        if (this.robotUsbDevice != null) this.robotUsbDevice.requestReadInterrupt(false);
+        if (this.robotUsbDevice != null) {
+            this.robotUsbDevice.requestReadInterrupt(false);
+        }
 
         return wasEngaged;
     }

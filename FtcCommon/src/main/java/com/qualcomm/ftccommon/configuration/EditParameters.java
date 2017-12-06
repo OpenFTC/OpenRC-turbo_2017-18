@@ -188,10 +188,11 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
     }
 
     public int getMaxItemCount() {
-        if (this.currentItems == null)
+        if (this.currentItems == null) {
             return this.maxItemCount;
-        else
+        } else {
             return Math.max(this.maxItemCount, this.currentItems.size());
+        }
     }
 
     public boolean isGrowable() {
@@ -314,7 +315,9 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
     @NonNull
     <RESULT_ITEM extends DeviceConfiguration> EditParameters<RESULT_ITEM> fromBundle(EditActivity editActivity, Bundle bundle) {
         EditParameters<RESULT_ITEM> result = new EditParameters<RESULT_ITEM>();
-        if (bundle == null) return result;
+        if (bundle == null) {
+            return result;
+        }
 
         for (String key : bundle.keySet()) {
             if (key.equals("configuration")) {

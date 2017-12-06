@@ -80,8 +80,9 @@ public class Velocity {
                     distanceUnit.fromUnit(this.unit, yVeloc),
                     distanceUnit.fromUnit(this.unit, zVeloc),
                     this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 
     //----------------------------------------------------------------------------------------------

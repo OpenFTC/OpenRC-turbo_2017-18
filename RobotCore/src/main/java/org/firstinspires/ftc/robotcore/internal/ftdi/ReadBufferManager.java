@@ -150,8 +150,9 @@ public class ReadBufferManager extends FtConstants {
             if (result == null) {
                 result = new BulkPacketBufferOut(mEndpointMaxPacketSize);
             }
-        } else
+        } else {
             result = new BulkPacketBufferOut(cbToWrite);
+        }
         //
         result.copyFrom(data, ibFirst, cbToWrite);
         return result;
@@ -277,8 +278,9 @@ public class ReadBufferManager extends FtConstants {
             double timeUnitScale = 1.0 / ElapsedTime.MILLIS_IN_NANO;
             for (; ; ) {
                 BulkPacketBuffer buffer = mRetainedBuffers.poll();
-                if (buffer == null)
+                if (buffer == null) {
                     break;
+                }
                 if (firstBuffer == null) {
                     firstBuffer = buffer;
                     if (nsOrigin == 0) {
@@ -320,14 +322,17 @@ public class ReadBufferManager extends FtConstants {
                     for (; ; ) {
                         int cbFree = mCircularBuffer.remainingCapacity();
                         int cbNeeded = cbBuffer - MODEM_STATUS_SIZE;
-                        if (cbNeeded <= cbFree)
+                        if (cbNeeded <= cbFree) {
                             break;
+                        }
 
                         // Wait until the state of the buffer changes
                         mCircularBuffer.wait();
 
                         // Get out of Dodge if things have closed while we were waiting
-                        if (!isOpen()) return;
+                        if (!isOpen()) {
+                            return;
+                        }
                     }
                 }
 
@@ -558,8 +563,9 @@ public class ReadBufferManager extends FtConstants {
             if (thread != null) {
                 thread.interrupt();
             }
-        } else
+        } else {
             mReadBulkInDataInterruptRequested = false;
+        }
     }
 
     private void spinWaitNoReadBulkInData() {

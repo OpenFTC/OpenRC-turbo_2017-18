@@ -205,8 +205,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         if (motors[motorZ].lastKnownEnable.updateValue(enable)) {
             LynxCommand command = new LynxSetMotorChannelEnableCommand(this.getModule(), motorZ, enable);
             try {
-                if (DEBUG)
+                if (DEBUG) {
                     RobotLog.vv(TAG, "setMotorEnable mod=%d motor=%d enable=%s", getModuleAddress(), motorZ, ((Boolean) enable).toString());
+                }
                 command.send();
             } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
@@ -304,9 +305,10 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
                 command = new LynxSetMotorChannelModeCommand(this.getModule(), motor, mode, zeroPowerBehavior);
             }
             try {
-                if (DEBUG)
+                if (DEBUG) {
                     RobotLog.vv(TAG, "setMotorChannelMode: mod=%d motor=%d mode=%s power=%f zero=%s",
                             getModuleAddress(), motor, mode.toString(), prevPower, zeroPowerBehavior.toString());
+                }
                 command.send();
 
                 // Ok, remember that mode. Note we need to set it before we call internalSetMotorPower()
@@ -417,8 +419,10 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
             DcMotor.RunMode runMode = internalGetMotorChannelMode(motorZ);
             LynxCommand command = new LynxSetMotorChannelModeCommand(this.getModule(), motorZ, runMode, behavior);
             try {
-                if (DEBUG) RobotLog.vv(TAG, "setZeroBehavior mod=%d motor=%d zero=%s",
-                        getModuleAddress(), motorZ, behavior.toString());
+                if (DEBUG) {
+                    RobotLog.vv(TAG, "setZeroBehavior mod=%d motor=%d zero=%s",
+                            getModuleAddress(), motorZ, behavior.toString());
+                }
                 command.send();
             } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
@@ -460,8 +464,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
             }
             try {
                 if (command != null) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         RobotLog.vv(TAG, "setMotorPower: mod=%d motor=%d iPower=%d", getModuleAddress(), motorZ, iPower);
+                    }
                     command.send();
                     internalSetMotorEnable(motorZ, true);
                 }
@@ -475,8 +480,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         // Do we have a cached answer?
         Double result = motors[motorZ].lastKnownPower.getValue();
         if (result != null) {
-            if (DEBUG)
+            if (DEBUG) {
                 RobotLog.vv(TAG, "getMotorPower(cached): mod=%d motor=%d power=%f", getModuleAddress(), motorZ, result);
+            }
             return result;
         }
 
@@ -492,8 +498,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
                     // Scale relative to the *current* max speed
                     int iVelocity = response.getVelocity();
                     result = Math.signum(iVelocity) * Range.scale(Math.abs(iVelocity), 0, getDefaultMaxMotorSpeed(motorZ), 0, apiPowerLast);
-                    if (DEBUG)
+                    if (DEBUG) {
                         RobotLog.vv(TAG, "getMotorPower: mod=%d motor=%d velocity=%d power=%f", getModuleAddress(), motorZ, iVelocity, result);
+                    }
                     break;
                 }
                 case RUN_WITHOUT_ENCODER:
@@ -502,8 +509,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
                     LynxGetMotorConstantPowerResponse response = command.sendReceive();
                     int iPower = response.getPower();
                     result = Range.scale(iPower, LynxSetMotorConstantPowerCommand.apiPowerFirst, LynxSetMotorConstantPowerCommand.apiPowerLast, apiPowerFirst, apiPowerLast);
-                    if (DEBUG)
+                    if (DEBUG) {
                         RobotLog.vv(TAG, "getMotorPower: mod=%d motor=%d iPower=%d power=%f", getModuleAddress(), motorZ, iPower, result);
+                    }
                 }
             }
             result = Range.clip(result, apiPowerFirst, apiPowerLast);    // paranoia
@@ -534,8 +542,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
     public synchronized void setMotorZeroPowerBehavior(int motor, DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         this.validateMotor(motor);
         motor -= apiMotorFirst;
-        if (zeroPowerBehavior == DcMotor.ZeroPowerBehavior.UNKNOWN)
+        if (zeroPowerBehavior == DcMotor.ZeroPowerBehavior.UNKNOWN) {
             throw new IllegalArgumentException("zeroPowerBehavior may not be UNKNOWN");
+        }
 
         internalSetZeroPowerBehavior(motor, zeroPowerBehavior);
     }
@@ -626,8 +635,9 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
 
         try {
             LynxCommand command = new LynxSetMotorTargetVelocityCommand(this.getModule(), motor, iTicksPerSecond);
-            if (DEBUG)
+            if (DEBUG) {
                 RobotLog.vv(TAG, "setMotorVelocity: mod=%d motor=%d iPower=%d", getModuleAddress(), motor, iTicksPerSecond);
+            }
             command.send();
             internalSetMotorEnable(motor, true);
         } catch (InterruptedException | RuntimeException | LynxNackException e) {
@@ -741,8 +751,10 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
 
         for (int motor = apiMotorFirst; motor <= apiMotorLast; motor++) {
             coeffs = getPIDCoefficients(motor, mode);
-            if (DEBUG) RobotLog.vv(TAG, "mod=%d motor=%d mode=%s p=%f i=%f d=%f",
-                    getModuleAddress(), motor, mode.toString(), coeffs.p, coeffs.i, coeffs.d);
+            if (DEBUG) {
+                RobotLog.vv(TAG, "mod=%d motor=%d mode=%s p=%f i=%f d=%f",
+                        getModuleAddress(), motor, mode.toString(), coeffs.p, coeffs.i, coeffs.d);
+            }
         }
     }
 

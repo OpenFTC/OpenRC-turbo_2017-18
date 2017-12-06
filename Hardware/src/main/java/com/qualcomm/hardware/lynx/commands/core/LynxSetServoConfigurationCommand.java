@@ -66,8 +66,9 @@ public class LynxSetServoConfigurationCommand extends LynxDekaInterfaceCommand<L
     public LynxSetServoConfigurationCommand(LynxModuleIntf module, int channelZ, int framePeriod) {
         this(module);
         LynxConstants.validateServoChannelZ(channelZ);
-        if (framePeriod < apiFramePeriodFirst || framePeriod > apiFramePeriodLast)
+        if (framePeriod < apiFramePeriodFirst || framePeriod > apiFramePeriodLast) {
             throw new IllegalArgumentException(String.format("illegal frame period: %d", framePeriod));
+        }
         this.channel = (byte) channelZ;
         this.framePeriod = (short) framePeriod;
     }

@@ -270,13 +270,19 @@ public abstract class DalvInsn {
         RegisterSpecList regs = registers;
         boolean firstBit = compatRegs.get(0);
 
-        if (hasResult()) compatRegs.set(0);
+        if (hasResult()) {
+            compatRegs.set(0);
+        }
 
         regs = regs.subset(compatRegs);
 
-        if (hasResult()) compatRegs.set(0, firstBit);
+        if (hasResult()) {
+            compatRegs.set(0, firstBit);
+        }
 
-        if (regs.size() == 0) return null;
+        if (regs.size() == 0) {
+            return null;
+        }
 
         return new HighRegisterPrefix(position, regs);
     }

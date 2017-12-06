@@ -82,8 +82,9 @@ public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxA
         // Some characters encode as multi-byte, and that's hard to predict, so we brute force it
         for (; ; ) {
             this.payload = text.getBytes(charset);
-            if (payload.length <= cbMaxText)
+            if (payload.length <= cbMaxText) {
                 break;
+            }
             text = text.substring(0, text.length() - 1);
         }
     }

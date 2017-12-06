@@ -66,8 +66,9 @@ public class LynxSetServoPulseWidthCommand extends LynxDekaInterfaceCommand<Lynx
     public LynxSetServoPulseWidthCommand(LynxModuleIntf module, int channelZ, int usPulseWidth) {
         this(module);
         LynxConstants.validateServoChannelZ(channelZ);
-        if (usPulseWidth < apiPulseWidthFirst || usPulseWidth > apiPulseWidthLast)
+        if (usPulseWidth < apiPulseWidthFirst || usPulseWidth > apiPulseWidthLast) {
             throw new IllegalArgumentException(String.format("illegal pulse width: %d", usPulseWidth));
+        }
         this.channel = (byte) channelZ;
         this.pulseWidth = (short) usPulseWidth;
     }

@@ -136,10 +136,12 @@ public class MarkedItemQueue {
     }
 
     public void removeItems(int itemCountToRemove) {
-        if (itemCountToRemove < 0)
+        if (itemCountToRemove < 0) {
             throw new IllegalArgumentException(String.format("remove count must be >=0: %d", itemCountToRemove));
-        if (itemCountToRemove > size)
+        }
+        if (itemCountToRemove > size) {
             throw new IllegalArgumentException(String.format("remove count must be <= size: count=%d, size=%d", itemCountToRemove, size));
+        }
 
         try {
             while (itemCountToRemove > 0 && !countsToMarks.isEmpty()) {
@@ -168,8 +170,9 @@ public class MarkedItemQueue {
     //----------------------------------------------------------------------------------------------
 
     public void addUnmarkedItems(int count) {
-        if (count < 0)
+        if (count < 0) {
             throw new IllegalArgumentException(String.format("count must be >= 0: %d", count));
+        }
         unmarkedAtEnd += count;
         size += count;
         verifyInvariants();

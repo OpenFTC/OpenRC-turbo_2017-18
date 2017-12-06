@@ -92,7 +92,7 @@ public class LynxGetModuleStatusCommand extends LynxStandardCommand<LynxGetModul
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {this.clearStatusAfterResponse ? (byte) 1 : (byte) 0};
+        return new byte[]{this.clearStatusAfterResponse ? (byte) 1 : (byte) 0};
     }
 
     @Override

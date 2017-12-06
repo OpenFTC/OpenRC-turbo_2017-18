@@ -98,8 +98,9 @@ public class ClassUtil {
             // In case target is an interface we need to explore the interface chain as well.
             if (targetClass.isInterface()) {
                 for (Class intf : baseClass.getInterfaces()) {
-                    if (inheritsFrom(intf, targetClass))
+                    if (inheritsFrom(intf, targetClass)) {
                         return true;
+                    }
                 }
             }
 
@@ -161,8 +162,9 @@ public class ClassUtil {
 
             // Search all the interfaces we extend or implement
             for (Class intf : clazz.getInterfaces()) {
-                if (searchInheritance(intf, predicate, visited))
+                if (searchInheritance(intf, predicate, visited)) {
                     return true;
+                }
             }
 
             // Try heading up one level of implementation

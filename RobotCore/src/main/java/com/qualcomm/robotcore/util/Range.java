@@ -73,8 +73,12 @@ public class Range {
      * @param max    maximum value allowed
      */
     public static double clip(double number, double min, double max) {
-        if (number < min) return min;
-        if (number > max) return max;
+        if (number < min) {
+            return min;
+        }
+        if (number > max) {
+            return max;
+        }
         return number;
     }
 
@@ -86,8 +90,12 @@ public class Range {
      * @param max    maximum value allowed
      */
     public static float clip(float number, float min, float max) {
-        if (number < min) return min;
-        if (number > max) return max;
+        if (number < min) {
+            return min;
+        }
+        if (number > max) {
+            return max;
+        }
         return number;
     }
 
@@ -99,8 +107,12 @@ public class Range {
      * @param max    maximum value allowed
      */
     public static int clip(int number, int min, int max) {
-        if (number < min) return min;
-        if (number > max) return max;
+        if (number < min) {
+            return min;
+        }
+        if (number > max) {
+            return max;
+        }
         return number;
     }
 
@@ -112,8 +124,12 @@ public class Range {
      * @param max    maximum value allowed
      */
     public static short clip(short number, short min, short max) {
-        if (number < min) return min;
-        if (number > max) return max;
+        if (number < min) {
+            return min;
+        }
+        if (number > max) {
+            return max;
+        }
         return number;
     }
 
@@ -125,8 +141,12 @@ public class Range {
      * @param max    maximum value allowed
      */
     public static byte clip(byte number, byte min, byte max) {
-        if (number < min) return min;
-        if (number > max) return max;
+        if (number < min) {
+            return min;
+        }
+        if (number > max) {
+            return max;
+        }
         return number;
     }
 

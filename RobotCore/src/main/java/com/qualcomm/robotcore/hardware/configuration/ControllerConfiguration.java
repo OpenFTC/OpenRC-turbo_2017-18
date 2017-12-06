@@ -96,20 +96,27 @@ public abstract class ControllerConfiguration<ITEM_T extends DeviceConfiguration
     @Nullable
     ControllerConfiguration forType(String name, @NonNull SerialNumber serialNumber, ConfigurationType type) {
 
-        if (type == BuiltInConfigurationType.DEVICE_INTERFACE_MODULE)
+        if (type == BuiltInConfigurationType.DEVICE_INTERFACE_MODULE) {
             return new DeviceInterfaceModuleConfiguration(name, serialNumber);
-        if (type == BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER)
+        }
+        if (type == BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER) {
             return new LegacyModuleControllerConfiguration(name, new LinkedList<DeviceConfiguration>(), serialNumber);
-        if (type == BuiltInConfigurationType.MATRIX_CONTROLLER)
+        }
+        if (type == BuiltInConfigurationType.MATRIX_CONTROLLER) {
             return new MatrixControllerConfiguration(name, new LinkedList<MotorConfiguration>(), new LinkedList<ServoConfiguration>(), serialNumber);
-        if (type == BuiltInConfigurationType.MOTOR_CONTROLLER)
+        }
+        if (type == BuiltInConfigurationType.MOTOR_CONTROLLER) {
             return new MotorControllerConfiguration(name, new LinkedList<MotorConfiguration>(), serialNumber);
-        if (type == BuiltInConfigurationType.SERVO_CONTROLLER)
+        }
+        if (type == BuiltInConfigurationType.SERVO_CONTROLLER) {
             return new ServoControllerConfiguration(name, new LinkedList<ServoConfiguration>(), serialNumber);
-        if (type == BuiltInConfigurationType.LYNX_USB_DEVICE)
+        }
+        if (type == BuiltInConfigurationType.LYNX_USB_DEVICE) {
             return new LynxUsbDeviceConfiguration(name, new LinkedList<LynxModuleConfiguration>(), serialNumber);
-        if (type == BuiltInConfigurationType.LYNX_MODULE)
+        }
+        if (type == BuiltInConfigurationType.LYNX_MODULE) {
             return new LynxModuleConfiguration(name);  // unclear if necessary
+        }
 
         return null;
     }

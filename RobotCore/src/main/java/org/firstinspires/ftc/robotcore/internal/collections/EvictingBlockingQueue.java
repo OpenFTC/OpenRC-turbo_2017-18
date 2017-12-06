@@ -126,12 +126,14 @@ public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements Blocki
             for (; ; ) {
                 // Can we get something? Return if we can.
                 E result = poll();
-                if (result != null)
+                if (result != null) {
                     return result;
+                }
 
                 // Punt if we've been asked to
-                if (Thread.currentThread().isInterrupted())
+                if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
+                }
 
                 // Wait and then try again
                 theLock.wait();
@@ -146,12 +148,14 @@ public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements Blocki
             for (; ; ) {
                 // Can we get something? Return if we can.
                 E result = poll();
-                if (result != null)
+                if (result != null) {
                     return result;
+                }
 
                 // Punt if we've been asked to
-                if (Thread.currentThread().isInterrupted())
+                if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
+                }
 
                 // How much longer can we wait?
                 long remaining = deadline - System.nanoTime();
@@ -160,8 +164,9 @@ public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements Blocki
                     long ms = remaining / ElapsedTime.MILLIS_IN_NANO;
                     long ns = remaining - ms * ElapsedTime.MILLIS_IN_NANO;
                     theLock.wait(ms, (int) ns);
-                } else
+                } else {
                     return null;
+                }
             }
         }
     }

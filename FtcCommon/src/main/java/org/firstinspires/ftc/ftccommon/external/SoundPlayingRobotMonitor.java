@@ -102,7 +102,9 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     @Override
     public synchronized void updateRobotState(@NonNull RobotState robotState) {
         if (robotState != this.robotState) {
-            if (DEBUG) RobotLog.vv(SoundPlayer.TAG, "updateRobotState(%s)", robotState.toString());
+            if (DEBUG) {
+                RobotLog.vv(SoundPlayer.TAG, "updateRobotState(%s)", robotState.toString());
+            }
             switch (robotState) {
                 case NOT_STARTED:
                     break;
@@ -128,8 +130,9 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     @Override
     public synchronized void updateRobotStatus(@NonNull RobotStatus robotStatus) {
         if (robotStatus != this.robotStatus) {
-            if (DEBUG)
+            if (DEBUG) {
                 RobotLog.vv(SoundPlayer.TAG, "updateRobotStatus(%s)", robotStatus.toString());
+            }
             switch (robotStatus) {
                 case NONE:
                     break;
@@ -143,15 +146,21 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     @Override
     public void updatePeerStatus(@NonNull PeerStatus peerStatus) {
         if (peerStatus != this.peerStatus) {
-            if (DEBUG) RobotLog.vv(SoundPlayer.TAG, "updatePeerStatus(%s)", peerStatus.toString());
+            if (DEBUG) {
+                RobotLog.vv(SoundPlayer.TAG, "updatePeerStatus(%s)", peerStatus.toString());
+            }
             switch (peerStatus) {
                 case UNKNOWN:
                     break;
                 case CONNECTED:
-                    if (this.peerStatus != PeerStatus.CONNECTED) playSound(soundConnect);
+                    if (this.peerStatus != PeerStatus.CONNECTED) {
+                        playSound(soundConnect);
+                    }
                     break;
                 case DISCONNECTED:
-                    if (this.peerStatus != PeerStatus.DISCONNECTED) playSound(soundDisconnect);
+                    if (this.peerStatus != PeerStatus.DISCONNECTED) {
+                        playSound(soundDisconnect);
+                    }
                     break;
                 default:
                     break;
@@ -163,8 +172,9 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     @Override
     public synchronized void updateNetworkStatus(@NonNull NetworkStatus networkStatus, @Nullable String extra) {
         if (networkStatus != this.networkStatus) {
-            if (DEBUG)
+            if (DEBUG) {
                 RobotLog.vv(SoundPlayer.TAG, "updateNetworkStatus(%s)", networkStatus.toString());
+            }
             switch (networkStatus) {
                 case UNKNOWN:
                     break;
@@ -188,7 +198,9 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     @Override
     public synchronized void updateErrorMessage(@Nullable String errorMessage) {
         if (errorMessage != null && !errorMessage.equals(this.errorMessage)) {
-            if (DEBUG) RobotLog.vv(SoundPlayer.TAG, "updateErrorMessage()");
+            if (DEBUG) {
+                RobotLog.vv(SoundPlayer.TAG, "updateErrorMessage()");
+            }
             playSound(soundError);
         }
         this.errorMessage = errorMessage;
@@ -197,7 +209,9 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     @Override
     public synchronized void updateWarningMessage(@Nullable String warningMessage) {
         if (warningMessage != null && !warningMessage.equals(this.warningMessage)) {
-            if (DEBUG) RobotLog.vv(SoundPlayer.TAG, "updateWarningMessage()");
+            if (DEBUG) {
+                RobotLog.vv(SoundPlayer.TAG, "updateWarningMessage()");
+            }
             playSound(soundWarning);
         }
         this.warningMessage = warningMessage;

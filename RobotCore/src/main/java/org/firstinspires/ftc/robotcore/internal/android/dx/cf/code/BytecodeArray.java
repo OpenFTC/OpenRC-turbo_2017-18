@@ -988,8 +988,9 @@ public final class BytecodeArray {
 
                 // First, check if the next bytecode is dup.
                 int nextByte = bytes.getUnsignedByte(curOffset++);
-                if (nextByte != ByteOps.DUP)
+                if (nextByte != ByteOps.DUP) {
                     break;
+                }
 
                 /*
                  * Next, check if the expected array index is pushed to
@@ -998,8 +999,9 @@ public final class BytecodeArray {
                 parseInstruction(curOffset, constantVisitor);
                 if (constantVisitor.length == 0 ||
                         !(constantVisitor.cst instanceof CstInteger) ||
-                        constantVisitor.value != nInit)
+                        constantVisitor.value != nInit) {
                     break;
+                }
 
                 // Next, fetch the init value and record it.
                 curOffset += constantVisitor.length;
@@ -1010,8 +1012,9 @@ public final class BytecodeArray {
                  */
                 parseInstruction(curOffset, constantVisitor);
                 if (constantVisitor.length == 0 ||
-                        !(constantVisitor.cst instanceof CstLiteralBits))
+                        !(constantVisitor.cst instanceof CstLiteralBits)) {
                     break;
+                }
 
                 curOffset += constantVisitor.length;
                 initVals.add(constantVisitor.cst);

@@ -191,8 +191,9 @@ public abstract class ModernRoboticsDatagram {
     }
 
     public void setAddress(int address) {
-        if (address < 0 || address > 255)
+        if (address < 0 || address > 255) {
             throw new IllegalArgumentException(String.format("address=%d; must be unsigned byte", address));
+        }
         data[IB_ADDRESS] = (byte) address;
     }
 
@@ -206,8 +207,9 @@ public abstract class ModernRoboticsDatagram {
     }
 
     public void setPayloadLength(int length) {
-        if (length < 0 || length > 255)
+        if (length < 0 || length > 255) {
             throw new IllegalArgumentException(String.format("length=%d; must be unsigned byte", length));
+        }
         data[IB_LENGTH] = (byte) length;
     }
 

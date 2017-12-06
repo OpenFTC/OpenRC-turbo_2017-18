@@ -95,8 +95,9 @@ public class RobotLog {
      * good enough for trying to coordinate timestamps in logs.
      */
     public static void processTimeSynch(long t0, long t1, long t2, long t3) {
-        if (t0 == 0 || t1 == 0 || t2 == 0 || t3 == 0)
+        if (t0 == 0 || t1 == 0 || t2 == 0 || t3 == 0) {
             return; // invalid packet data
+        }
 
         // https://en.wikipedia.org/wiki/Network_Time_Protocol
         // offset is how much the time source is ahead of us (ie: not behind)
@@ -467,8 +468,9 @@ public class RobotLog {
         StringBuilder result = new StringBuilder();
         for (String warning : warnings) {
             if (warning != null && !warning.isEmpty()) {
-                if (result.length() > 0)
+                if (result.length() > 0) {
                     result.append("; ");
+                }
                 result.append(warning);
             }
         }
@@ -697,8 +699,9 @@ public class RobotLog {
             StringBuilder line = new StringBuilder();
             for (int i = 0; i < cbLine; i++) {
                 int ib = i + ibFirst;
-                if (ib >= cb)
+                if (ib >= cb) {
                     break;
+                }
                 line.append(String.format("%02x ", data[ib]));
             }
             vv(tag, "%s%c %s", caption, separator, line.toString());

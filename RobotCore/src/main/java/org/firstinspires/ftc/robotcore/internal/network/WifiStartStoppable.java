@@ -104,20 +104,28 @@ public abstract class WifiStartStoppable {
     }
 
     protected void trace(String functionName, boolean enabled, Runnable runnable) {
-        if (enabled) RobotLog.vv(getTag(), "%s()...", functionName);
+        if (enabled) {
+            RobotLog.vv(getTag(), "%s()...", functionName);
+        }
         try {
             runnable.run();
         } finally {
-            if (enabled) RobotLog.vv(getTag(), "...%s()", functionName);
+            if (enabled) {
+                RobotLog.vv(getTag(), "...%s()", functionName);
+            }
         }
     }
 
     protected <T> T trace(String functionName, boolean enabled, Func<T> func) {
-        if (enabled) RobotLog.vv(getTag(), "%s()...", functionName);
+        if (enabled) {
+            RobotLog.vv(getTag(), "%s()...", functionName);
+        }
         try {
             return func.value();
         } finally {
-            if (enabled) RobotLog.vv(getTag(), "...%s()", functionName);
+            if (enabled) {
+                RobotLog.vv(getTag(), "...%s()", functionName);
+            }
         }
     }
 
@@ -185,8 +193,9 @@ public abstract class WifiStartStoppable {
         StartResult startResult = new StartResult();
         if (start(startResult)) {
             return startResult;
-        } else
+        } else {
             return null;
+        }
     }
 
     public boolean start(StartResult startResult) {
@@ -196,20 +205,27 @@ public abstract class WifiStartStoppable {
 
                 boolean startedHere = false;
                 boolean localSuccess = true;
-                if (DEBUG_VERBOSE) RobotLog.vv(getTag(), "start() count=%d...", startCount);
+                if (DEBUG_VERBOSE) {
+                    RobotLog.vv(getTag(), "start() count=%d...", startCount);
+                }
                 if (0 == startCount++ || startIsIdempotent()) {
                     startedHere = localSuccess = callDoStart();
                 }
                 startResult.setStartStoppable(this);
 
-                if (startedHere) startResult.incrementStartCount();
-                if (!startIsRefCounted())
+                if (startedHere) {
+                    startResult.incrementStartCount();
+                }
+                if (!startIsRefCounted()) {
                     startResult.setStartCount(Math.min(1, startResult.getStartCount()));
+                }
 
                 return localSuccess;
             }
         } finally {
-            if (DEBUG_VERBOSE) RobotLog.vv(getTag(), "...start()");
+            if (DEBUG_VERBOSE) {
+                RobotLog.vv(getTag(), "...start()");
+            }
         }
     }
 
@@ -273,7 +289,9 @@ public abstract class WifiStartStoppable {
     public void internalStop() {
         try {
             synchronized (startStopLock) {
-                if (DEBUG_VERBOSE) RobotLog.vv(getTag(), "stop() count=%d...", startCount);
+                if (DEBUG_VERBOSE) {
+                    RobotLog.vv(getTag(), "stop() count=%d...", startCount);
+                }
                 if (startCount > 0) {
                     if (--startCount == 0) {
                         callDoStop();
@@ -281,7 +299,9 @@ public abstract class WifiStartStoppable {
                 }
             }
         } finally {
-            if (DEBUG_VERBOSE) RobotLog.vv(getTag(), "...stop()");
+            if (DEBUG_VERBOSE) {
+                RobotLog.vv(getTag(), "...stop()");
+            }
         }
     }
 
@@ -311,7 +331,9 @@ public abstract class WifiStartStoppable {
     //------------------------------------------------------------------------------------------
 
     public void restart() {
-        if (DEBUG) RobotLog.vv(getTag(), "restart()...");
+        if (DEBUG) {
+            RobotLog.vv(getTag(), "restart()...");
+        }
         try {
             synchronized (startStopLock) {
                 if (startCount > 0) {
@@ -320,7 +342,9 @@ public abstract class WifiStartStoppable {
                 }
             }
         } finally {
-            if (DEBUG) RobotLog.vv(getTag(), "...restart()");
+            if (DEBUG) {
+                RobotLog.vv(getTag(), "...restart()");
+            }
         }
     }
 

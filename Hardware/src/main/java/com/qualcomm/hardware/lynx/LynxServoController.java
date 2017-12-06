@@ -152,10 +152,11 @@ public class LynxServoController extends LynxController implements ServoControll
         Boolean enabled = null;
         for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++) {
             boolean localEnabled = internalGetPwmEnable(servoZ);
-            if (enabled == null)
+            if (enabled == null) {
                 enabled = localEnabled;
-            else if (enabled != localEnabled)
+            } else if (enabled != localEnabled) {
                 return PwmStatus.MIXED;
+            }
         }
         return enabled ? PwmStatus.ENABLED : PwmStatus.DISABLED;
     }
@@ -299,7 +300,8 @@ public class LynxServoController extends LynxController implements ServoControll
 
     private void validateApiServoPosition(double position) {
         if (apiPositionFirst <= position && position <= apiPositionLast) {
-        } else
+        } else {
             throw new IllegalArgumentException(String.format("illegal servo position %f; must be in interval [%f,%f]", position, apiPositionFirst, apiPositionLast));
+        }
     }
 }

@@ -119,8 +119,9 @@ public class NaiveAccelerationIntegrator implements BNO055IMU.AccelerationIntegr
                 if (parameters != null && parameters.loggingEnabled) {
                     RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s vel=%s pos=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime) * 1e-9, acceleration, velocity, position);
                 }
-            } else
+            } else {
                 acceleration = linearAcceleration;
+            }
         }
     }
 }

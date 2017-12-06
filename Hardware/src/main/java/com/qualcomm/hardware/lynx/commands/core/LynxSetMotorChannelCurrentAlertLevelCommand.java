@@ -67,8 +67,9 @@ public class LynxSetMotorChannelCurrentAlertLevelCommand extends LynxDekaInterfa
         LynxConstants.validateMotorZ(motorZ);
         this.motor = (byte) motorZ;
         this.mACurrentLimit = (short) mACurrentLimit;
-        if (TypeConversion.unsignedShortToInt(this.mACurrentLimit) != mACurrentLimit)
+        if (TypeConversion.unsignedShortToInt(this.mACurrentLimit) != mACurrentLimit) {
             throw new IllegalArgumentException(String.format("illegal current limit: %d mA", mACurrentLimit));
+        }
     }
 
     //----------------------------------------------------------------------------------------------

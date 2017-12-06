@@ -112,8 +112,12 @@ public class HiTechnicNxtCompassSensor extends I2cControllerPortDeviceImpl imple
 
     @Override
     public synchronized double getDirection() {
-        if (switchingModes) return INVALID_DIRECTION;
-        if (mode == CompassMode.CALIBRATION_MODE) return INVALID_DIRECTION;
+        if (switchingModes) {
+            return INVALID_DIRECTION;
+        }
+        if (mode == CompassMode.CALIBRATION_MODE) {
+            return INVALID_DIRECTION;
+        }
 
         byte[] heading = null;
 
@@ -135,7 +139,9 @@ public class HiTechnicNxtCompassSensor extends I2cControllerPortDeviceImpl imple
 
     public synchronized void setMode(CompassMode mode) {
         // switching modes is expensive, don't do it if not needed
-        if (this.mode == mode) return;
+        if (this.mode == mode) {
+            return;
+        }
 
         this.mode = mode;
         writeModeSwitch();
@@ -174,7 +180,9 @@ public class HiTechnicNxtCompassSensor extends I2cControllerPortDeviceImpl imple
     @Override
     public synchronized boolean calibrationFailed() {
         // Hardware default is "success", so extended monitoring is necessary.
-        if (mode == CompassMode.CALIBRATION_MODE || switchingModes) return false;
+        if (mode == CompassMode.CALIBRATION_MODE || switchingModes) {
+            return false;
+        }
 
         boolean failed = false;
         try {

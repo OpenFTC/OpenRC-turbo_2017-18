@@ -73,10 +73,11 @@ public class WifiDirectChannelChanger {
 
     private void finishChannelChange(boolean success) {
         RobotLog.vv(TAG, "finishChannelChange() channel=%d success=%s", channel, success);
-        if (success)
+        if (success) {
             issueSuccessToast();
-        else
+        } else {
             issueFailureToast();
+        }
         isChangingChannels = false;
     }
 

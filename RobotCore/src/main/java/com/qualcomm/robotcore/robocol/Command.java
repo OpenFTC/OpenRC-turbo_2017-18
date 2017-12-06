@@ -152,14 +152,17 @@ public class Command extends RobocolParsableBase implements Comparable<Command>,
     @Override
     public byte[] toByteArray() throws RobotCoreException {
 
-        if (mAttempts != Byte.MAX_VALUE) mAttempts += 1;
+        if (mAttempts != Byte.MAX_VALUE) {
+            mAttempts += 1;
+        }
 
         byte[] nameBytes = TypeConversion.stringToUtf8(mName);
         byte[] extraBytes = TypeConversion.stringToUtf8(mExtra);
 
         short cbPayload = (short) getPayloadSize(nameBytes.length, extraBytes.length);
-        if (cbPayload > Short.MAX_VALUE)
+        if (cbPayload > Short.MAX_VALUE) {
             throw new IllegalArgumentException(String.format("command payload is too large: %d", cbPayload));
+        }
 
         ByteBuffer buffer = getWriteBuffer(cbPayload);
         try {
@@ -220,7 +223,9 @@ public class Command extends RobocolParsableBase implements Comparable<Command>,
     public boolean equals(Object o) {
         if (o instanceof Command) {
             Command c = (Command) o;
-            if (this.mName.equals(c.mName) && this.mTimestamp == c.mTimestamp) return true;
+            if (this.mName.equals(c.mName) && this.mTimestamp == c.mTimestamp) {
+                return true;
+            }
         }
 
         return false;
@@ -235,10 +240,16 @@ public class Command extends RobocolParsableBase implements Comparable<Command>,
     public int compareTo(Command another) {
         int diff = mName.compareTo(another.mName);
 
-        if (diff != 0) return diff;
+        if (diff != 0) {
+            return diff;
+        }
 
-        if (mTimestamp < another.mTimestamp) return -1;
-        if (mTimestamp > another.mTimestamp) return 1;
+        if (mTimestamp < another.mTimestamp) {
+            return -1;
+        }
+        if (mTimestamp > another.mTimestamp) {
+            return 1;
+        }
 
         return 0;
     }

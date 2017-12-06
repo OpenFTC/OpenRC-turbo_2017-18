@@ -87,10 +87,14 @@ public class WifiAssistant {
         }
 
         private void notify(WifiState newState) {
-            if (state == newState) return; // nothing to do
+            if (state == newState) {
+                return; // nothing to do
+            }
 
             state = newState;
-            if (callback != null) callback.wifiEventCallback(state);
+            if (callback != null) {
+                callback.wifiEventCallback(state);
+            }
         }
     }
 
@@ -107,7 +111,9 @@ public class WifiAssistant {
     public WifiAssistant(Context context, WifiAssistantCallback callback) {
         this.context = context;
 
-        if (callback == null) RobotLog.v("WifiAssistantCallback is null");
+        if (callback == null) {
+            RobotLog.v("WifiAssistantCallback is null");
+        }
         receiver = new WifiStateBroadcastReceiver(callback);
 
         intentFilter = new IntentFilter();

@@ -139,7 +139,7 @@ public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {};
+        return new byte[]{};
     }
 
     @Override

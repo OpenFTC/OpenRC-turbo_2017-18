@@ -167,8 +167,9 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
 
     protected void internalClearGlobalWarning() {
         synchronized (this.warningMessageLock) {
-            if (!this.warningMessage.isEmpty())
+            if (!this.warningMessage.isEmpty()) {
                 RobotLog.vv(getTag(), "clearing extant global warning: \"%s\"", this.warningMessage);
+            }
             this.warningMessage = "";
         }
     }
@@ -176,10 +177,11 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
     @Override
     public void suppressGlobalWarning(boolean suppress) {
         synchronized (this.warningMessageLock) {
-            if (suppress)
+            if (suppress) {
                 this.warningMessageSuppressionCount++;
-            else
+            } else {
                 this.warningMessageSuppressionCount--;
+            }
         }
     }
 
@@ -210,25 +212,35 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
             RobotUsbDevice device = null;
             try {
                 // Open the USB device
-                if (DEBUG) RobotLog.vv(getTag(), "opening %s...", serialNumber);
+                if (DEBUG) {
+                    RobotLog.vv(getTag(), "opening %s...", serialNumber);
+                }
                 device = this.openRobotUsbDevice.open();
 
-                if (DEBUG) RobotLog.vv(getTag(), "...opening, now arming %s...", serialNumber);
+                if (DEBUG) {
+                    RobotLog.vv(getTag(), "...opening, now arming %s...", serialNumber);
+                }
                 // Arm using that device
                 armDevice(device);
 
-                if (DEBUG) RobotLog.vv(getTag(), "...arming %s...", serialNumber);
+                if (DEBUG) {
+                    RobotLog.vv(getTag(), "...arming %s...", serialNumber);
+                }
             } catch (RobotCoreException | RuntimeException e) {
                 RobotLog.logExceptionHeader(getTag(), e, "exception arming %s", serialNumber);
                 //
                 // NullPointerException(s) are, annoyingly (vs some non-runtime exception), thrown by the FTDI
                 // layer on abnormal termination. Here, and elsewhere in this class, we catch those in order to
                 // robustly recover from what is just a USB read or write error.
-                if (device != null) device.close();
+                if (device != null) {
+                    device.close();
+                }
                 setGlobalWarning(String.format(context.getString(R.string.warningUnableToOpen), HardwareFactory.getDeviceDisplayName(context, serialNumber)));
                 throw e;
             } catch (InterruptedException e) {
-                if (device != null) device.close();
+                if (device != null) {
+                    device.close();
+                }
                 throw e;
             }
         }
@@ -416,8 +428,9 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         for (; ; ) {
             int crefCur = referenceCount.get();
             Assert.assertTrue(crefCur > 0); // can't revive dead objects
-            if (crefCur <= 0)
+            if (crefCur <= 0) {
                 break; // preserve sanity
+            }
 
             int crefNew = crefCur + 1;
             if (referenceCount.compareAndSet(crefCur, crefNew)) {
@@ -431,8 +444,9 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         for (; ; ) {
             int crefCur = referenceCount.get();
             Assert.assertTrue(crefCur > 0); // because we believe we own a ref we can release!
-            if (crefCur <= 0)
+            if (crefCur <= 0) {
                 break; // preserve sanity
+            }
 
             int crefNew = crefCur - 1;
             if (referenceCount.compareAndSet(crefCur, crefNew)) {
@@ -453,8 +467,9 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
     public void close() {
         for (; ; ) {
             int crefCur = referenceCount.get();
-            if (crefCur <= 0)
+            if (crefCur <= 0) {
                 break; // be idempotent
+            }
 
             int crefNew = 0;
             if (referenceCount.compareAndSet(crefCur, crefNew)) {

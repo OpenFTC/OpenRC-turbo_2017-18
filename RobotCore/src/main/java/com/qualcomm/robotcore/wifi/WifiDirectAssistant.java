@@ -169,7 +169,9 @@ public class WifiDirectAssistant extends NetworkConnection {
 
         @Override
         public void onGroupInfoAvailable(WifiP2pGroup group) {
-            if (group == null) return;
+            if (group == null) {
+                return;
+            }
 
             if (group.isGroupOwner()) {
                 groupOwnerMacAddress = deviceMacAddress;
@@ -257,7 +259,9 @@ public class WifiDirectAssistant extends NetworkConnection {
     }
 
     public synchronized static WifiDirectAssistant getWifiDirectAssistant(Context context) {
-        if (wifiDirectAssistant == null) wifiDirectAssistant = new WifiDirectAssistant(context);
+        if (wifiDirectAssistant == null) {
+            wifiDirectAssistant = new WifiDirectAssistant(context);
+        }
         return wifiDirectAssistant;
     }
 
@@ -293,7 +297,9 @@ public class WifiDirectAssistant extends NetworkConnection {
 
         if (clients == 1) {
             RobotLog.vv(TAG, "Enabling Wifi Direct Assistant");
-            if (receiver == null) receiver = new WifiP2pBroadcastReceiver();
+            if (receiver == null) {
+                receiver = new WifiP2pBroadcastReceiver();
+            }
             context.registerReceiver(receiver, intentFilter);
             inviteDialogMonitor.startMonitoring();
         }
@@ -632,11 +638,15 @@ public class WifiDirectAssistant extends NetworkConnection {
 
     private void sendEvent(Event event) {
         // don't send duplicate events
-        if (lastEvent == event && lastEvent != Event.PEERS_AVAILABLE) return;
+        if (lastEvent == event && lastEvent != Event.PEERS_AVAILABLE) {
+            return;
+        }
         lastEvent = event;
 
         synchronized (callbackLock) {
-            if (callback != null) callback.onNetworkConnectionEvent(event);
+            if (callback != null) {
+                callback.onNetworkConnectionEvent(event);
+            }
         }
     }
 }

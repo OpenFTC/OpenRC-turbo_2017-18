@@ -60,7 +60,7 @@ public class ConceptTelemetry extends LinearOpMode {
      */
     ElapsedTime poemElapsed = new ElapsedTime();
 
-    static final String[] poem = new String[] {
+    static final String[] poem = new String[]{
 
             "Mary had a little lamb,",
             "His fleece was white as snow,",

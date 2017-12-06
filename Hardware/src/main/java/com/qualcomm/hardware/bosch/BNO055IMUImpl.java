@@ -210,8 +210,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
      */
     @Override
     public boolean internalInitialize(@NonNull Parameters parameters) {
-        if (parameters.mode == SensorMode.DISABLED)
+        if (parameters.mode == SensorMode.DISABLED) {
             return false;
+        }
 
         // Remember parameters so they're accessible starting during initialization.
         // Disconnect from user parameters so he won't interfere with us later.
@@ -253,8 +254,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
      */
     protected boolean internalInitializeOnce(SystemStatus expectedStatus) {
         // Validate parameters
-        if (SensorMode.CONFIG == parameters.mode)
+        if (SensorMode.CONFIG == parameters.mode) {
             throw new IllegalArgumentException("SensorMode.CONFIG illegal for use as initialization mode");
+        }
 
         ElapsedTime elapsed = new ElapsedTime();
         if (parameters.accelerationIntegrationAlgorithm != null) {
@@ -288,8 +290,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
             write8(Register.SYS_TRIGGER, 0x20);
             for (; ; ) {
                 chipId = read8(Register.CHIP_ID);
-                if (chipId == bCHIP_ID_VALUE)
+                if (chipId == bCHIP_ID_VALUE) {
                     break;
+                }
                 delayExtra(10);
                 if (elapsed.milliseconds() > msAwaitChipId) {
                     log_e("failed to retrieve chip id");
@@ -392,9 +395,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
             status = getSystemStatus();
         }
 
-        if (status == expectedStatus)
+        if (status == expectedStatus) {
             return true;
-        else {
+        } else {
             log_w("IMU initialization failed: system status=%s expected=%s", status, expectedStatus);
             return false;
         }
@@ -411,10 +414,11 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         this.write8(Register.OPR_MODE, mode.bVal & 0x0F);                           // OPR_MODE=0x3D
 
         // Delay per Table 3-6 of BNO055 Data sheet (p21)
-        if (mode == SensorMode.CONFIG)
+        if (mode == SensorMode.CONFIG) {
             delayExtra(19);
-        else
+        } else {
             delayExtra(7);
+        }
     }
 
     public synchronized SystemStatus getSystemStatus() {
@@ -532,7 +536,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         //      http://iotdk.intel.com/docs/master/upm/classupm_1_1_b_n_o055.html
 
         SensorMode prevMode = this.currentMode;
-        if (prevMode != SensorMode.CONFIG) setSensorMode(SensorMode.CONFIG);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(SensorMode.CONFIG);
+        }
 
         CalibrationData result = new CalibrationData();
         result.dxAccel = readShort(Register.ACC_OFFSET_X_LSB);
@@ -548,7 +554,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         result.radiusMag = readShort(Register.MAG_RADIUS_LSB);
 
         // Restore the previous mode and return
-        if (prevMode != SensorMode.CONFIG) setSensorMode(prevMode);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(prevMode);
+        }
         return result;
     }
 
@@ -564,7 +572,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         //    3. Change operation mode to fusion mode
 
         SensorMode prevMode = this.currentMode;
-        if (prevMode != SensorMode.CONFIG) setSensorMode(SensorMode.CONFIG);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(SensorMode.CONFIG);
+        }
 
         writeShort(Register.ACC_OFFSET_X_LSB, data.dxAccel);
         writeShort(Register.ACC_OFFSET_Y_LSB, data.dyAccel);
@@ -579,7 +589,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         writeShort(Register.MAG_RADIUS_LSB, data.radiusMag);
 
         // Restore the previous mode and return
-        if (prevMode != SensorMode.CONFIG) setSensorMode(prevMode);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(prevMode);
+        }
     }
 
     //------------------------------------------------------------------------------------------
@@ -720,7 +732,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     public Acceleration getAcceleration() {
         synchronized (dataLock) {
             Acceleration result = this.accelerationAlgorithm.getAcceleration();
-            if (result == null) result = new Acceleration();
+            if (result == null) {
+                result = new Acceleration();
+            }
             return result;
         }
     }
@@ -728,7 +742,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     public Velocity getVelocity() {
         synchronized (dataLock) {
             Velocity result = this.accelerationAlgorithm.getVelocity();
-            if (result == null) result = new Velocity();
+            if (result == null) {
+                result = new Velocity();
+            }
             return result;
         }
     }
@@ -736,7 +752,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     public Position getPosition() {
         synchronized (dataLock) {
             Position result = this.accelerationAlgorithm.getPosition();
-            if (result == null) result = new Position();
+            if (result == null) {
+                result = new Position();
+            }
             return result;
         }
     }
@@ -801,8 +819,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
                         long msSoFar = (System.nanoTime() - linearAcceleration.acquisitionTime) / nsPerMs;
                         long msReadFudge = 5;   // very roughly accounts for delta from read request to acquisitionTime setting
                         Thread.sleep(Math.max(0, msPollInterval - msSoFar - msReadFudge));
-                    } else
+                    } else {
                         Thread.yield(); // never do a hard spin
+                    }
                 }
             } catch (InterruptedException | CancellationException e) {
                 return;

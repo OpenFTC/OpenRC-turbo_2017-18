@@ -91,18 +91,27 @@ public class PreferencesHelper {
     }
 
     public boolean writePrefIfDifferent(String prefName, @NonNull Object newValue) {
-        if (newValue instanceof String)
+        if (newValue instanceof String) {
             return writeStringPrefIfDifferent(prefName, (String) newValue);
-        if (newValue instanceof Boolean)
+        }
+        if (newValue instanceof Boolean) {
             return writeBooleanPrefIfDifferent(prefName, (Boolean) newValue);
-        if (newValue instanceof Integer)
+        }
+        if (newValue instanceof Integer) {
             return writeIntPrefIfDifferent(prefName, (Integer) newValue);
-        if (newValue instanceof Long) return writeLongPrefIfDifferent(prefName, (Long) newValue);
-        if (newValue instanceof Float) return writeFloatPrefIfDifferent(prefName, (Float) newValue);
-        if (newValue instanceof StringMap)
+        }
+        if (newValue instanceof Long) {
+            return writeLongPrefIfDifferent(prefName, (Long) newValue);
+        }
+        if (newValue instanceof Float) {
+            return writeFloatPrefIfDifferent(prefName, (Float) newValue);
+        }
+        if (newValue instanceof StringMap) {
             return writeStringMapPrefIfDifferent(prefName, (StringMap) newValue);
-        if (newValue instanceof Set)
+        }
+        if (newValue instanceof Set) {
             return writeStringSetPrefIfDifferent(prefName, (Set<String>) newValue);
+        }
         return false;
     }
 
@@ -153,8 +162,9 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue.equals(readString(prefName, "")))
+            if (contains(prefName) && newValue.equals(readString(prefName, ""))) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putString(prefName, newValue)
@@ -168,8 +178,9 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue.equals(readStringSet(prefName, (Set<String>) null)))
+            if (contains(prefName) && newValue.equals(readStringSet(prefName, (Set<String>) null))) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putStringSet(prefName, newValue)
@@ -183,8 +194,9 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue == readInt(prefName, 0))
+            if (contains(prefName) && newValue == readInt(prefName, 0)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putInt(prefName, newValue)
@@ -198,8 +210,9 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue == readLong(prefName, 0L))
+            if (contains(prefName) && newValue == readLong(prefName, 0L)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putLong(prefName, newValue)
@@ -213,8 +226,9 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue == readFloat(prefName, 0F))
+            if (contains(prefName) && newValue == readFloat(prefName, 0F)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putFloat(prefName, newValue)
@@ -228,8 +242,9 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue == readBoolean(prefName, false))
+            if (contains(prefName) && newValue == readBoolean(prefName, false)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putBoolean(prefName, newValue)
@@ -257,10 +272,11 @@ public class PreferencesHelper {
         }
 
         public static StringMap deserialize(String serialized) {
-            if (serialized == null)
+            if (serialized == null) {
                 return null;
-            else
+            } else {
                 return SimpleGson.getInstance().fromJson(serialized, StringMap.class);
+            }
         }
     }
 

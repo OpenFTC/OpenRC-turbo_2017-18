@@ -601,10 +601,11 @@ public interface BNO055IMU {
         }
 
         org.firstinspires.ftc.robotcore.external.navigation.TempUnit toTempUnit() {
-            if (this == CELSIUS)
+            if (this == CELSIUS) {
                 return org.firstinspires.ftc.robotcore.external.navigation.TempUnit.CELSIUS;
-            else
+            } else {
                 return org.firstinspires.ftc.robotcore.external.navigation.TempUnit.FARENHEIT;
+            }
         }
     }
 
@@ -617,10 +618,11 @@ public interface BNO055IMU {
         }
 
         org.firstinspires.ftc.robotcore.external.navigation.AngleUnit toAngleUnit() {
-            if (this == DEGREES)
+            if (this == DEGREES) {
                 return org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-            else
+            } else {
                 return org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+            }
         }
     }
 
@@ -737,7 +739,9 @@ public interface BNO055IMU {
 
         public static SystemStatus from(int value) {
             for (SystemStatus systemStatus : values()) {
-                if (systemStatus.bVal == value) return systemStatus;
+                if (systemStatus.bVal == value) {
+                    return systemStatus;
+                }
             }
             return UNKNOWN;
         }
@@ -779,7 +783,9 @@ public interface BNO055IMU {
 
         public static SystemError from(int value) {
             for (SystemError systemError : values()) {
-                if (systemError.bVal == value) return systemError;
+                if (systemError.bVal == value) {
+                    return systemError;
+                }
             }
             return UNKNOWN;
         }

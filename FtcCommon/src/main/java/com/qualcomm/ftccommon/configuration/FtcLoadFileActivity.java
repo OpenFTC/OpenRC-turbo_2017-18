@@ -288,7 +288,9 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
         EditParameters parameters = new EditParameters(this);
         parameters.setExtantRobotConfigurations(fileList);
         // *Explicitly* indicate which file to edit in order to avoid races with background updates of the contextually current config
-        if (configFile != null) parameters.setCurrentCfgFile(configFile);
+        if (configFile != null) {
+            parameters.setCurrentCfgFile(configFile);
+        }
         Intent intent = new Intent(context, clazz);
         parameters.putIntent(intent);
         return intent;

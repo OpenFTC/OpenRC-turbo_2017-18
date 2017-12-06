@@ -163,8 +163,9 @@ public class ClassManager {
                         break;
                     }
                 }
-                if (shouldIgnore)
+                if (shouldIgnore) {
                     continue;
+                }
 
                 // Get the Class from the className
                 Class clazz;
@@ -173,8 +174,9 @@ public class ClassManager {
                     // RobotLog.dd(TAG, "class %s: loader=%s", className, clazz.getClassLoader().getClass().getSimpleName());
                 } catch (NoClassDefFoundError | ClassNotFoundException ex) {
                     // We can't find that class
-                    if (logClassNotFound(className))
+                    if (logClassNotFound(className)) {
                         RobotLog.ww(TAG, ex, className + " " + ex.toString());
+                    }
                     if (className.contains("$")) {
                         // Prevent loading similar inner classes, a performance optimization
                         className = className.substring(0, className.indexOf("$") /* -1 */);

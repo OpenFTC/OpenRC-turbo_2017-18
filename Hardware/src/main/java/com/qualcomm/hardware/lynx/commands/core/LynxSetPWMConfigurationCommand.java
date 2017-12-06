@@ -66,8 +66,9 @@ public class LynxSetPWMConfigurationCommand extends LynxDekaInterfaceCommand<Lyn
     public LynxSetPWMConfigurationCommand(LynxModuleIntf module, int channelZ, int framePeriod) {
         this(module);
         LynxConstants.validatePwmChannelZ(channelZ);
-        if (framePeriod < apiFramePeriodFirst || framePeriod > apiFramePeriodLast)
+        if (framePeriod < apiFramePeriodFirst || framePeriod > apiFramePeriodLast) {
             throw new IllegalArgumentException(String.format("illegal frame period: %d", framePeriod));
+        }
         this.channel = (byte) channelZ;
         this.framePeriod = (short) framePeriod;
     }

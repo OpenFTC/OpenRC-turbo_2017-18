@@ -83,7 +83,7 @@ public class LynxSetDebugLogLevelCommand extends LynxStandardCommand<LynxAck> {
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {debugGroup.bVal, verbosity.bVal};
+        return new byte[]{debugGroup.bVal, verbosity.bVal};
     }
 
     @Override

@@ -53,7 +53,9 @@ public class WeakReferenceSet<E> implements Set<E> {
         synchronized (members) {
             boolean modified = false;
             for (E o : collection) {
-                if (this.add(o)) modified = true;
+                if (this.add(o)) {
+                    modified = true;
+                }
             }
             return modified;
         }
@@ -70,7 +72,9 @@ public class WeakReferenceSet<E> implements Set<E> {
     public boolean containsAll(Collection<?> collection) {
         synchronized (members) {
             for (Object o : collection) {
-                if (!contains(o)) return false;
+                if (!contains(o)) {
+                    return false;
+                }
             }
             return true;
         }
@@ -117,7 +121,9 @@ public class WeakReferenceSet<E> implements Set<E> {
         synchronized (members) {
             boolean modified = false;
             for (Object o : collection) {
-                if (remove(o)) modified = true;
+                if (remove(o)) {
+                    modified = true;
+                }
             }
             return modified;
         }
@@ -129,7 +135,9 @@ public class WeakReferenceSet<E> implements Set<E> {
             boolean modified = false;
             for (Object o : this) {
                 if (!collection.contains(o)) {
-                    if (remove(o)) modified = true;
+                    if (remove(o)) {
+                        modified = true;
+                    }
                 }
             }
             return modified;

@@ -102,8 +102,9 @@ public class MessageKeyedLock {
     }
 
     public void acquire(@NonNull LynxMessage message) throws InterruptedException {
-        if (message == null)
+        if (message == null) {
             throw new IllegalArgumentException("MessageKeyedLock.acquire: null message");
+        }
 
         this.lock.lockInterruptibly();
         try {
@@ -122,8 +123,9 @@ public class MessageKeyedLock {
                 this.lockCount = 0;
                 this.lockAquisitionTime = System.nanoTime();
                 this.lockOwner = message;
-                if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
+                if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK) {
                     logv("lock %s msg#=%d", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
+                }
             } else {
                 logv("lock recursively acquired");
             }
@@ -135,15 +137,17 @@ public class MessageKeyedLock {
     }
 
     public void release(@NonNull LynxMessage message) throws InterruptedException {
-        if (message == null)
+        if (message == null) {
             throw new IllegalArgumentException("MessageKeyedLock.release: null message");
+        }
 
         this.lock.lockInterruptibly();
         try {
             if (this.lockOwner == message) {
                 if (--this.lockCount == 0) {
-                    if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
+                    if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK) {
                         logv("unlock %s msg#=%d", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
+                    }
                     this.lockOwner = null;
                     this.condition.signalAll();
                 } else {

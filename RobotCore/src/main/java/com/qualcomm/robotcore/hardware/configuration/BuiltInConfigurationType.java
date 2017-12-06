@@ -114,40 +114,99 @@ public enum BuiltInConfigurationType implements ConfigurationType {
     }
 
     public static ConfigurationType fromXmlTag(String xmlTag) {
-        if (xmlTag.equalsIgnoreCase(SERVO.xmlTag)) return SERVO;
-        if (xmlTag.equalsIgnoreCase(CONTINUOUS_ROTATION_SERVO.xmlTag))
+        if (xmlTag.equalsIgnoreCase(SERVO.xmlTag)) {
+            return SERVO;
+        }
+        if (xmlTag.equalsIgnoreCase(CONTINUOUS_ROTATION_SERVO.xmlTag)) {
             return CONTINUOUS_ROTATION_SERVO;
-        if (xmlTag.equalsIgnoreCase(GYRO.xmlTag)) return GYRO;
-        if (xmlTag.equalsIgnoreCase(COMPASS.xmlTag)) return COMPASS;
-        if (xmlTag.equalsIgnoreCase(IR_SEEKER.xmlTag)) return IR_SEEKER;
-        if (xmlTag.equalsIgnoreCase(LIGHT_SENSOR.xmlTag)) return LIGHT_SENSOR;
-        if (xmlTag.equalsIgnoreCase(ACCELEROMETER.xmlTag)) return ACCELEROMETER;
-        if (xmlTag.equalsIgnoreCase(MOTOR_CONTROLLER.xmlTag)) return MOTOR_CONTROLLER;
-        if (xmlTag.equalsIgnoreCase(SERVO_CONTROLLER.xmlTag)) return SERVO_CONTROLLER;
-        if (xmlTag.equalsIgnoreCase(LEGACY_MODULE_CONTROLLER.xmlTag))
+        }
+        if (xmlTag.equalsIgnoreCase(GYRO.xmlTag)) {
+            return GYRO;
+        }
+        if (xmlTag.equalsIgnoreCase(COMPASS.xmlTag)) {
+            return COMPASS;
+        }
+        if (xmlTag.equalsIgnoreCase(IR_SEEKER.xmlTag)) {
+            return IR_SEEKER;
+        }
+        if (xmlTag.equalsIgnoreCase(LIGHT_SENSOR.xmlTag)) {
+            return LIGHT_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(ACCELEROMETER.xmlTag)) {
+            return ACCELEROMETER;
+        }
+        if (xmlTag.equalsIgnoreCase(MOTOR_CONTROLLER.xmlTag)) {
+            return MOTOR_CONTROLLER;
+        }
+        if (xmlTag.equalsIgnoreCase(SERVO_CONTROLLER.xmlTag)) {
+            return SERVO_CONTROLLER;
+        }
+        if (xmlTag.equalsIgnoreCase(LEGACY_MODULE_CONTROLLER.xmlTag)) {
             return LEGACY_MODULE_CONTROLLER;
-        if (xmlTag.equalsIgnoreCase(DEVICE_INTERFACE_MODULE.xmlTag)) return DEVICE_INTERFACE_MODULE;
-        if (xmlTag.equalsIgnoreCase(I2C_DEVICE.xmlTag)) return I2C_DEVICE;
-        if (xmlTag.equalsIgnoreCase(I2C_DEVICE_SYNCH.xmlTag)) return I2C_DEVICE_SYNCH;
-        if (xmlTag.equalsIgnoreCase(ANALOG_INPUT.xmlTag)) return ANALOG_INPUT;
-        if (xmlTag.equalsIgnoreCase(TOUCH_SENSOR.xmlTag)) return TOUCH_SENSOR;
-        if (xmlTag.equalsIgnoreCase(MR_ANALOG_TOUCH_SENSOR.xmlTag)) return MR_ANALOG_TOUCH_SENSOR;
-        if (xmlTag.equalsIgnoreCase(OPTICAL_DISTANCE_SENSOR.xmlTag)) return OPTICAL_DISTANCE_SENSOR;
-        if (xmlTag.equalsIgnoreCase(ANALOG_OUTPUT.xmlTag)) return ANALOG_OUTPUT;
-        if (xmlTag.equalsIgnoreCase(DIGITAL_DEVICE.xmlTag)) return DIGITAL_DEVICE;
-        if (xmlTag.equalsIgnoreCase(PULSE_WIDTH_DEVICE.xmlTag)) return PULSE_WIDTH_DEVICE;
-        if (xmlTag.equalsIgnoreCase(IR_SEEKER_V3.xmlTag)) return IR_SEEKER_V3;
-        if (xmlTag.equalsIgnoreCase(TOUCH_SENSOR_MULTIPLEXER.xmlTag))
+        }
+        if (xmlTag.equalsIgnoreCase(DEVICE_INTERFACE_MODULE.xmlTag)) {
+            return DEVICE_INTERFACE_MODULE;
+        }
+        if (xmlTag.equalsIgnoreCase(I2C_DEVICE.xmlTag)) {
+            return I2C_DEVICE;
+        }
+        if (xmlTag.equalsIgnoreCase(I2C_DEVICE_SYNCH.xmlTag)) {
+            return I2C_DEVICE_SYNCH;
+        }
+        if (xmlTag.equalsIgnoreCase(ANALOG_INPUT.xmlTag)) {
+            return ANALOG_INPUT;
+        }
+        if (xmlTag.equalsIgnoreCase(TOUCH_SENSOR.xmlTag)) {
+            return TOUCH_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(MR_ANALOG_TOUCH_SENSOR.xmlTag)) {
+            return MR_ANALOG_TOUCH_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(OPTICAL_DISTANCE_SENSOR.xmlTag)) {
+            return OPTICAL_DISTANCE_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(ANALOG_OUTPUT.xmlTag)) {
+            return ANALOG_OUTPUT;
+        }
+        if (xmlTag.equalsIgnoreCase(DIGITAL_DEVICE.xmlTag)) {
+            return DIGITAL_DEVICE;
+        }
+        if (xmlTag.equalsIgnoreCase(PULSE_WIDTH_DEVICE.xmlTag)) {
+            return PULSE_WIDTH_DEVICE;
+        }
+        if (xmlTag.equalsIgnoreCase(IR_SEEKER_V3.xmlTag)) {
+            return IR_SEEKER_V3;
+        }
+        if (xmlTag.equalsIgnoreCase(TOUCH_SENSOR_MULTIPLEXER.xmlTag)) {
             return TOUCH_SENSOR_MULTIPLEXER;
-        if (xmlTag.equalsIgnoreCase(MATRIX_CONTROLLER.xmlTag)) return MATRIX_CONTROLLER;
-        if (xmlTag.equalsIgnoreCase(ULTRASONIC_SENSOR.xmlTag)) return ULTRASONIC_SENSOR;
-        if (xmlTag.equalsIgnoreCase(ADAFRUIT_COLOR_SENSOR.xmlTag)) return ADAFRUIT_COLOR_SENSOR;
-        if (xmlTag.equalsIgnoreCase(COLOR_SENSOR.xmlTag)) return COLOR_SENSOR;
-        if (xmlTag.equalsIgnoreCase(LYNX_COLOR_SENSOR.xmlTag)) return LYNX_COLOR_SENSOR;
-        if (xmlTag.equalsIgnoreCase(LYNX_USB_DEVICE.xmlTag)) return LYNX_USB_DEVICE;
-        if (xmlTag.equalsIgnoreCase(LYNX_MODULE.xmlTag)) return LYNX_MODULE;
-        if (xmlTag.equalsIgnoreCase(LED.xmlTag)) return LED;
-        if (xmlTag.equalsIgnoreCase(NOTHING.xmlTag)) return NOTHING;
+        }
+        if (xmlTag.equalsIgnoreCase(MATRIX_CONTROLLER.xmlTag)) {
+            return MATRIX_CONTROLLER;
+        }
+        if (xmlTag.equalsIgnoreCase(ULTRASONIC_SENSOR.xmlTag)) {
+            return ULTRASONIC_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(ADAFRUIT_COLOR_SENSOR.xmlTag)) {
+            return ADAFRUIT_COLOR_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(COLOR_SENSOR.xmlTag)) {
+            return COLOR_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(LYNX_COLOR_SENSOR.xmlTag)) {
+            return LYNX_COLOR_SENSOR;
+        }
+        if (xmlTag.equalsIgnoreCase(LYNX_USB_DEVICE.xmlTag)) {
+            return LYNX_USB_DEVICE;
+        }
+        if (xmlTag.equalsIgnoreCase(LYNX_MODULE.xmlTag)) {
+            return LYNX_MODULE;
+        }
+        if (xmlTag.equalsIgnoreCase(LED.xmlTag)) {
+            return LED;
+        }
+        if (xmlTag.equalsIgnoreCase(NOTHING.xmlTag)) {
+            return NOTHING;
+        }
         return UNKNOWN;
     }
 

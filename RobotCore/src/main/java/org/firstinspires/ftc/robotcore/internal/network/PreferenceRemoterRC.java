@@ -63,7 +63,9 @@ public class PreferenceRemoterRC extends PreferenceRemoter {
     protected static PreferenceRemoterRC theInstance = null;
 
     public synchronized static PreferenceRemoterRC getInstance() {
-        if (null == theInstance) theInstance = new PreferenceRemoterRC();
+        if (null == theInstance) {
+            theInstance = new PreferenceRemoterRC();
+        }
         return theInstance;
     }
 

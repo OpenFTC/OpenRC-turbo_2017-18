@@ -175,7 +175,9 @@ public class ConfigurationUtility {
         RobotLog.vv(TAG, "buildNewLynxUsbDevice(%s)...", serialNumber);
         try {
             LynxModuleMetaList metas = discoveryFuture.await();
-            if (metas == null) metas = new LynxModuleMetaList(serialNumber);
+            if (metas == null) {
+                metas = new LynxModuleMetaList(serialNumber);
+            }
             RobotLog.vv(TAG, "buildLynxUsbDevice(): discovered lynx modules: %s", metas);
             //
             List<LynxModuleConfiguration> modules = new LinkedList<LynxModuleConfiguration>();

@@ -116,7 +116,9 @@ public class CRServoImpl implements CRServo {
         //      128 == stopped
         //      255 == full speed forward
         //
-        if (this.direction == Direction.REVERSE) power = -power;
+        if (this.direction == Direction.REVERSE) {
+            power = -power;
+        }
         power = Range.clip(power, apiPowerMin, apiPowerMax);
         power = Range.scale(power, apiPowerMin, apiPowerMax, apiServoPositionMin, apiServoPositionMax);
         this.controller.setServoPosition(this.portNumber, power);
@@ -126,7 +128,9 @@ public class CRServoImpl implements CRServo {
     public double getPower() {
         double power = this.controller.getServoPosition(this.portNumber);
         power = Range.scale(power, apiServoPositionMin, apiServoPositionMax, apiPowerMin, apiPowerMax);
-        if (this.direction == Direction.REVERSE) power = -power;
+        if (this.direction == Direction.REVERSE) {
+            power = -power;
+        }
         return power;
     }
 }

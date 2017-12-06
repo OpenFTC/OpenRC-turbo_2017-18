@@ -128,7 +128,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
         @Override
         public void onStateChange(@NonNull RobotState state) {
-            if (callback == null) return;
+            if (callback == null) {
+                return;
+            }
             callback.updateRobotState(state);
             if (state == RobotState.RUNNING) {
                 updateRobotStatus(RobotStatus.NONE);
@@ -137,13 +139,17 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
         @Override
         public void onPeerConnected(boolean peerLikelyChanged) {
-            if (callback == null) return;
+            if (callback == null) {
+                return;
+            }
             updatePeerStatus(PeerStatus.CONNECTED);
         }
 
         @Override
         public void onPeerDisconnected() {
-            if (callback == null) return;
+            if (callback == null) {
+                return;
+            }
             updatePeerStatus(PeerStatus.DISCONNECTED);
         }
 
@@ -163,7 +169,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
         @Override
         public void onTelemetryTransmitted() {
-            if (callback == null) return;
+            if (callback == null) {
+                return;
+            }
             callback.refreshErrorTextOnUiThread();
         }
     }
@@ -214,7 +222,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
             boolean waited = false;
             for (; ; ) {
                 synchronized (wifiDirectCallbackLock) {
-                    if (wifiDirectAgent.isWifiEnabled()) return waited;
+                    if (wifiDirectAgent.isWifiEnabled()) {
+                        return waited;
+                    }
                     waited = true;
                     waitForNextWifiDirectCallback();
                 }
@@ -226,7 +236,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
             boolean waited = false;
             for (; ; ) {
                 synchronized (wifiDirectCallbackLock) {
-                    if (wifiDirectAgent.isWifiDirectEnabled()) return waited;
+                    if (wifiDirectAgent.isWifiDirectEnabled()) {
+                        return waited;
+                    }
                     waited = true;
                     waitForNextWifiDirectCallback();
                 }
@@ -237,7 +249,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
             updateRobotStatus(RobotStatus.WAITING_ON_NETWORK_CONNECTION);
             boolean waited = false;
             for (; ; ) {
-                if (networkConnection.isConnected()) return waited;
+                if (networkConnection.isConnected()) {
+                    return waited;
+                }
                 waited = true;
                 Thread.sleep(NETWORK_WAIT);
             }
@@ -470,7 +484,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
         shutdownRobotSetup();
 
         // shut down the robot
-        if (robot != null) robot.shutdown();
+        if (robot != null) {
+            robot.shutdown();
+        }
         robot = null; // need to set robot to null
         updateRobotStatus(RobotStatus.NONE);
     }
@@ -511,7 +527,9 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
     private void updateNetworkConnectionStatus(final WifiDirectAssistant.Event event) {
         networkConnectionStatus = event;
-        if (callback != null) callback.networkConnectionUpdate(networkConnectionStatus);
+        if (callback != null) {
+            callback.networkConnectionUpdate(networkConnectionStatus);
+        }
     }
 
     private void updateRobotStatus(@NonNull final RobotStatus status) {

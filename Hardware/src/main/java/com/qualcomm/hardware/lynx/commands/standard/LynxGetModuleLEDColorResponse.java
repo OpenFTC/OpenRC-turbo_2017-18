@@ -87,7 +87,7 @@ public class LynxGetModuleLEDColorResponse extends LynxStandardResponse {
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {this.red, this.green, this.blue};
+        return new byte[]{this.red, this.green, this.blue};
     }
 
     @Override

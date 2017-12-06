@@ -238,7 +238,9 @@ public abstract class EditPortListActivity<ITEM_T extends DeviceConfiguration> e
 
     protected DeviceConfiguration findConfigByPort(int port) {
         for (DeviceConfiguration config : this.itemList) {
-            if (config.getPort() == port) return config;
+            if (config.getPort() == port) {
+                return config;
+            }
         }
         return null;
     }

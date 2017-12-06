@@ -52,6 +52,6 @@ public class FlashLoaderCommand extends FlashLoaderDatagram {
     }
 
     protected static byte[] makePayload(int command, byte[] data) {
-        return Util.concatenateByteArrays(new byte[] {(byte) command}, data);
+        return Util.concatenateByteArrays(new byte[]{(byte) command}, data);
     }
 }

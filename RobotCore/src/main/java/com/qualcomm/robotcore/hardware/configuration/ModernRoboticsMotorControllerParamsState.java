@@ -103,8 +103,9 @@ public class ModernRoboticsMotorControllerParamsState implements Serializable, C
         if (o instanceof ModernRoboticsMotorControllerParamsState) {
             ModernRoboticsMotorControllerParamsState them = (ModernRoboticsMotorControllerParamsState) o;
             return this.ratio == them.ratio && this.p == them.p && this.i == them.i && this.d == them.d;
-        } else
+        } else {
             return false;
+        }
     }
 
     @Override

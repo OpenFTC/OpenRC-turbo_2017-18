@@ -140,11 +140,15 @@ public class LightBlinker implements Blinker {
     }
 
     protected boolean isCurrentPattern(Collection<Step> steps) {
-        if (steps.size() != this.currentSteps.size()) return false;
+        if (steps.size() != this.currentSteps.size()) {
+            return false;
+        }
         int i = 0;
         for (Step theirStep : steps) {
             Step ourStep = this.currentSteps.get(i++);
-            if (!theirStep.equals(ourStep)) return false;
+            if (!theirStep.equals(ourStep)) {
+                return false;
+            }
         }
         return true;
     }
@@ -158,7 +162,9 @@ public class LightBlinker implements Blinker {
     protected synchronized void scheduleNext() {
         // Dig out this step, and advance
         final Step thisStep = this.currentSteps.get(this.nextStep++);
-        if (this.nextStep >= currentSteps.size()) this.nextStep = 0;
+        if (this.nextStep >= currentSteps.size()) {
+            this.nextStep = 0;
+        }
 
         // Light this step appropriately
         boolean isLit = thisStep.isLit();

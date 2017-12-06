@@ -145,8 +145,9 @@ public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice {
         ModernRoboticsResponse response = null;
         try {
             request = ModernRoboticsRequest.from(requestAllocationContext, bytes);
-            if (0 != request.getFunction())
+            if (0 != request.getFunction()) {
                 throw new IllegalArgumentException("undefined function: " + request.getFunction());
+            }
 
             // Generate an appropriate response
             if (request.isWrite()) {
@@ -186,8 +187,12 @@ public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice {
                 Thread.currentThread().interrupt();
             }
         } finally {
-            if (response != null) response.close();
-            if (request != null) request.close();
+            if (response != null) {
+                response.close();
+            }
+            if (request != null) {
+                request.close();
+            }
         }
     }
 

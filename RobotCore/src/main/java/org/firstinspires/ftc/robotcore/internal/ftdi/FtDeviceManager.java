@@ -71,7 +71,7 @@ public class FtDeviceManager extends FtConstants {
 
     private static Context mContext = null;
     private static PendingIntent mPendingIntent = null;
-    private static List<VendorAndProductIds> mSupportedDevices = new ArrayList<VendorAndProductIds>(Arrays.asList(new VendorAndProductIds[] {
+    private static List<VendorAndProductIds> mSupportedDevices = new ArrayList<VendorAndProductIds>(Arrays.asList(new VendorAndProductIds[]{
             new VendorAndProductIds(0x0403, 24597),    // 0x6015    X series
             new VendorAndProductIds(0x0403, 24596),    // 0x6014    ft232h
             new VendorAndProductIds(0x0403, 24593),    // 0x6011    ft4232h

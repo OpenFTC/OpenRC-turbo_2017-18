@@ -66,8 +66,9 @@ public class LynxSetMotorTargetVelocityCommand extends LynxDekaInterfaceCommand<
     public LynxSetMotorTargetVelocityCommand(LynxModuleIntf module, int motorZ, int velocity) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        if (velocity < apiVelocityFirst || velocity > apiVelocityLast)
+        if (velocity < apiVelocityFirst || velocity > apiVelocityLast) {
             throw new IllegalArgumentException(String.format("illegal velocity: %d", velocity));
+        }
         this.motor = (byte) motorZ;
         this.velocity = (short) velocity;
     }

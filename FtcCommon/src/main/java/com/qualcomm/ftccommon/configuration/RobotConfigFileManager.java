@@ -197,7 +197,9 @@ public class RobotConfigFileManager {
             file = getConfigFromString(objSerialized);
         }
 
-        if (DEBUG) RobotLog.vv(TAG, "getActiveConfig()='%s'", file.getName());
+        if (DEBUG) {
+            RobotLog.vv(TAG, "getActiveConfig()='%s'", file.getName());
+        }
         return file;
     }
 
@@ -228,7 +230,9 @@ public class RobotConfigFileManager {
     }
 
     public void setActiveConfig(@NonNull RobotConfigFile cfgFile) {
-        if (DEBUG) RobotLog.vv(TAG, "setActiveConfig('%s')", cfgFile.getName());
+        if (DEBUG) {
+            RobotLog.vv(TAG, "setActiveConfig('%s')", cfgFile.getName());
+        }
         String objSerialized = SimpleGson.getInstance().toJson(cfgFile);
         SharedPreferences.Editor edit = preferences.edit();
         String key = context.getString(R.string.pref_hardware_config_filename);
@@ -316,17 +320,20 @@ public class RobotConfigFileManager {
      */
     public ConfigNameCheckResult isPlausibleConfigName(RobotConfigFile existingConfig, String candidate, List<RobotConfigFile> extantConfigurations) {
         // We disallow whitespace at front and back to reduce user confusion
-        if (!candidate.equals(candidate.trim()))
+        if (!candidate.equals(candidate.trim())) {
             return new ConfigNameCheckResult(context.getString(R.string.configNameWhitespace));
+        }
 
         // Empty names aren't allowed
-        if (candidate.length() == 0)
+        if (candidate.length() == 0) {
             return new ConfigNameCheckResult(context.getString(R.string.configNameEmpty));
+        }
 
         // Names that contain path components aren't allowed as they'd end up in the wrong folder
         File file = new File(candidate);
-        if (!file.getName().equals(candidate))
+        if (!file.getName().equals(candidate)) {
             return new ConfigNameCheckResult(context.getString(R.string.configNameIllegalCharacters));
+        }
 
         // Certain characters can't be used in the Android SDCARD file system (which is, we believe, FAT32)
         // This may not be definititive, but will catch a lot of bad file names before they're attempted
@@ -338,8 +345,9 @@ public class RobotConfigFileManager {
         }
 
         // Can't mirror the 'nothing here' guy
-        if (candidate.equalsIgnoreCase(noConfig))
+        if (candidate.equalsIgnoreCase(noConfig)) {
             return new ConfigNameCheckResult(context.getString(R.string.configNameReserved));
+        }
 
         // Always ok to save on top of existing, unless it's read-only
         if (candidate.equalsIgnoreCase(existingConfig.getName())) {
@@ -609,7 +617,9 @@ public class RobotConfigFileManager {
                 this.writeXMLToFile(RobotConfigFileManager.withExtension(cfgFile.getName()), data);
             }
         } catch (RobotCoreException | IOException | RuntimeException e) {
-            if (wasDirty) cfgFile.markDirty();
+            if (wasDirty) {
+                cfgFile.markDirty();
+            }
             throw e;
         }
     }

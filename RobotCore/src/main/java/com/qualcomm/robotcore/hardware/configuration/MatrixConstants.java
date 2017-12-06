@@ -43,12 +43,14 @@ public class MatrixConstants {
     public final static int NUMBER_OF_SERVOS = 4;
 
     public static void validateMotorZ(int motorZ) {
-        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS)
+        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS) {
             throw new IllegalArgumentException(String.format("invalid motor: %d", motorZ));
+        }
     }
 
     public static void validateServoChannelZ(int channelZ) {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVOS)
+        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVOS) {
             throw new IllegalArgumentException(String.format("invalid servo channel: %d", channelZ));
+        }
     }
 }

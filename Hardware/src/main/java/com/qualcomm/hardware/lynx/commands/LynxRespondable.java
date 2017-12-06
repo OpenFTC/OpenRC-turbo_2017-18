@@ -98,7 +98,9 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
     @Override
     public void noteRetransmission() {
         this.retransmissionsRemaining--;
-        if (this.retransmissionsRemaining < 0) this.retransmissionsRemaining = 0;
+        if (this.retransmissionsRemaining < 0) {
+            this.retransmissionsRemaining = 0;
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -144,7 +146,9 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         }
 
         // Finish bookkeeping
-        if (this.module != null) this.module.finishedWithMessage(this);
+        if (this.module != null) {
+            this.module.finishedWithMessage(this);
+        }
 
         // Wake up waiters
         this.ackOrNackReceived.countDown();
@@ -272,20 +276,22 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
     }
 
     protected RESPONSE responseOrThrow() throws LynxNackException {
-        if (this.isNackReceived())
+        if (this.isNackReceived()) {
             throw new LynxNackException(this, "%s: nack received: %s:%d",
-                    this.getClass().getSimpleName(),
-                    this.nackReceived.getNackReasonCode().toString(),
-                    this.nackReceived.getNackReasonCode().getValue());
+                this.getClass().getSimpleName(),
+                this.nackReceived.getNackReasonCode().toString(),
+                this.nackReceived.getNackReasonCode().getValue());
+        }
         return this.response;
     }
 
     protected void throwIfNack() throws LynxNackException {
-        if (this.isNackReceived())
+        if (this.isNackReceived()) {
             throw new LynxNackException(this, "%s: nack received: %s:%d",
-                    this.getClass().getSimpleName(),
-                    this.nackReceived.getNackReasonCode().toString(),
-                    this.nackReceived.getNackReasonCode().getValue());
+                this.getClass().getSimpleName(),
+                this.nackReceived.getNackReasonCode().toString(),
+                this.nackReceived.getNackReasonCode().getValue());
+        }
     }
 
     protected int getMsAwaitInterval() {

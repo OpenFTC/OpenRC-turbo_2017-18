@@ -399,8 +399,9 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
             this.usedForRead = false;
             this.iregFirst = iregFirst;
             this.creg = creg;
-            if (creg < 0 || creg > READ_REGISTER_COUNT_MAX)
+            if (creg < 0 || creg > READ_REGISTER_COUNT_MAX) {
                 throw new IllegalArgumentException(String.format("buffer length %d invalid; max is %d", creg, READ_REGISTER_COUNT_MAX));
+            }
         }
 
         /**
@@ -424,8 +425,9 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
          * @return the result of the comparison
          */
         public boolean sameAsIncludingMode(ReadWindow him) {
-            if (him == null)
+            if (him == null) {
                 return false;
+            }
 
             return this.getRegisterFirst() == him.getRegisterFirst()
                     && this.getRegisterCount() == him.getRegisterCount()
@@ -440,8 +442,9 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
          * @see #contains(int, int)
          */
         public boolean contains(ReadWindow him) {
-            if (him == null)
+            if (him == null) {
                 return false;
+            }
 
             return this.getRegisterFirst() <= him.getRegisterFirst() && him.getRegisterMax() <= this.getRegisterMax();
         }

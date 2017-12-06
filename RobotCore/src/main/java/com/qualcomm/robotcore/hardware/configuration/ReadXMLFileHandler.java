@@ -177,8 +177,9 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
                     // just an empty <DEVICE> </> closing tag
                     continue;
                 }
-                if (DEBUG)
+                if (DEBUG) {
                     RobotLog.e("[handleDeviceInterfaceModule] tagname: " + configurationType);
+                }
                 if (configurationType == BuiltInConfigurationType.DEVICE_INTERFACE_MODULE) {
                     // end of loop...
                     noteExistingName(BuiltInConfigurationType.DEVICE_INTERFACE_MODULE, name);
@@ -250,7 +251,9 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
                 }
             }
             if (eventType == XmlPullParser.START_TAG) {
-                if (DEBUG) RobotLog.e("[handleLegacyModule] tagname: " + configurationType);
+                if (DEBUG) {
+                    RobotLog.e("[handleLegacyModule] tagname: " + configurationType);
+                }
                 if (configurationType == BuiltInConfigurationType.COMPASS ||
                         configurationType == BuiltInConfigurationType.LIGHT_SENSOR ||
                         configurationType == BuiltInConfigurationType.IR_SEEKER ||

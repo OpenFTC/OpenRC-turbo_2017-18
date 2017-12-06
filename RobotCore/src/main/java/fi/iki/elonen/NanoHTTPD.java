@@ -750,10 +750,11 @@ public abstract class NanoHTTPD {
                                     // add these two line to support multiple
                                     // files uploaded using the same field Id
                                     if (!fileName.isEmpty()) {
-                                        if (pcount > 0)
+                                        if (pcount > 0) {
                                             partName = partName + String.valueOf(pcount++);
-                                        else
+                                        } else {
                                             pcount++;
+                                        }
                                     }
                                 }
                             }
@@ -1025,8 +1026,9 @@ public abstract class NanoHTTPD {
                 // Search the search_window
                 for (int j = 0; j < new_bytes; j++) {
                     for (int i = 0; i < boundary.length; i++) {
-                        if (search_window[j + i] != boundary[i])
+                        if (search_window[j + i] != boundary[i]) {
                             break;
+                        }
                         if (i == boundary.length - 1) {
                             // Match found, add it to results
                             int[] new_res = new int[res.length + 1];
@@ -1304,8 +1306,9 @@ public abstract class NanoHTTPD {
         UNLOCK;
 
         static Method lookup(String method) {
-            if (method == null)
+            if (method == null) {
                 return null;
+            }
 
             try {
                 return valueOf(method);
@@ -1432,8 +1435,9 @@ public abstract class NanoHTTPD {
 
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
-                if (len == 0)
+                if (len == 0) {
                     return;
+                }
                 out.write(String.format("%x\r\n", len).getBytes());
                 out.write(b, off, len);
                 out.write("\r\n".getBytes());
@@ -1535,10 +1539,11 @@ public abstract class NanoHTTPD {
          *              let connection be closed by client.
          */
         public void closeConnection(boolean close) {
-            if (close)
+            if (close) {
                 this.header.put("connection", "close");
-            else
+            } else {
                 this.header.remove("connection");
+            }
         }
 
         /**

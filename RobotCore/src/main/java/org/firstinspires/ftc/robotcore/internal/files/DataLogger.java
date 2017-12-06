@@ -113,8 +113,9 @@ public class DataLogger {
                     if (ch == '"') {
                         writer.append('"');
                         writer.append('"');
-                    } else
+                    } else {
                         writer.append(ch);
+                    }
                 }
                 writer.append('"');
             } else {

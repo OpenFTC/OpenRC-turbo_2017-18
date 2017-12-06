@@ -104,7 +104,9 @@ public class RollingAverage {
      * @return rolling average, if available; otherwise 0
      */
     public int getAverage() {
-        if (queue.isEmpty()) return 0;
+        if (queue.isEmpty()) {
+            return 0;
+        }
         return (int) (total / queue.size());
     }
 

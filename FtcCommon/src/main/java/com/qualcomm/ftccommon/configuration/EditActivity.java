@@ -137,8 +137,9 @@ public abstract class EditActivity extends ThemedActivity {
         this.extantRobotConfigurations = parameters.getExtantRobotConfigurations();
         this.controllerConfiguration = (parameters.getConfiguration() instanceof ControllerConfiguration) ? (ControllerConfiguration) parameters.getConfiguration() : null;
         // Caller can optionally provide an explicit config file; this avoids races with setting the contextual one
-        if (parameters.getCurrentCfgFile() != null)
+        if (parameters.getCurrentCfgFile() != null) {
             this.currentCfgFile = parameters.getCurrentCfgFile();
+        }
         deserializeConfigMap(parameters);
     }
 
@@ -451,7 +452,9 @@ public abstract class EditActivity extends ThemedActivity {
     // Find the position of this indicated types in the localized spinner
     {
         int result = findPosition(spinner, typeA);
-        if (result < 0) result = findPosition(spinner, typeB);
+        if (result < 0) {
+            result = findPosition(spinner, typeB);
+        }
         return result;
     }
 

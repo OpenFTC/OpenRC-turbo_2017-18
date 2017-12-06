@@ -155,7 +155,7 @@ public final class DexFile {
          * This is the list of sections in the order they appear in
          * the final output.
          */
-        sections = new Section[] {
+        sections = new Section[]{
                 header, stringIds, typeIds, protoIds, fieldIds, methodIds,
                 classDefs, wordData, typeLists, stringData, byteData,
                 classData, map};

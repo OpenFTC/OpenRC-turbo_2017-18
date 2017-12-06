@@ -176,8 +176,9 @@ public class ModernRoboticsReaderWriter {
     //----------------------------------------------------------------------------------------------
 
     public void read(boolean retry, int address, byte[] buffer, @Nullable TimeWindow payloadTimeWindow) throws RobotUsbException, InterruptedException {
-        if (DEBUG)
+        if (DEBUG) {
             RobotLog.vv(TAG, "%s: read(addr=%d cb=%d)", device.getSerialNumber(), address, buffer.length);
+        }
 
         RobotUsbException exception = null;
 
@@ -207,7 +208,9 @@ public class ModernRoboticsReaderWriter {
             return;
         }
 
-        if (exception != null) throw exception;
+        if (exception != null) {
+            throw exception;
+        }
     }
 
     protected void readOnce(int address, byte[] buffer, @Nullable TimeWindow payloadTimeWindow) throws RobotUsbException, InterruptedException {
@@ -256,14 +259,19 @@ public class ModernRoboticsReaderWriter {
             throw e;
         } finally {
             // proactively reclaim instances
-            if (response != null) response.close();
-            if (request != null) request.close();
+            if (response != null) {
+                response.close();
+            }
+            if (request != null) {
+                request.close();
+            }
         }
     }
 
     public void write(int address, byte[] buffer) throws RobotUsbException, InterruptedException {
-        if (DEBUG)
+        if (DEBUG) {
             RobotLog.vv(TAG, "%s: write(addr=%d cb=%d)", device.getSerialNumber(), address, buffer.length);
+        }
 
         // Retry a handful of times before giving up. The thing we have to deal with most here
         // is USB transmission errors, which tend in our experience to be intermittent and not
@@ -301,7 +309,9 @@ public class ModernRoboticsReaderWriter {
         // If that didn't fix things, then fail : the write will (presumably) change
         // state if it succeeds, so we need to eithe make the change happen or let the
         // caller know that it won't
-        if (exception != null) throw exception;
+        if (exception != null) {
+            throw exception;
+        }
     }
 
     protected void writeOnce(int address, byte[] buffer) throws RobotUsbException, InterruptedException {
@@ -348,8 +358,12 @@ public class ModernRoboticsReaderWriter {
             ++this.usbSequentialCommWriteErrorCount;
             throw e;
         } finally {
-            if (response != null) response.close();
-            if (request != null) request.close();
+            if (response != null) {
+                response.close();
+            }
+            if (request != null) {
+                request.close();
+            }
         }
     }
 
@@ -431,7 +445,9 @@ public class ModernRoboticsReaderWriter {
                 isSynchronized = true;
                 return result;
             } finally {
-                if (header != null) header.close();
+                if (header != null) {
+                    header.close();
+                }
             }
         }
 

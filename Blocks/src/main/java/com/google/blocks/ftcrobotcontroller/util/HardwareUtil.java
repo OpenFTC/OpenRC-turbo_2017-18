@@ -441,8 +441,8 @@ public class HardwareUtil {
         properties.put("Temperature", "Temperature");
         properties.put("Velocity", "Velocity");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -530,8 +530,8 @@ public class HardwareUtil {
         properties.put("I2cAddress7Bit", "Number");
         properties.put("I2cAddress8Bit", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -580,8 +580,8 @@ public class HardwareUtil {
         properties.put("Power", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
         setterValues.put(
-                "Direction", new String[] {ToolboxUtil.makeTypedEnumShadow(hardwareType, "direction")});
-        setterValues.put("Power", new String[] {
+                "Direction", new String[]{ToolboxUtil.makeTypedEnumShadow(hardwareType, "direction")});
+        setterValues.put("Power", new String[]{
                 ToolboxUtil.makeNumberShadow(1),
                 ToolboxUtil.makeNumberShadow(0)
         });
@@ -611,11 +611,11 @@ public class HardwareUtil {
         properties.put("TargetPosition", "Number");
         properties.put("ZeroPowerBehavior", "ZeroPowerBehavior");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("Direction", new String[] {direction});
-        setterValues.put("Mode", new String[] {runMode});
-        setterValues.put("Power", new String[] {one, zero});
-        setterValues.put("TargetPosition", new String[] {zero});
-        setterValues.put("ZeroPowerBehavior", new String[] {zeroPowerBehavior});
+        setterValues.put("Direction", new String[]{direction});
+        setterValues.put("Mode", new String[]{runMode});
+        setterValues.put("Power", new String[]{one, zero});
+        setterValues.put("TargetPosition", new String[]{zero});
+        setterValues.put("ZeroPowerBehavior", new String[]{zeroPowerBehavior});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -665,8 +665,8 @@ public class HardwareUtil {
         properties.put("Mode", "DigitalChannelMode");
         properties.put("State", "Boolean");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("Mode", new String[] {mode});
-        setterValues.put("State", new String[] {ToolboxUtil.makeBooleanShadow(true)});
+        setterValues.put("Mode", new String[]{mode});
+        setterValues.put("State", new String[]{ToolboxUtil.makeBooleanShadow(true)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
     }
 
@@ -692,9 +692,9 @@ public class HardwareUtil {
         properties.put("AngularVelocityAxes", "Array");
         properties.put("AngularOrientationAxes", "Array");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("HeadingMode", new String[] {headingMode});
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("HeadingMode", new String[]{headingMode});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -732,10 +732,10 @@ public class HardwareUtil {
         properties.put("I2cAddress7Bit", "Number");
         properties.put("I2cAddress8Bit", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("SignalDetectedThreshold", new String[] {threshold});
-        setterValues.put("Mode", new String[] {mode});
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("SignalDetectedThreshold", new String[]{threshold});
+        setterValues.put("Mode", new String[]{mode});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
     }
 
@@ -798,8 +798,8 @@ public class HardwareUtil {
         properties.put("RawLightDetected", "Number");
         properties.put("RawLightDetectedMax", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -830,8 +830,8 @@ public class HardwareUtil {
         properties.put("I2cAddress7Bit", "Number");
         properties.put("I2cAddress8Bit", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -863,8 +863,8 @@ public class HardwareUtil {
         properties.put("I2cAddress7Bit", "Number");
         properties.put("I2cAddress8Bit", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
-        setterValues.put("I2cAddress7Bit", new String[] {ToolboxUtil.makeNumberShadow(8)});
-        setterValues.put("I2cAddress8Bit", new String[] {ToolboxUtil.makeNumberShadow(16)});
+        setterValues.put("I2cAddress7Bit", new String[]{ToolboxUtil.makeNumberShadow(8)});
+        setterValues.put("I2cAddress8Bit", new String[]{ToolboxUtil.makeNumberShadow(16)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions
@@ -911,8 +911,8 @@ public class HardwareUtil {
         properties.put("Position", "Number");
         Map<String, String[]> setterValues = new HashMap<String, String[]>();
         setterValues.put(
-                "Direction", new String[] {ToolboxUtil.makeTypedEnumShadow(hardwareType, "direction")});
-        setterValues.put("Position", new String[] {ToolboxUtil.makeNumberShadow(0)});
+                "Direction", new String[]{ToolboxUtil.makeTypedEnumShadow(hardwareType, "direction")});
+        setterValues.put("Position", new String[]{ToolboxUtil.makeNumberShadow(0)});
         ToolboxUtil.addProperties(xmlToolbox, hardwareType, hardwareItem, properties, setterValues);
 
         // Functions

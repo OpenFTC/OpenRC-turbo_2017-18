@@ -102,33 +102,39 @@ public class LynxConstants {
     public final static int DEFAULT_TARGET_POSITION_TOLERANCE = 5;
 
     public static void validateMotorZ(int motorZ) {
-        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS)
+        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS) {
             throw new IllegalArgumentException(String.format("invalid motor: %d", motorZ));
+        }
     }
 
     public static void validatePwmChannelZ(int channelZ) {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_PWM_CHANNELS)
+        if (channelZ < 0 || channelZ >= NUMBER_OF_PWM_CHANNELS) {
             throw new IllegalArgumentException(String.format("invalid pwm channel: %d", channelZ));
+        }
     }
 
     public static void validateServoChannelZ(int channelZ) {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVO_CHANNELS)
+        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVO_CHANNELS) {
             throw new IllegalArgumentException(String.format("invalid servo channel: %d", channelZ));
+        }
     }
 
     public static void validateI2cBusZ(int busZ) {
-        if (busZ < 0 || busZ >= NUMBER_OF_I2C_BUSSES)
+        if (busZ < 0 || busZ >= NUMBER_OF_I2C_BUSSES) {
             throw new IllegalArgumentException(String.format("invalid i2c bus: %d", busZ));
+        }
     }
 
     public static void validateAnalogInputZ(int analogInputZ) {
-        if (analogInputZ < 0 || analogInputZ >= NUMBER_OF_ANALOG_INPUTS)
+        if (analogInputZ < 0 || analogInputZ >= NUMBER_OF_ANALOG_INPUTS) {
             throw new IllegalArgumentException(String.format("invalid analog input: %d", analogInputZ));
+        }
     }
 
     public static void validateDigitalIOZ(int digitalIOZ) {
-        if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS)
+        if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS) {
             throw new IllegalArgumentException(String.format("invalid digital pin: %d", digitalIOZ));
+        }
     }
 
 }

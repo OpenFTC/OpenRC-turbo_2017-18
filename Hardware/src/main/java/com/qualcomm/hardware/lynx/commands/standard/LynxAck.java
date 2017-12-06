@@ -85,7 +85,7 @@ public class LynxAck extends LynxMessage {
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {this.isAttentionRequired ? (byte) 1 : (byte) 0};
+        return new byte[]{this.isAttentionRequired ? (byte) 1 : (byte) 0};
     }
 
     @Override

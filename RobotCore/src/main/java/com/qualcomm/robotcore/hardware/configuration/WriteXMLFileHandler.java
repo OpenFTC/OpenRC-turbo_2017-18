@@ -76,7 +76,9 @@ public class WriteXMLFileHandler {
             serializer.startDocument("UTF-8", true);
             serializer.ignorableWhitespace("\n");
             serializer.startTag("", "Robot");
-            if (attribute != null) serializer.attribute("", attribute, attributeValue);
+            if (attribute != null) {
+                serializer.attribute("", attribute, attributeValue);
+            }
             serializer.ignorableWhitespace("\n");
             for (ControllerConfiguration controllerConfiguration : deviceControllerConfigurations) {
 

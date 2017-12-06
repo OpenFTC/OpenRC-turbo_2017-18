@@ -79,7 +79,9 @@ public class SoftApAssistant extends NetworkConnection {
 
 
     public synchronized static SoftApAssistant getSoftApAssistant(Context context) {
-        if (softApAssistant == null) softApAssistant = new SoftApAssistant(context);
+        if (softApAssistant == null) {
+            softApAssistant = new SoftApAssistant(context);
+        }
 
         // Set up the intent filter for wifi direct
         intentFilter = new IntentFilter();
@@ -113,35 +115,37 @@ public class SoftApAssistant extends NetworkConnection {
     @Override
     public void enable() {
 
-        if (receiver == null) receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                RobotLog.v("onReceive(), action: " + action + ", wifiInfo: " + wifiInfo);
+        if (receiver == null) {
+            receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                    RobotLog.v("onReceive(), action: " + action + ", wifiInfo: " + wifiInfo);
 
-                if (wifiInfo.getSSID().equals(ssid) && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
-                    sendEvent(Event.CONNECTION_INFO_AVAILABLE);
-                }
-                if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
-                    scanResults.clear();
-                    scanResults.addAll(wifiManager.getScanResults());
-
-                    RobotLog.v("Soft AP scanResults found: " + scanResults.size());
-                    for (ScanResult scanResult : scanResults) {
-                        // deviceAddress is the MAC address, deviceName is the human readable name
-                        String s = "    scanResult: " + scanResult.SSID;
-                        RobotLog.v(s);
-                    }
-                    sendEvent(Event.PEERS_AVAILABLE);
-                }
-                if (WifiManager.SUPPLICANT_STATE_CHANGED_ACTION.equals(action)) {
-                    if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+                    if (wifiInfo.getSSID().equals(ssid) && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
                         sendEvent(Event.CONNECTION_INFO_AVAILABLE);
                     }
+                    if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+                        scanResults.clear();
+                        scanResults.addAll(wifiManager.getScanResults());
+
+                        RobotLog.v("Soft AP scanResults found: " + scanResults.size());
+                        for (ScanResult scanResult : scanResults) {
+                            // deviceAddress is the MAC address, deviceName is the human readable name
+                            String s = "    scanResult: " + scanResult.SSID;
+                            RobotLog.v(s);
+                        }
+                        sendEvent(Event.PEERS_AVAILABLE);
+                    }
+                    if (WifiManager.SUPPLICANT_STATE_CHANGED_ACTION.equals(action)) {
+                        if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+                            sendEvent(Event.CONNECTION_INFO_AVAILABLE);
+                        }
+                    }
                 }
-            }
-        };
+            };
+        }
 
         context.registerReceiver(receiver, intentFilter);
     }
@@ -312,7 +316,9 @@ public class SoftApAssistant extends NetworkConnection {
 
     @Override
     public boolean isConnected() {
-        if (isSoftAccessPoint()) return true;
+        if (isSoftAccessPoint()) {
+            return true;
+        }
 
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         RobotLog.v("isConnected(), current supplicant state: " + wifiInfo.getSupplicantState().toString());
@@ -399,9 +405,13 @@ public class SoftApAssistant extends NetworkConnection {
 
     private void sendEvent(Event event) {
         // don't send duplicate events
-        if (lastEvent == event) return;
+        if (lastEvent == event) {
+            return;
+        }
         lastEvent = event;
 
-        if (callback != null) callback.onNetworkConnectionEvent(event);
+        if (callback != null) {
+            callback.onNetworkConnectionEvent(event);
+        }
     }
 }

@@ -319,7 +319,9 @@ public abstract class InspectionActivity extends ThemedActivity {
     }
 
     public boolean isValidDeviceName(InspectionState state) {
-        if (state.deviceName.contains("\n") || state.deviceName.contains("\r")) return false;
+        if (state.deviceName.contains("\n") || state.deviceName.contains("\r")) {
+            return false;
+        }
         return (teamNoRegex.matcher(state.deviceName)).find();
     }
 

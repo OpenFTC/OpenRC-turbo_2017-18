@@ -97,8 +97,9 @@ public class ServiceController {
                             result.add(new AutoStartableService(serviceClassName, Integer.parseInt(splits[1])));
                         }
 
-                    } else
+                    } else {
                         throw AppUtil.getInstance().failFast(TAG, "incorrect manifest construction");
+                    }
                 }
             }
         } catch (PackageManager.NameNotFoundException e)   // we shouldn't configure classes we can't find

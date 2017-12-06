@@ -55,8 +55,9 @@ public abstract class LegacyModulePortDeviceImpl implements RobotArmingStateNoti
     protected void finishConstruction() {
         moduleNowArmedOrPretending();
 
-        if (module instanceof RobotUsbModule)
+        if (module instanceof RobotUsbModule) {
             ((RobotUsbModule) module).registerCallback((RobotArmingStateNotifier.Callback) this, false);
+        }
     }
 
     /**

@@ -73,7 +73,9 @@ public abstract class MatrixF {
     public MatrixF(int numRows, int numCols) {
         this.numRows = numRows;
         this.numCols = numCols;
-        if (numRows <= 0 || numCols <= 0) throw dimensionsError();
+        if (numRows <= 0 || numCols <= 0) {
+            throw dimensionsError();
+        }
     }
 
     /**
@@ -239,10 +241,14 @@ public abstract class MatrixF {
         StringBuilder result = new StringBuilder();
         result.append("{");
         for (int i = 0; i < this.numRows; i++) {
-            if (i > 0) result.append(",");
+            if (i > 0) {
+                result.append(",");
+            }
             result.append("{");
             for (int j = 0; j < this.numCols; j++) {
-                if (j > 0) result.append(",");
+                if (j > 0) {
+                    result.append(",");
+                }
                 result.append(String.format("%.3f", this.get(i, j)));
             }
             result.append("}");
@@ -385,10 +391,12 @@ public abstract class MatrixF {
                         this.put(i, j, temp.get(i, j));
                     }
                 }
-            } else
+            } else {
                 throw dimensionsError();
-        } else
+            }
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -411,8 +419,9 @@ public abstract class MatrixF {
                 }
             }
             return result;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -500,8 +509,9 @@ public abstract class MatrixF {
                 result.put(j, this.get(0, j));
             }
             return result;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -521,8 +531,9 @@ public abstract class MatrixF {
                 }
             }
             return result;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -538,8 +549,9 @@ public abstract class MatrixF {
                     this.put(i, j, this.get(i, j) + addend.get(i, j));
                 }
             }
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -559,8 +571,9 @@ public abstract class MatrixF {
                 }
             }
             return result;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -576,8 +589,9 @@ public abstract class MatrixF {
                     this.put(i, j, this.get(i, j) - subtrahend.get(i, j));
                 }
             }
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -687,7 +701,9 @@ public abstract class MatrixF {
         // (instead of numeric) entries were defined, their inverse symbolically computed, then
         // automatically transcribed to Java.
 
-        if (this.numRows != this.numCols) throw dimensionsError();
+        if (this.numRows != this.numCols) {
+            throw dimensionsError();
+        }
 
         if (this.numRows == 4) {
             MatrixF result = this.emptyMatrix(4, 4);

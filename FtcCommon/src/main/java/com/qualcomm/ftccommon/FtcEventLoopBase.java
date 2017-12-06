@@ -580,20 +580,28 @@ public abstract class FtcEventLoopBase implements EventLoop {
         }
 
         public void disengage() {
-            if (lynxUsbDevice != null) lynxUsbDevice.disengage();
+            if (lynxUsbDevice != null) {
+                lynxUsbDevice.disengage();
+            }
         }
 
         public void engage() {
-            if (lynxUsbDevice != null) lynxUsbDevice.engage();
+            if (lynxUsbDevice != null) {
+                lynxUsbDevice.engage();
+            }
         }
 
         public RobotUsbDevice getRobotUsbDevice() {
-            if (lynxUsbDevice != null) return lynxUsbDevice.getRobotUsbDevice();
+            if (lynxUsbDevice != null) {
+                return lynxUsbDevice.getRobotUsbDevice();
+            }
             return robotUsbDevice;
         }
 
         public SerialNumber getSerialNumber() {
-            if (lynxUsbDevice != null) return lynxUsbDevice.getSerialNumber();
+            if (lynxUsbDevice != null) {
+                return lynxUsbDevice.getSerialNumber();
+            }
             return robotUsbDevice.getSerialNumber();
         }
     }
@@ -646,7 +654,9 @@ public abstract class FtcEventLoopBase implements EventLoop {
                         boolean foundParent = false;
                         boolean foundChild = false;
                         for (LynxModuleMeta meta : lynxModuleMetas) {
-                            if (meta.getModuleAddress() == 0) continue;   // paranoia
+                            if (meta.getModuleAddress() == 0) {
+                                continue;   // paranoia
+                            }
                             if (meta.isParent()) {
                                 usbModule.setModuleAddress(meta.getModuleAddress());
                                 foundParent = true;
@@ -655,14 +665,16 @@ public abstract class FtcEventLoopBase implements EventLoop {
                                 foundChild = true;
                             }
                         }
-                        if (foundParent && !foundChild)
+                        if (foundParent && !foundChild) {
                             i++;
-                        else {
+                        } else {
                             RobotLog.vv(TAG, "lynx module %s not actually accessible", usbModule.getSerialNumber());
                             result.remove(i);
                         }
                     } finally {
-                        if (device != null) device.close();
+                        if (device != null) {
+                            device.close();
+                        }
                     }
                 }
             }
@@ -703,13 +715,16 @@ public abstract class FtcEventLoopBase implements EventLoop {
                                 success = false;
                                 throw ignored;
                             } finally {
-                                if (lynxUsbDevice != null) lynxUsbDevice.close();
+                                if (lynxUsbDevice != null) {
+                                    lynxUsbDevice.close();
+                                }
                             }
                         }
                     } catch (RobotCoreException | LynxNackException ignored) {
                     } finally {
-                        if (success)
+                        if (success) {
                             AppUtil.getInstance().showToast(UILocation.BOTH, activityContext.getString(R.string.toastLynxAddressChangeComplete));
+                        }
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

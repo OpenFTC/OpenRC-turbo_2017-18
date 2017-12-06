@@ -393,7 +393,9 @@ public final class SsaMethod {
 
         while (!blockList.isEmpty()) {
             SsaBasicBlock block = blockList.remove(0);
-            if (block.isReachable()) continue;
+            if (block.isReachable()) {
+                continue;
+            }
 
             block.setReachable(1);
             BitSet succs = block.getSuccessors();
@@ -519,7 +521,9 @@ public final class SsaMethod {
      */
     /*package*/ void onSourceChanged(SsaInsn insn,
                                      RegisterSpec oldSource, RegisterSpec newSource) {
-        if (useList == null) return;
+        if (useList == null) {
+            return;
+        }
 
         if (oldSource != null) {
             int reg = oldSource.getReg();
@@ -544,7 +548,9 @@ public final class SsaMethod {
      */
     /*package*/ void onSourcesChanged(SsaInsn insn,
                                       RegisterSpecList oldSources) {
-        if (useList == null) return;
+        if (useList == null) {
+            return;
+        }
 
         if (oldSources != null) {
             removeFromUseList(insn, oldSources);
@@ -635,7 +641,9 @@ public final class SsaMethod {
      */
     /*package*/ void updateOneDefinition(SsaInsn insn,
                                          RegisterSpec oldResult) {
-        if (definitionList == null) return;
+        if (definitionList == null) {
+            return;
+        }
 
         if (oldResult != null) {
             int reg = oldResult.getReg();
@@ -707,7 +715,9 @@ public final class SsaMethod {
         }
 
         // Does the definition have a local associated with it?
-        if (defn.getLocalAssignment() != null) return true;
+        if (defn.getLocalAssignment() != null) {
+            return true;
+        }
 
         // If not, is there a mark-local insn?
         for (SsaInsn use : getUseListForRegister(spec.getReg())) {

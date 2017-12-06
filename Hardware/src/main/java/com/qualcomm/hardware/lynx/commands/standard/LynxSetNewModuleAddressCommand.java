@@ -78,7 +78,7 @@ public class LynxSetNewModuleAddressCommand extends LynxStandardCommand<LynxAck>
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {this.moduleAddress};
+        return new byte[]{this.moduleAddress};
     }
 
     @Override

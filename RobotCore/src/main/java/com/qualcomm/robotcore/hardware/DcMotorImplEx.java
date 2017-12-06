@@ -102,7 +102,9 @@ public class DcMotorImplEx extends DcMotorImpl implements DcMotorEx {
     }
 
     protected double adjustAngularRate(double angularRate) {
-        if (getOperationalDirection() == Direction.REVERSE) angularRate = -angularRate;
+        if (getOperationalDirection() == Direction.REVERSE) {
+            angularRate = -angularRate;
+        }
         return angularRate;
     }
 

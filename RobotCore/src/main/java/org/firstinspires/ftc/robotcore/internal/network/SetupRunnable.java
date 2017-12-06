@@ -47,7 +47,9 @@ public class SetupRunnable implements Runnable {
             @Override
             public void run() {
                 try {
-                    if (socket != null) socket.close();
+                    if (socket != null) {
+                        socket.close();
+                    }
                     socket = new RobocolDatagramSocket();
                     socket.listenUsingDestination(networkConnection.getConnectionOwnerAddress());
                     if (socketConnect == SocketConnect.CONNECTION_OWNER) {

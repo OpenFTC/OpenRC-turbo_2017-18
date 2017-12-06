@@ -93,8 +93,9 @@ public class Acceleration {
                     distanceUnit.fromUnit(this.unit, yAccel),
                     distanceUnit.fromUnit(this.unit, zAccel),
                     this.acquisitionTime);
-        } else
+        } else {
             return this;
+        }
     }
 
     //----------------------------------------------------------------------------------------------

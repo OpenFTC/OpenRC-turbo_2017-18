@@ -383,21 +383,37 @@ public class Gamepad extends RobocolParsableBase {
         setTimestamp(event.getEventTime());
 
         int key = event.getKeyCode();
-        if (key == KeyEvent.KEYCODE_DPAD_UP) dpad_up = pressed(event);
-        else if (key == KeyEvent.KEYCODE_DPAD_DOWN) dpad_down = pressed(event);
-        else if (key == KeyEvent.KEYCODE_DPAD_RIGHT) dpad_right = pressed(event);
-        else if (key == KeyEvent.KEYCODE_DPAD_LEFT) dpad_left = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_A) a = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_B) b = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_X) x = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_Y) y = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_MODE) guide = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_START) start = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_SELECT) back = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_R1) right_bumper = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_L1) left_bumper = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_THUMBL) left_stick_button = pressed(event);
-        else if (key == KeyEvent.KEYCODE_BUTTON_THUMBR) right_stick_button = pressed(event);
+      if (key == KeyEvent.KEYCODE_DPAD_UP) {
+        dpad_up = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_DPAD_DOWN) {
+        dpad_down = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_DPAD_RIGHT) {
+        dpad_right = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_DPAD_LEFT) {
+        dpad_left = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_A) {
+        a = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_B) {
+        b = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_X) {
+        x = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_Y) {
+        y = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_MODE) {
+        guide = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_START) {
+        start = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_SELECT) {
+        back = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_R1) {
+        right_bumper = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_L1) {
+        left_bumper = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_THUMBL) {
+        left_stick_button = pressed(event);
+      } else if (key == KeyEvent.KEYCODE_BUTTON_THUMBR) {
+        right_stick_button = pressed(event);
+      }
 
         callCallback();
     }
@@ -528,21 +544,51 @@ public class Gamepad extends RobocolParsableBase {
     @Override
     public String toString() {
         String buttons = new String();
-        if (dpad_up) buttons += "dpad_up ";
-        if (dpad_down) buttons += "dpad_down ";
-        if (dpad_left) buttons += "dpad_left ";
-        if (dpad_right) buttons += "dpad_right ";
-        if (a) buttons += "a ";
-        if (b) buttons += "b ";
-        if (x) buttons += "x ";
-        if (y) buttons += "y ";
-        if (guide) buttons += "guide ";
-        if (start) buttons += "start ";
-        if (back) buttons += "back ";
-        if (left_bumper) buttons += "left_bumper ";
-        if (right_bumper) buttons += "right_bumper ";
-        if (left_stick_button) buttons += "left stick button ";
-        if (right_stick_button) buttons += "right stick button ";
+      if (dpad_up) {
+        buttons += "dpad_up ";
+      }
+      if (dpad_down) {
+        buttons += "dpad_down ";
+      }
+      if (dpad_left) {
+        buttons += "dpad_left ";
+      }
+      if (dpad_right) {
+        buttons += "dpad_right ";
+      }
+      if (a) {
+        buttons += "a ";
+      }
+      if (b) {
+        buttons += "b ";
+      }
+      if (x) {
+        buttons += "x ";
+      }
+      if (y) {
+        buttons += "y ";
+      }
+      if (guide) {
+        buttons += "guide ";
+      }
+      if (start) {
+        buttons += "start ";
+      }
+      if (back) {
+        buttons += "back ";
+      }
+      if (left_bumper) {
+        buttons += "left_bumper ";
+      }
+      if (right_bumper) {
+        buttons += "right_bumper ";
+      }
+      if (left_stick_button) {
+        buttons += "left stick button ";
+      }
+      if (right_stick_button) {
+        buttons += "right stick button ";
+      }
 
         return String.format("ID: %2d user: %2d lx: % 1.2f ly: % 1.2f rx: % 1.2f ry: % 1.2f lt: %1.2f rt: %1.2f %s",
                 id, user, left_stick_x, left_stick_y,
@@ -555,17 +601,24 @@ public class Gamepad extends RobocolParsableBase {
     protected float cleanMotionValues(float number) {
 
         // apply deadzone
-        if (number < joystickDeadzone && number > -joystickDeadzone) return 0.0f;
+      if (number < joystickDeadzone && number > -joystickDeadzone) {
+        return 0.0f;
+      }
 
         // apply trim
-        if (number > MAX_MOTION_RANGE) return MAX_MOTION_RANGE;
-        if (number < -MAX_MOTION_RANGE) return -MAX_MOTION_RANGE;
+      if (number > MAX_MOTION_RANGE) {
+        return MAX_MOTION_RANGE;
+      }
+      if (number < -MAX_MOTION_RANGE) {
+        return -MAX_MOTION_RANGE;
+      }
 
         // scale values "between deadzone and trim" to be "between 0 and Max range"
-        if (number > 0)
-            number = (float) Range.scale(number, joystickDeadzone, MAX_MOTION_RANGE, 0, MAX_MOTION_RANGE);
-        else
-            number = (float) Range.scale(number, -joystickDeadzone, -MAX_MOTION_RANGE, 0, -MAX_MOTION_RANGE);
+      if (number > 0) {
+        number = (float) Range.scale(number, joystickDeadzone, MAX_MOTION_RANGE, 0, MAX_MOTION_RANGE);
+      } else {
+        number = (float) Range.scale(number, -joystickDeadzone, -MAX_MOTION_RANGE, 0, -MAX_MOTION_RANGE);
+      }
 
         return number;
     }
@@ -575,7 +628,9 @@ public class Gamepad extends RobocolParsableBase {
     }
 
     protected void callCallback() {
-        if (callback != null) callback.gamepadChanged(this);
+      if (callback != null) {
+        callback.gamepadChanged(this);
+      }
     }
 
     /**
@@ -614,8 +669,9 @@ public class Gamepad extends RobocolParsableBase {
     public static synchronized boolean isGamepadDevice(int deviceId) {
 
         // check the cache
-        if (gameControllerDeviceIdCache.contains(deviceId))
-            return true;
+      if (gameControllerDeviceIdCache.contains(deviceId)) {
+        return true;
+      }
 
         // update game controllers cache, since a new controller might have been plugged in
         gameControllerDeviceIdCache = new HashSet<Integer>();
@@ -641,8 +697,9 @@ public class Gamepad extends RobocolParsableBase {
         }
 
         // check updated cache
-        if (gameControllerDeviceIdCache.contains(deviceId))
-            return true;
+      if (gameControllerDeviceIdCache.contains(deviceId)) {
+        return true;
+      }
 
         // this is not an event from a game pad
         return false;

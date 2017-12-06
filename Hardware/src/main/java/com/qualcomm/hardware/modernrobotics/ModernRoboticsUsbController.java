@@ -124,10 +124,11 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
                     }
                 }
 
-                if (!abandoned && isOkToReadOrWrite())
+                if (!abandoned && isOkToReadOrWrite()) {
                     return super.read(address, size);
-                else
+                } else {
                     return new byte[size];
+                }
             }
         }
     }
@@ -138,8 +139,9 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
         synchronized (this.callbackLock) {
             super.writeComplete();
             // Make sure we really read after we write before read()s can continue
-            if (this.writeStatus == WRITE_STATUS.DIRTY)
+            if (this.writeStatus == WRITE_STATUS.DIRTY) {
                 this.writeStatus = WRITE_STATUS.READ;
+            }
             this.callbackLock.notifyAll();
         }
     }
@@ -148,8 +150,9 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
     public void readComplete() throws InterruptedException {
         synchronized (this.callbackLock) {
             super.readComplete();
-            if (this.writeStatus == WRITE_STATUS.READ)
+            if (this.writeStatus == WRITE_STATUS.READ) {
                 this.writeStatus = WRITE_STATUS.IDLE;
+            }
             readCompletionCount.incrementAndGet();
             this.callbackLock.notifyAll();
         }
@@ -162,10 +165,12 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
                 long cur = this.readCompletionCount.get();
                 long target = cur + 1;
                 while (this.readCompletionCount.get() < target) {
-                    if (!this.isArmed())
+                    if (!this.isArmed()) {
                         return false;
-                    if (!waitForCallback())
+                    }
+                    if (!waitForCallback()) {
                         return false;     // interrupted or readWriteRunnable is dead, deem us to have completed
+                    }
                 }
             }
         }
@@ -191,8 +196,9 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
 
         // It's important that by here there be no more waiters: that is, everyone
         // who needs to see that readWriteRunnableIsRunning is false will have noted same.
-        while (this.callbackWaiterCount.get() > 0)
+        while (this.callbackWaiterCount.get() > 0) {
             Thread.yield();
+        }
     }
 
     /**

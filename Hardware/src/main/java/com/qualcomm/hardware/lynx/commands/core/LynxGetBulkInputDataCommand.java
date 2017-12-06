@@ -69,7 +69,7 @@ public class LynxGetBulkInputDataCommand extends LynxDekaInterfaceCommand<LynxGe
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {};
+        return new byte[]{};
     }
 
     @Override

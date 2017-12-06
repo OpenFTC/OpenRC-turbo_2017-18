@@ -201,13 +201,19 @@ public class FirstFitLocalCombiningAllocator extends RegisterAllocator {
             printLocalVars();
         }
 
-        if (DEBUG) System.out.println("--->Mapping local-associated params");
+        if (DEBUG) {
+            System.out.println("--->Mapping local-associated params");
+        }
         handleLocalAssociatedParams();
 
-        if (DEBUG) System.out.println("--->Mapping other params");
+        if (DEBUG) {
+            System.out.println("--->Mapping other params");
+        }
         handleUnassociatedParameters();
 
-        if (DEBUG) System.out.println("--->Mapping invoke-range");
+        if (DEBUG) {
+            System.out.println("--->Mapping invoke-range");
+        }
         handleInvokeRangeInsns();
 
         if (DEBUG) {
@@ -215,13 +221,19 @@ public class FirstFitLocalCombiningAllocator extends RegisterAllocator {
         }
         handleLocalAssociatedOther();
 
-        if (DEBUG) System.out.println("--->Mapping check-cast results");
+        if (DEBUG) {
+            System.out.println("--->Mapping check-cast results");
+        }
         handleCheckCastResults();
 
-        if (DEBUG) System.out.println("--->Mapping phis");
+        if (DEBUG) {
+            System.out.println("--->Mapping phis");
+        }
         handlePhiInsns();
 
-        if (DEBUG) System.out.println("--->Mapping others");
+        if (DEBUG) {
+            System.out.println("--->Mapping others");
+        }
         handleNormalUnassociated();
 
         return mapper;
@@ -656,7 +668,9 @@ public class FirstFitLocalCombiningAllocator extends RegisterAllocator {
 
             RegisterSpec ssaSpec = getDefinitionSpecForSsaReg(ssaReg);
 
-            if (ssaSpec == null) continue;
+            if (ssaSpec == null) {
+                continue;
+            }
 
             int category = ssaSpec.getCategory();
             // Find a rop reg that does not interfere
@@ -681,8 +695,12 @@ public class FirstFitLocalCombiningAllocator extends RegisterAllocator {
      */
     private boolean canMapRegs(ArrayList<RegisterSpec> specs, int ropReg) {
         for (RegisterSpec spec : specs) {
-            if (ssaRegsMapped.get(spec.getReg())) continue;
-            if (!canMapReg(spec, ropReg)) return false;
+            if (ssaRegsMapped.get(spec.getReg())) {
+                continue;
+            }
+            if (!canMapReg(spec, ropReg)) {
+                return false;
+            }
         }
         return true;
     }

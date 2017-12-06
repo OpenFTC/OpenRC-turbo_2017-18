@@ -132,8 +132,9 @@ public class AutoConfigGLSurfaceView extends GLSurfaceView {
             egl.eglChooseConfig(display, configAttribs, null, 0, num_config);
 
             int numConfigs = num_config[0];
-            if (numConfigs <= 0)
+            if (numConfigs <= 0) {
                 throw new IllegalArgumentException("No matching EGL configs");
+            }
 
             // Allocate then read the array of minimally matching EGL configs
             EGLConfig[] configs = new EGLConfig[numConfigs];
@@ -163,8 +164,9 @@ public class AutoConfigGLSurfaceView extends GLSurfaceView {
                 int s = findConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, 0);
 
                 // We need at least mDepthSize and mStencilSize bits
-                if (d < mDepthSize || s < mStencilSize)
+                if (d < mDepthSize || s < mStencilSize) {
                     continue;
+                }
 
                 // We want an *exact* match for red/green/blue/alpha
                 int r = findConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE, 0);
@@ -172,16 +174,18 @@ public class AutoConfigGLSurfaceView extends GLSurfaceView {
                 int b = findConfigAttrib(egl, display, config, EGL10.EGL_BLUE_SIZE, 0);
                 int a = findConfigAttrib(egl, display, config, EGL10.EGL_ALPHA_SIZE, 0);
 
-                if (r == mRedSize && g == mGreenSize && b == mBlueSize && a == mAlphaSize)
+                if (r == mRedSize && g == mGreenSize && b == mBlueSize && a == mAlphaSize) {
                     return config;
+                }
             }
 
             return null;
         }
 
         private int findConfigAttrib(EGL10 egl, EGLDisplay display, EGLConfig config, int attribute, int defaultValue) {
-            if (egl.eglGetConfigAttrib(display, config, attribute, mValue))
+            if (egl.eglGetConfigAttrib(display, config, attribute, mValue)) {
                 return mValue[0];
+            }
 
             return defaultValue;
         }

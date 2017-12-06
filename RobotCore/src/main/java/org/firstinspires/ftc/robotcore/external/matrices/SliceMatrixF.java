@@ -64,8 +64,12 @@ public class SliceMatrixF extends MatrixF {
         this.row = row;
         this.col = col;
 
-        if (row + numRows >= matrix.numRows) throw dimensionsError();
-        if (col + numCols >= matrix.numCols) throw dimensionsError();
+        if (row + numRows >= matrix.numRows) {
+            throw dimensionsError();
+        }
+        if (col + numCols >= matrix.numCols) {
+            throw dimensionsError();
+        }
     }
 
     //----------------------------------------------------------------------------------------------

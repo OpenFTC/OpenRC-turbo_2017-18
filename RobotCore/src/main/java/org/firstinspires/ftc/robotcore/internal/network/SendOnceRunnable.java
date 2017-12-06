@@ -151,8 +151,9 @@ public class SendOnceRunnable implements Runnable {
                 for (Gamepad gamepad : parameters.gamepadManager.getGamepadsForTransmission()) {
 
                     // don't send stale gamepads
-                    if (now - gamepad.timestamp > GAMEPAD_UPDATE_THRESHOLD && gamepad.atRest())
+                    if (now - gamepad.timestamp > GAMEPAD_UPDATE_THRESHOLD && gamepad.atRest()) {
                         continue;
+                    }
 
                     gamepad.setSequenceNumber();
                     RobocolDatagram packetGamepad = new RobocolDatagram(gamepad);
@@ -188,7 +189,9 @@ public class SendOnceRunnable implements Runnable {
                     send(packetCommand);
 
                     // if this is a command we handled, remove it
-                    if (command.isAcknowledged()) commandsToRemove.add(command);
+                    if (command.isAcknowledged()) {
+                        commandsToRemove.add(command);
+                    }
                 }
             }
             pendingCommands.removeAll(commandsToRemove);

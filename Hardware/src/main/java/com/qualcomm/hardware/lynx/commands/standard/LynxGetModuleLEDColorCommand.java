@@ -77,7 +77,7 @@ public class LynxGetModuleLEDColorCommand extends LynxStandardCommand<LynxGetMod
 
     @Override
     public byte[] toPayloadByteArray() {
-        return new byte[] {};
+        return new byte[]{};
     }
 
     @Override

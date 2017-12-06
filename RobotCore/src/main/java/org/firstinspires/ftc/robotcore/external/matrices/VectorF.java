@@ -127,7 +127,9 @@ public class VectorF {
         StringBuilder result = new StringBuilder();
         result.append("{");
         for (int i = 0; i < this.length(); i++) {
-            if (i > 0) result.append(" ");
+            if (i > 0) {
+                result.append(" ");
+            }
             result.append(String.format("%.2f", this.data[i]));
         }
         result.append("}");
@@ -155,8 +157,9 @@ public class VectorF {
                     this.data[0] / this.data[3],
                     this.data[1] / this.data[3],
                     this.data[2] / this.data[3]);
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -183,8 +186,9 @@ public class VectorF {
                 sum += this.get(i) * him.get(i);
             }
             return sum;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -211,8 +215,9 @@ public class VectorF {
                 result.put(i, this.get(i) + addend.get(i));
             }
             return result;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     @NonConst
@@ -221,8 +226,9 @@ public class VectorF {
             for (int i = 0; i < this.length(); i++) {
                 this.put(i, this.get(i) + addend.get(i));
             }
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**
@@ -241,8 +247,9 @@ public class VectorF {
                 result.put(i, this.get(i) - subtrahend.get(i));
             }
             return result;
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     @NonConst
@@ -251,8 +258,9 @@ public class VectorF {
             for (int i = 0; i < this.length(); i++) {
                 this.put(i, this.get(i) - subtrahend.get(i));
             }
-        } else
+        } else {
             throw dimensionsError();
+        }
     }
 
     /**

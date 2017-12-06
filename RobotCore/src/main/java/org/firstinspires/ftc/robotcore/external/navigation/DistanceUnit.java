@@ -54,7 +54,9 @@ public enum DistanceUnit {
     //----------------------------------------------------------------------------------------------
 
     public double fromMeters(double meters) {
-        if (meters == infinity) return infinity;
+        if (meters == infinity) {
+            return infinity;
+        }
         switch (this) {
             default:
             case METER:
@@ -69,7 +71,9 @@ public enum DistanceUnit {
     }
 
     public double fromInches(double inches) {
-        if (inches == infinity) return infinity;
+        if (inches == infinity) {
+            return infinity;
+        }
         switch (this) {
             default:
             case METER:
@@ -84,7 +88,9 @@ public enum DistanceUnit {
     }
 
     public double fromCm(double cm) {
-        if (cm == infinity) return infinity;
+        if (cm == infinity) {
+            return infinity;
+        }
         switch (this) {
             default:
             case METER:
@@ -99,7 +105,9 @@ public enum DistanceUnit {
     }
 
     public double fromMm(double mm) {
-        if (mm == infinity) return infinity;
+        if (mm == infinity) {
+            return infinity;
+        }
         switch (this) {
             default:
             case METER:

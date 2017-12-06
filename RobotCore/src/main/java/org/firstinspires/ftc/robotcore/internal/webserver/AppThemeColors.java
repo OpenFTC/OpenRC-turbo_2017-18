@@ -135,7 +135,9 @@ public class AppThemeColors {
         List<Integer> colorAttrList = new ArrayList<>();
 
         for (Field field : AppThemeColors.class.getDeclaredFields()) {
-            if ((field.getModifiers() & Modifier.STATIC) != 0) continue;
+            if ((field.getModifiers() & Modifier.STATIC) != 0) {
+                continue;
+            }
 
             String name = field.getName();
             switch (name) {

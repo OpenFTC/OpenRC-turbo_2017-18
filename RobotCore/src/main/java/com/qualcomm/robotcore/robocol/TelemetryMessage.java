@@ -120,7 +120,9 @@ public class TelemetryMessage extends RobocolParsableBase {
      * @return tag
      */
     public synchronized String getTag() {
-        if (tag.length() == 0) return DEFAULT_TAG;
+        if (tag.length() == 0) {
+            return DEFAULT_TAG;
+        }
 
         return tag;
     }
@@ -259,10 +261,12 @@ public class TelemetryMessage extends RobocolParsableBase {
             byte[] key = entry.getKey().getBytes(CHARSET);
             byte[] value = entry.getValue().getBytes(CHARSET);
 
-            if (key.length > cbKeyMax)
+            if (key.length > cbKeyMax) {
                 throw new RobotCoreException("telemetry key '%s' too long: %d bytes; max %d bytes", entry.getKey(), key.length, cbKeyMax);
-            if (value.length > cbValueMax)
+            }
+            if (value.length > cbValueMax) {
                 throw new RobotCoreException("telemetry value '%s' too long: %d bytes; max %d bytes", entry.getValue(), value.length, cbValueMax);
+            }
 
             putKeyLen(buffer, key.length);
             buffer.put(key);
@@ -276,8 +280,9 @@ public class TelemetryMessage extends RobocolParsableBase {
             byte[] key = entry.getKey().getBytes(CHARSET);
             float val = entry.getValue();
 
-            if (key.length > cbKeyMax)
+            if (key.length > cbKeyMax) {
                 throw new RobotCoreException("telemetry key '%s' too long: %d bytes; max %d bytes", entry.getKey(), key.length, cbKeyMax);
+            }
 
             putKeyLen(buffer, key.length);
             buffer.put(key);

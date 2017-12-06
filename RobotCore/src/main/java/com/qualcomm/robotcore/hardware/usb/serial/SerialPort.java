@@ -69,8 +69,9 @@ public class SerialPort {
 
         this.baudRate = baudRate;
         this.fileDescriptor = open(file.getAbsolutePath(), baudRate);
-        if (this.fileDescriptor == null)
+        if (this.fileDescriptor == null) {
             throw new IOException(String.format("SerialPort.SerialPort: failed: path=%s", file.getAbsolutePath()));
+        }
 
         this.fileInputStream = new FileInputStream(this.fileDescriptor);
         this.fileOutputStream = new FileOutputStream(this.fileDescriptor);

@@ -202,7 +202,9 @@ public class HiTechnicNxtGyroSensor extends LegacyModulePortDeviceImpl implement
         try {
             Statistics statistics = new Statistics();
             for (int i = 0; !Thread.currentThread().isInterrupted() && i < calibrationCount; i++) {
-                if (i > 0 && msCalibrationInterval > 0) sleep(msCalibrationInterval);
+                if (i > 0 && msCalibrationInterval > 0) {
+                    sleep(msCalibrationInterval);
+                }
                 double voltage = readRawVoltage();
                 statistics.add(voltage);
             }

@@ -50,7 +50,9 @@ public class GeneralMatrixF extends RowMajorMatrixF {
 
     public GeneralMatrixF(int numRows, int numCols, float[] data) {
         super(numRows, numCols);
-        if (data.length != numRows * numCols) throw dimensionsError(numRows, numCols);
+        if (data.length != numRows * numCols) {
+            throw dimensionsError(numRows, numCols);
+        }
         this.data = data;
     }
 

@@ -208,7 +208,7 @@ public final class DexMerger {
         int wastedByteCount = writerSizes.size() - compactedSizes.size();
         if (wastedByteCount > +compactWasteThreshold) {
             DexMerger compacter = new DexMerger(
-                    new Dex[] {dexOut, new Dex(0)}, CollisionPolicy.FAIL, compactedSizes);
+                    new Dex[]{dexOut, new Dex(0)}, CollisionPolicy.FAIL, compactedSizes);
             result = compacter.mergeDexes();
             System.out.printf("Result compacted from %.1fKiB to %.1fKiB to save %.1fKiB%n",
                     dexOut.getLength() / 1024f,

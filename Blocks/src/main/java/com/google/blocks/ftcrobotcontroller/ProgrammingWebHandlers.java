@@ -708,7 +708,9 @@ public class ProgrammingWebHandlers {
 
     static String getFirstNamedParameter(NanoHTTPD.IHTTPSession session, String name) {
         final Map<String, List<String>> parameters = session.getParameters();
-        if (!parameters.containsKey(name)) return null;
+        if (!parameters.containsKey(name)) {
+            return null;
+        }
         return parameters.get(name).get(0);
     }
 

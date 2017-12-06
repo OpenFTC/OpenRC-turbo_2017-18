@@ -224,7 +224,9 @@ public class ProgramAndManageActivity extends ThemedActivity {
                         : null;
 
                 // Null type check here is paranoia. Either way, first try what we've been asked for
-                if (type == null) type = "*/*";
+                if (type == null) {
+                    type = "*/*";
+                }
                 intentGetContent.setType(type);
 
                 // Try the system mime type map
@@ -347,7 +349,7 @@ public class ProgramAndManageActivity extends ThemedActivity {
             if (requestCode == RequestCode.CHOOSE_FILE.ordinal()) {
                 Uri[] result = (data == null || resultCode != RESULT_OK)
                         ? null
-                        : new Uri[] {data.getData()};
+                        : new Uri[]{data.getData()};
                 RobotLog.vv(TAG, "CHOOSE_FILE result=%s", result == null ? null : result[0]);
 
                 ValueCallback<Uri[]> filePathCallback = (ValueCallback<Uri[]>) holder.getTargetAndForget();

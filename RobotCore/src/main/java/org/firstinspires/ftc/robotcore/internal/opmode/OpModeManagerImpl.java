@@ -87,20 +87,26 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         Boolean callToStartNeeded = null;
 
         void apply() {
-            if (queuedOpModeName != null)
+            if (queuedOpModeName != null) {
                 OpModeManagerImpl.this.queuedOpModeName = queuedOpModeName;
+            }
 
             // We never clear state here; that's done in runActiveOpMode()
-            if (opModeSwapNeeded != null)
+            if (opModeSwapNeeded != null) {
                 OpModeManagerImpl.this.opModeSwapNeeded = opModeSwapNeeded;
-            if (callToInitNeeded != null)
+            }
+            if (callToInitNeeded != null) {
                 OpModeManagerImpl.this.callToInitNeeded = callToInitNeeded;
-            if (gamepadResetNeeded != null)
+            }
+            if (gamepadResetNeeded != null) {
                 OpModeManagerImpl.this.gamepadResetNeeded = gamepadResetNeeded;
-            if (telemetryClearNeeded != null)
+            }
+            if (telemetryClearNeeded != null) {
                 OpModeManagerImpl.this.telemetryClearNeeded = telemetryClearNeeded;
-            if (callToStartNeeded != null)
+            }
+            if (callToStartNeeded != null) {
                 OpModeManagerImpl.this.callToStartNeeded = callToStartNeeded;
+            }
         }
 
         OpModeStateTransition copy() {
@@ -260,8 +266,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
                 newState = new OpModeStateTransition();
             }
             newState.callToStartNeeded = true;
-            if (nextOpModeState.compareAndSet(existingState, newState))
+            if (nextOpModeState.compareAndSet(existingState, newState)) {
                 break;
+            }
             Thread.yield();
             existingState = nextOpModeState.get();
         }
@@ -278,8 +285,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
         // Apply a state transition if one is pending
         OpModeStateTransition transition = nextOpModeState.getAndSet(null);
-        if (transition != null)
+        if (transition != null) {
             transition.apply();
+        }
 
         activeOpMode.time = activeOpMode.getRuntime();
         activeOpMode.gamepad1 = gamepads[0];
@@ -336,10 +344,11 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
             NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_RUN_OP_MODE, activeOpModeName)); // send *truth* to DS
         }
 
-        if (opModeState == OpModeState.INIT)
+        if (opModeState == OpModeState.INIT) {
             callActiveOpModeInitLoop();
-        else if (opModeState == OpModeState.LOOPING)
+        } else if (opModeState == OpModeState.LOOPING) {
             callActiveOpModeLoop();
+        }
     }
 
     // resets the hardware to the state expected at the start of an opmode
@@ -455,11 +464,15 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
                 try {
                     // We won't bother timing if a debugger is attached because single stepping
                     // etc in a debugger can take an arbitrarily long amount of time.
-                    if (checkForDebugger()) return;
+                    if (checkForDebugger()) {
+                        return;
+                    }
 
                     if (!stopped.tryAcquire(msTimeout, TimeUnit.MILLISECONDS)) {
                         // Timeout hit waiting for opmode to stop. Inform user, then restart app.
-                        if (checkForDebugger()) return;
+                        if (checkForDebugger()) {
+                            return;
+                        }
 
                         String message = String.format(context.getString(R.string.errorOpModeStuck), activeOpModeName, method);
                         errorWasSet = RobotLog.setGlobalErrorMsg(message);
@@ -483,7 +496,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
                     }
                 } catch (InterruptedException e) {
                     // Shutdown complete, return
-                    if (errorWasSet) RobotLog.clearGlobalErrorMsg();
+                    if (errorWasSet) {
+                        RobotLog.clearGlobalErrorMsg();
+                    }
                 } finally {
                     acquired.countDown();
                 }
@@ -653,8 +668,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
             // Set all motor powers to zero. The implementation here will also stop any CRServos.
             for (DcMotorSimple motor : hardwareMap.getAll(DcMotorSimple.class)) {
                 // Avoid enabling servos if they are already zero power
-                if (motor.getPower() != 0)
+                if (motor.getPower() != 0) {
                     motor.setPower(0);
+                }
             }
 
             // Determine how long to wait before we send disables
@@ -663,8 +679,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
                 firstTimeRun = false;
                 nanoNextSafe = System.nanoTime();
                 blinkerTimer.reset();
-            } else
+            } else {
                 nanoNextSafe = System.nanoTime() + SAFE_WAIT_NANOS;
+            }
         }
 
         /***

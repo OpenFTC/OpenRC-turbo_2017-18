@@ -108,8 +108,9 @@ public class DragonboardIndicatorLED implements SwitchableLight {
     //----------------------------------------------------------------------------------------------
 
     public static DragonboardIndicatorLED forIndex(int index) {
-        if (index < LED_FIRST || index > LED_LAST)
+        if (index < LED_FIRST || index > LED_LAST) {
             throw new IllegalArgumentException("illegal LED index: " + index);
+        }
         return instances[index];
     }
 

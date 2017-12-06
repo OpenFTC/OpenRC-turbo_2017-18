@@ -141,7 +141,9 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
     @Override
     public synchronized void setMode(Mode mode) {
         // switching modes is expensive, don't do it if not needed
-        if (this.mode == mode) return;
+        if (this.mode == mode) {
+            return;
+        }
 
         this.mode = mode;
         writeModeSwitch();
@@ -154,7 +156,9 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
 
     @Override
     public boolean signalDetected() {
-        if (switchingModes) return false;
+        if (switchingModes) {
+            return false;
+        }
 
         boolean detected = false;
 
@@ -173,7 +177,9 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
 
     @Override
     public double getAngle() {
-        if (switchingModes) return INVALID_ANGLE;
+        if (switchingModes) {
+            return INVALID_ANGLE;
+        }
 
         double angle = 0.0;
 
@@ -193,7 +199,9 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
 
     @Override
     public double getStrength() {
-        if (switchingModes) return 0;
+        if (switchingModes) {
+            return 0;
+        }
 
         double strength = 0;
 
@@ -212,7 +220,9 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
     @Override
     public IrSeekerIndividualSensor[] getIndividualSensors() {
         IrSeekerIndividualSensor sensors[] = new IrSeekerIndividualSensor[SENSOR_COUNT];
-        if (switchingModes) return sensors;
+        if (switchingModes) {
+            return sensors;
+        }
 
         try {
             readBufferLock.lock();

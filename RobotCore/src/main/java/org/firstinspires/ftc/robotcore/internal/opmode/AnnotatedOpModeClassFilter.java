@@ -220,8 +220,9 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
         boolean isAutonomous = clazz.isAnnotationPresent(Autonomous.class);
 
         // If it's neither teleop or autonomous, then it's not interesting to us
-        if (!isTeleOp && !isAutonomous)
+        if (!isTeleOp && !isAutonomous) {
             return;
+        }
 
         // If we have BOTH Autonomous and TeleOp annotations on a class, that's an error, we'll ignore it.
         if (isTeleOp && isAutonomous) {
@@ -230,12 +231,14 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
         }
 
         // There's some things we need to check about the actual class
-        if (!checkOpModeClassConstraints(clazz, null))
+        if (!checkOpModeClassConstraints(clazz, null)) {
             return;
+        }
 
         // If the class has been annotated as @Disabled, then ignore it
-        if (clazz.isAnnotationPresent(Disabled.class))
+        if (clazz.isAnnotationPresent(Disabled.class)) {
             return;
+        }
 
         filteredAnnotatedOpModeClasses.add((Class<OpMode>) clazz);
     }
@@ -304,8 +307,9 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
         for (Method method : methods) {
             int requiredModifiers = Modifier.STATIC | Modifier.PUBLIC;
             int prohibitedModifiers = Modifier.ABSTRACT;
-            if (!((method.getModifiers() & requiredModifiers) == requiredModifiers && (method.getModifiers() & prohibitedModifiers) == 0))
+            if (!((method.getModifiers() & requiredModifiers) == requiredModifiers && (method.getModifiers() & prohibitedModifiers) == 0)) {
                 continue;
+            }
 
             if (method.isAnnotationPresent(OpModeRegistrar.class)) {
                 // the 1-parameter version is legacy (just a manager) instead of also a context
@@ -323,10 +327,11 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
             if (predicate.test(method.getDeclaringClass())) {
                 try {
                     // We support both with and without a context for compatibility
-                    if (getParameterCount(method) == 1)
+                    if (getParameterCount(method) == 1) {
                         method.invoke(null, manager);
-                    else if (getParameterCount(method) == 2)
+                    } else if (getParameterCount(method) == 2) {
                         method.invoke(null, context, manager);
+                    }
                 } catch (Exception e) {
                     // ignored
                 }
@@ -386,16 +391,18 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
             Annotation annotation = clazz.getAnnotation(Autonomous.class);
             String groupName = ((Autonomous) annotation).group();
             return addOpModeWithGroupName(clazz, OpModeMeta.Flavor.AUTONOMOUS, groupName);
-        } else
+        } else {
             return false;
+        }
     }
 
     private boolean addOpModeWithGroupName(Class<OpMode> clazz, OpModeMeta.Flavor flavor, String groupName) {
         OpModeMetaAndClass meta = new OpModeMetaAndClass(new OpModeMeta(flavor, groupName), clazz);
-        if (groupName.equals(""))
+        if (groupName.equals("")) {
             return addToOpModeGroup(defaultOpModeGroupName, meta);
-        else
+        } else {
             return addToOpModeGroup(groupName, meta);
+        }
     }
 
     /**
@@ -420,8 +427,9 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
             this.knownOpModes.add(opModeMetaAndClass);
             this.newOpModes.add(opModeMetaAndClass);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     private boolean isKnown(Class<OpMode> clazz) {
@@ -443,29 +451,33 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
     private String getOpModeName(Class<OpMode> clazz) {
         String name;
 
-        if (this.classNameOverrides.containsKey(clazz))
+        if (this.classNameOverrides.containsKey(clazz)) {
             name = this.classNameOverrides.get(clazz).meta.name;
-        else if (clazz.isAnnotationPresent(TeleOp.class))
+        } else if (clazz.isAnnotationPresent(TeleOp.class)) {
             name = clazz.getAnnotation(TeleOp.class).name();
-        else if (clazz.isAnnotationPresent(Autonomous.class))
+        } else if (clazz.isAnnotationPresent(Autonomous.class)) {
             name = clazz.getAnnotation(Autonomous.class).name();
-        else
+        } else {
             name = clazz.getSimpleName();
+        }
 
-        if (name.trim().equals(""))
+        if (name.trim().equals("")) {
             name = clazz.getSimpleName();
+        }
 
         return name;
     }
 
     private boolean isLegalOpModeName(String name) {
-        if (name == null)
+        if (name == null) {
             return false;
+        }
         if ((name.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) ||
-                (name.trim().equals("")))
+                (name.trim().equals(""))) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     private boolean isOpMode(Class clazz) {

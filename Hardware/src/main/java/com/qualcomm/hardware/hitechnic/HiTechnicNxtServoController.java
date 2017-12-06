@@ -89,7 +89,7 @@ public final class HiTechnicNxtServoController extends HiTechnicNxtController im
     protected static final byte PWM_ENABLE_WITHOUT_TIMEOUT = (byte) 0xaa;
     protected static final byte PWM_DISABLE = (byte) 0xff;
 
-    protected static final byte[] ADDRESS_CHANNEL_MAP = new byte[] {(byte) -1/*not used*/, (byte) 0x42, (byte) 0x43, (byte) 0x44, (byte) 0x45, (byte) 0x46, (byte) 0x47};
+    protected static final byte[] ADDRESS_CHANNEL_MAP = new byte[]{(byte) -1/*not used*/, (byte) 0x42, (byte) 0x43, (byte) 0x44, (byte) 0x45, (byte) 0x46, (byte) 0x47};
     protected static final int ADDRESS_PWM = 0x48;
 
     protected static final int iRegWindowFirst = 0x40;
@@ -257,7 +257,8 @@ public final class HiTechnicNxtServoController extends HiTechnicNxtController im
     private void validateApiPosition(double position) {
         if (apiPositionMin <= position && position <= apiPositionMax) {
             // all is well
-        } else
+        } else {
             throw new IllegalArgumentException(String.format("illegal servo position %f; must be in interval [%f,%f]", position, apiPositionMin, apiPositionMax));
+        }
     }
 }

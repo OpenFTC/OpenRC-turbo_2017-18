@@ -65,12 +65,19 @@ public class RobotControllerPreference {
     public RobotControllerPreference(String prefName, Object value) {
         this.prefName = prefName;
 
-        if (value instanceof String) stringValue = (String) value;
-        else if (value instanceof Boolean) booleanValue = (Boolean) value;
-        else if (value instanceof Integer) intValue = (Integer) value;
-        else if (value instanceof Long) longValue = (Long) value;
-        else if (value instanceof Float) floatValue = (Float) value;
-        else if (value instanceof Set) stringSetValue = (Set<String>) value;
+        if (value instanceof String) {
+            stringValue = (String) value;
+        } else if (value instanceof Boolean) {
+            booleanValue = (Boolean) value;
+        } else if (value instanceof Integer) {
+            intValue = (Integer) value;
+        } else if (value instanceof Long) {
+            longValue = (Long) value;
+        } else if (value instanceof Float) {
+            floatValue = (Float) value;
+        } else if (value instanceof Set) {
+            stringSetValue = (Set<String>) value;
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -94,12 +101,24 @@ public class RobotControllerPreference {
     }
 
     public Object getValue() {
-        if (stringValue != null) return stringValue;
-        if (booleanValue != null) return booleanValue;
-        if (intValue != null) return intValue;
-        if (longValue != null) return longValue;
-        if (floatValue != null) return floatValue;
-        if (stringSetValue != null) return stringSetValue;
+        if (stringValue != null) {
+            return stringValue;
+        }
+        if (booleanValue != null) {
+            return booleanValue;
+        }
+        if (intValue != null) {
+            return intValue;
+        }
+        if (longValue != null) {
+            return longValue;
+        }
+        if (floatValue != null) {
+            return floatValue;
+        }
+        if (stringSetValue != null) {
+            return stringSetValue;
+        }
         return null;
     }
 }

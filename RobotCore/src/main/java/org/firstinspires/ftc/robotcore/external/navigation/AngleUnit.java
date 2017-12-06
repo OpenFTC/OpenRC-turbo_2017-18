@@ -203,8 +203,12 @@ public enum AngleUnit {
     }
 
     public static double normalizeDegrees(double degrees) {
-        while (degrees >= 180.0) degrees -= 360.0;
-        while (degrees < -180.0) degrees += 360.0;
+        while (degrees >= 180.0) {
+            degrees -= 360.0;
+        }
+        while (degrees < -180.0) {
+            degrees += 360.0;
+        }
         return degrees;
     }
 
@@ -213,8 +217,12 @@ public enum AngleUnit {
     }
 
     public static double normalizeRadians(double radians) {
-        while (radians >= Math.PI) radians -= TwoPi;
-        while (radians < -Math.PI) radians += TwoPi;
+        while (radians >= Math.PI) {
+            radians -= TwoPi;
+        }
+        while (radians < -Math.PI) {
+            radians += TwoPi;
+        }
         return radians;
     }
 

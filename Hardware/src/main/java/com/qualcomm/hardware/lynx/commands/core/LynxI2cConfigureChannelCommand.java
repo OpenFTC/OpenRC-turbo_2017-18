@@ -62,7 +62,9 @@ public class LynxI2cConfigureChannelCommand extends LynxDekaInterfaceCommand<Lyn
 
         public static SpeedCode fromByte(int bVal) {
             for (SpeedCode code : values()) {
-                if (code.bVal == bVal) return code;
+                if (code.bVal == bVal) {
+                    return code;
+                }
             }
             return UNKNOWN;
         }

@@ -67,11 +67,13 @@ public class ReusableCountDownLatch {
             // Decrement count; signal when transition to zero
             for (; ; ) {
                 int c = getState();
-                if (c == 0)
+                if (c == 0) {
                     return false;
+                }
                 int nextc = c - 1;
-                if (compareAndSetState(c, nextc))
+                if (compareAndSetState(c, nextc)) {
                     return nextc == 0;
+                }
             }
         }
     }
@@ -83,7 +85,9 @@ public class ReusableCountDownLatch {
     //----------------------------------------------------------------------------------------------
 
     public ReusableCountDownLatch(int count) {
-        if (count < 0) throw new IllegalArgumentException("count < 0");
+        if (count < 0) {
+            throw new IllegalArgumentException("count < 0");
+        }
         this.sync = new Sync(count);
     }
 

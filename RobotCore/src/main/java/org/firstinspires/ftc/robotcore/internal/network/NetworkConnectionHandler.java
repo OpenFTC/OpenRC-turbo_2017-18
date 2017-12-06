@@ -168,7 +168,9 @@ public class NetworkConnectionHandler {
     public void startWifiAndDiscoverConnections() {
         acquireWifiLock();
         networkConnection.enable();
-        if (!networkConnection.isConnected()) networkConnection.discoverPotentialConnections();
+        if (!networkConnection.isConnected()) {
+            networkConnection.discoverPotentialConnections();
+        }
     }
 
     public void startConnection(@NonNull String owner, @NonNull String password) {
@@ -188,7 +190,9 @@ public class NetworkConnectionHandler {
     }
 
     public void acquireWifiLock() {
-        if (wifiLock != null) wifiLock.acquire();
+        if (wifiLock != null) {
+            wifiLock.acquire();
+        }
     }
 
     public boolean isNetworkConnected() {
@@ -221,7 +225,9 @@ public class NetworkConnectionHandler {
 
     public void stop() {
         networkConnection.disable();
-        if (wifiLock != null && wifiLock.isHeld()) wifiLock.release();
+        if (wifiLock != null && wifiLock.isHeld()) {
+            wifiLock.release();
+        }
     }
 
     public boolean connectingOrConnected() {
@@ -310,12 +316,18 @@ public class NetworkConnectionHandler {
             ) throws RobotCoreException {
 
         if (packet.getAddress().equals(remoteAddr)) {
-            if (sendOnceRunnable != null) sendOnceRunnable.onPeerConnected(false);
-            if (clientCallback != null) clientCallback.peerConnected(false);
+            if (sendOnceRunnable != null) {
+                sendOnceRunnable.onPeerConnected(false);
+            }
+            if (clientCallback != null) {
+                clientCallback.peerConnected(false);
+            }
             return;
         }
 
-        if (parameters == null) parameters = new SendOnceRunnable.Parameters();
+        if (parameters == null) {
+            parameters = new SendOnceRunnable.Parameters();
+        }
 
         // Actually parse the packet in order to verify Robocol version compatibility
         PeerDiscovery peerDiscovery = PeerDiscovery.forReceive();
@@ -343,8 +355,12 @@ public class NetworkConnectionHandler {
                 sendLoopFuture = sendLoopService.scheduleAtFixedRate(sendOnceRunnable, 0, 40, TimeUnit.MILLISECONDS);
             }
 
-            if (sendOnceRunnable != null) sendOnceRunnable.onPeerConnected(true);
-            if (clientCallback != null) clientCallback.peerConnected(true);
+            if (sendOnceRunnable != null) {
+                sendOnceRunnable.onPeerConnected(true);
+            }
+            if (clientCallback != null) {
+                clientCallback.peerConnected(true);
+            }
         }
     }
 
@@ -355,7 +371,9 @@ public class NetworkConnectionHandler {
 
     // synchronized avoids race with shutdown()
     public synchronized void sendCommand(Command cmd) {
-        if (sendOnceRunnable != null) sendOnceRunnable.sendCommand(cmd);
+        if (sendOnceRunnable != null) {
+            sendOnceRunnable.sendCommand(cmd);
+        }
     }
 
     // synchronized avoids race with shutdown()
@@ -385,8 +403,9 @@ public class NetworkConnectionHandler {
 
     public CallbackResult processAcknowledgments(Command command) throws RobotCoreException {
         if (command.isAcknowledged()) {
-            if (SendOnceRunnable.DEBUG)
+            if (SendOnceRunnable.DEBUG) {
                 RobotLog.vv(SendOnceRunnable.TAG, "received ack: %s(%d)", command.getName(), command.getSequenceNumber());
+            }
             removeCommand(command);
             return CallbackResult.HANDLED;
         }
@@ -397,11 +416,15 @@ public class NetworkConnectionHandler {
     }
 
     public synchronized void sendDatagram(RobocolDatagram datagram) {
-        if (socket != null && socket.getInetAddress() != null) socket.send(datagram);
+        if (socket != null && socket.getInetAddress() != null) {
+            socket.send(datagram);
+        }
     }
 
     public synchronized void clientDisconnect() {
-        if (sendOnceRunnable != null) sendOnceRunnable.clearCommands();
+        if (sendOnceRunnable != null) {
+            sendOnceRunnable.clearCommands();
+        }
         remoteAddr = null;
     }
 
@@ -466,7 +489,9 @@ public class NetworkConnectionHandler {
 
         void remove(@Nullable NetworkConnection.NetworkConnectionCallback callback) {
             synchronized (callbacks) {
-                if (callback != null) callbacks.remove(callback);
+                if (callback != null) {
+                    callbacks.remove(callback);
+                }
             }
         }
 
@@ -509,7 +534,9 @@ public class NetworkConnectionHandler {
 
         void remove(@Nullable RecvLoopRunnable.RecvLoopCallback callback) {
             synchronized (callbacks) {
-                if (callback != null) callbacks.remove(callback);
+                if (callback != null) {
+                    callbacks.remove(callback);
+                }
             }
         }
 
@@ -561,7 +588,9 @@ public class NetworkConnectionHandler {
                 // Make an informative trace message as to who was around that all refused to process the command
                 StringBuilder callbackNames = new StringBuilder();
                 for (RecvLoopRunnable.RecvLoopCallback callback : callbacks) {
-                    if (callbackNames.length() > 0) callbackNames.append(",");
+                    if (callbackNames.length() > 0) {
+                        callbackNames.append(",");
+                    }
                     callbackNames.append(callback.getClass().getSimpleName());
                 }
                 RobotLog.vv(RobocolDatagram.TAG, "unable to process command %s callbacks=%s", command.getName(), callbackNames.toString());

@@ -284,8 +284,9 @@ public class UserConfigurationTypeManager implements ClassFilter {
         MotorConfigurationType motorType = isUserMotorType(clazz);
         if (motorType != null) {
             // There's some things we need to check about the actual class
-            if (!checkMotorTypeClassConstraints(motorType))
+            if (!checkMotorTypeClassConstraints(motorType)) {
                 return;
+            }
 
             add(motorType);
         }
@@ -299,8 +300,9 @@ public class UserConfigurationTypeManager implements ClassFilter {
             UserI2cSensorType sensorType = isUserI2cSensor(clazzHardwareDevice);
             if (sensorType != null) {
                 // There's some things we need to check about the actual class
-                if (!checkI2cSensorClassConstraints(sensorType))
+                if (!checkI2cSensorClassConstraints(sensorType)) {
                     return;
+                }
 
                 add(sensorType);
             }
@@ -347,8 +349,9 @@ public class UserConfigurationTypeManager implements ClassFilter {
                 if (annotation != null) {
                     result.set(0, annotation);
                     return true;
-                } else
+                } else {
                     return false;
+                }
             }
         });
 
@@ -423,15 +426,17 @@ public class UserConfigurationTypeManager implements ClassFilter {
     }
 
     protected boolean isLegalMotorTypeName(String name) {
-        if (!isGoodString(name))
+        if (!isGoodString(name)) {
             return false;
+        }
 
         return true;
     }
 
     protected boolean isLegalSensorName(String name) {
-        if (!isGoodString(name))
+        if (!isGoodString(name)) {
             return false;
+        }
 
         return true;
     }
@@ -441,12 +446,15 @@ public class UserConfigurationTypeManager implements ClassFilter {
     //----------------------------------------------------------------------------------------------
 
     protected boolean isGoodString(String string) {
-        if (string == null)
+        if (string == null) {
             return false;
-        if (!string.trim().equals(string))
+        }
+        if (!string.trim().equals(string)) {
             return false;
-        if (string.length() == 0)
+        }
+        if (string.length() == 0) {
             return false;
+        }
 
         return true;
     }
@@ -462,16 +470,18 @@ public class UserConfigurationTypeManager implements ClassFilter {
     }
 
     protected boolean isLegalXmlTag(String xmlTag) {
-        if (!isGoodString(xmlTag))
+        if (!isGoodString(xmlTag)) {
             return false;
+        }
 
         // For simplicity, we only allow a restricted subset of what XML allows
         //  https://www.w3.org/TR/REC-xml/#NT-NameStartChar
         String nameStartChar = "\\p{Alpha}_:";
         String nameChar = nameStartChar + "0-9\\-\\.";
 
-        if (!xmlTag.matches("^[" + nameStartChar + "][" + nameChar + "]*$"))
+        if (!xmlTag.matches("^[" + nameStartChar + "][" + nameChar + "]*$")) {
             return false;
+        }
 
         return true;
     }

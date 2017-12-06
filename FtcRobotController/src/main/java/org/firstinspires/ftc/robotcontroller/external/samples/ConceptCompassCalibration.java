@@ -112,10 +112,11 @@ public class ConceptCompassCalibration extends LinearOpMode {
         sleep(HOLD_TIME_MS);  // Just do a sleep while we switch modes
 
         // Report whether the Calibration was successful or not.
-        if (compass.calibrationFailed())
+        if (compass.calibrationFailed()) {
             telemetry.addData("Compass", "Calibrate Failed. Try Again!");
-        else
+        } else {
             telemetry.addData("Compass", "Calibrate Passed.");
+        }
         telemetry.update();
     }
 }
