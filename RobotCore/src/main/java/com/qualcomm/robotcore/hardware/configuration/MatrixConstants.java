@@ -36,21 +36,21 @@ package com.qualcomm.robotcore.hardware.configuration;
  * MatrixConstants documents the various number of attachments that can be made
  * to Matrix controllers
  */
-public class MatrixConstants
-    {
+public class MatrixConstants {
     public final static int INITIAL_MOTOR_PORT = 1;
     public final static int INITIAL_SERVO_PORT = 1;
     public final static int NUMBER_OF_MOTORS = 4;
     public final static int NUMBER_OF_SERVOS = 4;
 
-    public static void validateMotorZ(int motorZ)
-        {
-        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS)
+    public static void validateMotorZ(int motorZ) {
+        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS) {
             throw new IllegalArgumentException(String.format("invalid motor: %d", motorZ));
         }
-    public static void validateServoChannelZ(int channelZ)
-        {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVOS)
+    }
+
+    public static void validateServoChannelZ(int channelZ) {
+        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVOS) {
             throw new IllegalArgumentException(String.format("invalid servo channel: %d", channelZ));
         }
     }
+}

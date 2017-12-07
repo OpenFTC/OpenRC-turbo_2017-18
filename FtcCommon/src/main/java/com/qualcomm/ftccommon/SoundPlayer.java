@@ -58,8 +58,7 @@ import java.util.concurrent.TimeUnit;
  * @see SoundPlayer#play(Context, int)
  */
 @SuppressWarnings("javadoc")
-public class SoundPlayer implements SoundPool.OnLoadCompleteListener
-    {
+public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -68,21 +67,23 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
     public static final boolean DEBUG = false;
 
     protected static SoundPlayer theInstance = new SoundPlayer(3, 6);
-    public static SoundPlayer getInstance()
-        {
-        return theInstance;
-        }
 
-    protected SoundPool            soundPool;
-    protected @RawRes volatile int currentlyLoading;
-    protected long                 msFinishPlaying;
-    protected LoadedSoundCache     loadedSounds;
-    protected ExecutorService      executorService;
-    protected Looper               looper;
-    protected Context              context;
-    protected SharedPreferences    sharedPreferences;
-    protected float                soundOnLevel = 1.0f;
-    protected float                soundOffLevel = 0.0f;
+    public static SoundPlayer getInstance() {
+        return theInstance;
+    }
+
+    protected SoundPool soundPool;
+    protected
+    @RawRes
+    volatile int currentlyLoading;
+    protected long msFinishPlaying;
+    protected LoadedSoundCache loadedSounds;
+    protected ExecutorService executorService;
+    protected Looper looper;
+    protected Context context;
+    protected SharedPreferences sharedPreferences;
+    protected float soundOnLevel = 1.0f;
+    protected float soundOffLevel = 0.0f;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -96,8 +97,7 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
      *                            a previous sound
      * @param cacheSize           the maximum size of the cache of loaded sounds.
      */
-    public SoundPlayer(int simultaneousStreams, int cacheSize)
-        {
+    public SoundPlayer(int simultaneousStreams, int cacheSize) {
         soundPool = new SoundPool(simultaneousStreams, AudioManager.STREAM_MUSIC, /*quality*/0); // can't use SoundPool.Builder on KitKat
         loadedSounds = new LoadedSoundCache(cacheSize);
         currentlyLoading = 0;
@@ -108,61 +108,55 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         //
         startup();
-        }
+    }
 
-    public void close()
-        {
+    public void close() {
         shutdown();
-        }
+    }
 
-    protected void startup()
-        {
-        if (this.executorService == null)
-            {
+    protected void startup() {
+        if (this.executorService == null) {
             this.executorService = ThreadPool.newFixedThreadPool(2, "SoundPlayer");
 
             // Use one of those threads to run a Looper() that will ONLY see
             // load completion callbacks from the SoundPool.
-            this.executorService.execute(new Runnable()
-                {
-                @Override public void run()
-                    {
+            this.executorService.execute(new Runnable() {
+                @Override
+                public void run() {
                     Thread.currentThread().setName("SoundPlayer looper");
                     Looper.prepare();
                     looper = Looper.myLooper();
                     soundPool.setOnLoadCompleteListener(SoundPlayer.this);
                     Looper.loop();  // doesn't return until we tell it to quit()
-                    }
-                });
+                }
+            });
 
             // Label the other thread
-            this.executorService.execute(new Runnable()
-                {
-                @Override public void run()
-                    {
+            this.executorService.execute(new Runnable() {
+                @Override
+                public void run() {
                     Thread.currentThread().setName("SoundPlayer");
-                    }
-                });
+                }
+            });
 
             // Wait for us to learn the looper
-            while (looper==null)
-                {
+            while (looper == null) {
                 Thread.yield();
-                }
             }
         }
+    }
 
-    protected void shutdown()
-        {
-        if (this.executorService != null)
-            {
-            if (looper != null) looper.quit();
+    protected void shutdown() {
+        if (this.executorService != null) {
+            if (looper != null) {
+                looper.quit();
+            }
             this.executorService.shutdownNow();
             ThreadPool.awaitTerminationOrExitApplication(this.executorService, 5, TimeUnit.SECONDS, "SoundPool", "internal error");
             this.executorService = null;
             this.looper = null;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
@@ -172,13 +166,12 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
      * Asynchronously loads the indicated sound from its resource (if not already loaded), then
      * initiates its play once any current sound is finished playing.
      *
-     * @param context   the context in which resId is to be interpreted
-     * @param resId     the resource id of the raw resource containing the sound.
+     * @param context the context in which resId is to be interpreted
+     * @param resId   the resource id of the raw resource containing the sound.
      */
-    synchronized public void play(final Context context, @RawRes final int resId)
-        {
+    synchronized public void play(final Context context, @RawRes final int resId) {
         play(context, resId, true);
-        }
+    }
 
     /**
      * Asynchronously loads the indicated sound from its resource (if not already loaded), then
@@ -188,25 +181,23 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
      * @param resId             the resource id of the raw resource containing the sound.
      * @param waitForCompletion whether to wait for any current sound to finish playing first or not
      */
-    synchronized public void play(final Context context, @RawRes final int resId, final boolean waitForCompletion)
-        {
+    synchronized public void play(final Context context, @RawRes final int resId, final boolean waitForCompletion) {
         // Ignore impossible ids
-        if (resId==0) return;
+        if (resId == 0) {
+            return;
+        }
 
-        this.executorService.execute(new Runnable()
-            {
-            @Override public void run()
-                {
+        this.executorService.execute(new Runnable() {
+            @Override
+            public void run() {
                 try {
                     loadAndPlay(context, resId, waitForCompletion);
-                    }
-                catch (Exception e)
-                    {
+                } catch (Exception e) {
                     RobotLog.ee(TAG, e, "exception playing sound; ignored");
-                    }
                 }
-            });
-        }
+            }
+        });
+    }
 
     /**
      * Loads the requested sound if necessary, then (eventually) plays it.
@@ -215,11 +206,9 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
      * prevent us from accepting new play requests while we're waiting for loads to
      * complete.
      */
-    protected void loadAndPlay(Context context, @RawRes int resourceId, boolean waitForCompletion)
-        {
+    protected void loadAndPlay(Context context, @RawRes int resourceId, boolean waitForCompletion) {
         SoundInfo soundInfo = loadedSounds.get(resourceId);
-        if (soundInfo == null)
-            {
+        if (soundInfo == null) {
             // Figure out how long the sound is. We do this before we load so
             // as to avoid potential conflicts with the method of determining duration
             int msDuration = getMsDuration(context, resourceId);
@@ -228,94 +217,90 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
             currentlyLoading = resourceId;
             try {
                 int sampleId = soundPool.load(context, resourceId, 1);
-                if (sampleId != 0)
-                    {
+                if (sampleId != 0) {
                     // Remember the sound for next time
                     soundInfo = new SoundInfo(resourceId, sampleId, msDuration);
                     loadedSounds.put(resourceId, soundInfo);
 
-                    if (DEBUG) RobotLog.vv(TAG, "loadAndPlay(res=0x%08x samp=%d)...", resourceId, sampleId);
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "loadAndPlay(res=0x%08x samp=%d)...", resourceId, sampleId);
+                    }
                     waitForLoadCompletion();
-                    if (DEBUG) RobotLog.vv(TAG, "...loaded");
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "...loaded");
+                    }
 
                     // Play the sound
                     playLoadedSound(soundInfo, waitForCompletion);
-                    }
-                else
-                    {
+                } else {
                     RobotLog.ee(TAG, "unable to load sound resource 0x%08x", resourceId);
-                    }
                 }
-            finally
-                {
+            } finally {
                 currentlyLoading = 0;
-                }
             }
-        else
-            {
+        } else {
             // Update the MRU notion of which sounds have been recently used
             loadedSounds.noteSoundUsage(soundInfo);
 
             // Play it for me, Sam.
             playLoadedSound(soundInfo, waitForCompletion);
-            }
         }
+    }
 
-    protected int getMsDuration(Context context, @RawRes int resourceId)
-        {
+    protected int getMsDuration(Context context, @RawRes int resourceId) {
         MediaPlayer mediaPlayer = MediaPlayer.create(context, resourceId);
         int msDuration = mediaPlayer.getDuration();
         mediaPlayer.release();
-        if (DEBUG) RobotLog.vv(TAG, "duration(res=0x%08x)=%d", resourceId, msDuration);
+        if (DEBUG) {
+            RobotLog.vv(TAG, "duration(res=0x%08x)=%d", resourceId, msDuration);
+        }
         return msDuration;
-        }
+    }
 
-    protected void waitForLoadCompletion()
-        {
+    protected void waitForLoadCompletion() {
         // Wait for the load to finish
-        while (currentlyLoading != 0)
-            {
+        while (currentlyLoading != 0) {
             Thread.yield();
-            }
         }
+    }
 
-    protected void playLoadedSound(SoundInfo soundInfo, boolean waitForCompletion)
-        {
-        if (soundInfo != null)
-            {
-            if (DEBUG) RobotLog.vv(TAG, "playLoadedSound(%d)", soundInfo.sampleId);
+    protected void playLoadedSound(SoundInfo soundInfo, boolean waitForCompletion) {
+        if (soundInfo != null) {
+            if (DEBUG) {
+                RobotLog.vv(TAG, "playLoadedSound(%d)", soundInfo.sampleId);
+            }
 
             boolean soundOn = sharedPreferences.getBoolean(context.getString(R.string.pref_sound_on_off), true);
             float volume = soundOn ? soundOnLevel : soundOffLevel;
 
-            if (waitForCompletion)
-                {
+            if (waitForCompletion) {
                 // Wait for the current sound to finish playing.
                 long msNow = getCurrentMilliseconds();
-                long msDelay = Math.max(0, msFinishPlaying-msNow);
-                try { Thread.sleep(msDelay); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                long msDelay = Math.max(0, msFinishPlaying - msNow);
+                try {
+                    Thread.sleep(msDelay);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
+            }
 
             // We try to successfully play for a little while before we eventually give up
             long msTry = 1000;
             long msDeadline = getCurrentMilliseconds() + msTry;
-            while (true)
-                {
+            while (true) {
                 long msNow = getCurrentMilliseconds();
-                if (msNow >= msDeadline)
-                    {
+                if (msNow >= msDeadline) {
                     break;
-                    }
+                }
 
                 long msStart = msNow;
                 int streamId = soundPool.play(soundInfo.sampleId, /*leftVol*/volume, /*rightVol*/volume, /*priority*/1, /*loop*/0, /*rate*/1.0f);
-                if (streamId != 0)
-                    {
+                if (streamId != 0) {
                     // Started playing. Yay!
                     soundInfo.msLastPlay = msStart;
                     msFinishPlaying = Math.max(msFinishPlaying, msStart + soundInfo.msDuration);
                     return;
-                    }
+                }
 
                /* if (soundInfo.msLastPlay==0)
                     {
@@ -324,107 +309,102 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener
                     Thread.yield();
                     }
                 else*/
-                    break;  // don't repeat earlier problems
-                }
+                break;  // don't repeat earlier problems
+            }
 
             RobotLog.vv(TAG, "Abandoning play attempt res=0x%08x samp=%d", soundInfo.resourceId, soundInfo.sampleId);
-            }
         }
+    }
 
-    protected long getCurrentMilliseconds()
-        {
+    protected long getCurrentMilliseconds() {
         return System.nanoTime() / ElapsedTime.MILLIS_IN_NANO;
-        }
+    }
 
     /**
      * Called when a sound has completed loading.
      *
      * @param soundPool SoundPool object from the load() method
-     * @param sampleId the sample ID of the sound loaded.
-     * @param status the status of the load operation (0 = success)
+     * @param sampleId  the sample ID of the sound loaded.
+     * @param status    the status of the load operation (0 = success)
      */
     @Override
-    public void onLoadComplete(SoundPool soundPool, int sampleId, int status)
-        {
-        if (DEBUG) RobotLog.vv(TAG, "onLoadComplete(res=0x%08x samp=%d)=%d", currentlyLoading, sampleId, status);
-        currentlyLoading = 0;
+    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+        if (DEBUG) {
+            RobotLog.vv(TAG, "onLoadComplete(res=0x%08x samp=%d)=%d", currentlyLoading, sampleId, status);
         }
+        currentlyLoading = 0;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
 
-    protected class SoundInfo
-        {
-        public @RawRes int      resourceId;
-        public         int      sampleId;
-        public         long     msDuration;
-        public         long     msLastPlay;
+    protected class SoundInfo {
+        public
+        @RawRes
+        int resourceId;
+        public int sampleId;
+        public long msDuration;
+        public long msLastPlay;
 
-        public SoundInfo(@RawRes int resourceId, int sampleId, int msDuration)
-            {
+        public SoundInfo(@RawRes int resourceId, int sampleId, int msDuration) {
             this.resourceId = resourceId;
             this.sampleId = sampleId;
             this.msDuration = msDuration;
             this.msLastPlay = 0;
-            }
         }
+    }
 
     /**
      * {@link LoadedSoundCache} keeps track of loaded sounds, mapping sound resource id to loaded
      * sound id. It keeps track of which sounds have been recently used, and unloads neglected
      * songs when a configured capacity of loaded sounds has been reached.
      */
-    protected class LoadedSoundCache extends LinkedHashMap<Integer, SoundInfo>
-        {
+    protected class LoadedSoundCache extends LinkedHashMap<Integer, SoundInfo> {
         static final float loadFactor = 0.75f;
 
         final int capacity;         // max number of cached sounds
         boolean unloadOnRemove;     // whether we should unload a sound when it's removed
 
-        LoadedSoundCache(int capacity)
-            {
-            super((int)Math.ceil(capacity / loadFactor) + 1, loadFactor, true);
+        LoadedSoundCache(int capacity) {
+            super((int) Math.ceil(capacity / loadFactor) + 1, loadFactor, true);
             this.capacity = capacity;
             this.unloadOnRemove = true;
-            }
+        }
 
-        /** update the fact that this key has been just used, again */
-        public void noteSoundUsage(SoundInfo soundInfo)
-            {
+        /**
+         * update the fact that this key has been just used, again
+         */
+        public void noteSoundUsage(SoundInfo soundInfo) {
             // We're updating the MRU, we don't want to unload the sound during the remove() below.
             unloadOnRemove = false;
             try {
                 // Make this key most recently used
                 this.remove(soundInfo.resourceId);
                 put(soundInfo.resourceId, soundInfo);
-                }
-            finally
-                {
+            } finally {
                 unloadOnRemove = true;
-                }
-            }
-
-        @Override
-        protected boolean removeEldestEntry(Entry<Integer, SoundInfo> eldest)
-            {
-            return size() > capacity;
-            }
-
-        @Override
-        public SoundInfo remove(Object key)
-            {
-            SoundInfo soundInfo = super.remove(key);
-            if (unloadOnRemove)
-                {
-                if (soundInfo != null)
-                    {
-                    if (DEBUG) RobotLog.vv(TAG, "unloading sound 0x%08x", (Integer)key);
-                    soundPool.unload(soundInfo.sampleId);
-                    }
-                }
-            return soundInfo;
             }
         }
 
+        @Override
+        protected boolean removeEldestEntry(Entry<Integer, SoundInfo> eldest) {
+            return size() > capacity;
+        }
+
+        @Override
+        public SoundInfo remove(Object key) {
+            SoundInfo soundInfo = super.remove(key);
+            if (unloadOnRemove) {
+                if (soundInfo != null) {
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "unloading sound 0x%08x", (Integer) key);
+                    }
+                    soundPool.unload(soundInfo.sampleId);
+                }
+            }
+            return soundInfo;
+        }
     }
+
+}

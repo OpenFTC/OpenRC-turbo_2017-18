@@ -55,99 +55,84 @@ import java.util.Map;
  * serial number.
  */
 @SuppressWarnings("javadoc")
-public class RobotConfigMap implements Serializable
-    {
+public class RobotConfigMap implements Serializable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    Map<SerialNumber, ControllerConfiguration>  map = new HashMap<SerialNumber, ControllerConfiguration>();
+    Map<SerialNumber, ControllerConfiguration> map = new HashMap<SerialNumber, ControllerConfiguration>();
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobotConfigMap(Collection<ControllerConfiguration> controllerConfigurations)
-        {
-        for (ControllerConfiguration controllerConfiguration : controllerConfigurations)
-            {
+    public RobotConfigMap(Collection<ControllerConfiguration> controllerConfigurations) {
+        for (ControllerConfiguration controllerConfiguration : controllerConfigurations) {
             this.put(controllerConfiguration.getSerialNumber(), controllerConfiguration);
-            }
         }
+    }
 
-    public RobotConfigMap(Map<SerialNumber, ControllerConfiguration> map)
-        {
+    public RobotConfigMap(Map<SerialNumber, ControllerConfiguration> map) {
         this.map = new HashMap<SerialNumber, ControllerConfiguration>(map);
-        }
+    }
 
-    public RobotConfigMap(RobotConfigMap him)
-        {
+    public RobotConfigMap(RobotConfigMap him) {
         this(him.map);
-        }
+    }
 
-    public RobotConfigMap()
-        {
+    public RobotConfigMap() {
         super();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public boolean contains(SerialNumber serialNumber)
-        {
+    public boolean contains(SerialNumber serialNumber) {
         return this.map.containsKey(serialNumber);
-        }
+    }
 
-    public ControllerConfiguration get(SerialNumber serialNumber)
-        {
+    public ControllerConfiguration get(SerialNumber serialNumber) {
         return this.map.get(serialNumber);
-        }
+    }
 
-    public void put(SerialNumber serialNumber, ControllerConfiguration controllerConfiguration)
-        {
+    public void put(SerialNumber serialNumber, ControllerConfiguration controllerConfiguration) {
         this.map.put(serialNumber, controllerConfiguration);
-        }
+    }
 
-    public boolean remove(SerialNumber serialNumber)
-        {
+    public boolean remove(SerialNumber serialNumber) {
         return this.map.remove(serialNumber) != null;
-        }
+    }
 
-    public int size()
-        {
+    public int size() {
         return this.map.size();
-        }
+    }
 
-    public Collection<SerialNumber> serialNumbers()
-        {
+    public Collection<SerialNumber> serialNumbers() {
         return this.map.keySet();
-        }
+    }
 
-    public Collection<ControllerConfiguration> controllerConfigurations()
-        {
+    public Collection<ControllerConfiguration> controllerConfigurations() {
         return this.map.values();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
     // a debugging utility
-    public void writeToLog(String tag, String message)
-        {
+    public void writeToLog(String tag, String message) {
         RobotLog.vv(tag, "robotConfigMap: %s", message);
-        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations())
-            {
+        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations()) {
             RobotLog.vv(tag, "   serial=%s id=0x%08x name='%s' ", controllerConfiguration.getSerialNumber().toString(), controllerConfiguration.hashCode(), controllerConfiguration.getName());
-            }
         }
+    }
+
     // a debugging utility
-    public void writeToLog(String tag, String message, ControllerConfiguration controllerConfiguration)
-        {
+    public void writeToLog(String tag, String message, ControllerConfiguration controllerConfiguration) {
         writeToLog(tag, message);
         RobotLog.vv(tag, "  :serial=%s id=0x%08x name='%s' ", controllerConfiguration.getSerialNumber().toString(), controllerConfiguration.hashCode(), controllerConfiguration.getName());
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Auto configuration
@@ -157,87 +142,77 @@ public class RobotConfigMap implements Serializable
      * Answers as to whether all the controllers in this map have real USB devices associated
      * with them or not
      */
-    boolean allControllersAreBound()
-        {
-        for (ControllerConfiguration controllerConfiguration : this .controllerConfigurations())
-            {
-            if (controllerConfiguration.getSerialNumber().isFake())
-                {
+    boolean allControllersAreBound() {
+        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations()) {
+            if (controllerConfiguration.getSerialNumber().isFake()) {
                 return false;
-                }
             }
-        return true;
         }
+        return true;
+    }
 
     /**
      * For each controller in this map that currently lacks a real serial number, try to choose
      * an unused selection from the scanned devices to associate with same.
      */
-    public void bindUnboundControllers(ScannedDevices scannedDevices)
-        {
+    public void bindUnboundControllers(ScannedDevices scannedDevices) {
         // First, find out whom we have to choose from that's not already used
         ScannedDevices extraDevices = new ScannedDevices(scannedDevices);
-        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations())
-            {
+        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations()) {
             extraDevices.remove(controllerConfiguration.getSerialNumber());
-            }
+        }
 
         // Invert the map, so we can easily lookup (ConfigurationType -> extra controllers)
         Map<ConfigurationType, List<SerialNumber>> extraByType = new HashMap<ConfigurationType, List<SerialNumber>>();
-        for (Map.Entry<SerialNumber,DeviceManager.DeviceType> pair : extraDevices.entrySet())
-            {
+        for (Map.Entry<SerialNumber, DeviceManager.DeviceType> pair : extraDevices.entrySet()) {
             ConfigurationType configurationType = BuiltInConfigurationType.fromUSBDeviceType(pair.getValue());
-            if (configurationType != BuiltInConfigurationType.UNKNOWN)
-                {
+            if (configurationType != BuiltInConfigurationType.UNKNOWN) {
                 List<SerialNumber> list = extraByType.get(configurationType);
-                if (list == null)
-                    {
+                if (list == null) {
                     list = new LinkedList<SerialNumber>();
                     extraByType.put(configurationType, list);
-                    }
-                list.add(pair.getKey());
                 }
+                list.add(pair.getKey());
             }
+        }
 
         // Figure out who's missing, and assign. Be careful about updating while iterating.
-        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations())
-            {
-            if (controllerConfiguration.getSerialNumber().isFake())
-                {
+        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations()) {
+            if (controllerConfiguration.getSerialNumber().isFake()) {
                 List<SerialNumber> list = extraByType.get(controllerConfiguration.getConfigurationType());
-                if (list != null && !list.isEmpty())
-                    {
+                if (list != null && !list.isEmpty()) {
                     // Use the first available controller of the right type, and bind to it
                     SerialNumber newSerialNumber = list.remove(0);
                     controllerConfiguration.setSerialNumber(newSerialNumber);
-                    }
                 }
             }
+        }
 
         // Make sure we're accurate on the way out
         Collection<ControllerConfiguration> controllers = new ArrayList<ControllerConfiguration>(this.controllerConfigurations());
         map.clear();
-        for (ControllerConfiguration controllerConfiguration : controllers)
-            {
+        for (ControllerConfiguration controllerConfiguration : controllers) {
             put(controllerConfiguration.getSerialNumber(), controllerConfiguration);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Swapping
     //----------------------------------------------------------------------------------------------
 
-    /** Changes a serial number of a controller known to be in this configuration */
-    public void setSerialNumber(ControllerConfiguration controllerConfiguration, SerialNumber serialNumber)
-        {
+    /**
+     * Changes a serial number of a controller known to be in this configuration
+     */
+    public void setSerialNumber(ControllerConfiguration controllerConfiguration, SerialNumber serialNumber) {
         this.remove(controllerConfiguration.getSerialNumber());
         controllerConfiguration.setSerialNumber(serialNumber);
         this.put(serialNumber, controllerConfiguration);
-        }
+    }
 
-    /** Swaps the serial numbers (and attachment status) of two controllers both known to be in this configuration */
-    public void swapSerialNumbers(ControllerConfiguration a, ControllerConfiguration b)
-        {
+    /**
+     * Swaps the serial numbers (and attachment status) of two controllers both known to be in this configuration
+     */
+    public void swapSerialNumbers(ControllerConfiguration a, ControllerConfiguration b) {
         SerialNumber aSerialNumber = a.getSerialNumber();
         a.setSerialNumber(b.getSerialNumber());
         b.setSerialNumber(aSerialNumber);
@@ -248,12 +223,11 @@ public class RobotConfigMap implements Serializable
         boolean knownToBeAttached = a.isKnownToBeAttached();
         a.setKnownToBeAttached(b.isKnownToBeAttached());
         b.setKnownToBeAttached(knownToBeAttached);
-        }
+    }
 
-    public boolean isSwappable(ControllerConfiguration target, ScannedDevices scannedDevices, Context context)
-        {
+    public boolean isSwappable(ControllerConfiguration target, ScannedDevices scannedDevices, Context context) {
         return !getEligibleSwapTargets(target, scannedDevices, context).isEmpty();
-        }
+    }
 
     /**
      * Returns a list of the candidate configurations with which the target may be swapped.
@@ -262,94 +236,97 @@ public class RobotConfigMap implements Serializable
      * what's currently attached to the USB bus: those are possibly intersecting sets, but each
      * may have members which are not in the other.
      */
-    public List<ControllerConfiguration> getEligibleSwapTargets(ControllerConfiguration target, ScannedDevices scannedDevices, Context context)
-        {
+    public List<ControllerConfiguration> getEligibleSwapTargets(ControllerConfiguration target, ScannedDevices scannedDevices, Context context) {
         List<ControllerConfiguration> result = new LinkedList<ControllerConfiguration>();
 
         // Only our USB-attached devices are swappable
         ConfigurationType type = target.getConfigurationType();
-        if (!(type==BuiltInConfigurationType.MOTOR_CONTROLLER
-                || type==BuiltInConfigurationType.SERVO_CONTROLLER
-                || type==BuiltInConfigurationType.DEVICE_INTERFACE_MODULE
-                || type==BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER))
+        if (!(type == BuiltInConfigurationType.MOTOR_CONTROLLER
+                || type == BuiltInConfigurationType.SERVO_CONTROLLER
+                || type == BuiltInConfigurationType.DEVICE_INTERFACE_MODULE
+                || type == BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER)) {
             return result;
+        }
 
-        if (target.getSerialNumber().isFake())
-            {
+        if (target.getSerialNumber().isFake()) {
             return result;
-            }
+        }
 
         // First snarf candidates that are already in this robot configuration
-        for (ControllerConfiguration other : this.controllerConfigurations())
-            {
+        for (ControllerConfiguration other : this.controllerConfigurations()) {
             SerialNumber serialNumber = other.getSerialNumber();
 
-            if (serialNumber.isFake()) continue;
-            if (serialNumber.equals(target.getSerialNumber())) continue;
-            if (containsSerialNumber(result, serialNumber)) continue;   // shouldn't need this test, but it's harmless
-            if (other.getConfigurationType() == target.getConfigurationType())
-                {
-                result.add(other);
-                }
+            if (serialNumber.isFake()) {
+                continue;
             }
+            if (serialNumber.equals(target.getSerialNumber())) {
+                continue;
+            }
+            if (containsSerialNumber(result, serialNumber)) {
+                continue;   // shouldn't need this test, but it's harmless
+            }
+            if (other.getConfigurationType() == target.getConfigurationType()) {
+                result.add(other);
+            }
+        }
 
         // Then add others we know about from scanning but haven't added yet
-        for (Map.Entry<SerialNumber, DeviceManager.DeviceType> entry : scannedDevices.entrySet())
-            {
+        for (Map.Entry<SerialNumber, DeviceManager.DeviceType> entry : scannedDevices.entrySet()) {
             SerialNumber serialNumber = entry.getKey();
 
-            if (serialNumber.isFake()) continue;
-            if (serialNumber.equals(target.getSerialNumber())) continue;
-            if (containsSerialNumber(result, serialNumber)) continue;
-            if (entry.getValue() == target.toUSBDeviceType())
-                {
+            if (serialNumber.isFake()) {
+                continue;
+            }
+            if (serialNumber.equals(target.getSerialNumber())) {
+                continue;
+            }
+            if (containsSerialNumber(result, serialNumber)) {
+                continue;
+            }
+            if (entry.getValue() == target.toUSBDeviceType()) {
                 String name = generateName(context, target.getConfigurationType(), result);
                 ControllerConfiguration controllerConfiguration = ControllerConfiguration.forType(name, entry.getKey(), target.getConfigurationType());
                 controllerConfiguration.setKnownToBeAttached(scannedDevices.containsKey(controllerConfiguration.getSerialNumber()));
                 result.add(controllerConfiguration);
-                }
             }
+        }
 
         return result;
-        }
+    }
 
     /**
      * Generates a name that's unique across both this whole configuration and the candidate swaps
      * that have been produced so far.
      */
-    protected String generateName(Context context, ConfigurationType type, List<ControllerConfiguration> resultSoFar)
-        {
-        for (int i = 0; ; i++)
-            {
+    protected String generateName(Context context, ConfigurationType type, List<ControllerConfiguration> resultSoFar) {
+        for (int i = 0; ; i++) {
             String name = String.format("%s %d", type.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal, context), i);
-            if (!nameExists(name, resultSoFar))
-                {
+            if (!nameExists(name, resultSoFar)) {
                 return name;
-                }
             }
-        }
-    protected boolean nameExists(String name, List<ControllerConfiguration> resultSoFar)
-        {
-        for (ControllerConfiguration controllerConfiguration : resultSoFar)
-            {
-            if (controllerConfiguration.getName().equalsIgnoreCase(name)) return true;
-            }
-        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations())
-            {
-            if (controllerConfiguration.getName().equalsIgnoreCase(name)) return true;
-            }
-        return false;
-        }
-
-    protected boolean containsSerialNumber(List<ControllerConfiguration> list, SerialNumber serialNumber)
-        {
-        for (ControllerConfiguration controllerConfiguration : list)
-            {
-            if (controllerConfiguration.getSerialNumber().equals(serialNumber))
-                {
-                return true;
-                }
-            }
-        return false;
         }
     }
+
+    protected boolean nameExists(String name, List<ControllerConfiguration> resultSoFar) {
+        for (ControllerConfiguration controllerConfiguration : resultSoFar) {
+            if (controllerConfiguration.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        for (ControllerConfiguration controllerConfiguration : this.controllerConfigurations()) {
+            if (controllerConfiguration.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean containsSerialNumber(List<ControllerConfiguration> list, SerialNumber serialNumber) {
+        for (ControllerConfiguration controllerConfiguration : list) {
+            if (controllerConfiguration.getSerialNumber().equals(serialNumber)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

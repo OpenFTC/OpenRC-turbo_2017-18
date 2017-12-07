@@ -38,50 +38,41 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * A simple utility class holding the serial number of a USB accessible lynx module and (optionally) its module address
  */
 @SuppressWarnings("WeakerAccess")
-public final class USBAccessibleLynxModule
-    {
+public final class USBAccessibleLynxModule {
     protected SerialNumber serialNumber = null;
-    protected int          moduleAddress = 0;
-    protected boolean      moduleAddressChangeable = true;
+    protected int moduleAddress = 0;
+    protected boolean moduleAddressChangeable = true;
 
-    public USBAccessibleLynxModule(SerialNumber serialNumber)
-        {
+    public USBAccessibleLynxModule(SerialNumber serialNumber) {
         this.setSerialNumber(serialNumber);
-        }
+    }
 
-    public USBAccessibleLynxModule(SerialNumber serialNumber, boolean moduleAddressChangeable)
-        {
+    public USBAccessibleLynxModule(SerialNumber serialNumber, boolean moduleAddressChangeable) {
         this.setSerialNumber(serialNumber);
         this.setModuleAddressChangeable(moduleAddressChangeable);
-        }
-
-    public SerialNumber getSerialNumber()
-        {
-        return serialNumber;
-        }
-
-    public void setSerialNumber(SerialNumber serialNumber)
-        {
-        this.serialNumber = serialNumber;
-        }
-
-    public int getModuleAddress()
-        {
-        return moduleAddress;
-        }
-
-    public void setModuleAddress(int moduleAddress)
-        {
-        this.moduleAddress = moduleAddress;
-        }
-
-    public boolean isModuleAddressChangeable()
-        {
-        return moduleAddressChangeable;
-        }
-
-    public void setModuleAddressChangeable(boolean moduleAddressChangeable)
-        {
-        this.moduleAddressChangeable = moduleAddressChangeable;
-        }
     }
+
+    public SerialNumber getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(SerialNumber serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public int getModuleAddress() {
+        return moduleAddress;
+    }
+
+    public void setModuleAddress(int moduleAddress) {
+        this.moduleAddress = moduleAddress;
+    }
+
+    public boolean isModuleAddressChangeable() {
+        return moduleAddressChangeable;
+    }
+
+    public void setModuleAddressChangeable(boolean moduleAddressChangeable) {
+        this.moduleAddressChangeable = moduleAddressChangeable;
+    }
+}

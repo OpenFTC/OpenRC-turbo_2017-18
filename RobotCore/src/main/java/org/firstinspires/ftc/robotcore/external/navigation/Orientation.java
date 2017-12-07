@@ -48,7 +48,7 @@ import static java.lang.Math.PI;
 /**
  * Instances of {@link Orientation} represent a rotated stance in three-dimensional space
  * by way of a set of three successive rotations.
- *
+ * <p>
  * <p>There are several ways that a particular orientation in three-space can be represented.
  * One way is by specifying a (unit) directional vector about which the orientation is to occur,
  * together with a rotation angle about that axis. This representation is unique up to the sign of the
@@ -56,14 +56,14 @@ import static java.lang.Math.PI;
  * rotation as a rotation {@code -a} about the vector {@code -v}. While this manner of specifying a
  * rotation is easy to visualize if the vector in question is one of the cardinal axes (ie: X,Y, or Z),
  * many find it more difficult to visualize more complex rotations in this manner.</p>
- *
+ * <p>
  * <p>An alternative, more common, way to represent a particular orientation in three-space is by means
  * of indicating three angles of rotation about three successive axes. You might for example be familiar
  * with the notions of heading, elevation, and bank angles for aircraft. Unfortunately, there are 24
  * different yet equivalent ways that a set of three rotational angles about three axes can represent
  * the same effective rotation. As might be expected, this can be the source of much confusion. The
  * 24 different representations break down as follows.</p>
- *
+ * <p>
  * <p>First is the matter of the axes reference: is the coordinate system in which the referred-to rotational
  * axes reside a coordinate system that moves with (and so remains fixed relative to) the object being rotated,
  * or do the axes remain fixed relative to the world around the object and are unaffected by the
@@ -72,7 +72,7 @@ import static java.lang.Math.PI;
  * Both points of view are equally valid methodologies, but one or the other may be more understandable
  * or useful in a given application situation.
  * </p>
- *
+ * <p>
  * <p>The extrinsic-vs-intrinsic difference accounts for a factor of two in our list of 24 different
  * representations. The remaining factor of 12 breaks down into whether the three rotations all use
  * different axes (and so are a permutation of X, Y, and Z, of which there are six in number), or whether
@@ -84,12 +84,12 @@ import static java.lang.Math.PI;
  * indicating orientation, but in any given application, one way may be more useful or easier to
  * understand than another.
  * </p>
- *
+ * <p>
  * <p>Even on top of all that, for a given intrinsic-vs-extrinsic distinction, and a given axes
  * ordering, there are two sets of angle rotation that will produce the same orientation. For example,
  * an extrinsic, XZX rotation of (in degrees) 90, -90, 0 is equivalent to an extrinsic, XZX rotation
  * of -90, 90, -180.</p>
- *
+ * <p>
  * <p>As was mentioned, much confusion has historically arisen from talking about an orientation as
  * a set of three angles without also clearly indicating which of the 24 representational possibilities
  * one is working within. One aim of {@link Orientation} is to reduce that confusion by being explicitly
@@ -102,8 +102,7 @@ import static java.lang.Math.PI;
  * @see <a href="https://en.wikipedia.org/wiki/Axes_conventions">Axes Conventions</a>
  * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
  */
-public class Orientation
-    {
+public class Orientation {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -150,13 +149,11 @@ public class Orientation
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public Orientation()
-        {
+    public Orientation() {
         this(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS, 0, 0, 0, 0);
-        }
+    }
 
-    public Orientation(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float firstAngle, float secondAngle, float thirdAngle, long acquisitionTime)
-        {
+    public Orientation(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float firstAngle, float secondAngle, float thirdAngle, long acquisitionTime) {
         this.axesReference = axesReference;
         this.axesOrder = axesOrder;
         this.angleUnit = angleUnit;
@@ -164,7 +161,7 @@ public class Orientation
         this.secondAngle = secondAngle;
         this.thirdAngle = thirdAngle;
         this.acquisitionTime = acquisitionTime;
-        }
+    }
 
     /**
      * Converts this {@link Orientation} to one with the indicated angular units.
@@ -172,19 +169,17 @@ public class Orientation
      * @param angleUnit the units to use in the returned [@link Orientation}
      * @return a new [@link Orientation} with the same data but in the indicated units
      */
-    public Orientation toAngleUnit(AngleUnit angleUnit)
-        {
-        if (angleUnit != this.angleUnit)
-            {
+    public Orientation toAngleUnit(AngleUnit angleUnit) {
+        if (angleUnit != this.angleUnit) {
             return new Orientation(this.axesReference, this.axesOrder, angleUnit,
                     angleUnit.fromUnit(this.angleUnit, firstAngle),
                     angleUnit.fromUnit(this.angleUnit, secondAngle),
                     angleUnit.fromUnit(this.angleUnit, thirdAngle),
                     this.acquisitionTime);
-            }
-        else
+        } else {
             return this;
         }
+    }
 
     /**
      * Converts the {@link Orientation} to an equivalent one with the indicted point of view.
@@ -192,10 +187,8 @@ public class Orientation
      * @param axesReference whether we wish to consider rotations from an extrinsic or intrinsic point of view
      * @return an equivalent orientation but with the indicated point of view.
      */
-    public Orientation toAxesReference(AxesReference axesReference)
-        {
-        if (this.axesReference != axesReference)
-            {
+    public Orientation toAxesReference(AxesReference axesReference) {
+        if (this.axesReference != axesReference) {
             /**
              * Theorem: Any extrinsic rotation is equivalent to an intrinsic rotation by
              * the same angles but with inverted order of elemental orientations, and vice versa.
@@ -204,37 +197,37 @@ public class Orientation
             Assert.assertTrue(axesReference == this.axesReference.reverse());
             return new Orientation(this.axesReference.reverse(), this.axesOrder.reverse(), this.angleUnit,
                     this.thirdAngle, this.secondAngle, this.firstAngle, this.acquisitionTime);
-            }
-        else
+        } else {
             return this;
         }
+    }
 
     /**
      * Converst the {@link Orientation} to an equivalent one with the indicated ordering of axes
+     *
      * @param axesOrder the desired ordering of axes
      * @return an equivalent orientation with the indicated axes order
      */
-    public Orientation toAxesOrder(AxesOrder axesOrder)
-        {
-        if (this.axesOrder != axesOrder)
-            {
+    public Orientation toAxesOrder(AxesOrder axesOrder) {
+        if (this.axesOrder != axesOrder) {
             return Orientation.getOrientation(this.getRotationMatrix(), this.axesReference, axesOrder, this.angleUnit);
-            }
-        else
+        } else {
             return this;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Override public String toString()
-        {
-        if (this.angleUnit == AngleUnit.DEGREES)
+    @Override
+    public String toString() {
+        if (this.angleUnit == AngleUnit.DEGREES) {
             return String.format("{%s %s %.0f %.0f %.0f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
-        else
+        } else {
             return String.format("{%s %s %.3f %.3f %.3f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Rotation Matrices
@@ -247,10 +240,9 @@ public class Orientation
      * @see #getRotationMatrix(AxesReference, AxesOrder, AngleUnit, float, float, float)
      * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
      */
-    public OpenGLMatrix getRotationMatrix()
-        {
+    public OpenGLMatrix getRotationMatrix() {
         return getRotationMatrix(this.axesReference, this.axesOrder, this.angleUnit, this.firstAngle, this.secondAngle, this.thirdAngle);
-        }
+    }
 
     /**
      * Returns the rotation matrix associated with a particular set of three rotational angles.
@@ -259,17 +251,15 @@ public class Orientation
      * @see #getRotationMatrix()
      * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
      */
-    public static OpenGLMatrix getRotationMatrix(AxesReference axesReference, AxesOrder axesOrder, AngleUnit unit, float firstAngle, float secondAngle, float thirdAngle)
-        {
-        if (axesReference == AxesReference.INTRINSIC)
-            {
+    public static OpenGLMatrix getRotationMatrix(AxesReference axesReference, AxesOrder axesOrder, AngleUnit unit, float firstAngle, float secondAngle, float thirdAngle) {
+        if (axesReference == AxesReference.INTRINSIC) {
             /**
              * Theorem: Any extrinsic rotation is equivalent to an intrinsic rotation by the same
              * angles but with inverted order of elemental orientations, and vice versa.
              * @see <a href="https://en.wikipedia.org/wiki/Euler_angles">Euler Angles</a>
              */
             return getRotationMatrix(axesReference.reverse(), axesOrder.reverse(), unit, thirdAngle, secondAngle, firstAngle);
-            }
+        }
 
         /**
          * The extrinsic case takes some work.
@@ -293,8 +283,7 @@ public class Orientation
         float m10, m11, m12;
         float m20, m21, m22;
 
-        switch (axesOrder)
-            {
+        switch (axesOrder) {
             default:
             case XZX:
                 m00 = ((float) (cos(secondAngle)));
@@ -428,7 +417,7 @@ public class Orientation
                 m21 = ((float) (sin(firstAngle) * sin(thirdAngle) + cos(firstAngle) * cos(thirdAngle) * sin(secondAngle)));
                 m22 = ((float) (cos(secondAngle) * cos(thirdAngle)));
                 break;
-            }
+        }
 
         OpenGLMatrix result = new OpenGLMatrix();
         result.put(0, 0, m00);
@@ -441,7 +430,7 @@ public class Orientation
         result.put(2, 1, m21);
         result.put(2, 2, m22);
         return result;
-        }
+    }
 
     /**
      * Given a rotation matrix, and an {@link AxesReference} and {@link AxesOrder}, returns an orientation
@@ -456,26 +445,29 @@ public class Orientation
      * @see #getOrientation(MatrixF, AxesReference, AxesOrder, AngleUnit, AngleSet)
      * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
      */
-    public static Orientation getOrientation(MatrixF rot, AxesReference axesReference, AxesOrder axesOrder, AngleUnit unit)
-        {
+    public static Orientation getOrientation(MatrixF rot, AxesReference axesReference, AxesOrder axesOrder, AngleUnit unit) {
         /**
          * Run both choices and return the one that uses smaller sets of angles. This is just a heuristic
          * to choose which angle set is the most aesthetically pleasing. Both angle sets are equally <em>valid</em>.
          */
-        Orientation one      = getOrientation(rot, axesReference, axesOrder, unit, AngleSet.THEONE);
+        Orientation one = getOrientation(rot, axesReference, axesOrder, unit, AngleSet.THEONE);
         Orientation theOther = getOrientation(rot, axesReference, axesOrder, unit, AngleSet.THEOTHER);
 
         VectorF vOne = new VectorF(one.firstAngle, one.secondAngle, one.thirdAngle);
         VectorF vOther = new VectorF(theOther.firstAngle, theOther.secondAngle, theOther.thirdAngle);
 
         return vOne.magnitude() <= vOther.magnitude() ? one : theOther;
-        }
+    }
 
     /**
      * {@link AngleSet} is used to distinguish between the two sets of angles that will produce
      * a given rotation in a given axes reference and a given axes order
      */
-    public enum AngleSet { THEONE, THEOTHER };
+    public enum AngleSet {
+        THEONE, THEOTHER
+    }
+
+    ;
 
     /**
      * Given a rotation matrix, and an {@link AxesReference} and {@link AxesOrder}, returns an orientation
@@ -490,14 +482,12 @@ public class Orientation
      * @see #getRotationMatrix(AxesReference, AxesOrder, AngleUnit, float, float, float)
      * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
      */
-    public static Orientation getOrientation(MatrixF rot, AxesReference axesReference, AxesOrder axesOrder, AngleUnit unit, AngleSet angleSet)
-        {
+    public static Orientation getOrientation(MatrixF rot, AxesReference axesReference, AxesOrder axesOrder, AngleUnit unit, AngleSet angleSet) {
         float firstAngle, secondAngle, thirdAngle;
 
-        if (axesReference == AxesReference.INTRINSIC)
-            {
+        if (axesReference == AxesReference.INTRINSIC) {
             return getOrientation(rot, axesReference.reverse(), axesOrder.reverse(), unit, angleSet).toAxesReference(axesReference);
-            }
+        }
 
         /**
          * The extrinsic case takes some work.
@@ -515,29 +505,23 @@ public class Orientation
          * arbitrary choice for the value of one of those two axes, then appropriately compute the other.
          */
         float test;
-        switch (axesOrder)
-            {
+        switch (axesOrder) {
             default:
             case XZX:
                 test = rot.get(0, 0);  /*  cos(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) 0;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(2, 1) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(2, 1), rot.get(1, 1)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) PI;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 2) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(2, 2) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(1, 2), rot.get(2, 2)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(0, 0) == cos(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? acos(rot.get(0, 0)) : -acos(rot.get(0, 0)));
                     /*  rot.get(0, 2) == sin(firstAngle) * sin(secondAngle)  */
@@ -546,28 +530,23 @@ public class Orientation
                     /*  rot.get(2, 0) == sin(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(1, 0) == cos(thirdAngle) * sin(secondAngle)  */
                     thirdAngle = (float) atan2(rot.get(2, 0) / sin(secondAngle), rot.get(1, 0) / sin(secondAngle));
-                    }
+                }
                 break;
             case XYX:
                 test = rot.get(0, 0);  /*  cos(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) 0;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(2, 1) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(2, 1), rot.get(1, 1)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) PI;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 2) == -sin(firstAngle - thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(-rot.get(1, 2), rot.get(1, 1)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(0, 0) == cos(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? acos(rot.get(0, 0)) : -acos(rot.get(0, 0)));
                     /*  rot.get(0, 1) == sin(firstAngle) * sin(secondAngle)  */
@@ -576,28 +555,23 @@ public class Orientation
                     /*  rot.get(1, 0) == sin(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(2, 0) == -(cos(thirdAngle) * sin(secondAngle))  */
                     thirdAngle = (float) atan2(rot.get(1, 0) / sin(secondAngle), -rot.get(2, 0) / sin(secondAngle));
-                    }
+                }
                 break;
             case YXY:
                 test = rot.get(1, 1);  /*  cos(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) 0;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(0, 2), rot.get(0, 0)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) PI;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(0, 2), rot.get(0, 0)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(1, 1) == cos(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? acos(rot.get(1, 1)) : -acos(rot.get(1, 1)));
                     /*  rot.get(1, 0) == sin(firstAngle) * sin(secondAngle)  */
@@ -606,28 +580,23 @@ public class Orientation
                     /*  rot.get(0, 1) == sin(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(2, 1) == cos(thirdAngle) * sin(secondAngle)  */
                     thirdAngle = (float) atan2(rot.get(0, 1) / sin(secondAngle), rot.get(2, 1) / sin(secondAngle));
-                    }
+                }
                 break;
             case YZY:
                 test = rot.get(1, 1);  /*  cos(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) 0;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(0, 2), rot.get(0, 0)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) PI;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == -sin(firstAngle - thirdAngle)  */
                     /*  rot.get(2, 2) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(-rot.get(0, 2), rot.get(2, 2)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(1, 1) == cos(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? acos(rot.get(1, 1)) : -acos(rot.get(1, 1)));
                     /*  rot.get(1, 2) == sin(firstAngle) * sin(secondAngle)  */
@@ -636,28 +605,23 @@ public class Orientation
                     /*  rot.get(2, 1) == sin(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(0, 1) == -(cos(thirdAngle) * sin(secondAngle))  */
                     thirdAngle = (float) atan2(rot.get(2, 1) / sin(secondAngle), -rot.get(0, 1) / sin(secondAngle));
-                    }
+                }
                 break;
             case ZYZ:
                 test = rot.get(2, 2);  /*  cos(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) 0;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 0) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(1, 0), rot.get(0, 0)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) PI;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 1) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(0, 1), rot.get(1, 1)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(2, 2) == cos(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? acos(rot.get(2, 2)) : -acos(rot.get(2, 2)));
                     /*  rot.get(2, 1) == sin(firstAngle) * sin(secondAngle)  */
@@ -666,28 +630,23 @@ public class Orientation
                     /*  rot.get(1, 2) == sin(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(0, 2) == cos(thirdAngle) * sin(secondAngle)  */
                     thirdAngle = (float) atan2(rot.get(1, 2) / sin(secondAngle), rot.get(0, 2) / sin(secondAngle));
-                    }
+                }
                 break;
             case ZXZ:
                 test = rot.get(2, 2);  /*  cos(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) 0;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 0) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(1, 0), rot.get(0, 0)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) PI;
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 1) == -sin(firstAngle - thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(-rot.get(0, 1), rot.get(0, 0)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(2, 2) == cos(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? acos(rot.get(2, 2)) : -acos(rot.get(2, 2)));
                     /*  rot.get(2, 0) == sin(firstAngle) * sin(secondAngle)  */
@@ -696,28 +655,23 @@ public class Orientation
                     /*  rot.get(0, 2) == sin(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(1, 2) == -(cos(thirdAngle) * sin(secondAngle))  */
                     thirdAngle = (float) atan2(rot.get(0, 2) / sin(secondAngle), -rot.get(1, 2) / sin(secondAngle));
-                    }
+                }
                 break;
             case XZY:
                 test = rot.get(1, 0);  /*  sin(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) (PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(2, 2) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(0, 2), rot.get(2, 2)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) (-PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(2, 1) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(0, 1) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(2, 1), rot.get(0, 1)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(1, 0) == sin(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? asin(rot.get(1, 0)) : PI - asin(rot.get(1, 0)));
                     /*  rot.get(1, 2) == -(cos(secondAngle) * sin(firstAngle))  */
@@ -726,28 +680,23 @@ public class Orientation
                     /*  rot.get(2, 0) == -(cos(secondAngle) * sin(thirdAngle))  */
                     /*  rot.get(0, 0) == cos(secondAngle) * cos(thirdAngle)  */
                     thirdAngle = (float) atan2(-rot.get(2, 0) / cos(secondAngle), rot.get(0, 0) / cos(secondAngle));
-                    }
+                }
                 break;
             case XYZ:
                 test = rot.get(2, 0);  /*  -sin(secondAngle)  */
-                if (test == -1)
-                    {
+                if (test == -1) {
                     secondAngle = (float) (PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 1) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(0, 2) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(0, 1), rot.get(0, 2)));
-                    }
-                else if (test == 1)
-                    {
+                } else if (test == 1) {
                     secondAngle = (float) (-PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 1) == -sin(firstAngle + thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(-rot.get(0, 1), rot.get(1, 1)) - firstAngle);
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(2, 0) == -sin(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? -asin(rot.get(2, 0)) : PI + asin(rot.get(2, 0)));
                     /*  rot.get(2, 1) == cos(secondAngle) * sin(firstAngle)  */
@@ -756,28 +705,23 @@ public class Orientation
                     /*  rot.get(1, 0) == cos(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(0, 0) == cos(secondAngle) * cos(thirdAngle)  */
                     thirdAngle = (float) atan2(rot.get(1, 0) / cos(secondAngle), rot.get(0, 0) / cos(secondAngle));
-                    }
+                }
                 break;
             case YXZ:
                 test = rot.get(2, 1);  /*  sin(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) (PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(0, 2), rot.get(0, 0)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) (-PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 2) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(0, 2), rot.get(0, 0)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(2, 1) == sin(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? asin(rot.get(2, 1)) : PI - asin(rot.get(2, 1)));
                     /*  rot.get(2, 0) == -(cos(secondAngle) * sin(firstAngle))  */
@@ -786,28 +730,23 @@ public class Orientation
                     /*  rot.get(0, 1) == -(cos(secondAngle) * sin(thirdAngle))  */
                     /*  rot.get(1, 1) == cos(secondAngle) * cos(thirdAngle)  */
                     thirdAngle = (float) atan2(-rot.get(0, 1) / cos(secondAngle), rot.get(1, 1) / cos(secondAngle));
-                    }
+                }
                 break;
             case YZX:
                 test = rot.get(0, 1);  /*  -sin(secondAngle)  */
-                if (test == -1)
-                    {
+                if (test == -1) {
                     secondAngle = (float) (PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 2) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(1, 0) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(1, 2), rot.get(1, 0)));
-                    }
-                else if (test == 1)
-                    {
+                } else if (test == 1) {
                     secondAngle = (float) (-PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 2) == -sin(firstAngle + thirdAngle)  */
                     /*  rot.get(2, 2) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(-rot.get(1, 2), rot.get(2, 2)) - firstAngle);
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(0, 1) == -sin(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? -asin(rot.get(0, 1)) : PI + asin(rot.get(0, 1)));
                     /*  rot.get(0, 2) == cos(secondAngle) * sin(firstAngle)  */
@@ -816,28 +755,23 @@ public class Orientation
                     /*  rot.get(2, 1) == cos(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(1, 1) == cos(secondAngle) * cos(thirdAngle)  */
                     thirdAngle = (float) atan2(rot.get(2, 1) / cos(secondAngle), rot.get(1, 1) / cos(secondAngle));
-                    }
+                }
                 break;
             case ZYX:
                 test = rot.get(0, 2);  /*  sin(secondAngle)  */
-                if (test == 1)
-                    {
+                if (test == 1) {
                     secondAngle = (float) (PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 0) == sin(firstAngle + thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(rot.get(1, 0), rot.get(1, 1)) - firstAngle);
-                    }
-                else if (test == -1)
-                    {
+                } else if (test == -1) {
                     secondAngle = (float) (-PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(1, 0) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(1, 1) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(1, 0), rot.get(1, 1)));
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(0, 2) == sin(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? asin(rot.get(0, 2)) : PI - asin(rot.get(0, 2)));
                     /*  rot.get(0, 1) == -(cos(secondAngle) * sin(firstAngle))  */
@@ -846,28 +780,23 @@ public class Orientation
                     /*  rot.get(1, 2) == -(cos(secondAngle) * sin(thirdAngle))  */
                     /*  rot.get(2, 2) == cos(secondAngle) * cos(thirdAngle)  */
                     thirdAngle = (float) atan2(-rot.get(1, 2) / cos(secondAngle), rot.get(2, 2) / cos(secondAngle));
-                    }
+                }
                 break;
             case ZXY:
                 test = rot.get(1, 2);  /*  -sin(secondAngle)  */
-                if (test == -1)
-                    {
+                if (test == -1) {
                     secondAngle = (float) (PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(2, 0) == sin(firstAngle - thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle - thirdAngle)  */
                     thirdAngle = (float) (firstAngle - atan2(rot.get(2, 0), rot.get(0, 0)));
-                    }
-                else if (test == 1)
-                    {
+                } else if (test == 1) {
                     secondAngle = (float) (-PI / 2);
                     firstAngle = (float) 0;  /*  arbitrary  */
                     /*  rot.get(0, 1) == -sin(firstAngle + thirdAngle)  */
                     /*  rot.get(0, 0) == cos(firstAngle + thirdAngle)  */
                     thirdAngle = (float) (atan2(-rot.get(0, 1), rot.get(0, 0)) - firstAngle);
-                    }
-                else
-                    {
+                } else {
                     /*  rot.get(1, 2) == -sin(secondAngle)  */
                     secondAngle = (float) (angleSet == AngleSet.THEONE ? -asin(rot.get(1, 2)) : PI + asin(rot.get(1, 2)));
                     /*  rot.get(1, 0) == cos(secondAngle) * sin(firstAngle)  */
@@ -876,16 +805,16 @@ public class Orientation
                     /*  rot.get(0, 2) == cos(secondAngle) * sin(thirdAngle)  */
                     /*  rot.get(2, 2) == cos(secondAngle) * cos(thirdAngle)  */
                     thirdAngle = (float) atan2(rot.get(0, 2) / cos(secondAngle), rot.get(2, 2) / cos(secondAngle));
-                    }
+                }
                 break;
-            }
+        }
 
         return new Orientation(axesReference, axesOrder, unit,
                 unit.fromRadians(firstAngle), unit.fromRadians(secondAngle), unit.fromRadians(thirdAngle),
                 0);
-        }
-
     }
+
+}
 
 
 

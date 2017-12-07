@@ -37,44 +37,39 @@ package com.qualcomm.robotcore.util;
  * an event in a (possibly infinite) sequence that follows after the juncture at which one
  * chooses to pay attention.
  */
-public class NextLock
-    {
-    protected final Object lock  = this;
-    protected long         count = 0;
+public class NextLock {
+    protected final Object lock = this;
+    protected long count = 0;
 
-    public NextLock()
-        {
-        }
+    public NextLock() {
+    }
 
     /**
      * {@link Waiter} instances are returned from {@link #getNextWaiter()}, and can
      * be used to await the next {@link #advanceNext()} call in lock from which they
      * were retrieved.
      */
-    public class Waiter
-        {
+    public class Waiter {
         long nextCount;
 
-        Waiter(long nextCount)
-            {
+        Waiter(long nextCount) {
             this.nextCount = nextCount;
-            }
+        }
 
         /**
          * Awaits the next {@link #advanceNext()} call in the associated {@link NextLock}.
+         *
          * @throws InterruptedException
          * @see #advanceNext()
          */
-        public void awaitNext() throws InterruptedException
-            {
-            synchronized (lock)
-                {
+        public void awaitNext() throws InterruptedException {
+            synchronized (lock) {
                 do {
-                   lock.wait();
-                   }
-                while (count < nextCount);
+                    lock.wait();
                 }
+                while (count < nextCount);
             }
+        }
 
         /**
          * Awaits the next {@link #advanceNext()} call in the associated {@link NextLock},
@@ -94,31 +89,29 @@ public class NextLock
                 }
             }
         */
-        }
+    }
 
     /**
      * Returns a {@link Waiter} that will await the next {@link #advanceNext()}.
+     *
      * @return a {@link Waiter} that will await the next {@link #advanceNext()}.
      * @see #advanceNext()
      */
-    public Waiter getNextWaiter()
-        {
-        synchronized (lock)
-            {
+    public Waiter getNextWaiter() {
+        synchronized (lock) {
             return new Waiter(this.count + 1);
-            }
         }
+    }
 
     /**
      * Advances to the next event in the sequence.
+     *
      * @see #getNextWaiter()
      */
-    public void advanceNext()
-        {
-        synchronized (lock)
-            {
+    public void advanceNext() {
+        synchronized (lock) {
             count += 1;
             lock.notifyAll();
-            }
         }
     }
+}

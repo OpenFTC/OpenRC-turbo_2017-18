@@ -75,15 +75,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  * issues.
  */
 @SuppressWarnings("WeakerAccess")
-public class ThreadPool
-    {
+public class ThreadPool {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "ThreadPool";
 
-    /** maps Thread.id to OS notion of thread id */
+    /**
+     * maps Thread.id to OS notion of thread id
+     */
     private static LongSparseArray<Integer> threadIdMap = new LongSparseArray<Integer>();
 
     //----------------------------------------------------------------------------------------------
@@ -96,415 +97,380 @@ public class ThreadPool
      * item or one that was previously running. That result can be waited upon for completion.
      * Alternately, the Singleton itself can be waited upon to await the completion of the
      * currently running item, if any.
+     *
      * @see SingletonResult
      */
-    public static class Singleton<T>
-        {
+    public static class Singleton<T> {
         public static int INFINITE_TIMEOUT = -1;
 
-        private       ExecutorService    service     = null;
-        private final Object             lock        = new Object();
-        private       SingletonResult<T> result      = null;
-        private       boolean            inFlight    = false;
+        private ExecutorService service = null;
+        private final Object lock = new Object();
+        private SingletonResult<T> result = null;
+        private boolean inFlight = false;
 
-        public Singleton()
-            {
-            }
+        public Singleton() {
+        }
 
-        public void setService(ExecutorService service)
-            {
+        public void setService(ExecutorService service) {
             this.service = service;
-            }
+        }
 
-        public void reset()
-            {
-            synchronized (lock)
-                {
+        public void reset() {
+            synchronized (lock) {
                 this.result = null;
                 this.inFlight = false;
-                }
             }
+        }
 
         /**
          * Submits a runnable to the service of this singleton, but only if there's not some
          * other runnable currently submitted thereto.
          *
-         * @param runnable  the code to run if something's not already running
-         * @return          a result that can be waited upon for completion
+         * @param runnable the code to run if something's not already running
+         * @return a result that can be waited upon for completion
          * @see #await(long)
          * @see #submit(int, Callable)
          * @see SingletonResult#await(long)
          */
-        public SingletonResult<T> submit(final int msAwaitDefault, final Runnable runnable)
-            {
-            return this.submit(msAwaitDefault, new Callable<T>()
-                {
-                @Override public T call() throws Exception
-                    {
+        public SingletonResult<T> submit(final int msAwaitDefault, final Runnable runnable) {
+            return this.submit(msAwaitDefault, new Callable<T>() {
+                @Override
+                public T call() throws Exception {
                     runnable.run();
                     return null;
-                    }
-                });
-            }
+                }
+            });
+        }
 
-        public SingletonResult<T> submit(Runnable runnable)
-            {
+        public SingletonResult<T> submit(Runnable runnable) {
             return submit(Singleton.INFINITE_TIMEOUT, runnable);
-            }
+        }
 
-        public SingletonResult<T> submit(final int msAwaitDefault, final Callable<T> callable)
-            {
-            synchronized (lock)
-                {
+        public SingletonResult<T> submit(final int msAwaitDefault, final Callable<T> callable) {
+            synchronized (lock) {
                 // Have we already got someone running?
-                if (!inFlight)
-                    {
-                    if (service == null)
-                        {
+                if (!inFlight) {
+                    if (service == null) {
                         throw new IllegalArgumentException("Singleton service must be set before work is submitted");
-                        }
+                    }
 
                     // Record us as busy *before* we actually try to run!
                     inFlight = true;
 
                     // Run and remember the future for later
-                    result = new SingletonResult<T>(msAwaitDefault, this.service.submit(new Callable<T>()
-                        {
-                        @Override public T call() throws Exception
-                            {
+                    result = new SingletonResult<T>(msAwaitDefault, this.service.submit(new Callable<T>() {
+                        @Override
+                        public T call() throws Exception {
                             try {
                                 return callable.call();
-                                }
-                            catch (InterruptedException ignored)
-                                {
+                            } catch (InterruptedException ignored) {
                                 Thread.currentThread().interrupt();
                                 return null;
-                                }
-                            catch (Exception e)
-                                {
+                            } catch (Exception e) {
                                 RobotLog.ee(TAG, e, "exception thrown during Singleton.submit()");
                                 return null;
-                                }
-                            finally
-                                {
+                            } finally {
                                 // Note that we will allow another guy in the next time someone asks
-                                synchronized (lock)
-                                    {
+                                synchronized (lock) {
                                     inFlight = false;
-                                    }
                                 }
                             }
-                        }));
-                    }
-                return result;
+                        }
+                    }));
                 }
+                return result;
             }
+        }
 
-        public SingletonResult<T> submit(Callable<T> callable)
-            {
+        public SingletonResult<T> submit(Callable<T> callable) {
             return submit(Singleton.INFINITE_TIMEOUT, callable);
-            }
+        }
 
 
         /**
          * Returns the result from the extant or previous work item, if any; otherwise, null.
+         *
          * @return the result from the extant or previous work item, if any; otherwise, null.
          */
-        public SingletonResult<T> getResult()
-            {
-            synchronized (lock)
-                {
+        public SingletonResult<T> getResult() {
+            synchronized (lock) {
                 return result;
-                }
             }
+        }
 
         /**
          * Awaits the completion of the extant work item, if one exists
+         *
          * @see #getResult()
          */
-        public @Nullable T await(long ms) throws InterruptedException
-            {
+        public
+        @Nullable
+        T await(long ms) throws InterruptedException {
             SingletonResult<T> result = getResult();
-            if (result != null)
-                {
+            if (result != null) {
                 return result.await(ms);
-                }
-            else
-                return null;
-            }
-
-        public @Nullable T await() throws InterruptedException
-            {
-            SingletonResult<T> result = getResult();
-            if (result != null)
-                {
-                return result.await();
-                }
-            else
+            } else {
                 return null;
             }
         }
+
+        public
+        @Nullable
+        T await() throws InterruptedException {
+            SingletonResult<T> result = getResult();
+            if (result != null) {
+                return result.await();
+            } else {
+                return null;
+            }
+        }
+    }
 
     /**
      * SingletonResults are returned from {@link Singleton Singletons} as a token
      * that can be used to await the completion of submitted work.
+     *
      * @see Singleton#submit(int, Callable)
      */
-    public static class SingletonResult<T>
-        {
+    public static class SingletonResult<T> {
         private Future<T> future = null;
-        private long      nsDeadline;
+        private long nsDeadline;
 
-        public SingletonResult(int msAwaitDefault, Future<T> future)
-            {
+        public SingletonResult(int msAwaitDefault, Future<T> future) {
             this.future = future;
-            this.nsDeadline = msAwaitDefault==Singleton.INFINITE_TIMEOUT
+            this.nsDeadline = msAwaitDefault == Singleton.INFINITE_TIMEOUT
                     ? -1
                     : System.nanoTime() + msAwaitDefault * ElapsedTime.MILLIS_IN_NANO;
-            }
+        }
 
-        public SingletonResult()
-            {
+        public SingletonResult() {
             this(0, null);
-            }
+        }
 
-        public void setFuture(Future<T> future)
-            {
+        public void setFuture(Future<T> future) {
             this.future = future;
-            }
+        }
 
         /**
          * Awaits the completion of the work item associated with this result.
-         * @param ms    the duration in milliseconds to wait
+         *
+         * @param ms the duration in milliseconds to wait
          * @return the result of the execution, or null of that was not available
          * @see Singleton#submit(int, Runnable)
          */
-        public @Nullable T await(long ms) throws InterruptedException
-            {
-            try
-                {
-                if (this.future != null)
-                    {
+        public
+        @Nullable
+        T await(long ms) throws InterruptedException {
+            try {
+                if (this.future != null) {
                     return this.future.get(ms, TimeUnit.MILLISECONDS);
-                    }
                 }
-            catch (ExecutionException e)
-                {
+            } catch (ExecutionException e) {
                 RobotLog.ee(TAG, e, "singleton threw ExecutionException");
-                }
-            catch (TimeoutException e)
-                {
+            } catch (TimeoutException e) {
                 RobotLog.ee(TAG, e, "singleton timed out");
-                }
-            return null;
             }
+            return null;
+        }
 
         /**
          * Awaits (until deadline, forever, or until interruption) the completion of
          * the work item associated with this result.
+         *
          * @return the result of the execution, or null of that was not available
          * @see Singleton#submit(int, Runnable)
          */
-        public @Nullable T await() throws InterruptedException
-            {
-            if (nsDeadline >= 0)
-                {
+        public
+        @Nullable
+        T await() throws InterruptedException {
+            if (nsDeadline >= 0) {
                 long nsNow = System.nanoTime();
                 long nsRemaining = Math.max(0, nsDeadline - nsNow);
                 return await(nsRemaining / ElapsedTime.MILLIS_IN_NANO);
-                }
-            else
-                {
-                try
-                    {
-                    if (this.future != null)
-                        {
+            } else {
+                try {
+                    if (this.future != null) {
                         return this.future.get();
-                        }
                     }
-                catch (ExecutionException e)
-                    {
+                } catch (ExecutionException e) {
                     RobotLog.ee(TAG, e, "singleton threw ExecutionException");
-                    }
-                return null;
                 }
+                return null;
             }
         }
+    }
 
 
     //----------------------------------------------------------------------------------------------
     // Construction API
     //----------------------------------------------------------------------------------------------
 
-    public static ExecutorService getDefault()
-        {
-        synchronized (ThreadPool.class)
-            {
-            if (defaultThreadPool == null)
-                {
+    public static ExecutorService getDefault() {
+        synchronized (ThreadPool.class) {
+            if (defaultThreadPool == null) {
                 defaultThreadPool = newCachedThreadPool("default threadpool");
-                }
-            return defaultThreadPool;
             }
+            return defaultThreadPool;
         }
+    }
 
-    public static ScheduledExecutorService getDefaultScheduler()
-        {
-        synchronized (ThreadPool.class)
-            {
-            if (defaultScheduler == null)
-                {
+    public static ScheduledExecutorService getDefaultScheduler() {
+        synchronized (ThreadPool.class) {
+            if (defaultScheduler == null) {
                 // Note: the size of the pool here is a compromise. The pool is effectively
                 // fixed size, so we waste threads if it's too big. But it needs to be big
                 // enough so as to prevent deadlock scenarios. The current value is a finger
                 // in the wind. The ideal sol'n is to implement a dynamically sized scheduler.
                 defaultScheduler = newScheduledExecutor(24, "default scheduler");
-                }
-            return defaultScheduler;
             }
+            return defaultScheduler;
         }
+    }
 
     /**
      * Creates an Executor that uses a single worker thread operating off an unbounded queue.
+     *
      * @see Executors#newSingleThreadExecutor()
      */
-    public static ExecutorService newSingleThreadExecutor(@Nullable String nameRoot)
-        {
+    public static ExecutorService newSingleThreadExecutor(@Nullable String nameRoot) {
         RecordingThreadPool result = new RecordingThreadPool(1, 1,
-                                    0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
-        }
+    }
 
     /**
      * Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded
      * queue. At any point, at most {@code numberOfThreads} threads will be active processing tasks.
+     *
      * @see Executors#newFixedThreadPool(int)
      */
-    public static ExecutorService newFixedThreadPool(int numberOfThreads, @Nullable String nameRoot)
-        {
+    public static ExecutorService newFixedThreadPool(int numberOfThreads, @Nullable String nameRoot) {
         RecordingThreadPool result = new RecordingThreadPool(numberOfThreads, numberOfThreads,
-                                    0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
-        }
+    }
 
     /**
      * Creates a thread pool that creates new threads as needed, but will reuse previously constructed
      * threads when they are available.
+     *
      * @see Executors#newCachedThreadPool()
      */
-    public static ExecutorService newCachedThreadPool(@Nullable String nameRoot)
-        {
+    public static ExecutorService newCachedThreadPool(@Nullable String nameRoot) {
         RecordingThreadPool result = new RecordingThreadPool(0, Integer.MAX_VALUE,
-                                      30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+                30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
-        }
+    }
 
     /**
      * Creates an executor that can schedule commands to run after a given delay, or
      * to execute periodically. The pool has a minimum size of 1, but will expand as
      * necessary to accommodate its workload.
+     *
      * @see Executors#newSingleThreadScheduledExecutor
      */
-    public static RecordingScheduledExecutor newScheduledExecutor(int maxWorkerThreadCount, @Nullable String nameRoot)
-        {
+    public static RecordingScheduledExecutor newScheduledExecutor(int maxWorkerThreadCount, @Nullable String nameRoot) {
         RecordingScheduledExecutor result = new RecordingScheduledExecutor(maxWorkerThreadCount);
-        if (nameRoot != null) result.setNameRootForThreads(nameRoot);
+        if (nameRoot != null) {
+            result.setNameRootForThreads(nameRoot);
+        }
         noteNewExecutor(result);
         return result;
-        }
+    }
 
     /**
      * We use the keys of the weak hash map to remember the executors we've instantiated. Because
      * those keys are weak references, they won't keep our executors alive longer than they otherwise
      * would live, yet allows us to find them and iterate over them when we need to.
      */
-    private       static Map<ExecutorService,Integer> extantExecutors     = new WeakHashMap<ExecutorService,Integer>();
-    private final static Object                       extantExecutorsLock = new Object();
-    private       static ExecutorService              defaultThreadPool   = null;
-    private       static ScheduledExecutorService     defaultScheduler    = null;
+    private static Map<ExecutorService, Integer> extantExecutors = new WeakHashMap<ExecutorService, Integer>();
+    private final static Object extantExecutorsLock = new Object();
+    private static ExecutorService defaultThreadPool = null;
+    private static ScheduledExecutorService defaultScheduler = null;
 
-    private static void noteNewExecutor(ExecutorService executor)
-        {
-        synchronized (extantExecutorsLock)
-            {
-            extantExecutors.put(executor,1);
-            }
+    private static void noteNewExecutor(ExecutorService executor) {
+        synchronized (extantExecutorsLock) {
+            extantExecutors.put(executor, 1);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operational API
     //----------------------------------------------------------------------------------------------
 
-    private static void noteTID(Thread thread, int tid)
-        {
-        synchronized (ThreadPool.class)
-            {
+    private static void noteTID(Thread thread, int tid) {
+        synchronized (ThreadPool.class) {
             threadIdMap.put(thread.getId(), tid);
-            }
         }
-    private static void removeTID(Thread thread)
-        {
-        synchronized (ThreadPool.class)
-            {
+    }
+
+    private static void removeTID(Thread thread) {
+        synchronized (ThreadPool.class) {
             threadIdMap.remove(thread.getId());
-            }
         }
+    }
 
-    /** Returns the OS-level thread id for the given thread */
-    public static int getTID(Thread thread)
-        {
+    /**
+     * Returns the OS-level thread id for the given thread
+     */
+    public static int getTID(Thread thread) {
         return getTID(thread.getId());
-        }
+    }
 
-    /** Returns the OS-level thread id for the indicated Android-level thread id */
-    public static int getTID(long threadId)
-        {
-        synchronized (ThreadPool.class)
-            {
+    /**
+     * Returns the OS-level thread id for the indicated Android-level thread id
+     */
+    public static int getTID(long threadId) {
+        synchronized (ThreadPool.class) {
             return threadIdMap.get(threadId, 0);
-            }
         }
+    }
 
     /**
      * Waits for the indicated timeout for the indicated executor service to shutdown. Will return
      * early if an interrupt occurs. If the shutdown is particularly lengthy, then at periodic intervals
      * (on the order of seconds) messages are recorded to the log to aid in postmortem analyses.
      *
-     * @param executorService   the service to shutdown
-     * @param timeout           the duration to wait for the shutdown
-     * @param unit              the units in which the timeout parameter is provided
-     * @param serviceName       the name of the service as it is to be recorded in the log
-     * @return                  whether or not the service was seen to terminate within the allotted timeout
+     * @param executorService the service to shutdown
+     * @param timeout         the duration to wait for the shutdown
+     * @param unit            the units in which the timeout parameter is provided
+     * @param serviceName     the name of the service as it is to be recorded in the log
+     * @return whether or not the service was seen to terminate within the allotted timeout
      */
-    public static boolean awaitTermination(ExecutorService executorService, long timeout, TimeUnit unit, String serviceName) throws InterruptedException
-        {
+    public static boolean awaitTermination(ExecutorService executorService, long timeout, TimeUnit unit, String serviceName) throws InterruptedException {
         verifyNotOnExecutorThread(executorService);
 
-        Deadline deadline  = new Deadline(timeout, unit);
-        int msRetry        = 2500;
+        Deadline deadline = new Deadline(timeout, unit);
+        int msRetry = 2500;
         boolean terminated = false;
         //
-        for (int iAttempt = 0; !(terminated = executorService.isTerminated()); iAttempt++)
-            {
+        for (int iAttempt = 0; !(terminated = executorService.isTerminated()); iAttempt++) {
             RobotLog.vv(TAG, "waiting for service %s", serviceName);
-            if (executorService.awaitTermination(Math.min(msRetry, deadline.timeRemaining(TimeUnit.MILLISECONDS)), TimeUnit.MILLISECONDS))
-                {
+            if (executorService.awaitTermination(Math.min(msRetry, deadline.timeRemaining(TimeUnit.MILLISECONDS)), TimeUnit.MILLISECONDS)) {
                 terminated = executorService.isTerminated();
                 RobotLog.vv(TAG, "awaitTermination returned, isTerminated=%s", terminated);
                 break;
-                }
+            }
 
             // If we're past our due date, then we're not going to wait any longer
-            if (deadline.hasExpired()) break;
+            if (deadline.hasExpired()) {
+                break;
+            }
 
             // It's taking a while. Log that fact
-            RobotLog.vv(TAG, "awaiting shutdown: thread pool=\"%s\" attempt=%d", serviceName, iAttempt+1);
+            RobotLog.vv(TAG, "awaiting shutdown: thread pool=\"%s\" attempt=%d", serviceName, iAttempt + 1);
 
             // If we can, dump the stacks of each of the threads in the service. That might help
             // give some indication as to what on earth is going on inside the service that's
@@ -516,172 +482,134 @@ public class ThreadPool
             // calling us, but even if he did, there are lurking bugs in, e.g., the FTDI infrastructure
             // that might need repeated pokes to get things working.
             interruptThreads(executorService);
-            }
+        }
 
-        if (terminated)
-            {
+        if (terminated) {
             RobotLog.vv(TAG, "executive service %s(0x%08x) is terminated", serviceName, executorService.hashCode());
-            }
-        else
-            {
+        } else {
             RobotLog.vv(TAG, "executive service %s(0x%08x) is NOT terminated", serviceName, executorService.hashCode());
 
             // Log the stacks of EVERYTHING we know about in the hope that that will give
             // us more information.
-            synchronized (extantExecutorsLock)
-                {
+            synchronized (extantExecutorsLock) {
                 // Run the collector in an attempt to clean up extantExecutors
                 System.gc();
 
                 // Log all the stacks that we know about.
-                for (ExecutorService e : extantExecutors.keySet())
-                    {
+                for (ExecutorService e : extantExecutors.keySet()) {
                     logThreadStacks(e);
-                    }
                 }
             }
+        }
 
         return terminated;
-        }
+    }
 
-    private static void logThreadStacks(ExecutorService executorService)
-        {
-        if (executorService instanceof ContainerOfThreads)
-            {
-            ContainerOfThreads container = (ContainerOfThreads)executorService;
-            for (Thread thread : container)
-                {
-                if (thread.isAlive())
-                    {
+    private static void logThreadStacks(ExecutorService executorService) {
+        if (executorService instanceof ContainerOfThreads) {
+            ContainerOfThreads container = (ContainerOfThreads) executorService;
+            for (Thread thread : container) {
+                if (thread.isAlive()) {
                     RobotLog.logStackTrace(thread, "");
-                    }
                 }
             }
         }
+    }
 
-    private static void interruptThreads(ExecutorService executorService)
-        {
-        if (executorService instanceof ContainerOfThreads)
-            {
-            ContainerOfThreads container = (ContainerOfThreads)executorService;
-            for (Thread thread : container)
-                {
-                if (thread.isAlive())
-                    {
-                    if (thread.getId() == Thread.currentThread().getId())
+    private static void interruptThreads(ExecutorService executorService) {
+        if (executorService instanceof ContainerOfThreads) {
+            ContainerOfThreads container = (ContainerOfThreads) executorService;
+            for (Thread thread : container) {
+                if (thread.isAlive()) {
+                    if (thread.getId() == Thread.currentThread().getId()) {
                         RobotLog.vv(TAG, "interrupting current thread");
+                    }
                     thread.interrupt();
-                    }
                 }
             }
         }
+    }
 
-    private static void verifyNotOnExecutorThread(ExecutorService executorService)
-        {
-        if (executorService instanceof ContainerOfThreads)
-            {
-            ContainerOfThreads container = (ContainerOfThreads)executorService;
-            for (Thread thread : container)
-                {
-                if (thread == Thread.currentThread())
-                    {
+    private static void verifyNotOnExecutorThread(ExecutorService executorService) {
+        if (executorService instanceof ContainerOfThreads) {
+            ContainerOfThreads container = (ContainerOfThreads) executorService;
+            for (Thread thread : container) {
+                if (thread == Thread.currentThread()) {
                     Assert.assertFailed();
-                    }
                 }
             }
         }
+    }
 
     /**
      * Awaits the termination of the indicated service for the indicated timeout. If the service
      * terminates, then the function returns. If the service does not terminate within the alloted
      * time, then a bold message is written to the log and the application is terminated.
      *
-     * @param executorService   the executor service whose termination we are to await
-     * @param timeout           the timeout we are to permit
-     * @param unit              the units in which timeout is expressed
-     * @param serviceName       a human-understandable name for the executor service
-     * @param message           the message to print if we terminate the app
+     * @param executorService the executor service whose termination we are to await
+     * @param timeout         the timeout we are to permit
+     * @param unit            the units in which timeout is expressed
+     * @param serviceName     a human-understandable name for the executor service
+     * @param message         the message to print if we terminate the app
      */
-    public static void awaitTerminationOrExitApplication(ExecutorService executorService, long timeout, TimeUnit unit, String serviceName, String message)
-        {
+    public static void awaitTerminationOrExitApplication(ExecutorService executorService, long timeout, TimeUnit unit, String serviceName, String message) {
         try {
-            if (!awaitTermination(executorService, timeout, unit, serviceName))
-                {
+            if (!awaitTermination(executorService, timeout, unit, serviceName)) {
                 exitApplication(serviceName, message);
-                }
             }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             RobotLog.vv(TAG, "awaitTerminationOrExitApplication %s; interrupt thrown", serviceName);
             try {
                 Thread.sleep(100);
-                }
-            catch (InterruptedException ignoredInterrupt)
-                {
+            } catch (InterruptedException ignoredInterrupt) {
                 Thread.currentThread().interrupt();
-                }
-            if (!executorService.isTerminated())
-                {
+            }
+            if (!executorService.isTerminated()) {
                 RobotLog.vv(TAG, "awaitTerminationOrExitApplication %s; exiting application after interrupt", serviceName);
                 exitApplication(serviceName, message);
-                }
             }
         }
+    }
 
-    /** @return whether we know the future has stopped its work or not */
-    public static boolean awaitFuture(Future future, long timeout, @NonNull TimeUnit unit)
-        {
+    /**
+     * @return whether we know the future has stopped its work or not
+     */
+    public static boolean awaitFuture(Future future, long timeout, @NonNull TimeUnit unit) {
         boolean result = true;
         try {
             future.get(timeout, unit);
-            }
-        catch (CancellationException|ExecutionException e)
-            {
-            }
-        catch (TimeoutException e)
-            {
+        } catch (CancellationException | ExecutionException e) {
+        } catch (TimeoutException e) {
             result = false;
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             result = false;
-            }
-        return result;
         }
+        return result;
+    }
 
-    public static void cancelFutureOrExitApplication(Future future, long timeout, TimeUnit unit, String serviceName, String message)
-        {
+    public static void cancelFutureOrExitApplication(Future future, long timeout, TimeUnit unit, String serviceName, String message) {
         try {
             // Try to cancel (return value is useless: false returned both if already completed and if can't cancel)
             future.cancel(true);
             // Try to the the result in the allocated amount of time
             future.get(timeout, unit);
-            }
-        catch (CancellationException e)
-            {
+        } catch (CancellationException e) {
             // It cancelled. We're done
-            }
-        catch (ExecutionException e)
-            {
+        } catch (ExecutionException e) {
             // The computation threw an exception. We figure that that's as good as
             // cancelling, and move on.
             RobotLog.logExceptionHeader(e, "exception thrown in future; ignoring");
-            }
-        catch (TimeoutException e)
-            {
+        } catch (TimeoutException e) {
             // Couldn't shut down: we're out of here
             exitApplication(serviceName, message);
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             // We ourselves were interrupted while waiting. Follow standard operating procedure
             Thread.currentThread().interrupt();
-            }
         }
+    }
 
-    public static void exitApplication(String serviceName, String message)
-        {
+    public static void exitApplication(String serviceName, String message) {
         RobotLog.ee(TAG, "*****************************************************************");
         RobotLog.ee(TAG, "%s took too long to exit; emergency killing app.", serviceName);
         RobotLog.ee(TAG, "%s", message);
@@ -689,167 +617,153 @@ public class ThreadPool
 
         // If a debugger is attached, then don't actually exit. This allows us to debug
         // conditions that happen in timed shutdown paths.
-        while (Debug.isDebuggerConnected())
-            {
+        while (Debug.isDebuggerConnected()) {
             Thread.yield();
-            }
+        }
 
         System.exit(-1);
-        }
+    }
 
     /**
      * Robustly log thread startup and shutdown
      */
-    public static void logThreadLifeCycle(final String name, final Runnable runnable)
-        {
-        try
-            {
+    public static void logThreadLifeCycle(final String name, final Runnable runnable) {
+        try {
             Thread.currentThread().setName(name);
             RobotLog.v(String.format("thread: '%s' starting...", name));
             runnable.run();
-            }
-        finally
-            {
+        } finally {
             RobotLog.v(String.format("thread: ...terminating '%s'", name));
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public interface ContainerOfThreads extends Iterable<Thread>
-        {
+    public interface ContainerOfThreads extends Iterable<Thread> {
         void setNameRootForThreads(@NonNull String nameRootForThreads);
+
         void setPriorityForThreads(@NonNull Integer priorityForThreads);
+
         void noteNewThread(Thread thread);
+
         void noteFinishedThread(Thread thread);
-        }
+    }
 
     /**
      * ThreadFactoryImpl notifies the container that it's passed on construction of all the
      * threads that get made.
      */
-    static class ThreadFactoryImpl implements ThreadFactory
-        {
+    static class ThreadFactoryImpl implements ThreadFactory {
         //------------------------------------------------------------------------------------------
         // State
         //------------------------------------------------------------------------------------------
 
-        final ThreadFactory      threadFactory;
+        final ThreadFactory threadFactory;
         final ContainerOfThreads container;
 
         //------------------------------------------------------------------------------------------
         // Construction
         //------------------------------------------------------------------------------------------
 
-        ThreadFactoryImpl(ContainerOfThreads container)
-            {
+        ThreadFactoryImpl(ContainerOfThreads container) {
             this.threadFactory = Executors.defaultThreadFactory();
-            this.container     = container;
-            }
+            this.container = container;
+        }
 
         //------------------------------------------------------------------------------------------
         // Operations
         //------------------------------------------------------------------------------------------
 
         @Override
-        public Thread newThread(final Runnable runUserCode)
-            {
-            Thread thread = this.threadFactory.newThread(new Runnable()
-                {
-                @Override public void run()
-                    {
+        public Thread newThread(final Runnable runUserCode) {
+            Thread thread = this.threadFactory.newThread(new Runnable() {
+                @Override
+                public void run() {
                     noteTID(Thread.currentThread(), Process.myTid());
                     runUserCode.run();
                     ThreadFactoryImpl.this.container.noteFinishedThread(Thread.currentThread());
                     removeTID(Thread.currentThread());
-                    }
-                });
+                }
+            });
             this.container.noteNewThread(thread);
             return thread;
-            }
         }
+    }
 
     /**
      * ContainerOfThreadsImpl serves as base for our executors, and records the threads used
      * in each.
      */
-    static class ContainerOfThreadsRecorder implements ContainerOfThreads
-        {
+    static class ContainerOfThreadsRecorder implements ContainerOfThreads {
         //------------------------------------------------------------------------------------------
         // State
         //------------------------------------------------------------------------------------------
 
         Queue<Thread> threads;
-        String        nameRootForThreads = null;
-        AtomicInteger threadCount        = new AtomicInteger(0);
-        Integer       priorityForThreads = null;
+        String nameRootForThreads = null;
+        AtomicInteger threadCount = new AtomicInteger(0);
+        Integer priorityForThreads = null;
 
         //------------------------------------------------------------------------------------------
         // Construction
         //------------------------------------------------------------------------------------------
 
-        ContainerOfThreadsRecorder()
-            {
+        ContainerOfThreadsRecorder() {
             this.threads = new ConcurrentLinkedQueue<Thread>();
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // Operations
         //------------------------------------------------------------------------------------------
 
-        @Override public void setNameRootForThreads(@NonNull String nameRootForThreads)
-            {
+        @Override
+        public void setNameRootForThreads(@NonNull String nameRootForThreads) {
             this.nameRootForThreads = nameRootForThreads;
-            }
+        }
 
-        @Override public void setPriorityForThreads(@NonNull Integer priorityForThreads)
-            {
+        @Override
+        public void setPriorityForThreads(@NonNull Integer priorityForThreads) {
             this.priorityForThreads = priorityForThreads;
-            }
+        }
 
-        @SuppressLint("DefaultLocale") @Override
-        public void noteNewThread(Thread thread)
-            {
+        @SuppressLint("DefaultLocale")
+        @Override
+        public void noteNewThread(Thread thread) {
             this.threads.add(thread);
-            if (this.nameRootForThreads != null)
-                {
+            if (this.nameRootForThreads != null) {
                 thread.setName(String.format("%s-#%d", this.nameRootForThreads, threadCount.getAndIncrement()));
-                }
-            if (this.priorityForThreads != null)
-                {
-                thread.setPriority(this.priorityForThreads);
-                }
-            logThread(thread, "added");
             }
+            if (this.priorityForThreads != null) {
+                thread.setPriority(this.priorityForThreads);
+            }
+            logThread(thread, "added");
+        }
 
-        @Override public void noteFinishedThread(Thread thread)
-            {
+        @Override
+        public void noteFinishedThread(Thread thread) {
             logThread(thread, "removed");
             this.threads.remove(thread);
-            }
+        }
 
-        protected void logThread(Thread thread, String action)
-            {
+        protected void logThread(Thread thread, String action) {
             RobotLog.vv(TAG, "container(0x%08x%s) %s id=%d TID=%d count=%d",
                     this.hashCode(),
-                    (nameRootForThreads==null ?"" : ": " + nameRootForThreads),
+                    (nameRootForThreads == null ? "" : ": " + nameRootForThreads),
                     action,
                     thread.getId(),
                     getTID(thread),
                     this.threads.size());
-            }
-
-        @Override
-        public Iterator<Thread> iterator()
-            {
-            return this.threads.iterator();
-            }
         }
 
-    public static class RecordingThreadPool extends ContainerOfThreadsRecorder implements ExecutorService
-        {
+        @Override
+        public Iterator<Thread> iterator() {
+            return this.threads.iterator();
+        }
+    }
+
+    public static class RecordingThreadPool extends ContainerOfThreadsRecorder implements ExecutorService {
         //------------------------------------------------------------------------------------------
         // State
         //------------------------------------------------------------------------------------------
@@ -860,90 +774,88 @@ public class ThreadPool
         // Construction
         //------------------------------------------------------------------------------------------
 
-        RecordingThreadPool(int nThreadsCore, int nThreadsMax, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
-            {
+        RecordingThreadPool(int nThreadsCore, int nThreadsMax, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
             this.executor = new ThreadPoolExecutor(nThreadsCore, nThreadsMax,
-                                      keepAliveTime, unit,
-                                      workQueue,
-                                      new ThreadFactoryImpl(this));
-            }
+                    keepAliveTime, unit,
+                    workQueue,
+                    new ThreadFactoryImpl(this));
+        }
 
         //------------------------------------------------------------------------------------------
         // Executor
         //------------------------------------------------------------------------------------------
 
-        @Override public void execute(Runnable command)
-            {
+        @Override
+        public void execute(Runnable command) {
             this.executor.execute(command);
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // ExecutorService
         //------------------------------------------------------------------------------------------
 
-        @Override public void shutdown()
-            {
+        @Override
+        public void shutdown() {
             this.executor.shutdown();
-            }
-
-        @Override public List<Runnable> shutdownNow()
-            {
-            return this.executor.shutdownNow();
-            }
-
-        @Override public boolean isShutdown()
-            {
-            return this.executor.isShutdown();
-            }
-
-        @Override public boolean isTerminated()
-            {
-            return this.executor.isTerminated();
-            }
-
-        @Override public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException
-            {
-            return this.executor.awaitTermination(timeout, unit);
-            }
-
-        @Override public <T> Future<T> submit(Callable<T> task)
-            {
-            return this.executor.submit(task);
-            }
-
-        @Override public <T> Future<T> submit(Runnable task, T result)
-            {
-            return this.executor.submit(task, result);
-            }
-
-        @Override public Future<?> submit(Runnable task)
-            {
-            return this.executor.submit(task);
-            }
-
-        @Override public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException
-            {
-            return this.executor.invokeAll(tasks);
-            }
-
-        @Override public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException
-            {
-            return this.executor.invokeAll(tasks, timeout, unit);
-            }
-
-        @Override public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException
-            {
-            return this.executor.invokeAny(tasks);
-            }
-
-        @Override public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
-            {
-            return this.executor.invokeAny(tasks, timeout, unit);
-            }
         }
 
-    public static class RecordingScheduledExecutor extends ContainerOfThreadsRecorder implements ScheduledExecutorService
-        {
+        @Override
+        public List<Runnable> shutdownNow() {
+            return this.executor.shutdownNow();
+        }
+
+        @Override
+        public boolean isShutdown() {
+            return this.executor.isShutdown();
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return this.executor.isTerminated();
+        }
+
+        @Override
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return this.executor.awaitTermination(timeout, unit);
+        }
+
+        @Override
+        public <T> Future<T> submit(Callable<T> task) {
+            return this.executor.submit(task);
+        }
+
+        @Override
+        public <T> Future<T> submit(Runnable task, T result) {
+            return this.executor.submit(task, result);
+        }
+
+        @Override
+        public Future<?> submit(Runnable task) {
+            return this.executor.submit(task);
+        }
+
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
+            return this.executor.invokeAll(tasks);
+        }
+
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
+            return this.executor.invokeAll(tasks, timeout, unit);
+        }
+
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
+            return this.executor.invokeAny(tasks);
+        }
+
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            return this.executor.invokeAny(tasks, timeout, unit);
+        }
+    }
+
+    public static class RecordingScheduledExecutor extends ContainerOfThreadsRecorder implements ScheduledExecutorService {
         //------------------------------------------------------------------------------------------
         // State
         //------------------------------------------------------------------------------------------
@@ -954,8 +866,7 @@ public class ThreadPool
         // Construction
         //------------------------------------------------------------------------------------------
 
-        RecordingScheduledExecutor(int numberOfThreads)
-            {
+        RecordingScheduledExecutor(int numberOfThreads) {
             this.executor = new ScheduledThreadPoolExecutor(numberOfThreads, new ThreadFactoryImpl(this));
 
             /**
@@ -969,119 +880,116 @@ public class ThreadPool
              * on KitKat, we just live with it. So beware if you schedule a lot of actions that
              * you ultimately cancel.
              */
-            if (Build.VERSION.SDK_INT >= 21)
-                {
+            if (Build.VERSION.SDK_INT >= 21) {
                 this.executor.setRemoveOnCancelPolicy(true);
-                }
             }
+        }
 
-        public void setKeepAliveTime(long time, TimeUnit timeUnit)
-            {
+        public void setKeepAliveTime(long time, TimeUnit timeUnit) {
             this.executor.setKeepAliveTime(time, timeUnit);
-            }
+        }
 
-        public void allowCoreThreadTimeOut(boolean allow)
-            {
+        public void allowCoreThreadTimeOut(boolean allow) {
             this.executor.allowCoreThreadTimeOut(allow);
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // Executor
         //------------------------------------------------------------------------------------------
 
-        @Override public void execute(Runnable command)
-            {
+        @Override
+        public void execute(Runnable command) {
             this.executor.execute(command);
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // ExecutorService
         //------------------------------------------------------------------------------------------
 
-        @Override public void shutdown()
-            {
+        @Override
+        public void shutdown() {
             this.executor.shutdown();
-            }
+        }
 
-        @Override public List<Runnable> shutdownNow()
-            {
+        @Override
+        public List<Runnable> shutdownNow() {
             return this.executor.shutdownNow();
-            }
+        }
 
-        @Override public boolean isShutdown()
-            {
+        @Override
+        public boolean isShutdown() {
             return this.executor.isShutdown();
-            }
+        }
 
-        @Override public boolean isTerminated()
-            {
+        @Override
+        public boolean isTerminated() {
             return this.executor.isTerminated();
-            }
+        }
 
-        @Override public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException
-            {
+        @Override
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
             return this.executor.awaitTermination(timeout, unit);
-            }
+        }
 
-        @Override public <T> Future<T> submit(Callable<T> task)
-            {
+        @Override
+        public <T> Future<T> submit(Callable<T> task) {
             return this.executor.submit(task);
-            }
+        }
 
-        @Override public <T> Future<T> submit(Runnable task, T result)
-            {
+        @Override
+        public <T> Future<T> submit(Runnable task, T result) {
             return this.executor.submit(task, result);
-            }
+        }
 
-        @Override public Future<?> submit(Runnable task)
-            {
+        @Override
+        public Future<?> submit(Runnable task) {
             return this.executor.submit(task);
-            }
+        }
 
-        @Override public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException
-            {
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
             return this.executor.invokeAll(tasks);
-            }
+        }
 
-        @Override public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException
-            {
+        @Override
+        public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
             return this.executor.invokeAll(tasks, timeout, unit);
-            }
+        }
 
-        @Override public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException
-            {
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
             return this.executor.invokeAny(tasks);
-            }
+        }
 
-        @Override public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
-            {
+        @Override
+        public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return this.executor.invokeAny(tasks, timeout, unit);
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // ScheduledExecutorService
         //------------------------------------------------------------------------------------------
 
-        @Override public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit)
-            {
+        @Override
+        public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
             return this.executor.schedule(command, delay, unit);
-            }
+        }
 
-        @Override public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit)
-            {
+        @Override
+        public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
             return this.executor.schedule(callable, delay, unit);
-            }
+        }
 
-        @Override public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)
-            {
+        @Override
+        public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
             return this.executor.scheduleAtFixedRate(command, initialDelay, period, unit);
-            }
+        }
 
-        @Override public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit)
-            {
+        @Override
+        public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
             return this.executor.scheduleWithFixedDelay(command, initialDelay, delay, unit);
-            }
-
         }
 
     }
+
+}

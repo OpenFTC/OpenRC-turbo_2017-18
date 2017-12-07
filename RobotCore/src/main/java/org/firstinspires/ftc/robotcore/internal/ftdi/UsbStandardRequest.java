@@ -36,8 +36,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * Created by bob on 3/27/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public enum UsbStandardRequest
-    {
+public enum UsbStandardRequest {
     // Table 9.5, USB Spec
     GET_STATUS(0),
     CLEAR_FEATURE(1),
@@ -64,13 +63,11 @@ public enum UsbStandardRequest
     LOOPBACK_DATA_READ(22),
     SET_INTERFACE_DS(23),
     SET_SEL(48),
-    SET_ISOCH_DELAY(49),
-    ;
+    SET_ISOCH_DELAY(49),;
 
     final int value;
 
-    UsbStandardRequest(int value)
-        {
+    UsbStandardRequest(int value) {
         this.value = value;
-        }
     }
+}

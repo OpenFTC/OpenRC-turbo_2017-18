@@ -31,18 +31,19 @@ package com.qualcomm.robotcore.wifi;
 
 import android.support.annotation.NonNull;
 
-public enum NetworkType
-  {
+public enum NetworkType {
     WIFIDIRECT,
     LOOPBACK,
     SOFTAP,
     UNKNOWN_NETWORK_TYPE;
 
-    public static @NonNull NetworkType fromString(String type) {
-      try {
-        return NetworkType.valueOf(type.toUpperCase());
-      } catch (Exception e) {
-        return UNKNOWN_NETWORK_TYPE;
-      }
+    public static
+    @NonNull
+    NetworkType fromString(String type) {
+        try {
+            return NetworkType.valueOf(type.toUpperCase());
+        } catch (Exception e) {
+            return UNKNOWN_NETWORK_TYPE;
+        }
     }
-  }
+}

@@ -60,12 +60,11 @@ import java.util.concurrent.TimeUnit;
  * carried out asynchronously. When a scan is requested, any extant scan that is already in
  * progress is joined; otherwise a new scan is started. Scans are carried out either locally
  * or remotely, in a manner (largely) transparent to clients.
- *
+ * <p>
  * We also analogously now carry out remote Lynx module discovery.
  */
 @SuppressWarnings("WeakerAccess")
-public class USBScanManager
-    {
+public class USBScanManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -74,120 +73,103 @@ public class USBScanManager
 
     public static final int msWaitDefault = 4000;
 
-    protected Context                               context;
-    protected boolean                               isRemoteConfig;
-    protected ExecutorService                       executorService = null;
-    protected ThreadPool.Singleton<ScannedDevices>  scanningSingleton = new ThreadPool.Singleton<ScannedDevices>();
-    protected DeviceManager                         deviceManager;
-    protected NextLock                              scanResultsSequence;
-    protected final Object                          remoteScannedDevicesLock = new Object();
-    protected ScannedDevices                        remoteScannedDevices;
-    protected NetworkConnectionHandler              networkConnectionHandler = NetworkConnectionHandler.getInstance();
+    protected Context context;
+    protected boolean isRemoteConfig;
+    protected ExecutorService executorService = null;
+    protected ThreadPool.Singleton<ScannedDevices> scanningSingleton = new ThreadPool.Singleton<ScannedDevices>();
+    protected DeviceManager deviceManager;
+    protected NextLock scanResultsSequence;
+    protected final Object remoteScannedDevicesLock = new Object();
+    protected ScannedDevices remoteScannedDevices;
+    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     protected final Map<String, LynxModuleDiscoveryState> lynxModuleDiscoveryStateMap = new ConcurrentHashMap<String, LynxModuleDiscoveryState>();  // concurrency is paranoia
 
-    protected class LynxModuleDiscoveryState
-        {
-        protected SerialNumber              serialNumber;
-        protected LynxModuleMetaList        remoteLynxModules;
-        protected NextLock                  lynxDiscoverySequence = new NextLock();
-        protected final Object              remoteLynxDiscoveryLock = new Object();
+    protected class LynxModuleDiscoveryState {
+        protected SerialNumber serialNumber;
+        protected LynxModuleMetaList remoteLynxModules;
+        protected NextLock lynxDiscoverySequence = new NextLock();
+        protected final Object remoteLynxDiscoveryLock = new Object();
         protected ThreadPool.Singleton<LynxModuleMetaList> lynxDiscoverySingleton = new ThreadPool.Singleton<LynxModuleMetaList>();
 
-        protected LynxModuleDiscoveryState(SerialNumber serialNumber)
-            {
+        protected LynxModuleDiscoveryState(SerialNumber serialNumber) {
             this.serialNumber = serialNumber;
             this.remoteLynxModules = new LynxModuleMetaList(serialNumber);
             startExecutorService();
-            }
+        }
 
-        protected void startExecutorService()
-            {
+        protected void startExecutorService() {
             ExecutorService executorService = USBScanManager.this.executorService;
-            if (executorService != null)
-                {
+            if (executorService != null) {
                 this.lynxDiscoverySingleton.reset();
                 this.lynxDiscoverySingleton.setService(executorService);
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public USBScanManager(Context context, boolean isRemoteConfig) throws RobotCoreException
-        {
+    public USBScanManager(Context context, boolean isRemoteConfig) throws RobotCoreException {
         this.context = context;
         this.isRemoteConfig = isRemoteConfig;
         this.scanResultsSequence = new NextLock();
 
-        if (!isRemoteConfig)
-            {
+        if (!isRemoteConfig) {
             deviceManager = new HardwareDeviceManager(context, null);
-            }
         }
+    }
 
-    public void startExecutorService()
-        {
+    public void startExecutorService() {
         this.executorService = ThreadPool.newCachedThreadPool("USBScanManager");
         this.scanningSingleton.reset();
         this.scanningSingleton.setService(this.executorService);
 
-        for (LynxModuleDiscoveryState state : lynxModuleDiscoveryStateMap.values())
-            {
+        for (LynxModuleDiscoveryState state : lynxModuleDiscoveryStateMap.values()) {
             state.startExecutorService();
-            }
         }
+    }
 
-    public void stopExecutorService()
-        {
+    public void stopExecutorService() {
         this.executorService.shutdownNow();
         ThreadPool.awaitTerminationOrExitApplication(this.executorService, 5, TimeUnit.SECONDS, "USBScanManager service", "internal error");
         this.executorService = null;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public ExecutorService getExecutorService()
-        {
+    public ExecutorService getExecutorService() {
         return this.executorService;
-        }
+    }
 
-    public DeviceManager getDeviceManager()
-        {
+    public DeviceManager getDeviceManager() {
         return this.deviceManager;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Lynx Module discovery
     //----------------------------------------------------------------------------------------------
 
-    LynxModuleDiscoveryState getDiscoveryState(SerialNumber serialNumber)
-        {
-        synchronized (lynxModuleDiscoveryStateMap)
-            {
+    LynxModuleDiscoveryState getDiscoveryState(SerialNumber serialNumber) {
+        synchronized (lynxModuleDiscoveryStateMap) {
             LynxModuleDiscoveryState result = lynxModuleDiscoveryStateMap.get(serialNumber.toString());
-            if (result == null)
-                {
+            if (result == null) {
                 result = new LynxModuleDiscoveryState(serialNumber);
                 lynxModuleDiscoveryStateMap.put(serialNumber.toString(), result);
-                }
-            return result;
             }
+            return result;
         }
+    }
 
-    public ThreadPool.SingletonResult<LynxModuleMetaList> startLynxModuleEnumerationIfNecessary(final SerialNumber serialNumber)
-        {
+    public ThreadPool.SingletonResult<LynxModuleMetaList> startLynxModuleEnumerationIfNecessary(final SerialNumber serialNumber) {
         final LynxModuleDiscoveryState discoveryState = getDiscoveryState(serialNumber);
 
-        return discoveryState.lynxDiscoverySingleton.submit(msWaitDefault, new Callable<LynxModuleMetaList>()
-            {
-            @Override public LynxModuleMetaList call() throws InterruptedException
-                {
-                if (isRemoteConfig)
-                    {
+        return discoveryState.lynxDiscoverySingleton.submit(msWaitDefault, new Callable<LynxModuleMetaList>() {
+            @Override
+            public LynxModuleMetaList call() throws InterruptedException {
+                if (isRemoteConfig) {
                     // Figure out whom we have to wait for
                     NextLock.Waiter waiter = discoveryState.lynxDiscoverySequence.getNextWaiter();
 
@@ -200,54 +182,43 @@ public class USBScanManager
                     RobotLog.vv(TAG, "...remote scan lynx module discovery completed.");
 
                     // Return same
-                    synchronized (discoveryState.remoteLynxDiscoveryLock)
-                        {
+                    synchronized (discoveryState.remoteLynxDiscoveryLock) {
                         return discoveryState.remoteLynxModules;
-                        }
                     }
-                else
-                    {
+                } else {
                     RobotLog.vv(TAG, "discovering lynx modules on lynx device=%s...", serialNumber.toString());
                     LynxModuleMetaList localResult = null;
-                    try
-                        {
+                    try {
                         RobotCoreLynxUsbDevice lynxUsbDevice = null;
                         try {
                             lynxUsbDevice = deviceManager.createLynxUsbDevice(serialNumber, null);
                             localResult = lynxUsbDevice.discoverModules();
-                            }
-                        finally
-                            {
-                            if (lynxUsbDevice != null) lynxUsbDevice.close();
+                        } finally {
+                            if (lynxUsbDevice != null) {
+                                lynxUsbDevice.close();
                             }
                         }
-                    catch (RobotCoreException e)
-                        {
+                    } catch (RobotCoreException e) {
                         RobotLog.ee(TAG, "discovering lynx modules threw exception: " + e.toString());
                         localResult = null;
-                        }
-                    finally
-                        {
-                        RobotLog.vv(TAG, "...discovering lynx modules complete: %s", localResult==null?"null":localResult.toString());
-                        }
-                    return localResult;
+                    } finally {
+                        RobotLog.vv(TAG, "...discovering lynx modules complete: %s", localResult == null ? "null" : localResult.toString());
                     }
+                    return localResult;
                 }
-            });
-        }
+            }
+        });
+    }
 
     //----------------------------------------------------------------------------------------------
     // Scanning
     //----------------------------------------------------------------------------------------------
 
-    public ThreadPool.SingletonResult<ScannedDevices> startDeviceScanIfNecessary()
-        {
-        return scanningSingleton.submit(msWaitDefault, new Callable<ScannedDevices>()
-            {
-            @Override public ScannedDevices call() throws InterruptedException
-                {
-                if (isRemoteConfig)
-                    {
+    public ThreadPool.SingletonResult<ScannedDevices> startDeviceScanIfNecessary() {
+        return scanningSingleton.submit(msWaitDefault, new Callable<ScannedDevices>() {
+            @Override
+            public ScannedDevices call() throws InterruptedException {
+                if (isRemoteConfig) {
                     // Figure out whom we have to wait for
                     NextLock.Waiter waiter = scanResultsSequence.getNextWaiter();
 
@@ -260,89 +231,75 @@ public class USBScanManager
                     RobotLog.vv(TAG, "...remote scan request completed.");
 
                     // Return same
-                    synchronized (remoteScannedDevicesLock)
-                        {
+                    synchronized (remoteScannedDevicesLock) {
                         return remoteScannedDevices;
-                        }
                     }
-                else
-                    {
+                } else {
                     RobotLog.vv(TAG, "scanning USB bus...");
                     ScannedDevices localResult = null;
-                    try
-                        {
+                    try {
                         localResult = new ScannedDevices(deviceManager.scanForUsbDevices());
-                        }
-                    catch (RobotCoreException e)
-                        {
+                    } catch (RobotCoreException e) {
                         RobotLog.ee(TAG, "USB bus scan threw exception: " + e.toString());
                         localResult = null;
-                        }
-                    finally
-                        {
-                        RobotLog.vv(TAG, ".. scanning complete: %s", localResult==null?"null":localResult.keySet().toString());
-                        }
-                    return localResult;
+                    } finally {
+                        RobotLog.vv(TAG, ".. scanning complete: %s", localResult == null ? "null" : localResult.keySet().toString());
                     }
+                    return localResult;
                 }
-            });
-        }
+            }
+        });
+    }
 
-    public @NonNull ScannedDevices awaitScannedDevices() throws InterruptedException
-        {
+    public
+    @NonNull
+    ScannedDevices awaitScannedDevices() throws InterruptedException {
         ScannedDevices result = this.scanningSingleton.await();
-        if (result == null)
-            {
+        if (result == null) {
             RobotLog.vv(TAG, "USBScanManager.await() returning made-up scan result");
             result = new ScannedDevices();
-            }
-        return result;
         }
+        return result;
+    }
 
-    public @NonNull LynxModuleMetaList awaitLynxModules(SerialNumber serialNumber) throws InterruptedException
-        {
+    public
+    @NonNull
+    LynxModuleMetaList awaitLynxModules(SerialNumber serialNumber) throws InterruptedException {
         LynxModuleDiscoveryState discoveryState = getDiscoveryState(serialNumber);
         LynxModuleMetaList result = discoveryState.lynxDiscoverySingleton.await();
-        if (result == null)
-            {
+        if (result == null) {
             RobotLog.vv(TAG, "USBScanManager.awaitLynxModules() returning made-up result");
             result = new LynxModuleMetaList(serialNumber);
-            }
+        }
         return result;
-        }
+    }
 
-    public String packageCommandResponse(ScannedDevices scannedDevices)
-        {
+    public String packageCommandResponse(ScannedDevices scannedDevices) {
         return scannedDevices.toSerializationString();
-        }
+    }
 
-    public String packageCommandResponse(LynxModuleMetaList lynxModules)
-        {
+    public String packageCommandResponse(LynxModuleMetaList lynxModules) {
         return lynxModules.toSerializationString();
-        }
+    }
 
-    public void handleCommandScanResponse(String extra) throws RobotCoreException
-        {
+    public void handleCommandScanResponse(String extra) throws RobotCoreException {
         RobotLog.vv(TAG, "handleCommandScanResponse()...");
         ScannedDevices scannedDevices = ScannedDevices.fromSerializationString(extra);
-        synchronized (this.remoteScannedDevicesLock)
-            {
+        synchronized (this.remoteScannedDevicesLock) {
             this.remoteScannedDevices = scannedDevices;
             this.scanResultsSequence.advanceNext();
-            }
-        RobotLog.vv(TAG, "...handleCommandScanResponse()");
         }
+        RobotLog.vv(TAG, "...handleCommandScanResponse()");
+    }
 
-    public void handleCommandDiscoverLynxModulesResponse(String extra) throws RobotCoreException
-        {
+    public void handleCommandDiscoverLynxModulesResponse(String extra) throws RobotCoreException {
         RobotLog.vv(TAG, "handleCommandDiscoverLynxModulesResponse()...");
         LynxModuleMetaList lynxModules = LynxModuleMetaList.fromSerializationString(extra);
         LynxModuleDiscoveryState discoveryState = getDiscoveryState(lynxModules.serialNumber);
-        synchronized (discoveryState.remoteLynxDiscoveryLock)
-            {
+        synchronized (discoveryState.remoteLynxDiscoveryLock) {
             discoveryState.remoteLynxModules = lynxModules;
             discoveryState.lynxDiscoverySequence.advanceNext();
-            }
-        RobotLog.vv(TAG, "...handleCommandDiscoverLynxModulesResponse()");
         }
+        RobotLog.vv(TAG, "...handleCommandDiscoverLynxModulesResponse()");
     }
+}

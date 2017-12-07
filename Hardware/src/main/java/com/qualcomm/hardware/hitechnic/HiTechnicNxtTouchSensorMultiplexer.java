@@ -44,108 +44,110 @@ import java.nio.ByteOrder;
  */
 public class HiTechnicNxtTouchSensorMultiplexer extends LegacyModulePortDeviceImpl implements TouchSensorMultiplexer {
 
-  //------------------------------------------------------------------------------------------------
-  // Constants
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------
 
-  int NUM_TOUCH_SENSORS = 4;
+    int NUM_TOUCH_SENSORS = 4;
 
-  public static final int MASK_TOUCH_SENSOR_1 = 0x1;
-  public static final int MASK_TOUCH_SENSOR_2 = 0x2;
-  public static final int MASK_TOUCH_SENSOR_3 = 0x4;
-  public static final int MASK_TOUCH_SENSOR_4 = 0x8;
+    public static final int MASK_TOUCH_SENSOR_1 = 0x1;
+    public static final int MASK_TOUCH_SENSOR_2 = 0x2;
+    public static final int MASK_TOUCH_SENSOR_3 = 0x4;
+    public static final int MASK_TOUCH_SENSOR_4 = 0x8;
 
-  public static final int INVALID = -1;
+    public static final int INVALID = -1;
 
-  public static final int[] MASK_MAP = {
-      INVALID,
-      MASK_TOUCH_SENSOR_1,
-      MASK_TOUCH_SENSOR_2,
-      MASK_TOUCH_SENSOR_3,
-      MASK_TOUCH_SENSOR_4
-  };
+    public static final int[] MASK_MAP = {
+            INVALID,
+            MASK_TOUCH_SENSOR_1,
+            MASK_TOUCH_SENSOR_2,
+            MASK_TOUCH_SENSOR_3,
+            MASK_TOUCH_SENSOR_4
+    };
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtTouchSensorMultiplexer(LegacyModule legacyModule, int physicalPort) {
-    super(legacyModule, physicalPort);
-    finishConstruction();
-  }
-
-  @Override
-  protected void moduleNowArmedOrPretending() {
-    module.enableAnalogReadMode(physicalPort);
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
-
-  public String status() {
-    return String.format("NXT Touch Sensor Multiplexer, connected via device %s, port %d",
-        module.getSerialNumber().toString(), physicalPort);  }
-
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.HiTechnic;
-  }
-
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTTouchSensorMultiplexer);
-  }
-
-  @Override
-  public String getConnectionInfo() {
-    return module.getConnectionInfo() + "; port " + physicalPort;
-  }
-
-  @Override
-  public int getVersion() {
-    return 1;
-  }
-
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
-
-  @Override
-  public void close() {
-    // take no action.
-  }
-
-  @Override
-  public boolean isTouchSensorPressed(int channel) {
-    throwIfChannelInvalid(channel);
-    int switches = getAllSwitches();
-
-    int touchSensor = switches & MASK_MAP[channel];
-    return (touchSensor > 0);
-  }
-
-  @Override
-  public int getSwitches() {
-    return getAllSwitches();
-  }
-
-  private int getAllSwitches() {
-    byte[] analogBuffer = module.readAnalogRaw(3);
-    int analogValue = TypeConversion.byteArrayToShort(analogBuffer, ByteOrder.LITTLE_ENDIAN);
-
-    int svalue=1023-analogValue;
-    int switches=339*svalue;
-    switches/=1023-svalue;
-    switches+=5;
-    switches/=10;
-
-    return switches;
-  }
-
-  private void throwIfChannelInvalid(int channel) {
-    if (channel <= 0 || channel > NUM_TOUCH_SENSORS) {
-      throw new IllegalArgumentException(String.format( "Channel %d is invalid; " +
-          "valid channels are 1..%d", channel, NUM_TOUCH_SENSORS));
+    public HiTechnicNxtTouchSensorMultiplexer(LegacyModule legacyModule, int physicalPort) {
+        super(legacyModule, physicalPort);
+        finishConstruction();
     }
-  }
+
+    @Override
+    protected void moduleNowArmedOrPretending() {
+        module.enableAnalogReadMode(physicalPort);
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
+
+    public String status() {
+        return String.format("NXT Touch Sensor Multiplexer, connected via device %s, port %d",
+                module.getSerialNumber().toString(), physicalPort);
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.HiTechnic;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTTouchSensorMultiplexer);
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return module.getConnectionInfo() + "; port " + physicalPort;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
+
+    @Override
+    public void close() {
+        // take no action.
+    }
+
+    @Override
+    public boolean isTouchSensorPressed(int channel) {
+        throwIfChannelInvalid(channel);
+        int switches = getAllSwitches();
+
+        int touchSensor = switches & MASK_MAP[channel];
+        return (touchSensor > 0);
+    }
+
+    @Override
+    public int getSwitches() {
+        return getAllSwitches();
+    }
+
+    private int getAllSwitches() {
+        byte[] analogBuffer = module.readAnalogRaw(3);
+        int analogValue = TypeConversion.byteArrayToShort(analogBuffer, ByteOrder.LITTLE_ENDIAN);
+
+        int svalue = 1023 - analogValue;
+        int switches = 339 * svalue;
+        switches /= 1023 - svalue;
+        switches += 5;
+        switches /= 10;
+
+        return switches;
+    }
+
+    private void throwIfChannelInvalid(int channel) {
+        if (channel <= 0 || channel > NUM_TOUCH_SENSORS) {
+            throw new IllegalArgumentException(String.format("Channel %d is invalid; " +
+                    "valid channels are 1..%d", channel, NUM_TOUCH_SENSORS));
+        }
+    }
 }

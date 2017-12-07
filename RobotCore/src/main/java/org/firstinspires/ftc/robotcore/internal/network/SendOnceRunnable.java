@@ -34,6 +34,7 @@ public class SendOnceRunnable implements Runnable {
          * Notifies that the peer is currently connected. Note: this is a level-state
          * notification, not a transition notification from disconnected to connected,
          * though the peerLikelyChanged parameter provides an indication of the latter.
+         *
          * @param peerLikelyChanged if false, then the peer is the same as the last notification.
          */
         void peerConnected(boolean peerLikelyChanged);
@@ -46,11 +47,13 @@ public class SendOnceRunnable implements Runnable {
     }
 
     public static class Parameters {
-        public boolean                 disconnectOnTimeout = true;
-        public boolean                 originateHeartbeats = AppUtil.getInstance().isDriverStation();
-        public RobotCoreGamepadManager gamepadManager      = null;
+        public boolean disconnectOnTimeout = true;
+        public boolean originateHeartbeats = AppUtil.getInstance().isDriverStation();
+        public RobotCoreGamepadManager gamepadManager = null;
 
-        public Parameters() { }
+        public Parameters() {
+        }
+
         public Parameters(RobotCoreGamepadManager gamepadManager) {
             this.gamepadManager = gamepadManager;
         }
@@ -60,38 +63,38 @@ public class SendOnceRunnable implements Runnable {
     // State
     //----------------------------------------------------------------------------------------------
 
-    public static final String          TAG = RobocolDatagram.TAG;
-    public static       boolean         DEBUG = false;
+    public static final String TAG = RobocolDatagram.TAG;
+    public static boolean DEBUG = false;
 
-    public static final double          ASSUME_DISCONNECT_TIMER = 2.0; // in seconds
-    public static final int             MAX_COMMAND_ATTEMPTS = 10;
-    public static final long            GAMEPAD_UPDATE_THRESHOLD = 1000; // in milliseconds
-    public static final int             MS_HEARTBEAT_TRANSMISSION_INTERVAL = 100;
+    public static final double ASSUME_DISCONNECT_TIMER = 2.0; // in seconds
+    public static final int MAX_COMMAND_ATTEMPTS = 10;
+    public static final long GAMEPAD_UPDATE_THRESHOLD = 1000; // in milliseconds
+    public static final int MS_HEARTBEAT_TRANSMISSION_INTERVAL = 100;
 
-    protected ElapsedTime               lastRecvPacket;
-    protected List<Command>             pendingCommands = new CopyOnWriteArrayList<Command>();
-    protected Heartbeat                 heartbeatSend = new Heartbeat();
-    protected RobocolDatagramSocket     socket;
-    protected ClientCallback            clientCallback;
-    protected Context                   context;
-    protected final Parameters          parameters;
-    protected final Object              issuedDisconnectLogMessageLock = new Object();
-    protected boolean                   issuedDisconnectLogMessage;
+    protected ElapsedTime lastRecvPacket;
+    protected List<Command> pendingCommands = new CopyOnWriteArrayList<Command>();
+    protected Heartbeat heartbeatSend = new Heartbeat();
+    protected RobocolDatagramSocket socket;
+    protected ClientCallback clientCallback;
+    protected Context context;
+    protected final Parameters parameters;
+    protected final Object issuedDisconnectLogMessageLock = new Object();
+    protected boolean issuedDisconnectLogMessage;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public SendOnceRunnable(@NonNull  Context context,
+    public SendOnceRunnable(@NonNull Context context,
                             @Nullable ClientCallback clientCallback,
-                            @NonNull  RobocolDatagramSocket socket,
+                            @NonNull RobocolDatagramSocket socket,
                             @Nullable ElapsedTime lastRecvPacket,
-                            @NonNull  Parameters parameters) {
-        this.context            = context;
-        this.clientCallback     = clientCallback;
-        this.socket             = socket;
-        this.lastRecvPacket     = lastRecvPacket;
-        this.parameters         = parameters;
+                            @NonNull Parameters parameters) {
+        this.context = context;
+        this.clientCallback = clientCallback;
+        this.socket = socket;
+        this.lastRecvPacket = lastRecvPacket;
+        this.parameters = parameters;
         this.issuedDisconnectLogMessage = false;
 
         RobotLog.vv(TAG, "SendOnceRunnable created");
@@ -117,7 +120,7 @@ public class SendOnceRunnable implements Runnable {
             // of the world and never disconnects from anyone.
             double seconds = lastRecvPacket.seconds();
             if (parameters.disconnectOnTimeout && lastRecvPacket != null && seconds > ASSUME_DISCONNECT_TIMER) {
-                if (clientCallback != null ) {
+                if (clientCallback != null) {
                     synchronized (issuedDisconnectLogMessageLock) {
                         if (!issuedDisconnectLogMessage) {
                             issuedDisconnectLogMessage = true;
@@ -148,8 +151,9 @@ public class SendOnceRunnable implements Runnable {
                 for (Gamepad gamepad : parameters.gamepadManager.getGamepadsForTransmission()) {
 
                     // don't send stale gamepads
-                    if (now - gamepad.timestamp > GAMEPAD_UPDATE_THRESHOLD && gamepad.atRest())
+                    if (now - gamepad.timestamp > GAMEPAD_UPDATE_THRESHOLD && gamepad.atRest()) {
                         continue;
+                    }
 
                     gamepad.setSequenceNumber();
                     RobocolDatagram packetGamepad = new RobocolDatagram(gamepad);
@@ -185,7 +189,9 @@ public class SendOnceRunnable implements Runnable {
                     send(packetCommand);
 
                     // if this is a command we handled, remove it
-                    if (command.isAcknowledged()) commandsToRemove.add(command);
+                    if (command.isAcknowledged()) {
+                        commandsToRemove.add(command);
+                    }
                 }
             }
             pendingCommands.removeAll(commandsToRemove);
@@ -213,5 +219,7 @@ public class SendOnceRunnable implements Runnable {
         return pendingCommands.remove(cmd);
     }
 
-    public void clearCommands() { pendingCommands.clear();}
+    public void clearCommands() {
+        pendingCommands.clear();
+    }
 }

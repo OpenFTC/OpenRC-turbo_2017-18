@@ -41,37 +41,42 @@ import com.qualcomm.robotcore.hardware.DeviceManager;
  * {@link ConfigurationType} instances represent the type of various kinds of hardware
  * device configurations that might exist within the SDK.
  */
-public interface ConfigurationType
-    {
-    enum DisplayNameFlavor
-        {
+public interface ConfigurationType {
+    enum DisplayNameFlavor {
         Normal,
         Legacy
-        }
+    }
 
     /**
      * Returns a user-understandable string form of this configuration type
+     *
      * @param context context to use for resource string retrieval
      * @return a user-understandable string form of this configuration type
      */
-    @NonNull String getDisplayName(DisplayNameFlavor flavor, Context context);
+    @NonNull
+    String getDisplayName(DisplayNameFlavor flavor, Context context);
 
     /**
      * Returns the XML element tag to be used when serializing configurations of this type
+     *
      * @return the XML element tag to be used when serializing configurations of this type
      */
-    @NonNull String getXmlTag();
+    @NonNull
+    String getXmlTag();
 
     /**
      * If this configuration type has a corresponding USB device configuration type, returns same;
      * otherwise, returns {@link com.qualcomm.robotcore.hardware.DeviceManager.DeviceType#FTDI_USB_UNKNOWN_DEVICE FTDI_USB_UNKNOWN_DEVICE}.
+     *
      * @return the USB device type that corresponds to this configuration type, if any
      */
-    @NonNull DeviceManager.DeviceType toUSBDeviceType();
+    @NonNull
+    DeviceManager.DeviceType toUSBDeviceType();
 
     /**
      * Returns whether this configuration type is of the indicated flavor
+     *
      * @return whether this configuration type is of the indicated flavor;
      */
     boolean isDeviceFlavor(UserConfigurationType.Flavor flavor);
-    }
+}

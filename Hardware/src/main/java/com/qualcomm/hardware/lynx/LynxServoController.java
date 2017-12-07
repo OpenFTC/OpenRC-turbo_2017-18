@@ -55,17 +55,20 @@ import com.qualcomm.robotcore.util.Range;
  * Created by bob on 2016-03-12.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxServoController extends LynxController implements ServoController, ServoControllerEx
-    {
+public class LynxServoController extends LynxController implements ServoController, ServoControllerEx {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxServoController";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     public static final int apiServoFirst = LynxConstants.INITIAL_SERVO_PORT;
-    public static final int apiServoLast = apiServoFirst + LynxConstants.NUMBER_OF_SERVO_CHANNELS -1;
+    public static final int apiServoLast = apiServoFirst + LynxConstants.NUMBER_OF_SERVO_CHANNELS - 1;
     public static final double apiPositionFirst = 0.0;
     public static final double apiPositionLast = 1.0;
 
@@ -73,152 +76,135 @@ public class LynxServoController extends LynxController implements ServoControll
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final LastKnown<Double>[]     lastKnownCommandedPosition;
-    protected final LastKnown<Boolean>[]    lastKnownEnabled;
-    protected       PwmControl.PwmRange[]   pwmRanges;
+    protected final LastKnown<Double>[] lastKnownCommandedPosition;
+    protected final LastKnown<Boolean>[] lastKnownEnabled;
+    protected PwmControl.PwmRange[] pwmRanges;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     public LynxServoController(final Context context, final LynxModule module)
-            throws RobotCoreException, InterruptedException
-        {
+            throws RobotCoreException, InterruptedException {
         super(context, module);
         this.lastKnownCommandedPosition = LastKnown.createArray(LynxConstants.NUMBER_OF_SERVO_CHANNELS);
-        this.lastKnownEnabled           = LastKnown.createArray(LynxConstants.NUMBER_OF_SERVO_CHANNELS);
-        this.pwmRanges                  = new PwmControl.PwmRange[LynxConstants.NUMBER_OF_SERVO_CHANNELS];
+        this.lastKnownEnabled = LastKnown.createArray(LynxConstants.NUMBER_OF_SERVO_CHANNELS);
+        this.pwmRanges = new PwmControl.PwmRange[LynxConstants.NUMBER_OF_SERVO_CHANNELS];
 
         // Paranoia: *always* initialize to something reasonable to as to avoid null pointer issues
-        for (int i = 0; i < this.pwmRanges.length; i++)
-            {
+        for (int i = 0; i < this.pwmRanges.length; i++) {
             this.pwmRanges[i] = PwmControl.PwmRange.defaultRange;
-            }
+        }
 
         this.finishConstruction();
-        }
-
-    @Override public void initializeHardware()
-        {
-        for (int servo = apiServoFirst; servo <= apiServoLast; servo++)
-            {
-            this.pwmRanges[servo-apiServoFirst] = null;     // clear so that setServoPwmRange will always transmit
-            setServoPwmRange(servo, PwmControl.PwmRange.defaultRange);
-            }
-        floatHardware();
-        forgetLastKnown();
-        }
-
-    @Override public void floatHardware()
-        {
-        pwmDisable();
-        }
+    }
 
     @Override
-    public void forgetLastKnown()
-        {
+    public void initializeHardware() {
+        for (int servo = apiServoFirst; servo <= apiServoLast; servo++) {
+            this.pwmRanges[servo - apiServoFirst] = null;     // clear so that setServoPwmRange will always transmit
+            setServoPwmRange(servo, PwmControl.PwmRange.defaultRange);
+        }
+        floatHardware();
+        forgetLastKnown();
+    }
+
+    @Override
+    public void floatHardware() {
+        pwmDisable();
+    }
+
+    @Override
+    public void forgetLastKnown() {
         LastKnown.invalidateArray(lastKnownCommandedPosition);
         LastKnown.invalidateArray(lastKnownEnabled);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice interface
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return this.context.getString(R.string.lynxServoControllerDisplayName);
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // ServoController interface
     //------------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized void pwmEnable()
-        {
-        for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++)
-            {
+    public synchronized void pwmEnable() {
+        for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++) {
             internalSetPwmEnable(servoZ, true);
-            }
         }
+    }
 
     @Override
-    public synchronized void pwmDisable()
-        {
-        for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++)
-            {
+    public synchronized void pwmDisable() {
+        for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++) {
             internalSetPwmEnable(servoZ, false);
-            }
         }
+    }
 
     @Override
-    public synchronized PwmStatus getPwmStatus()
-        {
+    public synchronized PwmStatus getPwmStatus() {
         Boolean enabled = null;
-        for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++)
-            {
+        for (int servoZ = 0; servoZ < LynxConstants.NUMBER_OF_SERVO_CHANNELS; servoZ++) {
             boolean localEnabled = internalGetPwmEnable(servoZ);
-            if (enabled == null)
+            if (enabled == null) {
                 enabled = localEnabled;
-            else if (enabled != localEnabled)
+            } else if (enabled != localEnabled) {
                 return PwmStatus.MIXED;
             }
+        }
         return enabled ? PwmStatus.ENABLED : PwmStatus.DISABLED;
-        }
+    }
 
     @Override
-    public synchronized void setServoPwmEnable(int servo)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
+    public synchronized void setServoPwmEnable(int servo) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
         internalSetPwmEnable(servo, true);
-        }
+    }
 
     @Override
-    public synchronized void setServoPwmDisable(int servo)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
+    public synchronized void setServoPwmDisable(int servo) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
         internalSetPwmEnable(servo, false);
-        }
+    }
 
     @Override
-    public synchronized boolean isServoPwmEnabled(int servo)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
+    public synchronized boolean isServoPwmEnabled(int servo) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
         return internalGetPwmEnable(servo);
-        }
+    }
 
-    private void internalSetPwmEnable(int servoZ, boolean enable)
-        {
+    private void internalSetPwmEnable(int servoZ, boolean enable) {
         // Don't change state if we know we are already there
-        if (lastKnownEnabled[servoZ].updateValue(enable))
-            {
+        if (lastKnownEnabled[servoZ].updateValue(enable)) {
             // If we're disabling, then make sure that next setServoPosition will reenable
-            if (!enable)
-                {
+            if (!enable) {
                 lastKnownCommandedPosition[servoZ].invalidate();
-                }
+            }
 
             LynxSetServoEnableCommand command = new LynxSetServoEnableCommand(this.getModule(), servoZ, enable);
             try {
                 command.send();
-                }
-            catch (InterruptedException|RuntimeException|LynxNackException e)
-                {
+            } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
-                }
             }
         }
+    }
 
-    private boolean internalGetPwmEnable(int servoZ)
-        {
+    private boolean internalGetPwmEnable(int servoZ) {
         // If we have a cached value, then use that
         Boolean result = lastKnownEnabled[servoZ].getValue();
-        if (result != null)
-            {
+        if (result != null) {
             return result;
-            }
+        }
 
         // Actually talk to the device
         LynxGetServoEnableCommand command = new LynxGetServoEnableCommand(this.getModule(), servoZ);
@@ -227,48 +213,42 @@ public class LynxServoController extends LynxController implements ServoControll
             result = response.isEnabled();
             lastKnownEnabled[servoZ].setValue(result);
             return result;
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
-        return LynxUsbUtil.makePlaceholderValue(true);
         }
+        return LynxUsbUtil.makePlaceholderValue(true);
+    }
 
     @Override
-    public synchronized void setServoPosition(int servo, double position)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
+    public synchronized void setServoPosition(int servo, double position) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
         this.validateApiServoPosition(position);
-        if (lastKnownCommandedPosition[servo].updateValue(position))
-            {
+        if (lastKnownCommandedPosition[servo].updateValue(position)) {
             double pwm = Range.scale(position, apiPositionFirst, apiPositionLast, pwmRanges[servo].usPulseLower, pwmRanges[servo].usPulseUpper);
             pwm = Range.clip(pwm, LynxSetServoPulseWidthCommand.apiPulseWidthFirst, LynxSetServoPulseWidthCommand.apiPulseWidthLast);
-            LynxSetServoPulseWidthCommand command = new LynxSetServoPulseWidthCommand(this.getModule(), servo, (int)pwm);
+            LynxSetServoPulseWidthCommand command = new LynxSetServoPulseWidthCommand(this.getModule(), servo, (int) pwm);
             try {
                 command.send();
-                }
-            catch (InterruptedException|RuntimeException|LynxNackException e)
-                {
+            } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
-                }
+            }
 
             // Auto-enable after setting position to match historical behavior (and because it's handy)
             this.internalSetPwmEnable(servo, true);
-            }
         }
+    }
 
     @Override
-    public synchronized double getServoPosition(int servo)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
+    public synchronized double getServoPosition(int servo) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
 
         // Use cached value if we have it
         Double result = lastKnownCommandedPosition[servo].getValue();
-        if (result != null)
-            {
+        if (result != null) {
             return result;
-            }
+        }
 
         // Actually go ask the hardware
         LynxGetServoPulseWidthCommand command = new LynxGetServoPulseWidthCommand(this.getModule(), servo);
@@ -278,57 +258,50 @@ public class LynxServoController extends LynxController implements ServoControll
             result = Range.clip(result, apiPositionFirst, apiPositionLast); // paranoia
             lastKnownCommandedPosition[servo].setValue(result);
             return result;
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
-        return LynxUsbUtil.makePlaceholderValue(0.0);
         }
+        return LynxUsbUtil.makePlaceholderValue(0.0);
+    }
 
     @Override
-    public synchronized void setServoPwmRange(int servo, @NonNull PwmControl.PwmRange range)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
-        if (!range.equals(pwmRanges[servo]))
-            {
+    public synchronized void setServoPwmRange(int servo, @NonNull PwmControl.PwmRange range) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
+        if (!range.equals(pwmRanges[servo])) {
             pwmRanges[servo] = range;
-            LynxSetServoConfigurationCommand command = new LynxSetServoConfigurationCommand(this.getModule(), servo, (int)range.usFrame);
+            LynxSetServoConfigurationCommand command = new LynxSetServoConfigurationCommand(this.getModule(), servo, (int) range.usFrame);
             try {
                 command.send();
-                }
-            catch (InterruptedException|RuntimeException|LynxNackException e)
-                {
+            } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
-                }
             }
         }
+    }
 
     @Override
-    public synchronized @NonNull PwmControl.PwmRange getServoPwmRange(int servo)
-        {
-        this.validateServo(servo); servo -= apiServoFirst;
+    public synchronized
+    @NonNull
+    PwmControl.PwmRange getServoPwmRange(int servo) {
+        this.validateServo(servo);
+        servo -= apiServoFirst;
         return pwmRanges[servo];
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    private void validateServo(int servo)
-        {
-        if (servo < apiServoFirst || servo > apiServoLast)
-            {
+    private void validateServo(int servo) {
+        if (servo < apiServoFirst || servo > apiServoLast) {
             throw new IllegalArgumentException(String.format("Servo %d is invalid; valid servos are %d..%d", servo, apiServoFirst, apiServoLast));
-            }
         }
+    }
 
-    private void validateApiServoPosition(double position)
-        {
-        if (apiPositionFirst <= position && position <= apiPositionLast)
-            {
-            }
-        else
+    private void validateApiServoPosition(double position) {
+        if (apiPositionFirst <= position && position <= apiPositionLast) {
+        } else {
             throw new IllegalArgumentException(String.format("illegal servo position %f; must be in interval [%f,%f]", position, apiPositionFirst, apiPositionLast));
         }
     }
+}

@@ -34,24 +34,27 @@ package com.qualcomm.robotcore.hardware;
 
 /**
  * {@link HardwareDeviceHealth} provides an indication of the perceived health of a hardware device
+ *
  * @see HardwareDevice
  */
-public interface HardwareDeviceHealth
-    {
-    enum HealthStatus
-        {
+public interface HardwareDeviceHealth {
+    enum HealthStatus {
         UNKNOWN,
 
-        /** The device appears to be operating successfully */
+        /**
+         * The device appears to be operating successfully
+         */
         HEALTHY,
 
-        /** Experiencing problems of an unspecified nature */
+        /**
+         * Experiencing problems of an unspecified nature
+         */
         UNHEALTHY,
 
         CLOSED,
-        }
+    }
 
     void setHealthStatus(HealthStatus status);
 
     HealthStatus getHealthStatus();
-    }
+}

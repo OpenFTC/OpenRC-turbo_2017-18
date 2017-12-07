@@ -36,8 +36,8 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface TouchSensorMultiplexer extends HardwareDevice {
 
-  boolean isTouchSensorPressed(int channel);
+    boolean isTouchSensorPressed(int channel);
 
-  int getSwitches();
+    int getSwitches();
 
 }

@@ -67,7 +67,9 @@ import com.qualcomm.robotcore.hardware.configuration.LynxI2cDeviceConfiguration;
 /**
  * Created by bob on 2016-10-21.
  */
-public class EditI2cDevicesActivityLynx extends EditI2cDevicesActivityAbstract<LynxI2cDeviceConfiguration>
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditI2cDevicesActivityLynx extends EditI2cDevicesActivityAbstract<LynxI2cDeviceConfiguration> {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
+}

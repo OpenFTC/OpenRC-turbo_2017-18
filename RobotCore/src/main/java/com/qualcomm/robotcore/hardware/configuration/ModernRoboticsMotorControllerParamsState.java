@@ -43,80 +43,78 @@ import java.io.Serializable;
  * {@link ModernRoboticsMotorControllerParamsState} contains metadata transcribed from {@link ModernRoboticsMotorControllerParams}
  */
 @SuppressWarnings("WeakerAccess")
-public class ModernRoboticsMotorControllerParamsState implements Serializable, Cloneable
-    {
-    public @Expose int ratio = 0;
-    public @Expose int p = 0;
-    public @Expose int i = 0;
-    public @Expose int d = 0;
+public class ModernRoboticsMotorControllerParamsState implements Serializable, Cloneable {
+    public
+    @Expose
+    int ratio = 0;
+    public
+    @Expose
+    int p = 0;
+    public
+    @Expose
+    int i = 0;
+    public
+    @Expose
+    int d = 0;
 
-    public ModernRoboticsMotorControllerParamsState()
-        {
+    public ModernRoboticsMotorControllerParamsState() {
         Assert.assertTrue(this.isDefault());
-        }
+    }
 
-    public ModernRoboticsMotorControllerParamsState(ModernRoboticsMotorControllerParams params)
-        {
+    public ModernRoboticsMotorControllerParamsState(ModernRoboticsMotorControllerParams params) {
         this.ratio = params.ratio();
         this.p = params.P();
         this.i = params.I();
         this.d = params.D();
-        }
+    }
 
-    public ModernRoboticsMotorControllerParamsState clone()
-        {
+    public ModernRoboticsMotorControllerParamsState clone() {
         try {
-            return (ModernRoboticsMotorControllerParamsState)super.clone();
-            }
-        catch (CloneNotSupportedException e)
-            {
+            return (ModernRoboticsMotorControllerParamsState) super.clone();
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException("internal error: Parameters not cloneable");
-            }
         }
+    }
 
-    public static ModernRoboticsMotorControllerParamsState fromByteArray(byte[] controllerData)
-        {
+    public static ModernRoboticsMotorControllerParamsState fromByteArray(byte[] controllerData) {
         ModernRoboticsMotorControllerParamsState result = new ModernRoboticsMotorControllerParamsState();
         result.ratio = TypeConversion.unsignedByteToInt(controllerData[0]);
         result.p = TypeConversion.unsignedByteToInt(controllerData[1]);
         result.i = TypeConversion.unsignedByteToInt(controllerData[2]);
         result.d = TypeConversion.unsignedByteToInt(controllerData[3]);
         return result;
-        }
+    }
 
-    public byte[] toByteArray()
-        {
+    public byte[] toByteArray() {
         byte[] result = new byte[4];
         result[0] = (byte) ratio;
         result[1] = (byte) p;
         result[2] = (byte) i;
         result[3] = (byte) d;
         return result;
-        }
+    }
 
-    public boolean isDefault()
-        {
+    public boolean isDefault() {
         return ratio == 0 && p == 0 && i == 0 && d == 0;
-        }
+    }
 
-    @Override public boolean equals(Object o)
-        {
-        if (o instanceof ModernRoboticsMotorControllerParamsState)
-            {
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ModernRoboticsMotorControllerParamsState) {
             ModernRoboticsMotorControllerParamsState them = (ModernRoboticsMotorControllerParamsState) o;
             return this.ratio == them.ratio && this.p == them.p && this.i == them.i && this.d == them.d;
-            }
-        else
+        } else {
             return false;
         }
-
-    @Override public int hashCode()
-        {
-        return ratio ^ (p << 3) ^ (i << 6) ^ (d << 9) ^ 0xFAD11234;
-        }
-
-    @Override public String toString()
-        {
-        return String.format("ratio=%d,p=%d,i=%d,d=%d", ratio, p, i, d);
-        }
     }
+
+    @Override
+    public int hashCode() {
+        return ratio ^ (p << 3) ^ (i << 6) ^ (d << 9) ^ 0xFAD11234;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ratio=%d,p=%d,i=%d,d=%d", ratio, p, i, d);
+    }
+}

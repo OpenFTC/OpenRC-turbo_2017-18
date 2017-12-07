@@ -36,17 +36,19 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface TouchSensor extends HardwareDevice {
 
-  /**
-   * Represents how much force is applied to the touch sensor; for some touch sensors
-   * this value will only ever be 0 or 1.
-   * @return a number between 0 and 1
-   */
-  double getValue();
+    /**
+     * Represents how much force is applied to the touch sensor; for some touch sensors
+     * this value will only ever be 0 or 1.
+     *
+     * @return a number between 0 and 1
+     */
+    double getValue();
 
-  /**
-   * Return true if the touch sensor is being pressed
-   * @return true if the touch sensor is being pressed
-   */
-  boolean isPressed();
+    /**
+     * Return true if the touch sensor is being pressed
+     *
+     * @return true if the touch sensor is being pressed
+     */
+    boolean isPressed();
 
 }

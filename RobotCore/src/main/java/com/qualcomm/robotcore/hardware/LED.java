@@ -36,62 +36,66 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 public class LED implements HardwareDevice, SwitchableLight {
 
-  private DigitalChannelController controller = null;
-  private int physicalPort = -1;
+    private DigitalChannelController controller = null;
+    private int physicalPort = -1;
 
-  /***
-   * Constructor
-   * @param controller Digital Channel Controller this LED is attached to
-   * @param physicalPort the physical port it's plugged into.
-   */
-  public LED(DigitalChannelController controller, int physicalPort) {
-    this.controller = controller;
-    this.physicalPort = physicalPort;
+    /***
+     * Constructor
+     * @param controller Digital Channel Controller this LED is attached to
+     * @param physicalPort the physical port it's plugged into.
+     */
+    public LED(DigitalChannelController controller, int physicalPort) {
+        this.controller = controller;
+        this.physicalPort = physicalPort;
 
-    controller.setDigitalChannelMode(physicalPort, DigitalChannel.Mode.OUTPUT);
-  }
+        controller.setDigitalChannelMode(physicalPort, DigitalChannel.Mode.OUTPUT);
+    }
 
-  /**
-   * A method to turn on or turn off the LED
-   * @param set - true turns it on, false turns it off.
-   */
-  public void enable(boolean set) {
-    controller.setDigitalChannelState(physicalPort, set);
-  }
+    /**
+     * A method to turn on or turn off the LED
+     *
+     * @param set - true turns it on, false turns it off.
+     */
+    public void enable(boolean set) {
+        controller.setDigitalChannelState(physicalPort, set);
+    }
 
-  @Override public boolean isLightOn() {
-    return controller.getDigitalChannelState(physicalPort);
-  }
+    @Override
+    public boolean isLightOn() {
+        return controller.getDigitalChannelState(physicalPort);
+    }
 
-  @Override public void enableLight(boolean enable) {
-    this.enable(enable);
-  }
+    @Override
+    public void enableLight(boolean enable) {
+        this.enable(enable);
+    }
 
- @Override public Manufacturer getManufacturer() {
-    return controller.getManufacturer();
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return controller.getManufacturer();
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(R.string.configTypeLED);
-  }
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(R.string.configTypeLED);
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return String.format("%s; port %d", this.controller.getConnectionInfo(), this.physicalPort);
-  }
+    @Override
+    public String getConnectionInfo() {
+        return String.format("%s; port %d", this.controller.getConnectionInfo(), this.physicalPort);
+    }
 
-  @Override
-  public int getVersion() {
-    return 0;
-  }
+    @Override
+    public int getVersion() {
+        return 0;
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
-  @Override
-  public void close() {
+    @Override
+    public void close() {
 
-  }
+    }
 }

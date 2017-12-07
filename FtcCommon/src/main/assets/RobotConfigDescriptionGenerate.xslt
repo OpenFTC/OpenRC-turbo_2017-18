@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
-	<xsl:strip-space elements="*"/>
-	
-	<xsl:template match="RobotConfigTaxonomy"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+    <xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
+    <xsl:strip-space elements="*"/>
+
+    <xsl:template match="RobotConfigTaxonomy"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions">
 	<xsl:output method="text" indent="no"/>
 	<xsl:strip-space elements="*"/>
@@ -76,18 +76,21 @@
 	</xsl:template>
   
 </xsl:stylesheet>
-]]></xsl:template>
+]]>
+    </xsl:template>
 
-	<xsl:template match="Sensor"><![CDATA[
+    <xsl:template match="Sensor"><![CDATA[
     <xsl:template match="]]><xsl:value-of select="XmlTag"/><![CDATA[">
 		<xsl:param name="indent" select="0"/>
-		<xsl:param name="]]><xsl:value-of select="Bus"/><![CDATA[">]]><xsl:value-of select="BusDefault"/><![CDATA[</xsl:param>
-		<xsl:value-of select="substring($spaces, 1, $indent)"/>]]><xsl:value-of select="Description"/><![CDATA[ <xsl:choose>
+		<xsl:param name="]]><xsl:value-of select="Bus"/><![CDATA[">]]><xsl:value-of
+        select="BusDefault"/><![CDATA[</xsl:param>
+		<xsl:value-of select="substring($spaces, 1, $indent)"/>]]><xsl:value-of
+        select="Description"/><![CDATA[ <xsl:choose>
 			<xsl:when test="@name">(<xsl:value-of select="@name"/>) </xsl:when>
 			<xsl:otherwise></xsl:otherwise>
 		</xsl:choose>in <xsl:value-of select="$]]><xsl:value-of select="Bus"/><![CDATA["/><xsl:value-of select="$space"/><xsl:value-of select="@port"/>
 		<xsl:value-of select="$nl"/>
 	</xsl:template>]]>
-</xsl:template>
+    </xsl:template>
 
 </xsl:stylesheet>

@@ -37,25 +37,20 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * deeper layers have closed the underlying USB device. One common cause of this is a disconnected
  * cable.
  */
-public class RobotUsbDeviceClosedException extends RobotUsbException
-    {
-    public RobotUsbDeviceClosedException(String message)
-        {
+public class RobotUsbDeviceClosedException extends RobotUsbException {
+    public RobotUsbDeviceClosedException(String message) {
         super(message);
-        }
-
-    public RobotUsbDeviceClosedException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbDeviceClosedException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbDeviceClosedException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbDeviceClosedException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbDeviceClosedException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbDeviceClosedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbDeviceClosedException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbDeviceClosedException(String.format(format, args), e);
+    }
+}

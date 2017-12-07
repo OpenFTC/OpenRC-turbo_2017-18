@@ -44,8 +44,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-09.
  */
-public class LynxGetServoPulseWidthCommand extends LynxDekaInterfaceCommand<LynxGetServoPulseWidthResponse>
-    {
+public class LynxGetServoPulseWidthCommand extends LynxDekaInterfaceCommand<LynxGetServoPulseWidthResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -58,46 +57,40 @@ public class LynxGetServoPulseWidthCommand extends LynxDekaInterfaceCommand<Lynx
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetServoPulseWidthCommand(LynxModuleIntf module)
-        {
+    public LynxGetServoPulseWidthCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxGetServoPulseWidthResponse(module);
-        }
+    }
 
-    public LynxGetServoPulseWidthCommand(LynxModuleIntf module, int channelZ)
-        {
+    public LynxGetServoPulseWidthCommand(LynxModuleIntf module, int channelZ) {
         this(module);
         LynxConstants.validateServoChannelZ(channelZ);
-        this.channel = (byte)channelZ;
-        }
+        this.channel = (byte) channelZ;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxGetServoPulseWidthResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.channel);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.channel = buffer.get();
-        }
     }
+}

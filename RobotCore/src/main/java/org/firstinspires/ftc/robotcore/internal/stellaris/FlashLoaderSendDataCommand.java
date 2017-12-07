@@ -47,25 +47,21 @@ import java.util.Arrays;
  * of the previous data.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderSendDataCommand extends FlashLoaderCommand
-    {
+public class FlashLoaderSendDataCommand extends FlashLoaderCommand {
     // The documentation says that the quantum should be 8, but in practice, the LM Flash
     // Programmer actually uses 60 bytes
     public static final int QUANTUM = 60;
 
-    public FlashLoaderSendDataCommand(byte[] data)
-        {
+    public FlashLoaderSendDataCommand(byte[] data) {
         this(data, 0);
-        }
+    }
 
-    public FlashLoaderSendDataCommand(byte[] data, int ibFirst)
-        {
+    public FlashLoaderSendDataCommand(byte[] data, int ibFirst) {
         super(0x24, makePayload(data, ibFirst));
-        }
+    }
 
-    protected static byte[] makePayload(byte[] data, int ibFirst)
-        {
+    protected static byte[] makePayload(byte[] data, int ibFirst) {
         int cb = Math.min(QUANTUM, data.length - ibFirst);
         return Arrays.copyOfRange(data, ibFirst /*inclusive*/, ibFirst + cb /*exclusive!*/);
-        }
     }
+}

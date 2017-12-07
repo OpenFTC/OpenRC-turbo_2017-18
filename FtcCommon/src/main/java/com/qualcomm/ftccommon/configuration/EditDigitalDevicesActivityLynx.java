@@ -34,12 +34,14 @@ package com.qualcomm.ftccommon.configuration;
 
 import com.qualcomm.ftccommon.R;
 
-public class EditDigitalDevicesActivityLynx extends EditDigitalDevicesActivity
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
-    public EditDigitalDevicesActivityLynx()
-        {
+public class EditDigitalDevicesActivityLynx extends EditDigitalDevicesActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
+    public EditDigitalDevicesActivityLynx() {
         super();
         this.layoutItem = R.layout.digital_device_lynx;
-        }
     }
+}

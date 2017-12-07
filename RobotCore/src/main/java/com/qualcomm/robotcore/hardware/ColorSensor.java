@@ -38,55 +38,62 @@ import android.support.annotation.ColorInt;
  */
 public interface ColorSensor extends HardwareDevice {
 
-  /**
-   * Get the Red values detected by the sensor as an int.
-   * @return reading, unscaled.
-   */
-  int red();
+    /**
+     * Get the Red values detected by the sensor as an int.
+     *
+     * @return reading, unscaled.
+     */
+    int red();
 
-  /**
-   * Get the Green values detected by the sensor as an int.
-   * @return reading, unscaled.
-   */
-  int green();
+    /**
+     * Get the Green values detected by the sensor as an int.
+     *
+     * @return reading, unscaled.
+     */
+    int green();
 
-  /**
-   * Get the Blue values detected by the sensor as an int.
-   * @return reading, unscaled.
-   */
-  int blue();
+    /**
+     * Get the Blue values detected by the sensor as an int.
+     *
+     * @return reading, unscaled.
+     */
+    int blue();
 
-  /**
-   * Get the amount of light detected by the sensor as an int.
-   * @return reading, unscaled.
-   */
-  int alpha();
+    /**
+     * Get the amount of light detected by the sensor as an int.
+     *
+     * @return reading, unscaled.
+     */
+    int alpha();
 
-  /**
-   * Get the "hue"
-   * @return hue
-   */
-  @ColorInt int argb();
+    /**
+     * Get the "hue"
+     *
+     * @return hue
+     */
+    @ColorInt
+    int argb();
 
-  /**
-   * Enable the LED light
-   * @param enable true to enable; false to disable
-   */
-  void enableLed(boolean enable);
+    /**
+     * Enable the LED light
+     *
+     * @param enable true to enable; false to disable
+     */
+    void enableLed(boolean enable);
 
-  /**
-   * Set the I2C address to a new value.
-   *
-   */
-  void setI2cAddress(I2cAddr newAddress);
+    /**
+     * Set the I2C address to a new value.
+     */
+    void setI2cAddress(I2cAddr newAddress);
 
-  /**
-   * Get the current I2C Address of this object.
-   * Not necessarily the same as the I2C address of the actual device.
-   *
-   * Return the current I2C address.
-   * @return current I2C address
-   */
-  I2cAddr getI2cAddress();
+    /**
+     * Get the current I2C Address of this object.
+     * Not necessarily the same as the I2C address of the actual device.
+     * <p>
+     * Return the current I2C address.
+     *
+     * @return current I2C address
+     */
+    I2cAddr getI2cAddress();
 
 }

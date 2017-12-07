@@ -55,353 +55,363 @@ import java.util.List;
 
 public class SoftApAssistant extends NetworkConnection {
 
-  private static SoftApAssistant softApAssistant = null;
+    private static SoftApAssistant softApAssistant = null;
 
-  private final List<ScanResult> scanResults = new ArrayList<ScanResult>();
+    private final List<ScanResult> scanResults = new ArrayList<ScanResult>();
 
-  private final WifiManager wifiManager;
-  private Context context = null;
-  private Event lastEvent = null;
+    private final WifiManager wifiManager;
+    private Context context = null;
+    private Event lastEvent = null;
 
-  private static IntentFilter intentFilter;
-  private BroadcastReceiver receiver;
+    private static IntentFilter intentFilter;
+    private BroadcastReceiver receiver;
 
-  private static String DEFAULT_PASSWORD = "password";
-  private static String DEFAULT_SSID = "FTC-1234";
+    private static String DEFAULT_PASSWORD = "password";
+    private static String DEFAULT_SSID = "FTC-1234";
 
-  String ssid = DEFAULT_SSID;
-  String password = DEFAULT_PASSWORD;
+    String ssid = DEFAULT_SSID;
+    String password = DEFAULT_PASSWORD;
 
-  private final static String NETWORK_SSID_FILE = "FTC_RobotController_SSID.txt";
-  private final static String NETWORK_PASSWORD_FILE = "FTC_RobotController_password.txt";
+    private final static String NETWORK_SSID_FILE = "FTC_RobotController_SSID.txt";
+    private final static String NETWORK_PASSWORD_FILE = "FTC_RobotController_password.txt";
 
-  private NetworkConnectionCallback callback = null;
+    private NetworkConnectionCallback callback = null;
 
 
-  public synchronized static SoftApAssistant getSoftApAssistant(Context context) {
-    if (softApAssistant == null) softApAssistant = new SoftApAssistant(context);
+    public synchronized static SoftApAssistant getSoftApAssistant(Context context) {
+        if (softApAssistant == null) {
+            softApAssistant = new SoftApAssistant(context);
+        }
 
-    // Set up the intent filter for wifi direct
-    intentFilter = new IntentFilter();
-    intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-    intentFilter.addAction(WifiManager.NETWORK_IDS_CHANGED_ACTION);
-    intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-    intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
-    intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-    intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        // Set up the intent filter for wifi direct
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_IDS_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-    return softApAssistant;
-  }
+        return softApAssistant;
+    }
 
-  private SoftApAssistant(Context context) {
+    private SoftApAssistant(Context context) {
 
-    this.context = context;
+        this.context = context;
 
-    wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-  }
+    }
 
-  public List<ScanResult> getScanResults() {
-    return scanResults;
-  }
+    public List<ScanResult> getScanResults() {
+        return scanResults;
+    }
 
-  @Override
-  public NetworkType getNetworkType() {
-    return NetworkType.SOFTAP;
-  }
+    @Override
+    public NetworkType getNetworkType() {
+        return NetworkType.SOFTAP;
+    }
 
-  @Override
-  public void enable() {
+    @Override
+    public void enable() {
 
-    if (receiver == null) receiver = new BroadcastReceiver() {
-      @Override
-      public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
+        if (receiver == null) {
+            receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                    RobotLog.v("onReceive(), action: " + action + ", wifiInfo: " + wifiInfo);
+
+                    if (wifiInfo.getSSID().equals(ssid) && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+                        sendEvent(Event.CONNECTION_INFO_AVAILABLE);
+                    }
+                    if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+                        scanResults.clear();
+                        scanResults.addAll(wifiManager.getScanResults());
+
+                        RobotLog.v("Soft AP scanResults found: " + scanResults.size());
+                        for (ScanResult scanResult : scanResults) {
+                            // deviceAddress is the MAC address, deviceName is the human readable name
+                            String s = "    scanResult: " + scanResult.SSID;
+                            RobotLog.v(s);
+                        }
+                        sendEvent(Event.PEERS_AVAILABLE);
+                    }
+                    if (WifiManager.SUPPLICANT_STATE_CHANGED_ACTION.equals(action)) {
+                        if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+                            sendEvent(Event.CONNECTION_INFO_AVAILABLE);
+                        }
+                    }
+                }
+            };
+        }
+
+        context.registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    public void disable() {
+        try {
+            context.unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            // disable() was called, but enable() was never called; ignore
+        }
+        lastEvent = null;
+    }
+
+    @Override
+    public void setCallback(NetworkConnectionCallback callback) {
+        RobotLog.v("setting NetworkConnection callback: " + callback);
+        this.callback = callback;
+    }
+
+    @Override
+    public void discoverPotentialConnections() {
+        wifiManager.startScan();
+    }
+
+    @Override
+    public void cancelPotentialConnections() {
+        // nothing to do, as the startScan() call operates asynchronously and, seemingly, has no means to be cancelled
+    }
+
+    private WifiConfiguration buildConfig(String ssid, String pass) {
+        WifiConfiguration myConfig = new WifiConfiguration();
+        myConfig.SSID = ssid;
+        myConfig.preSharedKey = pass;
+        RobotLog.v("Setting up network, myConfig.SSID: " + myConfig.SSID + ", password: " + myConfig.preSharedKey);
+        myConfig.status = WifiConfiguration.Status.ENABLED;
+        myConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+        myConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        myConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        myConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        myConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+        myConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        myConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        myConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+
+        return myConfig;
+    }
+
+    @Override
+    public void createConnection() {
+
+        if (wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(false);
+        }
+
+        File directory = AppUtil.FIRST_FOLDER;
+        File fileSSID = new File(directory, NETWORK_SSID_FILE);
+        if (!fileSSID.exists()) {
+            ReadWriteFile.writeFile(directory, NETWORK_SSID_FILE, DEFAULT_SSID);
+        }
+
+        File filePassword = new File(directory, NETWORK_PASSWORD_FILE);
+        if (!filePassword.exists()) {
+            ReadWriteFile.writeFile(directory, NETWORK_PASSWORD_FILE, DEFAULT_PASSWORD);
+        }
+
+        String userSSID = ReadWriteFile.readFile(fileSSID);
+        String userPass = ReadWriteFile.readFile(filePassword);
+
+        if (userSSID.isEmpty() || userSSID.length() >= 15) {
+            ReadWriteFile.writeFile(directory, NETWORK_SSID_FILE, DEFAULT_SSID);
+        }
+
+        if (userPass.isEmpty()) {
+            ReadWriteFile.writeFile(directory, NETWORK_PASSWORD_FILE, DEFAULT_PASSWORD);
+        }
+        this.ssid = ReadWriteFile.readFile(fileSSID);
+        this.password = ReadWriteFile.readFile(filePassword);
+
+        WifiConfiguration wifiConfig = buildConfig(this.ssid, this.password);
+
+        RobotLog.v("Advertising SSID: " + this.ssid + ", password: " + this.password);
+
+        try {
+            Boolean success = false;
+
+            if (isSoftAccessPoint()) {
+                // AP is already set up
+                success = true;
+            } else {
+                // Set up AP
+                Method setApConfig = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
+                setApConfig.invoke(wifiManager, wifiConfig);
+
+                Method enableAp = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
+                enableAp.invoke(wifiManager, null, false);
+                success = (Boolean) enableAp.invoke(wifiManager, wifiConfig, true);
+            }
+
+            if (success) {
+                sendEvent(Event.AP_CREATED);
+            }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            RobotLog.e(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void connect(String ssid, String password) {
+        this.ssid = ssid;
+        this.password = password;
+        // setup a wifi configuration
+        WifiConfiguration wifiConfig = buildConfig(String.format("\"%s\"", ssid), String.format("\"%s\"", password));
+
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        RobotLog.v("onReceive(), action: " + action + ", wifiInfo: " + wifiInfo);
 
-        if (wifiInfo.getSSID().equals(ssid) && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
-          sendEvent(Event.CONNECTION_INFO_AVAILABLE);
-        }
-        if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
-          scanResults.clear();
-          scanResults.addAll(wifiManager.getScanResults());
-
-          RobotLog.v("Soft AP scanResults found: " + scanResults.size());
-          for (ScanResult scanResult : scanResults) {
-            // deviceAddress is the MAC address, deviceName is the human readable name
-            String s = "    scanResult: " + scanResult.SSID;
-            RobotLog.v(s);
-          }
-          sendEvent(Event.PEERS_AVAILABLE);
-        }
-        if (WifiManager.SUPPLICANT_STATE_CHANGED_ACTION.equals(action)) {
-          if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+        RobotLog.v("Connecting to SoftAP, SSID: " + wifiConfig.SSID + ", supplicant state: " + wifiInfo.getSupplicantState());
+        if (wifiInfo.getSSID().equals(wifiConfig.SSID) && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
             sendEvent(Event.CONNECTION_INFO_AVAILABLE);
-          }
         }
-      }
-    };
+        if (!wifiInfo.getSSID().equals(wifiConfig.SSID) || wifiInfo.getSupplicantState() != SupplicantState.COMPLETED) {
+            // connect to and enable the connection
+            int netId = wifiManager.addNetwork(wifiConfig);
+            wifiManager.saveConfiguration();
+            if (netId != -1) {
 
-    context.registerReceiver(receiver, intentFilter);
-  }
-
-  @Override
-  public void disable() {
-    try {
-      context.unregisterReceiver(receiver);
-    } catch (IllegalArgumentException e) {
-      // disable() was called, but enable() was never called; ignore
-    }
-    lastEvent = null;
-  }
-
-  @Override
-  public void setCallback(NetworkConnectionCallback callback) {
-    RobotLog.v("setting NetworkConnection callback: " + callback);
-    this.callback = callback;
-  }
-
-  @Override
-  public void discoverPotentialConnections() {
-    wifiManager.startScan();
-  }
-
-  @Override
-  public void cancelPotentialConnections() {
-    // nothing to do, as the startScan() call operates asynchronously and, seemingly, has no means to be cancelled
-  }
-
-  private WifiConfiguration buildConfig(String ssid, String pass) {
-    WifiConfiguration myConfig =  new WifiConfiguration();
-    myConfig.SSID = ssid;
-    myConfig.preSharedKey = pass;
-    RobotLog.v("Setting up network, myConfig.SSID: " + myConfig.SSID + ", password: " + myConfig.preSharedKey);
-    myConfig.status = WifiConfiguration.Status.ENABLED;
-    myConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-    myConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-    myConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-    myConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-    myConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-    myConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-    myConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-    myConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-
-    return myConfig;
-  }
-
-  @Override
-  public void createConnection() {
-
-    if (wifiManager.isWifiEnabled()) {
-      wifiManager.setWifiEnabled(false);
-    }
-
-    File directory = AppUtil.FIRST_FOLDER;
-    File fileSSID = new File(directory, NETWORK_SSID_FILE);
-    if (!fileSSID.exists()) {
-      ReadWriteFile.writeFile(directory, NETWORK_SSID_FILE, DEFAULT_SSID);
-    }
-
-    File filePassword = new File(directory, NETWORK_PASSWORD_FILE);
-    if (!filePassword.exists()) {
-      ReadWriteFile.writeFile(directory, NETWORK_PASSWORD_FILE, DEFAULT_PASSWORD);
-    }
-
-    String userSSID = ReadWriteFile.readFile(fileSSID);
-    String userPass = ReadWriteFile.readFile(filePassword);
-
-    if(userSSID.isEmpty() || userSSID.length() >= 15) {
-      ReadWriteFile.writeFile(directory, NETWORK_SSID_FILE, DEFAULT_SSID);
-    }
-
-    if (userPass.isEmpty()) {
-      ReadWriteFile.writeFile(directory, NETWORK_PASSWORD_FILE, DEFAULT_PASSWORD);
-    }
-    this.ssid = ReadWriteFile.readFile(fileSSID);
-    this.password = ReadWriteFile.readFile(filePassword);
-
-    WifiConfiguration wifiConfig = buildConfig(this.ssid, this.password);
-
-    RobotLog.v("Advertising SSID: " + this.ssid + ", password: " + this.password);
-
-    try {
-      Boolean success = false;
-
-      if (isSoftAccessPoint()) {
-        // AP is already set up
-        success = true;
-      } else {
-        // Set up AP
-        Method setApConfig = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
-        setApConfig.invoke(wifiManager, wifiConfig);
-
-        Method enableAp = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
-        enableAp.invoke(wifiManager, null, false);
-        success = (Boolean) enableAp.invoke(wifiManager, wifiConfig, true);
-      }
-
-      if (success) {
-        sendEvent(Event.AP_CREATED);
-      }
-    } catch (NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
-      RobotLog.e(e.getMessage());
-      e.printStackTrace();
-    }
-  }
-
-  @Override
-  public void connect(String ssid, String password) {
-    this.ssid = ssid;
-    this.password = password;
-    // setup a wifi configuration
-    WifiConfiguration wifiConfig = buildConfig(String.format("\"%s\"", ssid), String.format("\"%s\"", password));
-
-    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-
-    RobotLog.v("Connecting to SoftAP, SSID: " + wifiConfig.SSID + ", supplicant state: " + wifiInfo.getSupplicantState());
-    if (wifiInfo.getSSID().equals(wifiConfig.SSID) && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
-      sendEvent(Event.CONNECTION_INFO_AVAILABLE);
-    }
-    if (!wifiInfo.getSSID().equals(wifiConfig.SSID) || wifiInfo.getSupplicantState() != SupplicantState.COMPLETED) {
-      // connect to and enable the connection
-      int netId = wifiManager.addNetwork(wifiConfig);
-      wifiManager.saveConfiguration();
-      if (netId != -1) {
-
-        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-        for (WifiConfiguration i : list) {
-          if(i.SSID != null && i.SSID.equals("\"" + ssid + "\"")) {
-            wifiManager.disconnect();
-            wifiManager.enableNetwork(i.networkId, true);
-            wifiManager.reconnect();
-            break;
-          }
+                List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+                for (WifiConfiguration i : list) {
+                    if (i.SSID != null && i.SSID.equals("\"" + ssid + "\"")) {
+                        wifiManager.disconnect();
+                        wifiManager.enableNetwork(i.networkId, true);
+                        wifiManager.reconnect();
+                        break;
+                    }
+                }
+            }
         }
-      }
-    }
-  }
-
-  @Override
-  public void connect(String ssid) {
-    connect(ssid, DEFAULT_PASSWORD);
-  }
-
-  @Override
-  public InetAddress getConnectionOwnerAddress() {
-    InetAddress address = null;
-    try {
-      address = InetAddress.getByName("192.168.43.1");
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
     }
 
-    return  address;
-  }
-
-  @Override
-  public String getConnectionOwnerName() {
-    RobotLog.v("ssid in softap assistant: " + ssid);
-    return this.ssid.replace("\"", "");
-  }
-
-  @Override
-  public String getConnectionOwnerMacAddress() {
-    return this.ssid.replace("\"", "");
-  }
-
-  @Override
-  public boolean isConnected() {
-    if (isSoftAccessPoint()) return true;
-
-    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-    RobotLog.v("isConnected(), current supplicant state: " + wifiInfo.getSupplicantState().toString());
-    return wifiInfo.getSupplicantState() == SupplicantState.COMPLETED;
-  }
-
-  @Override
-  public String getDeviceName() {
-    return ssid;
-  }
-
-  private boolean isSoftAccessPoint() {
-
-    Method isWifiApEnabled = null;
-    try {
-      isWifiApEnabled = wifiManager.getClass().getMethod("isWifiApEnabled");
-      return (Boolean) isWifiApEnabled.invoke(wifiManager);
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
-    return false;
-  }
-
-  @Override
-  public String getInfo() {
-    StringBuilder s = new StringBuilder();
-
-    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-
-    s.append("Name: ").append(getDeviceName());
-    if (isSoftAccessPoint()) {
-      s.append("\nAccess Point SSID: ").append(getConnectionOwnerName());
-      s.append("\nPassphrase: ").append(getPassphrase());
-      s.append("\nAdvertising");
-    } else if (isConnected()) {
-      s.append("\nIP Address: ").append(getIpAddressAsString(wifiInfo.getIpAddress()));
-      s.append("\nAccess Point SSID: ").append(getConnectionOwnerName());
-      s.append("\nPassphrase: ").append(getPassphrase());
-    } else {
-      s.append("\nNo connection information");
+    @Override
+    public void connect(String ssid) {
+        connect(ssid, DEFAULT_PASSWORD);
     }
 
-    return s.toString();
-  }
+    @Override
+    public InetAddress getConnectionOwnerAddress() {
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName("192.168.43.1");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
-  private String getIpAddressAsString(int ipAddress) {
-    String address =
-        String.format("%d.%d.%d.%d",
-            (ipAddress & 0xff),
-            (ipAddress >> 8 & 0xff),
-            (ipAddress >> 16 & 0xff),
-            (ipAddress >> 24 & 0xff));
-    return address;
-  }
-
-  @Override
-  public String getFailureReason() {
-    return null;
-  }
-
-  @Override
-  public String getPassphrase() {
-    return password;
-  }
-
-  @Override
-  public ConnectStatus getConnectStatus() {
-    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-    switch (wifiInfo.getSupplicantState()) {
-      case ASSOCIATING:
-        return ConnectStatus.CONNECTING;
-      case COMPLETED:
-        return ConnectStatus.CONNECTED;
-      case SCANNING:
-        return ConnectStatus.NOT_CONNECTED;
-      default:
-        return ConnectStatus.NOT_CONNECTED;
+        return address;
     }
-  }
 
-  private void sendEvent(Event event) {
-    // don't send duplicate events
-    if (lastEvent == event) return;
-    lastEvent = event;
+    @Override
+    public String getConnectionOwnerName() {
+        RobotLog.v("ssid in softap assistant: " + ssid);
+        return this.ssid.replace("\"", "");
+    }
 
-    if (callback != null) callback.onNetworkConnectionEvent(event);
-  }
+    @Override
+    public String getConnectionOwnerMacAddress() {
+        return this.ssid.replace("\"", "");
+    }
+
+    @Override
+    public boolean isConnected() {
+        if (isSoftAccessPoint()) {
+            return true;
+        }
+
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        RobotLog.v("isConnected(), current supplicant state: " + wifiInfo.getSupplicantState().toString());
+        return wifiInfo.getSupplicantState() == SupplicantState.COMPLETED;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return ssid;
+    }
+
+    private boolean isSoftAccessPoint() {
+
+        Method isWifiApEnabled = null;
+        try {
+            isWifiApEnabled = wifiManager.getClass().getMethod("isWifiApEnabled");
+            return (Boolean) isWifiApEnabled.invoke(wifiManager);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public String getInfo() {
+        StringBuilder s = new StringBuilder();
+
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+        s.append("Name: ").append(getDeviceName());
+        if (isSoftAccessPoint()) {
+            s.append("\nAccess Point SSID: ").append(getConnectionOwnerName());
+            s.append("\nPassphrase: ").append(getPassphrase());
+            s.append("\nAdvertising");
+        } else if (isConnected()) {
+            s.append("\nIP Address: ").append(getIpAddressAsString(wifiInfo.getIpAddress()));
+            s.append("\nAccess Point SSID: ").append(getConnectionOwnerName());
+            s.append("\nPassphrase: ").append(getPassphrase());
+        } else {
+            s.append("\nNo connection information");
+        }
+
+        return s.toString();
+    }
+
+    private String getIpAddressAsString(int ipAddress) {
+        String address =
+                String.format("%d.%d.%d.%d",
+                        (ipAddress & 0xff),
+                        (ipAddress >> 8 & 0xff),
+                        (ipAddress >> 16 & 0xff),
+                        (ipAddress >> 24 & 0xff));
+        return address;
+    }
+
+    @Override
+    public String getFailureReason() {
+        return null;
+    }
+
+    @Override
+    public String getPassphrase() {
+        return password;
+    }
+
+    @Override
+    public ConnectStatus getConnectStatus() {
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        switch (wifiInfo.getSupplicantState()) {
+            case ASSOCIATING:
+                return ConnectStatus.CONNECTING;
+            case COMPLETED:
+                return ConnectStatus.CONNECTED;
+            case SCANNING:
+                return ConnectStatus.NOT_CONNECTED;
+            default:
+                return ConnectStatus.NOT_CONNECTED;
+        }
+    }
+
+    private void sendEvent(Event event) {
+        // don't send duplicate events
+        if (lastEvent == event) {
+            return;
+        }
+        lastEvent = event;
+
+        if (callback != null) {
+            callback.onNetworkConnectionEvent(event);
+        }
+    }
 }

@@ -65,19 +65,21 @@ package com.qualcomm.ftccommon.configuration;
 
 import com.qualcomm.ftccommon.R;
 
-public class EditDigitalDevicesActivity extends EditPortListSpinnerActivity
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditDigitalDevicesActivity extends EditPortListSpinnerActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_DIGITAL;
 
-    public EditDigitalDevicesActivity()
-        {
-        this.layoutMain             = R.layout.digital_devices;
-        this.idListParentLayout     = R.id.item_list_parent;
-        this.layoutItem             = R.layout.digital_device;
-        this.idItemRowPort          = R.id.row_port_digital_device;
-        this.idItemSpinner          = R.id.choiceSpinner;
-        this.idItemEditTextResult   = R.id.editTextResult;
-        this.idItemPortNumber       = R.id.port_number;
-        }
-  }
+    public EditDigitalDevicesActivity() {
+        this.layoutMain = R.layout.digital_devices;
+        this.idListParentLayout = R.id.item_list_parent;
+        this.layoutItem = R.layout.digital_device;
+        this.idItemRowPort = R.id.row_port_digital_device;
+        this.idItemSpinner = R.id.choiceSpinner;
+        this.idItemEditTextResult = R.id.editTextResult;
+        this.idItemPortNumber = R.id.port_number;
+    }
+}

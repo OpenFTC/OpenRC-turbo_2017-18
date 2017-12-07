@@ -43,53 +43,47 @@ import java.util.Map;
  * {@link ScannedDevices} is a simple distinguished kind of map of serial numbers
  * to device types. Simple serialization and deserialization logic is provided.
  */
-public class ScannedDevices extends HashMap<SerialNumber, DeviceManager.DeviceType>
-    {
-    public ScannedDevices(Map<SerialNumber, DeviceManager.DeviceType> map)
-        {
+public class ScannedDevices extends HashMap<SerialNumber, DeviceManager.DeviceType> {
+    public ScannedDevices(Map<SerialNumber, DeviceManager.DeviceType> map) {
         super(map);
-        }
+    }
 
-    public ScannedDevices()
-        {
+    public ScannedDevices() {
         super();
-        }
+    }
 
     private static final String pairSeparatorWrite = "|";
     private static final String pairSeparatorSplit = "\\|";  // '|' is a a regex metachar, so we have to escape
     private static final String keyValueSeparatorWrite = ",";
     private static final String keyValueSeparatorSplit = ",";
 
-    public String toSerializationString()
-        {
+    public String toSerializationString() {
         StringBuilder result = new StringBuilder();
-        for (Entry<SerialNumber, DeviceManager.DeviceType> entry : this.entrySet())
-            {
-            if (result.length() > 0) result.append(pairSeparatorWrite);
+        for (Entry<SerialNumber, DeviceManager.DeviceType> entry : this.entrySet()) {
+            if (result.length() > 0) {
+                result.append(pairSeparatorWrite);
+            }
             result.append(entry.getKey().toString());
             result.append(keyValueSeparatorWrite);
             result.append(entry.getValue().toString());
-            }
-        return result.toString();
         }
+        return result.toString();
+    }
 
-    public static ScannedDevices fromSerializationString(String string)
-        {
+    public static ScannedDevices fromSerializationString(String string) {
         ScannedDevices result = new ScannedDevices();
         //
         string = string.trim(); // paranoia
-        if (string.length() > 0)
-            {
+        if (string.length() > 0) {
             String[] pairs = string.split(pairSeparatorSplit);
-            for (String pair : pairs)
-                {
+            for (String pair : pairs) {
                 String[] keyValue = pair.split(keyValueSeparatorSplit);
-                SerialNumber             serialNumber = new SerialNumber(keyValue[0]);
-                DeviceManager.DeviceType deviceType   = DeviceManager.DeviceType.valueOf(keyValue[1]);
+                SerialNumber serialNumber = new SerialNumber(keyValue[0]);
+                DeviceManager.DeviceType deviceType = DeviceManager.DeviceType.valueOf(keyValue[1]);
                 result.put(serialNumber, deviceType);
-                }
             }
+        }
         //
         return result;
-        }
     }
+}

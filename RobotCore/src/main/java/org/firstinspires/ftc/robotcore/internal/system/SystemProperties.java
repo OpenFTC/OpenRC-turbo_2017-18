@@ -40,20 +40,19 @@ import java.lang.reflect.Method;
  * {@link SystemProperties} provides access to {@link android.os.SystemProperties}
  */
 @SuppressWarnings("WeakerAccess")
-public class SystemProperties
-    {
+public class SystemProperties {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "SystemProperties";
 
-    protected static Class<?>   clazzSystemProperties;
-    protected static Method     methodStringGetDefault;
-    protected static Method     methodStringSet;
-    protected static Method     methodIntGet;
-    protected static Method     methodLongGet;
-    protected static Method     methodBooleanGet;
+    protected static Class<?> clazzSystemProperties;
+    protected static Method methodStringGetDefault;
+    protected static Method methodStringSet;
+    protected static Method methodIntGet;
+    protected static Method methodLongGet;
+    protected static Method methodBooleanGet;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -61,17 +60,15 @@ public class SystemProperties
 
     static {
         try {
-            clazzSystemProperties  = Class.forName("android.os.SystemProperties");
+            clazzSystemProperties = Class.forName("android.os.SystemProperties");
             methodStringGetDefault = clazzSystemProperties.getMethod("get", String.class, String.class);
-            methodStringSet        = clazzSystemProperties.getMethod("set", String.class, String.class);
-            methodIntGet           = clazzSystemProperties.getMethod("getInt", String.class, int.class);
-            methodLongGet          = clazzSystemProperties.getMethod("getLong", String.class, long.class);
-            methodBooleanGet       = clazzSystemProperties.getMethod("getBoolean", String.class, boolean.class);
-            }
-        catch (ClassNotFoundException|NoSuchMethodException ignored)
-            {
-            }
+            methodStringSet = clazzSystemProperties.getMethod("set", String.class, String.class);
+            methodIntGet = clazzSystemProperties.getMethod("getInt", String.class, int.class);
+            methodLongGet = clazzSystemProperties.getMethod("getLong", String.class, long.class);
+            methodBooleanGet = clazzSystemProperties.getMethod("getBoolean", String.class, boolean.class);
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Access
@@ -79,39 +76,39 @@ public class SystemProperties
 
     /**
      * Get the value for the given key.
+     *
      * @return if the key isn't found, return def if it isn't null, or an empty string otherwise
      * @throws IllegalArgumentException if the key exceeds 32 characters
      */
-    public static String get(String key, String def)
-        {
-        return (String)ClassUtil.invoke(null, methodStringGetDefault, key, def);
-        }
+    public static String get(String key, String def) {
+        return (String) ClassUtil.invoke(null, methodStringGetDefault, key, def);
+    }
 
     /**
      * Get the value for the given key, and return as an integer.
+     *
      * @param key the key to lookup
      * @param def a default value to return
      * @return the key parsed as an integer, or def if the key isn't found or
-     *         cannot be parsed
+     * cannot be parsed
      * @throws IllegalArgumentException if the key exceeds 32 characters
      */
-    public static int getInt(String key, int def)
-        {
-        return (int)ClassUtil.invoke(null, methodIntGet, key, def);
-        }
+    public static int getInt(String key, int def) {
+        return (int) ClassUtil.invoke(null, methodIntGet, key, def);
+    }
 
     /**
      * Get the value for the given key, and return as a long.
+     *
      * @param key the key to lookup
      * @param def a default value to return
      * @return the key parsed as a long, or def if the key isn't found or
-     *         cannot be parsed
+     * cannot be parsed
      * @throws IllegalArgumentException if the key exceeds 32 characters
      */
-    public static long getLong(String key, long def)
-        {
-        return (long)ClassUtil.invoke(null, methodLongGet, key, def);
-        }
+    public static long getLong(String key, long def) {
+        return (long) ClassUtil.invoke(null, methodLongGet, key, def);
+    }
 
     /**
      * Get the value for the given key, returned as a boolean.
@@ -120,24 +117,24 @@ public class SystemProperties
      * (case sensitive).
      * If the key does not exist, or has any other value, then the default
      * result is returned.
+     *
      * @param key the key to lookup
      * @param def a default value to return
      * @return the key parsed as a boolean, or def if the key isn't found or is
-     *         not able to be parsed as a boolean.
+     * not able to be parsed as a boolean.
      * @throws IllegalArgumentException if the key exceeds 32 characters
      */
-    public static boolean getBoolean(String key, boolean def)
-        {
-        return (boolean)ClassUtil.invoke(null, methodBooleanGet, key, def);
-        }
+    public static boolean getBoolean(String key, boolean def) {
+        return (boolean) ClassUtil.invoke(null, methodBooleanGet, key, def);
+    }
 
     /**
      * Set the value for the given key.
+     *
      * @throws IllegalArgumentException if the key exceeds 32 characters
      * @throws IllegalArgumentException if the value exceeds 92 characters
      */
-    public static void set(String key, String val)
-        {
+    public static void set(String key, String val) {
         ClassUtil.invoke(null, methodStringSet, key, val);
-        }
     }
+}

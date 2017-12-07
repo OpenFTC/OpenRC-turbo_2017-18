@@ -42,21 +42,18 @@ public class RobotConfigResFilter implements ClassFilter {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobotConfigResFilter(String typeAttributeValue)
-    {
+    public RobotConfigResFilter(String typeAttributeValue) {
         this(AppUtil.getInstance().getApplication(), typeAttributeValue);
     }
 
-    public RobotConfigResFilter(Context context, String typeAttributeValue)
-    {
+    public RobotConfigResFilter(Context context, String typeAttributeValue) {
         this.typeAttributeValue = typeAttributeValue;
         this.resources = context.getResources();
         this.xmlIdCollection = new ArrayList<Integer>();
         clear();
     }
 
-    protected void clear()
-    {
+    protected void clear() {
         this.xmlIdCollection.clear();
     }
 
@@ -64,8 +61,7 @@ public class RobotConfigResFilter implements ClassFilter {
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public List<Integer> getXmlIds()
-    {
+    public List<Integer> getXmlIds() {
         return this.xmlIdCollection;
     }
 
@@ -74,8 +70,7 @@ public class RobotConfigResFilter implements ClassFilter {
      *
      * Expects (e.g.) <Robot type="FirstInspires-FTC"> as the root XML element
      */
-    private boolean isRobotConfiguration(XmlResourceParser xpp)
-    {
+    private boolean isRobotConfiguration(XmlResourceParser xpp) {
         return typeAttributeValue.equals(getRootAttribute(xpp, robotConfigRootTag, robotConfigRootTypeAttribute, null));
     }
 
@@ -84,8 +79,7 @@ public class RobotConfigResFilter implements ClassFilter {
      * attributeName'd attribute thereof, or defaultValue if the attribute does not exist. If
      * the root element is not of the indicated tag, then null is returned.
      */
-    public static String getRootAttribute(XmlResourceParser xpp, String rootElement, String attributeName, String defaultValue)
-    {
+    public static String getRootAttribute(XmlResourceParser xpp, String rootElement, String attributeName, String defaultValue) {
         try {
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
@@ -100,20 +94,20 @@ public class RobotConfigResFilter implements ClassFilter {
                 }
                 xpp.next();
             }
-        } catch (XmlPullParserException |IOException e) {
+        } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    @Override public void filterAllClassesStart()
-    {
+    @Override
+    public void filterAllClassesStart() {
         clear();
     }
 
-    @Override public void filterOnBotJavaClassesStart()
-    {
+    @Override
+    public void filterOnBotJavaClassesStart() {
 
     }
 
@@ -122,7 +116,7 @@ public class RobotConfigResFilter implements ClassFilter {
      */
     @Override
     public void filterClass(Class clazz) {
-      if (clazz.getName().endsWith("R$xml")) {
+        if (clazz.getName().endsWith("R$xml")) {
       /*
        * Pull out all the R.xml classes and then filter all the xml files for robot configurations.
        * Create a list of robot configurations to be used elsewhere.
@@ -144,18 +138,18 @@ public class RobotConfigResFilter implements ClassFilter {
         }
     }
 
-    @Override public void filterOnBotJavaClass(Class clazz)
-    {
+    @Override
+    public void filterOnBotJavaClass(Class clazz) {
         filterClass(clazz);
     }
 
-    @Override public void filterAllClassesComplete()
-    {
+    @Override
+    public void filterAllClassesComplete() {
         // Nothing to do
     }
 
-    @Override public void filterOnBotJavaClassesComplete()
-    {
+    @Override
+    public void filterOnBotJavaClassesComplete() {
         filterAllClassesComplete();
     }
 }

@@ -40,25 +40,32 @@ import com.qualcomm.robotcore.R;
  * {@link RobotStatus} provides additional status information about a robot
  * beyond what is indicated in {@link RobotState} when the state is not 'running'.
  */
-public enum RobotStatus
-    {
+public enum RobotStatus {
     UNKNOWN, NONE, SCANNING_USB, ABORT_DUE_TO_INTERRUPT, WAITING_ON_WIFI, WAITING_ON_WIFI_DIRECT,
-        WAITING_ON_NETWORK_CONNECTION, NETWORK_TIMED_OUT, STARTING_ROBOT, UNABLE_TO_START_ROBOT;
+    WAITING_ON_NETWORK_CONNECTION, NETWORK_TIMED_OUT, STARTING_ROBOT, UNABLE_TO_START_ROBOT;
 
-    public String toString(Context context)
-        {
-        switch (this)
-            {
-            case UNKNOWN:                   return context.getString(R.string.robotStatusUnknown);
-            case NONE:                      return "";
-            case SCANNING_USB:              return context.getString(R.string.robotStatusScanningUSB);
-            case WAITING_ON_WIFI:           return context.getString(R.string.robotStatusWaitingOnWifi);
-            case WAITING_ON_WIFI_DIRECT:    return context.getString(R.string.robotStatusWaitingOnWifiDirect);
-            case WAITING_ON_NETWORK_CONNECTION: return context.getString(R.string.robotStatusWaitingOnNetworkConnection);
-            case NETWORK_TIMED_OUT:         return context.getString(R.string.robotStatusNetworkTimedOut);
-            case STARTING_ROBOT:            return context.getString(R.string.robotStatusStartingRobot);
-            case UNABLE_TO_START_ROBOT:     return context.getString(R.string.robotStatusUnableToStartRobot);
-            default:                        return context.getString(R.string.robotStatusInternalError);
-            }
+    public String toString(Context context) {
+        switch (this) {
+            case UNKNOWN:
+                return context.getString(R.string.robotStatusUnknown);
+            case NONE:
+                return "";
+            case SCANNING_USB:
+                return context.getString(R.string.robotStatusScanningUSB);
+            case WAITING_ON_WIFI:
+                return context.getString(R.string.robotStatusWaitingOnWifi);
+            case WAITING_ON_WIFI_DIRECT:
+                return context.getString(R.string.robotStatusWaitingOnWifiDirect);
+            case WAITING_ON_NETWORK_CONNECTION:
+                return context.getString(R.string.robotStatusWaitingOnNetworkConnection);
+            case NETWORK_TIMED_OUT:
+                return context.getString(R.string.robotStatusNetworkTimedOut);
+            case STARTING_ROBOT:
+                return context.getString(R.string.robotStatusStartingRobot);
+            case UNABLE_TO_START_ROBOT:
+                return context.getString(R.string.robotStatusUnableToStartRobot);
+            default:
+                return context.getString(R.string.robotStatusInternalError);
         }
     }
+}

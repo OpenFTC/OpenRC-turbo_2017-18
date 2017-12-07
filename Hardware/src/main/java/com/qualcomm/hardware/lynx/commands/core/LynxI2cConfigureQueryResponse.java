@@ -40,8 +40,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-09-01.
  */
-public class LynxI2cConfigureQueryResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxI2cConfigureQueryResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,36 +53,32 @@ public class LynxI2cConfigureQueryResponse extends LynxDekaInterfaceResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cConfigureQueryResponse(LynxModuleIntf module)
-        {
+    public LynxI2cConfigureQueryResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cConfigureChannelCommand.SpeedCode getSpeedCode()
-        {
+    public LynxI2cConfigureChannelCommand.SpeedCode getSpeedCode() {
         return LynxI2cConfigureChannelCommand.SpeedCode.fromByte(this.speedCode);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.speedCode);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.speedCode = buffer.get();
-        }
     }
+}

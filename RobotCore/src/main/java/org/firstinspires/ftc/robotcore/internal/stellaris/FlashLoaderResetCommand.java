@@ -38,20 +38,18 @@ package org.firstinspires.ftc.robotcore.internal.stellaris;
  * COMMAND_RUN command, this allows the initial stack pointer to be read by the hardware and set
  * up for the new code. It can also be used to reset the flash loader if a critical error occurs and the
  * host device wants to restart communication with the flash loader.
- *
- *  Byte[0] = 3
- *  Byte[1] = checksum(Byte[2])
- *  Byte[2] = COMMAND_RESET
- *
+ * <p>
+ * Byte[0] = 3
+ * Byte[1] = checksum(Byte[2])
+ * Byte[2] = COMMAND_RESET
+ * <p>
  * The flash loader responds with an ACK signal back to the host device before actually executing the
  * software reset to the device running the flash loader. This allows the host to know that the command
  * was received successfully and the part will be reset.
  */
 
-public class FlashLoaderResetCommand extends FlashLoaderCommand
-    {
-    public FlashLoaderResetCommand()
-        {
+public class FlashLoaderResetCommand extends FlashLoaderCommand {
+    public FlashLoaderResetCommand() {
         super(0x25);
-        }
     }
+}

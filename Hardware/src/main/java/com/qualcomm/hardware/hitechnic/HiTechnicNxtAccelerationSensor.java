@@ -44,115 +44,116 @@ import java.util.concurrent.locks.Lock;
 
 public class HiTechnicNxtAccelerationSensor extends I2cControllerPortDeviceImpl implements AccelerationSensor, I2cController.I2cPortReadyCallback {
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  public static final I2cAddr I2C_ADDRESS = I2cAddr.create8bit(2);
+    public static final I2cAddr I2C_ADDRESS = I2cAddr.create8bit(2);
 
-  public static final int ADDRESS_ACCEL_START = 0x42;
-  public static final int ACCEL_LENGTH = 0x6;
+    public static final int ADDRESS_ACCEL_START = 0x42;
+    public static final int ACCEL_LENGTH = 0x6;
 
-  // the value the sensor will return when at 1g
-  private static final double ONE_G = 200.0;
+    // the value the sensor will return when at 1g
+    private static final double ONE_G = 200.0;
 
-  // shift the high byte by 2
-  private static final double HIGH_BYTE_SCALING_VALUE = 4.0;
+    // shift the high byte by 2
+    private static final double HIGH_BYTE_SCALING_VALUE = 4.0;
 
-  private static final int X_HIGH_BYTE = 0 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
-  private static final int Y_HIGH_BYTE = 1 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
-  private static final int Z_HIGH_BYTE = 2 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
-  private static final int X_LOW_BYTE = 3 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
-  private static final int Y_LOW_BYTE = 4 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
-  private static final int Z_LOW_BYTE = 5 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
+    private static final int X_HIGH_BYTE = 0 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
+    private static final int Y_HIGH_BYTE = 1 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
+    private static final int Z_HIGH_BYTE = 2 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
+    private static final int X_LOW_BYTE = 3 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
+    private static final int Y_LOW_BYTE = 4 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
+    private static final int Z_LOW_BYTE = 5 + ModernRoboticsUsbLegacyModule.OFFSET_I2C_PORT_MEMORY_BUFFER;
 
-  private byte[] readBuffer;
-  private Lock readBufferLock;
+    private byte[] readBuffer;
+    private Lock readBufferLock;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtAccelerationSensor(I2cController module, int physicalPort) {
-    super(module, physicalPort);
-    finishConstruction();
-  }
-
-  protected void controllerNowArmedOrPretending() {
-
-    controller.enableI2cReadMode(physicalPort, I2C_ADDRESS, ADDRESS_ACCEL_START, ACCEL_LENGTH);
-
-    this.readBuffer = controller.getI2cReadCache(physicalPort);
-    this.readBufferLock = controller.getI2cReadCacheLock(physicalPort);
-
-    controller.registerForI2cPortReadyCallback(this, physicalPort);
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // AccelerationSensor
-  //------------------------------------------------------------------------------------------------
-
-  @Override
-  public String toString() {
-    return getAcceleration().toString();
-  }
-
-  @Override
-  public Acceleration getAcceleration() {
-
-    try {
-      readBufferLock.lock();
-      double gx = rawToG(readBuffer[X_HIGH_BYTE], readBuffer[X_LOW_BYTE]);
-      double gy = rawToG(readBuffer[Y_HIGH_BYTE], readBuffer[Y_LOW_BYTE]);
-      double gz = rawToG(readBuffer[Z_HIGH_BYTE], readBuffer[Z_LOW_BYTE]);
-      return Acceleration.fromGravity(gx, gy, gz, System.nanoTime());
-    } finally {
-      readBufferLock.unlock();
+    public HiTechnicNxtAccelerationSensor(I2cController module, int physicalPort) {
+        super(module, physicalPort);
+        finishConstruction();
     }
-  }
 
-  @Override
-  public String status() {
-    return String.format("NXT Acceleration Sensor, connected via device %s, port %d",
-        controller.getSerialNumber().toString(), physicalPort);
-  }
+    protected void controllerNowArmedOrPretending() {
 
-  private double rawToG(double high, double low) {
-    return (high * HIGH_BYTE_SCALING_VALUE + low) / ONE_G;
-  }
+        controller.enableI2cReadMode(physicalPort, I2C_ADDRESS, ADDRESS_ACCEL_START, ACCEL_LENGTH);
 
-  @Override
-  public void portIsReady(int port) {
-    controller.setI2cPortActionFlag(physicalPort);
-    controller.writeI2cPortFlagOnlyToController(physicalPort);
-    controller.readI2cCacheFromController(physicalPort);
-  }
+        this.readBuffer = controller.getI2cReadCache(physicalPort);
+        this.readBufferLock = controller.getI2cReadCacheLock(physicalPort);
 
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.HiTechnic;
-  }
+        controller.registerForI2cPortReadyCallback(this, physicalPort);
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(R.string.configTypeHTAccelerometer);
-  }
+    //------------------------------------------------------------------------------------------------
+    // AccelerationSensor
+    //------------------------------------------------------------------------------------------------
 
-  @Override
-  public String getConnectionInfo() {
-    return controller.getConnectionInfo() + "; port " + physicalPort;
-  }
+    @Override
+    public String toString() {
+        return getAcceleration().toString();
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public Acceleration getAcceleration() {
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+        try {
+            readBufferLock.lock();
+            double gx = rawToG(readBuffer[X_HIGH_BYTE], readBuffer[X_LOW_BYTE]);
+            double gy = rawToG(readBuffer[Y_HIGH_BYTE], readBuffer[Y_LOW_BYTE]);
+            double gz = rawToG(readBuffer[Z_HIGH_BYTE], readBuffer[Z_LOW_BYTE]);
+            return Acceleration.fromGravity(gx, gy, gz, System.nanoTime());
+        } finally {
+            readBufferLock.unlock();
+        }
+    }
 
-  @Override
-  public void close() {
-    // take no action
-  }
+    @Override
+    public String status() {
+        return String.format("NXT Acceleration Sensor, connected via device %s, port %d",
+                controller.getSerialNumber().toString(), physicalPort);
+    }
+
+    private double rawToG(double high, double low) {
+        return (high * HIGH_BYTE_SCALING_VALUE + low) / ONE_G;
+    }
+
+    @Override
+    public void portIsReady(int port) {
+        controller.setI2cPortActionFlag(physicalPort);
+        controller.writeI2cPortFlagOnlyToController(physicalPort);
+        controller.readI2cCacheFromController(physicalPort);
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.HiTechnic;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(R.string.configTypeHTAccelerometer);
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return controller.getConnectionInfo() + "; port " + physicalPort;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
+
+    @Override
+    public void close() {
+        // take no action
+    }
 }

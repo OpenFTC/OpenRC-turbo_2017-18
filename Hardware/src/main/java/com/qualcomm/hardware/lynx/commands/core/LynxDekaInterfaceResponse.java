@@ -39,25 +39,22 @@ import com.qualcomm.hardware.lynx.commands.LynxInterfaceResponse;
 /**
  * Created by bob on 2016-03-07.
  */
-public abstract class LynxDekaInterfaceResponse extends LynxInterfaceResponse
-    {
+public abstract class LynxDekaInterfaceResponse extends LynxInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxDekaInterfaceResponse(LynxModuleIntf module)
-        {
+    public LynxDekaInterfaceResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public LynxInterface getInterface()
-        {
+    public LynxInterface getInterface() {
         return LynxDekaInterfaceCommand.theInterface;
-        }
-
     }
+
+}

@@ -50,8 +50,7 @@ import java.util.concurrent.TimeUnit;
  * rather than failing when new data is added to the queue.
  */
 @SuppressWarnings("WeakerAccess")
-public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E>
-    {
+public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E> {
     //----------------------------------------------------------------------------------------------
     // State
     //
@@ -60,9 +59,9 @@ public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements Blocki
     // Removals also take the lock so we don't evict data unncessarily.
     //----------------------------------------------------------------------------------------------
 
-    protected final Object     theLock = new Object();
+    protected final Object theLock = new Object();
     protected BlockingQueue<E> targetQueue;
-    protected Consumer<E>      evictAction = null;
+    protected Consumer<E> evictAction = null;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -71,158 +70,151 @@ public class EvictingBlockingQueue<E> extends AbstractQueue<E> implements Blocki
     /**
      * Constructs an EvictingBlockingQueue using the target queue as an implementation. The
      * target queue must have a capacity of at least one.
+     *
      * @param targetQueue the underlying implementation queue from which we will auto-evict as needed
      */
-    public EvictingBlockingQueue(BlockingQueue<E> targetQueue)
-        {
+    public EvictingBlockingQueue(BlockingQueue<E> targetQueue) {
         this.targetQueue = targetQueue;
-        }
+    }
 
-    public void setEvictAction(Consumer<E> evictAction)
-        {
-        synchronized (theLock)
-            {
+    public void setEvictAction(Consumer<E> evictAction) {
+        synchronized (theLock) {
             this.evictAction = evictAction;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // AbstractCollection
     //----------------------------------------------------------------------------------------------
 
-    @Override public @NonNull Iterator<E> iterator()
-        {
+    @Override
+    public
+    @NonNull
+    Iterator<E> iterator() {
         return targetQueue.iterator();
-        }
+    }
 
-    @Override public int size()
-        {
+    @Override
+    public int size() {
         return targetQueue.size();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Core: the hard parts
     //----------------------------------------------------------------------------------------------
 
-    @Override public boolean offer(@NonNull E e)
-        {
-        synchronized (theLock)
-            {
-            if (targetQueue.remainingCapacity() == 0)
-                {
+    @Override
+    public boolean offer(@NonNull E e) {
+        synchronized (theLock) {
+            if (targetQueue.remainingCapacity() == 0) {
                 E evicted = targetQueue.poll();
                 Assert.assertNotNull(evicted);
-                if (evictAction != null)
-                    {
+                if (evictAction != null) {
                     evictAction.accept(evicted);
-                    }
                 }
+            }
             boolean result = targetQueue.offer(e);
             Assert.assertTrue(result);
             theLock.notifyAll(); // pending polls/takes are worth trying again
             return result;
-            }
         }
+    }
 
-    @Override public E take() throws InterruptedException
-        {
-        synchronized (theLock)
-            {
-            for (;;)
-                {
+    @Override
+    public E take() throws InterruptedException {
+        synchronized (theLock) {
+            for (; ; ) {
                 // Can we get something? Return if we can.
                 E result = poll();
-                if (result != null)
+                if (result != null) {
                     return result;
+                }
 
                 // Punt if we've been asked to
-                if (Thread.currentThread().isInterrupted())
+                if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
+                }
 
                 // Wait and then try again
                 theLock.wait();
-                }
             }
         }
+    }
 
-    @Override public E poll(long timeout, @NonNull TimeUnit unit) throws InterruptedException
-        {
-        synchronized (theLock)
-            {
+    @Override
+    public E poll(long timeout, @NonNull TimeUnit unit) throws InterruptedException {
+        synchronized (theLock) {
             final long deadline = System.nanoTime() + unit.toNanos(timeout);
-            for (;;)
-                {
+            for (; ; ) {
                 // Can we get something? Return if we can.
                 E result = poll();
-                if (result != null)
+                if (result != null) {
                     return result;
+                }
 
                 // Punt if we've been asked to
-                if (Thread.currentThread().isInterrupted())
+                if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
+                }
 
                 // How much longer can we wait?
                 long remaining = deadline - System.nanoTime();
-                if (remaining > 0)
-                    {
+                if (remaining > 0) {
                     // Wait up to that much and then try again
                     long ms = remaining / ElapsedTime.MILLIS_IN_NANO;
                     long ns = remaining - ms * ElapsedTime.MILLIS_IN_NANO;
-                    theLock.wait(ms, (int)ns);
-                    }
-                else
+                    theLock.wait(ms, (int) ns);
+                } else {
                     return null;
                 }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Remaining parts
     //----------------------------------------------------------------------------------------------
 
-    @Override public E poll()
-        {
-        synchronized (theLock)
-            {
+    @Override
+    public E poll() {
+        synchronized (theLock) {
             return targetQueue.poll();
-            }
-        }
-
-    @Override public E peek()
-        {
-        return targetQueue.peek();
-        }
-
-    @Override public void put(E e) throws InterruptedException
-        {
-        offer(e);
-        }
-
-    @Override public boolean offer(E e, long timeout, @NonNull TimeUnit unit) throws InterruptedException
-        {
-        // We will never block because we're full, so the timeouts are unnecessary
-        return offer(e);
-        }
-
-    @Override public int remainingCapacity()
-        {
-        // We *always* have capacity
-        return Math.max(targetQueue.remainingCapacity(), 1);
-        }
-
-    @Override public int drainTo(@NonNull Collection<? super E> c)
-        {
-        synchronized (theLock)
-            {
-            return targetQueue.drainTo(c);
-            }
-        }
-
-    @Override public int drainTo(@NonNull Collection<? super E> c, int maxElements)
-        {
-        synchronized (theLock)
-            {
-            return targetQueue.drainTo(c, maxElements);
-            }
         }
     }
+
+    @Override
+    public E peek() {
+        return targetQueue.peek();
+    }
+
+    @Override
+    public void put(E e) throws InterruptedException {
+        offer(e);
+    }
+
+    @Override
+    public boolean offer(E e, long timeout, @NonNull TimeUnit unit) throws InterruptedException {
+        // We will never block because we're full, so the timeouts are unnecessary
+        return offer(e);
+    }
+
+    @Override
+    public int remainingCapacity() {
+        // We *always* have capacity
+        return Math.max(targetQueue.remainingCapacity(), 1);
+    }
+
+    @Override
+    public int drainTo(@NonNull Collection<? super E> c) {
+        synchronized (theLock) {
+            return targetQueue.drainTo(c);
+        }
+    }
+
+    @Override
+    public int drainTo(@NonNull Collection<? super E> c, int maxElements) {
+        synchronized (theLock) {
+            return targetQueue.drainTo(c, maxElements);
+        }
+    }
+}

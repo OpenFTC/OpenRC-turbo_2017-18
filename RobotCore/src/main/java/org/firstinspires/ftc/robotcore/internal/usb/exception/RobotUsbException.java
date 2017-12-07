@@ -37,15 +37,12 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * the USB communications system.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class RobotUsbException extends Exception
-    {
-    protected RobotUsbException(String message)
-        {
+public abstract class RobotUsbException extends Exception {
+    protected RobotUsbException(String message) {
         super(message);
-        }
-
-    protected RobotUsbException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
     }
+
+    protected RobotUsbException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

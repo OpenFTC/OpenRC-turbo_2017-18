@@ -48,97 +48,124 @@ import java.util.List;
  */
 public abstract class ControllerConfiguration<ITEM_T extends DeviceConfiguration> extends DeviceConfiguration implements Serializable {
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  public static final String XMLATTR_SERIAL_NUMBER = "serialNumber";
+    public static final String XMLATTR_SERIAL_NUMBER = "serialNumber";
 
-  /** If the controller contains only one "kind" of configuration, this can be used to store same
-   *  Heterogenous contains will tend to ignore this.
-   */
-  private List<ITEM_T> devices;
+    /**
+     * If the controller contains only one "kind" of configuration, this can be used to store same
+     * Heterogenous contains will tend to ignore this.
+     */
+    private List<ITEM_T> devices;
 
-  /** the USB serial number of the controller, if any */
-  private @NonNull SerialNumber serialNumber;
+    /**
+     * the USB serial number of the controller, if any
+     */
+    private
+    @NonNull
+    SerialNumber serialNumber;
 
-  /** If we're a USB device, then do we know if we are attached, right now, or not? */
-  private boolean knownToBeAttached = false;  // not persisted in XML
+    /**
+     * If we're a USB device, then do we know if we are attached, right now, or not?
+     */
+    private boolean knownToBeAttached = false;  // not persisted in XML
 
-  /** True if this device is made up by the system, user is not aware of same */
-  private boolean isSystemSynthetic = false; // not persisted in XML
+    /**
+     * True if this device is made up by the system, user is not aware of same
+     */
+    private boolean isSystemSynthetic = false; // not persisted in XML
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public ControllerConfiguration(String name, @NonNull SerialNumber serialNumber, ConfigurationType type) {
-    this(name, new ArrayList<ITEM_T>(), serialNumber, type);
-  }
+    public ControllerConfiguration(String name, @NonNull SerialNumber serialNumber, ConfigurationType type) {
+        this(name, new ArrayList<ITEM_T>(), serialNumber, type);
+    }
 
-  public ControllerConfiguration(String name, List<ITEM_T> devices, @NonNull SerialNumber serialNumber, ConfigurationType type) {
-    super(type);
-    super.setName(name);
-    this.devices = devices;
-    this.serialNumber = serialNumber;
-  }
+    public ControllerConfiguration(String name, List<ITEM_T> devices, @NonNull SerialNumber serialNumber, ConfigurationType type) {
+        super(type);
+        super.setName(name);
+        this.devices = devices;
+        this.serialNumber = serialNumber;
+    }
 
-  public static @Nullable ControllerConfiguration forType(String name, @NonNull SerialNumber serialNumber, ConfigurationType type) {
+    public static
+    @Nullable
+    ControllerConfiguration forType(String name, @NonNull SerialNumber serialNumber, ConfigurationType type) {
 
-    if (type==BuiltInConfigurationType.DEVICE_INTERFACE_MODULE)  return new DeviceInterfaceModuleConfiguration(name, serialNumber);
-    if (type==BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER) return new LegacyModuleControllerConfiguration(name, new LinkedList<DeviceConfiguration>(), serialNumber);
-    if (type==BuiltInConfigurationType.MATRIX_CONTROLLER)        return new MatrixControllerConfiguration(name, new LinkedList<MotorConfiguration>(), new LinkedList<ServoConfiguration>(), serialNumber);
-    if (type==BuiltInConfigurationType.MOTOR_CONTROLLER)         return new MotorControllerConfiguration(name, new LinkedList<MotorConfiguration>(), serialNumber);
-    if (type==BuiltInConfigurationType.SERVO_CONTROLLER)         return new ServoControllerConfiguration(name, new LinkedList<ServoConfiguration>(), serialNumber);
-    if (type==BuiltInConfigurationType.LYNX_USB_DEVICE)          return new LynxUsbDeviceConfiguration(name, new LinkedList<LynxModuleConfiguration>(), serialNumber);
-    if (type==BuiltInConfigurationType.LYNX_MODULE)              return new LynxModuleConfiguration(name);  // unclear if necessary
+        if (type == BuiltInConfigurationType.DEVICE_INTERFACE_MODULE) {
+            return new DeviceInterfaceModuleConfiguration(name, serialNumber);
+        }
+        if (type == BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER) {
+            return new LegacyModuleControllerConfiguration(name, new LinkedList<DeviceConfiguration>(), serialNumber);
+        }
+        if (type == BuiltInConfigurationType.MATRIX_CONTROLLER) {
+            return new MatrixControllerConfiguration(name, new LinkedList<MotorConfiguration>(), new LinkedList<ServoConfiguration>(), serialNumber);
+        }
+        if (type == BuiltInConfigurationType.MOTOR_CONTROLLER) {
+            return new MotorControllerConfiguration(name, new LinkedList<MotorConfiguration>(), serialNumber);
+        }
+        if (type == BuiltInConfigurationType.SERVO_CONTROLLER) {
+            return new ServoControllerConfiguration(name, new LinkedList<ServoConfiguration>(), serialNumber);
+        }
+        if (type == BuiltInConfigurationType.LYNX_USB_DEVICE) {
+            return new LynxUsbDeviceConfiguration(name, new LinkedList<LynxModuleConfiguration>(), serialNumber);
+        }
+        if (type == BuiltInConfigurationType.LYNX_MODULE) {
+            return new LynxModuleConfiguration(name);  // unclear if necessary
+        }
 
-    return null;
-  }
+        return null;
+    }
 
-  //------------------------------------------------------------------------------------------------
-  // Accessing
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Accessing
+    //------------------------------------------------------------------------------------------------
 
-  public List<ITEM_T> getDevices() {
-    return devices;
-  }
+    public List<ITEM_T> getDevices() {
+        return devices;
+    }
 
-  public ConfigurationType getConfigurationType(){
-    return super.getConfigurationType();
-  }
+    public ConfigurationType getConfigurationType() {
+        return super.getConfigurationType();
+    }
 
-  public void setSerialNumber(@NonNull SerialNumber serialNumber) {
-    this.serialNumber = serialNumber;
-  }
+    public void setSerialNumber(@NonNull SerialNumber serialNumber) {
+        this.serialNumber = serialNumber;
+    }
 
-  public @NonNull SerialNumber getSerialNumber(){
-    return this.serialNumber;
-  }
+    public
+    @NonNull
+    SerialNumber getSerialNumber() {
+        return this.serialNumber;
+    }
 
-  public boolean isKnownToBeAttached() {
-    return this.knownToBeAttached;
-  }
+    public boolean isKnownToBeAttached() {
+        return this.knownToBeAttached;
+    }
 
-  public void setKnownToBeAttached(boolean knownToBeAttached) {
-    this.knownToBeAttached = knownToBeAttached;
-  }
+    public void setKnownToBeAttached(boolean knownToBeAttached) {
+        this.knownToBeAttached = knownToBeAttached;
+    }
 
-  public boolean isSystemSynthetic() {
-    return this.isSystemSynthetic;
-  }
+    public boolean isSystemSynthetic() {
+        return this.isSystemSynthetic;
+    }
 
-  public void setSystemSynthetic(boolean systemSynthetic) {
-    this.isSystemSynthetic = systemSynthetic;
-  }
+    public void setSystemSynthetic(boolean systemSynthetic) {
+        this.isSystemSynthetic = systemSynthetic;
+    }
 
-  public void setDevices(List<ITEM_T> devices){
-    this.devices = devices;
-  }
+    public void setDevices(List<ITEM_T> devices) {
+        this.devices = devices;
+    }
 
-  public DeviceManager.DeviceType toUSBDeviceType() {
-    return this.getConfigurationType().toUSBDeviceType();
-  }
+    public DeviceManager.DeviceType toUSBDeviceType() {
+        return this.getConfigurationType().toUSBDeviceType();
+    }
 
 }
 

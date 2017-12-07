@@ -38,127 +38,129 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-public class HiTechnicNxtLightSensor extends LegacyModulePortDeviceImpl implements LightSensor, AnalogSensor
-  {
+public class HiTechnicNxtLightSensor extends LegacyModulePortDeviceImpl implements LightSensor, AnalogSensor {
 
-  //------------------------------------------------------------------------------------------------
-  // Constants
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------
 
-  public static final byte LED_DIGITAL_LINE_NUMBER = 0;
-  public static final double MIN_LIGHT_FRACTION = 120.0 / 1023.0;
-  public static final double MAX_LIGHT_FRACTION = 870.0 / 1023.0;
+    public static final byte LED_DIGITAL_LINE_NUMBER = 0;
+    public static final double MIN_LIGHT_FRACTION = 120.0 / 1023.0;
+    public static final double MAX_LIGHT_FRACTION = 870.0 / 1023.0;
 
-  protected static final double apiLevelMin = 0.0;
-  protected static final double apiLevelMax = 1.0;
+    protected static final double apiLevelMin = 0.0;
+    protected static final double apiLevelMax = 1.0;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtLightSensor(LegacyModule legacyModule, int physicalPort) {
-    super(legacyModule, physicalPort);
-    finishConstruction();
-  }
+    public HiTechnicNxtLightSensor(LegacyModule legacyModule, int physicalPort) {
+        super(legacyModule, physicalPort);
+        finishConstruction();
+    }
 
-  @Override
-  protected void moduleNowArmedOrPretending() {
-    module.enableAnalogReadMode(physicalPort);
-  }
+    @Override
+    protected void moduleNowArmedOrPretending() {
+        module.enableAnalogReadMode(physicalPort);
+    }
 
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
-  @Override
-  public String toString() {
-    return String.format("Light Level: %1.2f", getLightDetected());
-  }
+    @Override
+    public String toString() {
+        return String.format("Light Level: %1.2f", getLightDetected());
+    }
 
-  /**
-   * Read the scaled light level from an NXT Light sensor and return a scaled value<BR>
-   * NOTE: Returned values INCREASE as the light energy INCREASES<BR>
-   * Typical Scaled Light Levels:<BR>
-   * LED ON (reflective): Black = 0.1  White  = 0.55 <BR>
-   * LED OFF (ambient):   Dark  = 0.0  Bright = 1.0 <BR>
-   * @return a double scaled to a value between 0.0 and 1.0, inclusive
-   */
-  @Override
-  public double getLightDetected() {
-    double max = getRawLightDetectedMax();
-    return Range.clip(
-            Range.scale(getRawLightDetected(),
-                    MIN_LIGHT_FRACTION * max, MAX_LIGHT_FRACTION * max,
-                    apiLevelMin, apiLevelMax),
-            apiLevelMin, apiLevelMax);
-  }
+    /**
+     * Read the scaled light level from an NXT Light sensor and return a scaled value<BR>
+     * NOTE: Returned values INCREASE as the light energy INCREASES<BR>
+     * Typical Scaled Light Levels:<BR>
+     * LED ON (reflective): Black = 0.1  White  = 0.55 <BR>
+     * LED OFF (ambient):   Dark  = 0.0  Bright = 1.0 <BR>
+     *
+     * @return a double scaled to a value between 0.0 and 1.0, inclusive
+     */
+    @Override
+    public double getLightDetected() {
+        double max = getRawLightDetectedMax();
+        return Range.clip(
+                Range.scale(getRawLightDetected(),
+                        MIN_LIGHT_FRACTION * max, MAX_LIGHT_FRACTION * max,
+                        apiLevelMin, apiLevelMax),
+                apiLevelMin, apiLevelMax);
+    }
 
-  /**
-   * Read the raw light level from an NXT Light sensor<BR>
-   * NOTE: Returned values INCREASE as the light energy INCREASES<BR>
-   * @return the light level detected, in volts (here; interface doesn't specify the units)
-   * Typical Scaled Light Levels:<BR>
-   * LED ON (reflective): Black = 0.9  White  = 2.7 <BR>
-   * LED OFF (ambient):   Dark  = 0.1  Bright = 5.0 <BR>
-   */
-  @Override
-  public double getRawLightDetected() {
-    // Note the raw voltage coming back from the sensor has the wrong sense of correlation
-    // with intensity, so we invert the signal here
-    double max = getRawLightDetectedMax();
-    return Range.clip(max - readRawVoltage(), 0, max);  // paranoia
-  }
+    /**
+     * Read the raw light level from an NXT Light sensor<BR>
+     * NOTE: Returned values INCREASE as the light energy INCREASES<BR>
+     *
+     * @return the light level detected, in volts (here; interface doesn't specify the units)
+     * Typical Scaled Light Levels:<BR>
+     * LED ON (reflective): Black = 0.9  White  = 2.7 <BR>
+     * LED OFF (ambient):   Dark  = 0.1  Bright = 5.0 <BR>
+     */
+    @Override
+    public double getRawLightDetected() {
+        // Note the raw voltage coming back from the sensor has the wrong sense of correlation
+        // with intensity, so we invert the signal here
+        double max = getRawLightDetectedMax();
+        return Range.clip(max - readRawVoltage(), 0, max);  // paranoia
+    }
 
-  @Override
-  public double getRawLightDetectedMax() {
-    // The sensor is a five volt sensor, but we might have a level shifter between us and the
-    // sensor (probably not, but this mirrors the other sensor's paths).
-    final double sensorMaxVoltage = 5.0;
-    return Math.min(sensorMaxVoltage, module.getMaxAnalogInputVoltage());
-  }
+    @Override
+    public double getRawLightDetectedMax() {
+        // The sensor is a five volt sensor, but we might have a level shifter between us and the
+        // sensor (probably not, but this mirrors the other sensor's paths).
+        final double sensorMaxVoltage = 5.0;
+        return Math.min(sensorMaxVoltage, module.getMaxAnalogInputVoltage());
+    }
 
-  @Override
-  public double readRawVoltage() {
-    // Note the raw voltage coming back from the sensor has the wrong sense of correllation with intensity
-    return module.readAnalogVoltage(physicalPort);
-  }
+    @Override
+    public double readRawVoltage() {
+        // Note the raw voltage coming back from the sensor has the wrong sense of correllation with intensity
+        return module.readAnalogVoltage(physicalPort);
+    }
 
-  @Override
-  public void enableLed(boolean enable) {
-    module.setDigitalLine(physicalPort, LED_DIGITAL_LINE_NUMBER, enable);
-  }
+    @Override
+    public void enableLed(boolean enable) {
+        module.setDigitalLine(physicalPort, LED_DIGITAL_LINE_NUMBER, enable);
+    }
 
-  @Override
-  public String status() {
-    return String.format("NXT Light Sensor, connected via device %s, port %d",
-        module.getSerialNumber().toString(), physicalPort);
-  }
+    @Override
+    public String status() {
+        return String.format("NXT Light Sensor, connected via device %s, port %d",
+                module.getSerialNumber().toString(), physicalPort);
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.HiTechnic;
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.HiTechnic;
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTLightSensor);
-  }
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTLightSensor);
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return module.getConnectionInfo() + "; port " + physicalPort;
-  }
+    @Override
+    public String getConnectionInfo() {
+        return module.getConnectionInfo() + "; port " + physicalPort;
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public int getVersion() {
+        return 1;
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
-  @Override
-  public void close() {
-    // take no action
-  }
+    @Override
+    public void close() {
+        // take no action
+    }
 }

@@ -42,8 +42,7 @@ import android.support.annotation.ColorInt;
  * in a designated color.
  */
 @SuppressWarnings("WeakerAccess")
-public class FilledPolygonDrawable extends PaintedPathDrawable
-    {
+public class FilledPolygonDrawable extends PaintedPathDrawable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,38 +53,34 @@ public class FilledPolygonDrawable extends PaintedPathDrawable
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public FilledPolygonDrawable(@ColorInt int color, int numSides)
-        {
+    public FilledPolygonDrawable(@ColorInt int color, int numSides) {
         super(color);
         this.paint.setStyle(Paint.Style.FILL);
         this.numSides = numSides;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Drawing
     //----------------------------------------------------------------------------------------------
 
     @Override
-    protected void computePath(Rect bounds)
-        {
+    protected void computePath(Rect bounds) {
         path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
         path.addPath(computePath(Math.min(bounds.width(), bounds.height()), bounds.centerX(), bounds.centerY()));
-        }
+    }
 
-    protected Path computePath(double size, int centerX, int centerY)
-        {
+    protected Path computePath(double size, int centerX, int centerY) {
         final double section = (2.0 * Math.PI / numSides);
         double radius = size / 2;
         Path result = new Path();
-        result.moveTo((float)(centerX + radius * Math.cos(0)), (float)(centerY + radius * Math.sin(0)));
+        result.moveTo((float) (centerX + radius * Math.cos(0)), (float) (centerY + radius * Math.sin(0)));
 
-        for (int i = 1; i < numSides; i++)
-            {
-            result.lineTo((float)(centerX + radius * Math.cos(section * i)), (float)(centerY + radius * Math.sin(section * i)));
-            }
+        for (int i = 1; i < numSides; i++) {
+            result.lineTo((float) (centerX + radius * Math.cos(section * i)), (float) (centerY + radius * Math.sin(section * i)));
+        }
 
         result.close();
         return result;
-        }
     }
+}

@@ -50,18 +50,20 @@ import java.util.List;
 /**
  * {@link EditUSBDeviceActivity} handles the configuration of the modules within a Lynx USB device.
  */
-public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity
-    {
-	@Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_LYNX_USB_DEVICE;
 
-    private LynxUsbDeviceConfiguration      lynxUsbDeviceConfiguration;
-    private EditText                        textLynxUsbDeviceName;
-    private DisplayNameAndInteger[]         listKeys;
+    private LynxUsbDeviceConfiguration lynxUsbDeviceConfiguration;
+    private EditText textLynxUsbDeviceName;
+    private DisplayNameAndInteger[] listKeys;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-        {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lynx_usb_device);
 
@@ -79,108 +81,91 @@ public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity
 
         populateModules();
         showFixSwapButtons();
-        }
+    }
 
-    @Override protected void refreshSerialNumber()
-        {
+    @Override
+    protected void refreshSerialNumber() {
         TextView serialNumberView = (TextView) findViewById(R.id.serialNumber);
         serialNumberView.setText(formatSerialNumber(this, controllerConfiguration));
-        }
+    }
 
-    protected void populateModules()
-        {
+    protected void populateModules() {
         ListView listView = (ListView) findViewById(R.id.lynxUsbDeviceModules);
         List<LynxModuleConfiguration> modules = lynxUsbDeviceConfiguration.getModules();
         listKeys = new DisplayNameAndInteger[modules.size()];
-        for (int i = 0; i < listKeys.length; i++)
-            {
+        for (int i = 0; i < listKeys.length; i++) {
             listKeys[i] = new DisplayNameAndInteger(modules.get(i).getName(), i);
-            }
-        listView.setAdapter(new ArrayAdapter<DisplayNameAndInteger>(this, android.R.layout.simple_list_item_1, listKeys));
         }
+        listView.setAdapter(new ArrayAdapter<DisplayNameAndInteger>(this, android.R.layout.simple_list_item_1, listKeys));
+    }
 
     @Override
-    protected void onStart()
-        {
+    protected void onStart() {
         super.onStart();
-        }
+    }
 
-    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener()
-        {
+    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             DisplayNameAndInteger key = listKeys[position];
             handleLaunchEdit(EditLynxModuleActivity.requestCode, EditLynxModuleActivity.class, lynxUsbDeviceConfiguration.getModules().get(key.value));
-            }
-        };
+        }
+    };
 
     @Override
-    protected void onActivityResult(int requestCodeValue, int resultCode, Intent data)
-        {
+    protected void onActivityResult(int requestCodeValue, int resultCode, Intent data) {
         logActivityResult(requestCodeValue, resultCode, data);
-        if (resultCode == RESULT_OK)
-            {
+        if (resultCode == RESULT_OK) {
             EditParameters parameters = EditParameters.fromIntent(this, data);
             RequestCode requestCode = RequestCode.fromValue(requestCodeValue);
 
-            if (requestCode == EditSwapUsbDevices.requestCode)
-                {
+            if (requestCode == EditSwapUsbDevices.requestCode) {
                 completeSwapConfiguration(requestCodeValue, resultCode, data);
-                }
-            else if (requestCode == EditLynxModuleActivity.requestCode)
-                {
-                LynxModuleConfiguration newModule = (LynxModuleConfiguration)parameters.getConfiguration();
-                if (newModule != null)
-                    {
+            } else if (requestCode == EditLynxModuleActivity.requestCode) {
+                LynxModuleConfiguration newModule = (LynxModuleConfiguration) parameters.getConfiguration();
+                if (newModule != null) {
                     // Replace that configuration in the module list
-                    for (int i = 0; i < lynxUsbDeviceConfiguration.getModules().size(); i++)
-                        {
-                        LynxModuleConfiguration existingModule = (LynxModuleConfiguration)lynxUsbDeviceConfiguration.getModules().get(i);
-                        if (existingModule.getModuleAddress() == newModule.getModuleAddress())
-                            {
+                    for (int i = 0; i < lynxUsbDeviceConfiguration.getModules().size(); i++) {
+                        LynxModuleConfiguration existingModule = (LynxModuleConfiguration) lynxUsbDeviceConfiguration.getModules().get(i);
+                        if (existingModule.getModuleAddress() == newModule.getModuleAddress()) {
                             lynxUsbDeviceConfiguration.getModules().set(i, newModule);
                             break;
-                            }
                         }
+                    }
                     // Refresh the screen
                     populateModules();
-                    }
                 }
+            }
 
             currentCfgFile.markDirty();
             robotConfigFileManager.setActiveConfig(currentCfgFile);
-            }
         }
+    }
 
-    public void onDoneButtonPressed(View v)
-        {
+    public void onDoneButtonPressed(View v) {
         finishOk();
-        }
+    }
 
-    @Override protected void finishOk()
-        {
+    @Override
+    protected void finishOk() {
         controllerConfiguration.setName(textLynxUsbDeviceName.getText().toString());
         finishOk(new EditParameters(this, controllerConfiguration, getRobotConfigMap()));
-        }
+    }
 
-    public void onCancelButtonPressed(View v)
-        {
+    public void onCancelButtonPressed(View v) {
         finishCancel();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Fixing and swapping
     //----------------------------------------------------------------------------------------------
 
-    public void onFixButtonPressed(View v)
-        {
+    public void onFixButtonPressed(View v) {
         fixConfiguration();
-        }
-
-    public void onSwapButtonPressed(View view)
-        {
-        swapConfiguration();
-        }
-
     }
+
+    public void onSwapButtonPressed(View view) {
+        swapConfiguration();
+    }
+
+}

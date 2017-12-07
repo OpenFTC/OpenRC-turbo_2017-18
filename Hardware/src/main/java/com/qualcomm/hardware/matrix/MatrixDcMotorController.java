@@ -52,8 +52,7 @@ public class MatrixDcMotorController implements DcMotorController {
      */
     private class MotorProperties {
 
-        public MotorProperties(int motor)
-        {
+        public MotorProperties(int motor) {
             target = 0;
             position = 0;
             mode = 0;
@@ -79,10 +78,12 @@ public class MatrixDcMotorController implements DcMotorController {
      * Waste the zero element for ease of indexing.
      */
     private MotorProperties[] motorCache = {
-        new MotorProperties(1), new MotorProperties(1), new MotorProperties(2), new MotorProperties(3), new MotorProperties(4)
+            new MotorProperties(1), new MotorProperties(1), new MotorProperties(2), new MotorProperties(3), new MotorProperties(4)
     };
 
-    /** Used to help implement setMotorPower for a set of motors */
+    /**
+     * Used to help implement setMotorPower for a set of motors
+     */
     private boolean pendMotorPowerChanges = false;
 
     public static final byte POWER_MAX = 0x64;
@@ -94,7 +95,7 @@ public class MatrixDcMotorController implements DcMotorController {
     /*
      * Motors float.  No PID, no encoders.
      */
-    private final static byte CHANNEL_MODE_FLAG_SELECT_FLOAT         = 0x00;
+    private final static byte CHANNEL_MODE_FLAG_SELECT_FLOAT = 0x00;
 
     /*
      * Run without PID control, but with motor braking
@@ -107,26 +108,25 @@ public class MatrixDcMotorController implements DcMotorController {
     /*
      * Run To Position (target)
      */
-    private final static byte CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL   = 0x03;
+    private final static byte CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL = 0x03;
     /*
      * Reset position encoder to zero
      */
-    private final static byte CHANNEL_MODE_FLAG_SELECT_RESET         = 0x04;
+    private final static byte CHANNEL_MODE_FLAG_SELECT_RESET = 0x04;
 
-    private static final byte I2C_DATA_OFFSET    = 0x04;
-    private static final byte MODE_PENDING_BIT   = 0x08;
-    private static final byte SPEED_STOPPED      = 0;
-    private static final int  MAX_NUM_MOTORS     = MatrixConstants.NUMBER_OF_MOTORS;
-    private static final int  NO_TARGET          = 0;
-    private static final int  BATTERY_UNITS      = 40;
-    private static final int  POSITION_DATA_SIZE = 4;
-    private static final int  TARGET_DATA_SIZE   = 4;
+    private static final byte I2C_DATA_OFFSET = 0x04;
+    private static final byte MODE_PENDING_BIT = 0x08;
+    private static final byte SPEED_STOPPED = 0;
+    private static final int MAX_NUM_MOTORS = MatrixConstants.NUMBER_OF_MOTORS;
+    private static final int NO_TARGET = 0;
+    private static final int BATTERY_UNITS = 40;
+    private static final int POSITION_DATA_SIZE = 4;
+    private static final int TARGET_DATA_SIZE = 4;
 
     protected MatrixMasterController master;
     private int batteryVal;
 
-    public MatrixDcMotorController(MatrixMasterController master)
-    {
+    public MatrixDcMotorController(MatrixMasterController master) {
         this.master = master;
         this.batteryVal = 0;
 
@@ -149,47 +149,44 @@ public class MatrixDcMotorController implements DcMotorController {
         pendMotorPowerChanges = false;
     }
 
-    protected byte runModeToFlagMatrix(DcMotor.RunMode mode)
-    {
+    protected byte runModeToFlagMatrix(DcMotor.RunMode mode) {
         switch (mode.migrate()) {
-        case RUN_USING_ENCODER: // PID Control (Speed control) 0x02
-            return CHANNEL_MODE_FLAG_SELECT_SPEED_CONTROL;
-        case RUN_WITHOUT_ENCODER: // Power Control 0x01
-            return CHANNEL_MODE_FLAG_SELECT_POWER_CONTROL;
-        case RUN_TO_POSITION: // 0x03
-            return CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL;
-        case STOP_AND_RESET_ENCODER:
+            case RUN_USING_ENCODER: // PID Control (Speed control) 0x02
+                return CHANNEL_MODE_FLAG_SELECT_SPEED_CONTROL;
+            case RUN_WITHOUT_ENCODER: // Power Control 0x01
+                return CHANNEL_MODE_FLAG_SELECT_POWER_CONTROL;
+            case RUN_TO_POSITION: // 0x03
+                return CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL;
+            case STOP_AND_RESET_ENCODER:
             /*
              * Set the reset bit in the Mode byte.  This will also reset the power/position/target bytes.
              */
-            return CHANNEL_MODE_FLAG_SELECT_RESET;
+                return CHANNEL_MODE_FLAG_SELECT_RESET;
         }
         return CHANNEL_MODE_FLAG_SELECT_RESET;
     }
 
-    protected DcMotor.RunMode flagMatrixToRunMode(byte flag)
-    {
+    protected DcMotor.RunMode flagMatrixToRunMode(byte flag) {
         switch (flag) {
-        case CHANNEL_MODE_FLAG_SELECT_SPEED_CONTROL: // PID Control (Speed control) 0x02
-            return DcMotor.RunMode.RUN_USING_ENCODER;
-        case CHANNEL_MODE_FLAG_SELECT_POWER_CONTROL: // Power Control 0x01
-            return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-        case CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL: // 0x03
-            return DcMotor.RunMode.RUN_TO_POSITION;
-        case CHANNEL_MODE_FLAG_SELECT_RESET:
+            case CHANNEL_MODE_FLAG_SELECT_SPEED_CONTROL: // PID Control (Speed control) 0x02
+                return DcMotor.RunMode.RUN_USING_ENCODER;
+            case CHANNEL_MODE_FLAG_SELECT_POWER_CONTROL: // Power Control 0x01
+                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+            case CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL: // 0x03
+                return DcMotor.RunMode.RUN_TO_POSITION;
+            case CHANNEL_MODE_FLAG_SELECT_RESET:
             /*
              * Set the reset bit in the Mode byte.  This will also reset the power/position/target bytes.
              */
-            return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+                return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
         }
 
         RobotLog.e("Invalid run mode flag " + flag);
         return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
     }
 
-    public boolean isBusy(int motor)
-    {
-        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_MODE);
+    public boolean isBusy(int motor) {
+        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_MODE);
         master.queueTransaction(transaction);
 
         master.waitOnRead();
@@ -201,14 +198,14 @@ public class MatrixDcMotorController implements DcMotorController {
         }
     }
 
-    @Override public synchronized void setMotorType(int motor, MotorConfigurationType motorType)
-    {
+    @Override
+    public synchronized void setMotorType(int motor, MotorConfigurationType motorType) {
         throwIfMotorIsInvalid(motor);
         motorCache[motor].motorType = motorType;
     }
 
-    @Override public synchronized MotorConfigurationType getMotorType(int motor)
-    {
+    @Override
+    public synchronized MotorConfigurationType getMotorType(int motor) {
         this.throwIfMotorIsInvalid(motor);
         return motorCache[motor].motorType;
     }
@@ -220,9 +217,8 @@ public class MatrixDcMotorController implements DcMotorController {
      * Teams have to select a mode again after doing the reset.
      */
     @Override
-    public void setMotorMode(int motor, DcMotor.RunMode mode)
-    {
-        mode=mode.migrate();
+    public void setMotorMode(int motor, DcMotor.RunMode mode) {
+        mode = mode.migrate();
         throwIfMotorIsInvalid(motor);
 
         /*
@@ -239,7 +235,7 @@ public class MatrixDcMotorController implements DcMotorController {
         double prevPower = getMotorPower(motor);
 
         MatrixI2cTransaction transaction =
-                new MatrixI2cTransaction((byte)motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_MODE, flag);
+                new MatrixI2cTransaction((byte) motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_MODE, flag);
         master.queueTransaction(transaction);
 
         motorCache[motor].runMode = mode;
@@ -251,8 +247,7 @@ public class MatrixDcMotorController implements DcMotorController {
         setFloatingFromMode(motor);
     }
 
-    void setFloatingFromMode(int motor)
-    {
+    void setFloatingFromMode(int motor) {
         if (motorCache[motor].runMode == DcMotor.RunMode.STOP_AND_RESET_ENCODER) {
             motorCache[motor].floating = true;
         } else {
@@ -261,18 +256,18 @@ public class MatrixDcMotorController implements DcMotorController {
     }
 
     @Override
-    public DcMotor.RunMode getMotorMode(int motor)
-    {
+    public DcMotor.RunMode getMotorMode(int motor) {
         throwIfMotorIsInvalid(motor);
 
         return motorCache[motor].runMode;
     }
 
     @Override
-    public synchronized void setMotorZeroPowerBehavior(int motor, DcMotor.ZeroPowerBehavior zeroPowerBehavior)
-    {
+    public synchronized void setMotorZeroPowerBehavior(int motor, DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         throwIfMotorIsInvalid(motor);
-        if (zeroPowerBehavior == DcMotor.ZeroPowerBehavior.UNKNOWN) throw new IllegalArgumentException("zeroPowerBehavior may not be UNKNOWN");
+        if (zeroPowerBehavior == DcMotor.ZeroPowerBehavior.UNKNOWN) {
+            throw new IllegalArgumentException("zeroPowerBehavior may not be UNKNOWN");
+        }
 
         motorCache[motor].zeroPowerBehavior = zeroPowerBehavior;
 
@@ -283,8 +278,7 @@ public class MatrixDcMotorController implements DcMotorController {
     }
 
     @Override
-    public synchronized DcMotor.ZeroPowerBehavior getMotorZeroPowerBehavior(int motor)
-    {
+    public synchronized DcMotor.ZeroPowerBehavior getMotorZeroPowerBehavior(int motor) {
         throwIfMotorIsInvalid(motor);
         return motorCache[motor].zeroPowerBehavior;
     }
@@ -297,8 +291,7 @@ public class MatrixDcMotorController implements DcMotorController {
      * Unfortunately the RunMode enumeration does not map directly onto the Matrix
      * controller's mode byte as there is no "FLOAT" property in the RunMode enumeration.
      */
-    protected void setMotorPowerFloat(int motor)
-    {
+    protected void setMotorPowerFloat(int motor) {
         throwIfMotorIsInvalid(motor);
 
         /*
@@ -307,7 +300,7 @@ public class MatrixDcMotorController implements DcMotorController {
          * This causes the motor to go into float mode, stopped.
          */
         if (!motorCache[motor].floating) {
-            MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_MODE, CHANNEL_MODE_FLAG_SELECT_RESET);
+            MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_MODE, CHANNEL_MODE_FLAG_SELECT_RESET);
             master.queueTransaction(transaction);
         }
 
@@ -319,8 +312,7 @@ public class MatrixDcMotorController implements DcMotorController {
     }
 
     @Override
-    public boolean getMotorPowerFloat(int motor)
-    {
+    public boolean getMotorPowerFloat(int motor) {
         throwIfMotorIsInvalid(motor);
 
         return motorCache[motor].floating;
@@ -332,10 +324,9 @@ public class MatrixDcMotorController implements DcMotorController {
      * @param motors This provides an optimization specific to the Matrix controller
      *               by using the controller's pending bit to tell all of the motors
      *               to start at the same time.
-     * @param power The motor power to apply to all motors in the set.
+     * @param power  The motor power to apply to all motors in the set.
      */
-    public synchronized void setMotorPower(Set<DcMotor> motors, double power)
-    {
+    public synchronized void setMotorPower(Set<DcMotor> motors, double power) {
         pendMotorPowerChanges = true;
         try {
             for (DcMotor motor : motors) {
@@ -345,7 +336,7 @@ public class MatrixDcMotorController implements DcMotorController {
             /*
              * Write the start flag to start the motors.
              */
-            MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_START, 0x01);
+            MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) 0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_START, 0x01);
             master.queueTransaction(transaction);
         } finally {
             pendMotorPowerChanges = false;
@@ -353,21 +344,20 @@ public class MatrixDcMotorController implements DcMotorController {
     }
 
     @Override
-    public synchronized void setMotorPower(int motor, double power)
-    {
+    public synchronized void setMotorPower(int motor, double power) {
         throwIfMotorIsInvalid(motor);
         power = Range.clip(power, apiPowerMin, apiPowerMax);
 
-        if (motorCache[motor].zeroPowerBehavior==DcMotor.ZeroPowerBehavior.FLOAT && power==0.0) {
+        if (motorCache[motor].zeroPowerBehavior == DcMotor.ZeroPowerBehavior.FLOAT && power == 0.0) {
 
             setMotorPowerFloat(motor);
 
         } else {
 
-            byte p = (byte)(power * POWER_MAX);
+            byte p = (byte) (power * POWER_MAX);
             byte bit = pendMotorPowerChanges ? MODE_PENDING_BIT : 0;
 
-            MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)motor, p, motorCache[motor].target, (byte)(runModeToFlagMatrix(motorCache[motor].runMode) | bit));
+            MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) motor, p, motorCache[motor].target, (byte) (runModeToFlagMatrix(motorCache[motor].runMode) | bit));
             master.queueTransaction(transaction);
 
             setFloatingFromMode(motor);
@@ -376,31 +366,28 @@ public class MatrixDcMotorController implements DcMotorController {
     }
 
     @Override
-    public double getMotorPower(int motor)
-    {
+    public double getMotorPower(int motor) {
         throwIfMotorIsInvalid(motor);
         double power = motorCache[motor].power;
         return power;
     }
 
     @Override
-    public void setMotorTargetPosition(int motor, int position)
-    {
+    public void setMotorTargetPosition(int motor, int position) {
         throwIfMotorIsInvalid(motor);
 
         MatrixI2cTransaction transaction =
-                new MatrixI2cTransaction((byte)motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_TARGET, position);
+                new MatrixI2cTransaction((byte) motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_TARGET, position);
         master.queueTransaction(transaction);
         motorCache[motor].target = position;
     }
 
     @Override
-    public int getMotorTargetPosition(int motor)
-    {
+    public int getMotorTargetPosition(int motor) {
         throwIfMotorIsInvalid(motor);
 
         MatrixI2cTransaction transaction =
-                new MatrixI2cTransaction((byte)motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_TARGET);
+                new MatrixI2cTransaction((byte) motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_TARGET);
 
         if (master.queueTransaction(transaction)) {
             master.waitOnRead();
@@ -409,12 +396,11 @@ public class MatrixDcMotorController implements DcMotorController {
         return motorCache[motor].target;
     }
 
-    public int getMotorCurrentPosition(int motor)
-    {
+    public int getMotorCurrentPosition(int motor) {
         throwIfMotorIsInvalid(motor);
 
         MatrixI2cTransaction transaction =
-                new MatrixI2cTransaction((byte)motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_POSITION);
+                new MatrixI2cTransaction((byte) motor, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_POSITION);
 
         if (master.queueTransaction(transaction)) {
             master.waitOnRead();
@@ -423,10 +409,9 @@ public class MatrixDcMotorController implements DcMotorController {
         return motorCache[motor].position;
     }
 
-    public int getBattery()
-    {
+    public int getBattery() {
         MatrixI2cTransaction transaction =
-                new MatrixI2cTransaction((byte)0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_BATTERY);
+                new MatrixI2cTransaction((byte) 0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_BATTERY);
 
         if (master.queueTransaction(transaction)) {
             master.waitOnRead();
@@ -435,47 +420,40 @@ public class MatrixDcMotorController implements DcMotorController {
         return batteryVal;
     }
 
-    @Override public Manufacturer getManufacturer()
-    {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.Matrix;
     }
 
     @Override
-    public String getDeviceName()
-    {
+    public String getDeviceName() {
         return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.displayNameMatrixMotorController);
     }
 
     @Override
-    public String getConnectionInfo()
-    {
+    public String getConnectionInfo() {
         return master.getConnectionInfo();
     }
 
     @Override
-    public int getVersion()
-    {
+    public int getVersion() {
         return 1;
     }
 
-    void brakeAllAtZero()
-    {
-        for (int motor = 0; motor < MAX_NUM_MOTORS; motor++)
-            {
+    void brakeAllAtZero() {
+        for (int motor = 0; motor < MAX_NUM_MOTORS; motor++) {
             motorCache[motor].zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
-            }
+        }
     }
 
     @Override
-    public void resetDeviceConfigurationForOpMode()
-    {
+    public void resetDeviceConfigurationForOpMode() {
         // TODO: fully mirror other motor controller's reset behavior
         brakeAllAtZero();
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         setMotorPowerFloat(1);
         setMotorPowerFloat(2);
         setMotorPowerFloat(3);
@@ -488,34 +466,30 @@ public class MatrixDcMotorController implements DcMotorController {
      *
      * These should not be documented, and teams should not be calling them.
      */
-    public void handleReadBattery(byte[] buffer)
-    {
+    public void handleReadBattery(byte[] buffer) {
         batteryVal = BATTERY_UNITS * TypeConversion.unsignedByteToInt(buffer[I2C_DATA_OFFSET]);
         RobotLog.v("Battery voltage: " + batteryVal + "mV");
     }
 
-    public void handleReadPosition(MatrixI2cTransaction transaction, byte[] buffer)
-    {
+    public void handleReadPosition(MatrixI2cTransaction transaction, byte[] buffer) {
         motorCache[transaction.motor].position = TypeConversion.byteArrayToInt(Arrays.copyOfRange(buffer, I2C_DATA_OFFSET, I2C_DATA_OFFSET + POSITION_DATA_SIZE));
         RobotLog.v("Position motor: " + transaction.motor + " " + motorCache[transaction.motor].position);
     }
 
-    public void handleReadTargetPosition(MatrixI2cTransaction transaction, byte[] buffer)
-    {
+    public void handleReadTargetPosition(MatrixI2cTransaction transaction, byte[] buffer) {
         motorCache[transaction.motor].target = TypeConversion.byteArrayToInt(Arrays.copyOfRange(buffer, I2C_DATA_OFFSET, I2C_DATA_OFFSET + TARGET_DATA_SIZE));
         RobotLog.v("Target motor: " + transaction.motor + " " + motorCache[transaction.motor].target);
     }
 
-    public void handleReadMode(MatrixI2cTransaction transaction, byte[] buffer)
-    {
+    public void handleReadMode(MatrixI2cTransaction transaction, byte[] buffer) {
         motorCache[transaction.motor].mode = buffer[I2C_DATA_OFFSET];
         RobotLog.v("Mode: " + motorCache[transaction.motor].mode);
     }
 
     private void throwIfMotorIsInvalid(int motor) {
         if (motor < 1 || motor > MAX_NUM_MOTORS) {
-            throw new IllegalArgumentException (
-                    String.format( "Motor %d is invalid; valid motors are %d..%d", motor, MatrixConstants.INITIAL_MOTOR_PORT, MAX_NUM_MOTORS));
+            throw new IllegalArgumentException(
+                    String.format("Motor %d is invalid; valid motors are %d..%d", motor, MatrixConstants.INITIAL_MOTOR_PORT, MAX_NUM_MOTORS));
         }
     }
 }

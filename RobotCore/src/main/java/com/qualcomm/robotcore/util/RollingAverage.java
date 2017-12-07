@@ -40,73 +40,80 @@ import java.util.Queue;
  */
 public class RollingAverage {
 
-  public static final int DEFAULT_SIZE = 100;
+    public static final int DEFAULT_SIZE = 100;
 
-  private final Queue<Integer> queue = new LinkedList<Integer>();
-  private long total;
-  private int size;
+    private final Queue<Integer> queue = new LinkedList<Integer>();
+    private long total;
+    private int size;
 
-  /**
-   * Constructor, with default size
-   */
-  public RollingAverage() {
-    resize(DEFAULT_SIZE);
-  }
-
-  /**
-   * Constructor, with given size
-   * @param size
-   */
-  public RollingAverage(int size) {
-    resize(size);
-  }
-
-  /**
-   * Get the size
-   * @return Size
-   */
-  public int size() {
-    return size;
-  }
-
-  /**
-   * Resize the rolling average
-   * <p>
-   * Side Effect: the rolling average is reset
-   * @param size
-   */
-  public void resize(int size) {
-    this.size = size;
-    queue.clear();
-  }
-
-  /**
-   * Add a number to the rolling average
-   * @param number
-   */
-  public void addNumber(int number) {
-    if (queue.size() >= size) {
-      int last = queue.remove();
-      total -= last;
+    /**
+     * Constructor, with default size
+     */
+    public RollingAverage() {
+        resize(DEFAULT_SIZE);
     }
 
-    queue.add(number);
-    total += number;
-  }
+    /**
+     * Constructor, with given size
+     *
+     * @param size
+     */
+    public RollingAverage(int size) {
+        resize(size);
+    }
 
-  /**
-   * Get the rolling average
-   * @return rolling average, if available; otherwise 0
-   */
-  public int getAverage() {
-    if (queue.isEmpty()) return 0;
-    return (int) (total / queue.size());
-  }
+    /**
+     * Get the size
+     *
+     * @return Size
+     */
+    public int size() {
+        return size;
+    }
 
-  /**
-   * Reset the rolling average
-   */
-  public void reset() {
-    queue.clear();
-  }
+    /**
+     * Resize the rolling average
+     * <p>
+     * Side Effect: the rolling average is reset
+     *
+     * @param size
+     */
+    public void resize(int size) {
+        this.size = size;
+        queue.clear();
+    }
+
+    /**
+     * Add a number to the rolling average
+     *
+     * @param number
+     */
+    public void addNumber(int number) {
+        if (queue.size() >= size) {
+            int last = queue.remove();
+            total -= last;
+        }
+
+        queue.add(number);
+        total += number;
+    }
+
+    /**
+     * Get the rolling average
+     *
+     * @return rolling average, if available; otherwise 0
+     */
+    public int getAverage() {
+        if (queue.isEmpty()) {
+            return 0;
+        }
+        return (int) (total / queue.size());
+    }
+
+    /**
+     * Reset the rolling average
+     */
+    public void reset() {
+        queue.clear();
+    }
 }

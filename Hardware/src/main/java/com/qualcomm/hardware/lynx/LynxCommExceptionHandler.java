@@ -38,64 +38,54 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Created by bob on 2016-12-11.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxCommExceptionHandler
-    {
+public class LynxCommExceptionHandler {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected String tag = RobotLog.TAG;
 
-    protected String getTag()
-        {
+    protected String getTag() {
         return tag;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxCommExceptionHandler()
-        {
-        }
+    public LynxCommExceptionHandler() {
+    }
 
-    public LynxCommExceptionHandler(String tag)
-        {
+    public LynxCommExceptionHandler(String tag) {
         this.tag = tag;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Exceptions
     //----------------------------------------------------------------------------------------------
 
-    protected void handleException(Exception e)
-        {
-        if (e instanceof InterruptedException)
-            handleSpecificException((InterruptedException)e);
-        else if (e instanceof LynxNackException)
-            handleSpecificException((LynxNackException)e);
-        else if (e instanceof RuntimeException)
-            handleSpecificException((RuntimeException)e);
-        else
-            {
+    protected void handleException(Exception e) {
+        if (e instanceof InterruptedException) {
+            handleSpecificException((InterruptedException) e);
+        } else if (e instanceof LynxNackException) {
+            handleSpecificException((LynxNackException) e);
+        } else if (e instanceof RuntimeException) {
+            handleSpecificException((RuntimeException) e);
+        } else {
             RobotLog.ee(getTag(), e, "unexpected exception thrown during lynx communication");
-            }
         }
+    }
 
-    protected void handleSpecificException(InterruptedException e)
-        {
+    protected void handleSpecificException(InterruptedException e) {
         Thread.currentThread().interrupt();
-        }
+    }
 
-    protected void handleSpecificException(RuntimeException e)
-        {
+    protected void handleSpecificException(RuntimeException e) {
         RobotLog.ee(getTag(), e, "exception thrown during lynx communication");
-        }
+    }
 
-    protected void handleSpecificException(LynxNackException nackException)
-        {
-        switch (nackException.getNack().getNackReasonCode())
-            {
+    protected void handleSpecificException(LynxNackException nackException) {
+        switch (nackException.getNack().getNackReasonCode()) {
             case COMMAND_IMPL_PENDING:
                 RobotLog.ww(getTag(), "%s not implemented by lynx hw; ignoring", nackException.getCommand().getClass().getSimpleName());
                 break;
@@ -107,6 +97,6 @@ public class LynxCommExceptionHandler
                 break;
             default:
                 RobotLog.ee(getTag(), nackException, "exception thrown during lynx communication");
-            }
         }
     }
+}

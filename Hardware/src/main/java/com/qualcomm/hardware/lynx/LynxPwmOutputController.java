@@ -56,209 +56,187 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * Created by bob on 2016-03-12.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxPwmOutputController extends LynxController implements PWMOutputController, PWMOutputControllerEx
-    {
+public class LynxPwmOutputController extends LynxController implements PWMOutputController, PWMOutputControllerEx {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxPwmOutputController";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     public static final int apiPortFirst = 0;
-    public static final int apiPortLast = apiPortFirst + LynxConstants.NUMBER_OF_PWM_CHANNELS -1;
+    public static final int apiPortLast = apiPortFirst + LynxConstants.NUMBER_OF_PWM_CHANNELS - 1;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected LastKnown<Integer>[]  lastKnownOutputTimes;
-    protected LastKnown<Integer>[]  lastKnownPulseWidthPeriods;
+    protected LastKnown<Integer>[] lastKnownOutputTimes;
+    protected LastKnown<Integer>[] lastKnownPulseWidthPeriods;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     public LynxPwmOutputController(final Context context, final LynxModule module)
-            throws RobotCoreException, InterruptedException
-        {
+            throws RobotCoreException, InterruptedException {
         super(context, module);
-        this.lastKnownOutputTimes       = LastKnown.createArray(LynxConstants.NUMBER_OF_PWM_CHANNELS);
+        this.lastKnownOutputTimes = LastKnown.createArray(LynxConstants.NUMBER_OF_PWM_CHANNELS);
         this.lastKnownPulseWidthPeriods = LastKnown.createArray(LynxConstants.NUMBER_OF_PWM_CHANNELS);
         this.finishConstruction();
-        }
+    }
 
-    @Override public void initializeHardware()
-        {
-        for (int port = apiPortFirst; port <= apiPortLast; port++)
-            {
+    @Override
+    public void initializeHardware() {
+        for (int port = apiPortFirst; port <= apiPortLast; port++) {
             this.setPwmDisable(port);
             this.internalSetPulseWidthPeriod(port - apiPortFirst, (int) PwmControl.PwmRange.usFrameDefault);
-            }
         }
+    }
 
-    @Override public void floatHardware()
-        {
-        for (int port = apiPortFirst; port <= apiPortLast; port++)
-            {
+    @Override
+    public void floatHardware() {
+        for (int port = apiPortFirst; port <= apiPortLast; port++) {
             this.setPwmDisable(port);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return this.context.getString(R.string.lynxPwmOutputControllerDisplayName);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // PWMOutputController
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public SerialNumber getSerialNumber()
-        {
+    public SerialNumber getSerialNumber() {
         return this.getModule().getSerialNumber();
-        }
+    }
 
     @Override
-    public synchronized void setPulseWidthOutputTime(int port, int usDuration)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized void setPulseWidthOutputTime(int port, int usDuration) {
+        validatePort(port);
+        port -= apiPortFirst;
         internalSetPulseWidthOutputTime(port, usDuration);
         setPwmEnable(port + apiPortFirst);
-        }
+    }
 
-    void internalSetPulseWidthOutputTime(int portZ, int usDuration)
-        {
-        if (lastKnownOutputTimes[portZ].updateValue(usDuration))
-            {
+    void internalSetPulseWidthOutputTime(int portZ, int usDuration) {
+        if (lastKnownOutputTimes[portZ].updateValue(usDuration)) {
             LynxSetPWMPulseWidthCommand command = new LynxSetPWMPulseWidthCommand(this.getModule(), portZ, usDuration);
             try {
                 command.send();
-                }
-            catch (InterruptedException|RuntimeException|LynxNackException e)
-                {
+            } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
-                }
             }
         }
+    }
 
     @Override
-    public synchronized void setPulseWidthPeriod(int port, int usPeriod)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized void setPulseWidthPeriod(int port, int usPeriod) {
+        validatePort(port);
+        port -= apiPortFirst;
         internalSetPulseWidthPeriod(port, usPeriod);
         setPwmEnable(port + apiPortFirst);
-        }
+    }
 
-    void internalSetPulseWidthPeriod(int portZ, int usPeriod)
-        {
-        if (lastKnownOutputTimes[portZ].updateValue(usPeriod))
-            {
+    void internalSetPulseWidthPeriod(int portZ, int usPeriod) {
+        if (lastKnownOutputTimes[portZ].updateValue(usPeriod)) {
             LynxSetPWMConfigurationCommand command = new LynxSetPWMConfigurationCommand(this.getModule(), portZ, usPeriod);
             try {
                 command.send();
-                }
-            catch (InterruptedException|RuntimeException|LynxNackException e)
-                {
+            } catch (InterruptedException | RuntimeException | LynxNackException e) {
                 handleException(e);
-                }
             }
         }
+    }
 
     @Override
-    public synchronized int getPulseWidthOutputTime(int port)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized int getPulseWidthOutputTime(int port) {
+        validatePort(port);
+        port -= apiPortFirst;
         LynxGetPWMPulseWidthCommand command = new LynxGetPWMPulseWidthCommand(this.getModule(), port);
         try {
             LynxGetPWMPulseWidthResponse response = command.sendReceive();
             return response.getPulseWidth();
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
-        return LynxUsbUtil.makePlaceholderValue(0);
         }
+        return LynxUsbUtil.makePlaceholderValue(0);
+    }
 
     @Override
-    public synchronized int getPulseWidthPeriod(int port)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized int getPulseWidthPeriod(int port) {
+        validatePort(port);
+        port -= apiPortFirst;
         LynxGetPWMConfigurationCommand command = new LynxGetPWMConfigurationCommand(this.getModule(), port);
         try {
             LynxGetPWMConfigurationResponse response = command.sendReceive();
             return response.getFramePeriod();
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
+        }
         return LynxUsbUtil.makePlaceholderValue(0);
-        }
+    }
 
     @Override
-    public synchronized void setPwmEnable(int port)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized void setPwmEnable(int port) {
+        validatePort(port);
+        port -= apiPortFirst;
         internalSetPwmEnable(port, true);
-        }
+    }
 
     @Override
-    public synchronized void setPwmDisable(int port)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized void setPwmDisable(int port) {
+        validatePort(port);
+        port -= apiPortFirst;
         internalSetPwmEnable(port, false);
-        }
+    }
 
     @Override
-    public synchronized boolean isPwmEnabled(int port)
-        {
-        validatePort(port); port -= apiPortFirst;
+    public synchronized boolean isPwmEnabled(int port) {
+        validatePort(port);
+        port -= apiPortFirst;
         return internalGetPwmEnable(port);
-        }
+    }
 
-    private void internalSetPwmEnable(int portZ, boolean enable)
-        {
+    private void internalSetPwmEnable(int portZ, boolean enable) {
         LynxSetPWMEnableCommand command = new LynxSetPWMEnableCommand(this.getModule(), portZ, enable);
         try {
             command.send();
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
         }
+    }
 
-    private boolean internalGetPwmEnable(int portZ)
-        {
+    private boolean internalGetPwmEnable(int portZ) {
         LynxGetPWMEnableCommand command = new LynxGetPWMEnableCommand(this.getModule(), portZ);
         try {
             LynxGetPWMEnableResponse response = command.sendReceive();
             return response.isEnabled();
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
-        return LynxUsbUtil.makePlaceholderValue(true);
         }
+        return LynxUsbUtil.makePlaceholderValue(true);
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    private void validatePort(int port)
-        {
-        if (port < apiPortFirst || port > apiPortLast)
-            {
+    private void validatePort(int port) {
+        if (port < apiPortFirst || port > apiPortLast) {
             throw new IllegalArgumentException(String.format("port %d is invalid; valid ports are %d..%d", port, apiPortFirst, apiPortLast));
-            }
         }
     }
+}

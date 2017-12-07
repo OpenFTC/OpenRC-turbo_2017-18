@@ -41,62 +41,56 @@ import java.nio.ByteBuffer;
  * LynxI2cReadStatusQueryResponse is the message that ultimately finally returns data
  * read from I2C
  */
-public class LynxI2cReadStatusQueryResponse extends LynxI2cResponse
-    {
+public class LynxI2cReadStatusQueryResponse extends LynxI2cResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final static int cbPayload = 2;
 
-    private byte    cbRead;
-    private byte[]  payload;
+    private byte cbRead;
+    private byte[] payload;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cReadStatusQueryResponse(LynxModuleIntf module)
-        {
+    public LynxI2cReadStatusQueryResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxI2cReadStatusQueryResponse(LynxModuleIntf module, int cbExpected)
-        {
+    public LynxI2cReadStatusQueryResponse(LynxModuleIntf module, int cbExpected) {
         super(module);
         this.payload = new byte[cbExpected];
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public byte[] getBytes()
-        {
+    public byte[] getBytes() {
         return this.payload;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cStatus);
         buffer.put(this.cbRead);
         buffer.put(this.payload);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cStatus = buffer.get();
         this.cbRead = buffer.get();
         this.payload = new byte[this.cbRead];
         buffer.get(this.payload);
-        }
     }
+}

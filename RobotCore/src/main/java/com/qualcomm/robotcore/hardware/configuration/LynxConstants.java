@@ -41,43 +41,43 @@ import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
  * a Lynx module.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxConstants
-    {
+public class LynxConstants {
     public static final String TAG = "LynxConstants";
 
-    /** Are we running on a Dragonboard / Lynx combo device */
-    public static boolean isRevControlHub()
-        {
+    /**
+     * Are we running on a Dragonboard / Lynx combo device
+     */
+    public static boolean isRevControlHub() {
         return SystemProperties.getBoolean("persist.ftcandroid.serialasusb", false);
-        }
+    }
 
-    /** In the embedded case, we *always* have a lynx module that we can update */
-    public static boolean enableLynxFirmwareUpdateForDragonboard()
-        {
+    /**
+     * In the embedded case, we *always* have a lynx module that we can update
+     */
+    public static boolean enableLynxFirmwareUpdateForDragonboard() {
         return isRevControlHub();
-        }
+    }
 
-    /** When running on a Dragonboard / Lynx combo device, should the Dragonboard pretend
-     * that it's not there and thus allow the Lynx to be used as an stand-alone extension? */
-    public static boolean disableDragonboard()
-        {
+    /**
+     * When running on a Dragonboard / Lynx combo device, should the Dragonboard pretend
+     * that it's not there and thus allow the Lynx to be used as an stand-alone extension?
+     */
+    public static boolean disableDragonboard() {
         return SystemProperties.getBoolean("persist.ftcandroid.db.disable", false);
-        }
+    }
 
-    public static boolean isEmbeddedSerialNumber(SerialNumber serialNumber)
-        {
+    public static boolean isEmbeddedSerialNumber(SerialNumber serialNumber) {
         return SERIAL_NUMBER_EMBEDDED.equals(serialNumber);
-        }
+    }
 
-    public static boolean autorunRobotController()
-        {
+    public static boolean autorunRobotController() {
         return SystemProperties.getBoolean("persist.ftcandroid.autorunrc", false);
-        }
+    }
 
-    public static boolean useIndicatorLEDS()
-        {
+    public static boolean useIndicatorLEDS() {
         return SystemProperties.getBoolean("persist.ftcandroid.rcuseleds", false);
-        }
+    }
+
     public final static int INDICATOR_LED_ROBOT_CONTROLLER_ALIVE = 1;
     public final static int INDICATOR_LED_INVITE_DIALOG_ACTIVE = 2;
     public final static int INDICATOR_LED_BOOT = 4;
@@ -101,35 +101,40 @@ public class LynxConstants
 
     public final static int DEFAULT_TARGET_POSITION_TOLERANCE = 5;
 
-    public static void validateMotorZ(int motorZ)
-        {
-        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS)
+    public static void validateMotorZ(int motorZ) {
+        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS) {
             throw new IllegalArgumentException(String.format("invalid motor: %d", motorZ));
         }
-    public static void validatePwmChannelZ(int channelZ)
-        {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_PWM_CHANNELS)
+    }
+
+    public static void validatePwmChannelZ(int channelZ) {
+        if (channelZ < 0 || channelZ >= NUMBER_OF_PWM_CHANNELS) {
             throw new IllegalArgumentException(String.format("invalid pwm channel: %d", channelZ));
         }
-    public static void validateServoChannelZ(int channelZ)
-        {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVO_CHANNELS)
+    }
+
+    public static void validateServoChannelZ(int channelZ) {
+        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVO_CHANNELS) {
             throw new IllegalArgumentException(String.format("invalid servo channel: %d", channelZ));
         }
-    public static void validateI2cBusZ(int busZ)
-        {
-        if (busZ < 0 || busZ >= NUMBER_OF_I2C_BUSSES)
+    }
+
+    public static void validateI2cBusZ(int busZ) {
+        if (busZ < 0 || busZ >= NUMBER_OF_I2C_BUSSES) {
             throw new IllegalArgumentException(String.format("invalid i2c bus: %d", busZ));
         }
-    public static void validateAnalogInputZ(int analogInputZ)
-        {
-        if (analogInputZ < 0 || analogInputZ >= NUMBER_OF_ANALOG_INPUTS)
+    }
+
+    public static void validateAnalogInputZ(int analogInputZ) {
+        if (analogInputZ < 0 || analogInputZ >= NUMBER_OF_ANALOG_INPUTS) {
             throw new IllegalArgumentException(String.format("invalid analog input: %d", analogInputZ));
         }
-    public static void validateDigitalIOZ(int digitalIOZ)
-        {
-        if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS)
+    }
+
+    public static void validateDigitalIOZ(int digitalIOZ) {
+        if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS) {
             throw new IllegalArgumentException(String.format("invalid digital pin: %d", digitalIOZ));
         }
-
     }
+
+}

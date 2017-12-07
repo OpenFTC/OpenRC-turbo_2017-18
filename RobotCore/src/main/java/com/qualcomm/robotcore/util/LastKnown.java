@@ -40,52 +40,47 @@ package com.qualcomm.robotcore.util;
  * 'fresh' helps guard against an error situation in which the underlying setting has actually
  * been lost and the user's code is simply trying to apply it. Were we to not have this, such
  * error situations might never be repaired.
- *
+ * <p>
  * This class is NOT thread-safe.
  */
-public class LastKnown<T>
-    {
+public class LastKnown<T> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected T           value;
-    protected boolean     isValid;
+    protected T value;
+    protected boolean isValid;
     protected ElapsedTime timer;
-    protected double      msFreshness;
+    protected double msFreshness;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LastKnown()
-        {
+    public LastKnown() {
         this(500);
-        }
+    }
 
-    public LastKnown(double msFreshness)
-        {
-        this.value       = null;
-        this.isValid     = false;
-        this.timer       = new ElapsedTime();
+    public LastKnown(double msFreshness) {
+        this.value = null;
+        this.isValid = false;
+        this.timer = new ElapsedTime();
         this.msFreshness = msFreshness;
-        }
+    }
 
-    public static <X> LastKnown<X>[] createArray(int length)
-        {
+    public static <X> LastKnown<X>[] createArray(int length) {
         LastKnown<X>[] result = new LastKnown[length];
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++) {
             result[i] = new LastKnown<X>();
+        }
         return result;
-        }
+    }
 
-    public static <X> void invalidateArray(LastKnown<X>[] array)
-        {
-        for (int i = 0; i < array.length; i++)
-            {
+    public static <X> void invalidateArray(LastKnown<X>[] array) {
+        for (int i = 0; i < array.length; i++) {
             array[i].invalidate();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
@@ -93,98 +88,99 @@ public class LastKnown<T>
 
     /**
      * Marks the last known value as invalid. However, the value internally stored is uneffected.
+     *
      * @see #getRawValue()
      * @see #getValue()
      */
-    public void invalidate()
-        {
+    public void invalidate() {
         this.isValid = false;
-        }
+    }
 
     /**
      * Returns whether a last value is currently known and is fresh enough. Note that a value
      * which is valid may spontaneously become invalid (because it expires) but a value which
      * is invalid will never spontaneously become valid.
+     *
      * @return whether a last value is currently known and is fresh enough
      */
-    public boolean isValid()
-        {
+    public boolean isValid() {
         return this.isValid && this.timer.milliseconds() <= msFreshness;
-        }
+    }
 
     /**
      * Returns the last known value, or null if not valid
+     *
      * @return the last known value
      */
-    public T getValue()
-        {
+    public T getValue() {
         return this.isValid() ? this.value : null;
-        }
+    }
 
     /**
      * Returns the stored value, w/o using a timer to invalidate
+     *
      * @return the raw stored value.
      */
-    public T getNonTimedValue()
-        {
+    public T getNonTimedValue() {
         return this.isValid ? this.value : null;
-        }
+    }
 
     /**
      * Returns the stored value, whether or not it is valid
+     *
      * @return the raw stored value.
      */
-    public T getRawValue()
-        {
+    public T getRawValue() {
         return this.value;
-        }
+    }
 
     /**
      * If non-null, sets the current value to be the indicated (known) value and resets
      * the freshness timer. If null, this is equivalent to {@link #invalidate()}.
+     *
      * @return the previous value.
      */
-    public T setValue(T value)
-        {
+    public T setValue(T value) {
         T prevValue = this.value;
         this.value = value;
         this.isValid = true;
-        if (null == value)
+        if (null == value) {
             invalidate();
-        else
+        } else {
             this.timer.reset();
-        return prevValue;
         }
+        return prevValue;
+    }
 
     /**
      * Answers whether the last known value is both valid and equal to the value indicated. Note
      * that the .equals() method is used to make the comparison.
+     *
      * @param valueQ the value queried
      * @return whether the last known value is both valid and equal to the value indicated
      */
-    public boolean isValue(T valueQ)
-        {
-        if (this.isValid())
+    public boolean isValue(T valueQ) {
+        if (this.isValid()) {
             return this.value.equals(valueQ);
-        else
+        } else {
             return false;
         }
+    }
 
     /**
      * If the last known value is not both valid and equal to the indicated value, updates it to be
      * same and returns true; otherwise, returns false.
+     *
      * @param valueQ the value queried
      * @return whether the value was just updated
      */
-    public boolean updateValue(T valueQ)
-        {
-        if (!isValue(valueQ))
-            {
+    public boolean updateValue(T valueQ) {
+        if (!isValue(valueQ)) {
             setValue(valueQ);
             return true;
-            }
-        else
+        } else {
             return false;
         }
-
     }
+
+}

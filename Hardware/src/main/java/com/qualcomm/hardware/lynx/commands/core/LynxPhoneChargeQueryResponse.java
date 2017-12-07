@@ -40,8 +40,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-09-01.
  */
-public class LynxPhoneChargeQueryResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxPhoneChargeQueryResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,36 +53,32 @@ public class LynxPhoneChargeQueryResponse extends LynxDekaInterfaceResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxPhoneChargeQueryResponse(LynxModuleIntf module)
-        {
+    public LynxPhoneChargeQueryResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean isChargeEnabled()
-        {
+    public boolean isChargeEnabled() {
         return this.chargeEnabled != 0;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.chargeEnabled);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.chargeEnabled = buffer.get();
-        }
     }
+}

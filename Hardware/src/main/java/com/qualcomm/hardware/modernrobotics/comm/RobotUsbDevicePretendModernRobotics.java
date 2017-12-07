@@ -49,108 +49,123 @@ import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
  * writes but doesn't actually do anything.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice
-    {
-    protected FirmwareVersion           firmwareVersion = new FirmwareVersion();
-    protected CircularByteBuffer        circularByteBuffer = new CircularByteBuffer(0);
-    protected MarkedItemQueue           markedItemQueue = new MarkedItemQueue();
-    protected boolean                   interruptRequested = false;
-    protected SerialNumber              serialNumber;
-    protected DeviceManager.DeviceType  deviceType = DeviceManager.DeviceType.FTDI_USB_UNKNOWN_DEVICE;
-    protected boolean                   debugRetainBuffers = false;
-    protected ModernRoboticsDatagram.AllocationContext<ModernRoboticsRequest>  requestAllocationContext  = new ModernRoboticsDatagram.AllocationContext<ModernRoboticsRequest>();
+public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice {
+    protected FirmwareVersion firmwareVersion = new FirmwareVersion();
+    protected CircularByteBuffer circularByteBuffer = new CircularByteBuffer(0);
+    protected MarkedItemQueue markedItemQueue = new MarkedItemQueue();
+    protected boolean interruptRequested = false;
+    protected SerialNumber serialNumber;
+    protected DeviceManager.DeviceType deviceType = DeviceManager.DeviceType.FTDI_USB_UNKNOWN_DEVICE;
+    protected boolean debugRetainBuffers = false;
+    protected ModernRoboticsDatagram.AllocationContext<ModernRoboticsRequest> requestAllocationContext = new ModernRoboticsDatagram.AllocationContext<ModernRoboticsRequest>();
     protected ModernRoboticsDatagram.AllocationContext<ModernRoboticsResponse> responseAllocationContext = new ModernRoboticsDatagram.AllocationContext<ModernRoboticsResponse>();
 
-    public RobotUsbDevicePretendModernRobotics(SerialNumber serialNumber)
-        {
+    public RobotUsbDevicePretendModernRobotics(SerialNumber serialNumber) {
         this.serialNumber = serialNumber;
-        }
-    @Override @NonNull public SerialNumber getSerialNumber()
-        {
+    }
+
+    @Override
+    @NonNull
+    public SerialNumber getSerialNumber() {
         return this.serialNumber;
-        }
-    @Override public void setDeviceType(@NonNull DeviceManager.DeviceType deviceType)
-        {
+    }
+
+    @Override
+    public void setDeviceType(@NonNull DeviceManager.DeviceType deviceType) {
         this.deviceType = deviceType;
-        }
-    @Override @NonNull public DeviceManager.DeviceType getDeviceType()
-        {
+    }
+
+    @Override
+    @NonNull
+    public DeviceManager.DeviceType getDeviceType() {
         return this.deviceType;
-        }
-    @Override public void close()
-        {
-        }
-    @Override public boolean isOpen()
-        {
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public boolean isOpen() {
         return true;
-        }
-    @Override public boolean isAttached()
-        {
+    }
+
+    @Override
+    public boolean isAttached() {
         return true;
-        }
-    @Override public void setDebugRetainBuffers(boolean retain)
-        {
+    }
+
+    @Override
+    public void setDebugRetainBuffers(boolean retain) {
         this.debugRetainBuffers = retain;
-        }
-    @Override public boolean getDebugRetainBuffers()
-        {
+    }
+
+    @Override
+    public boolean getDebugRetainBuffers() {
         return this.debugRetainBuffers;
-        }
-    @Override public void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object...args)
-        {
+    }
+
+    @Override
+    public void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object... args) {
         RobotLog.ee(tag, format, args);
-        }
-    @Override public void setBaudRate(int i)
-        {
-        }
-    @Override public void setDataCharacteristics(byte b, byte b1, byte b2)
-        {
-        }
-    @Override public void setLatencyTimer(int i)
-        {
-        }
-    @Override public void setBreak(boolean enable)
-        {
-        }
-    @Override public void skipToLikelyUsbPacketStart()
-        {
+    }
+
+    @Override
+    public void setBaudRate(int i) {
+    }
+
+    @Override
+    public void setDataCharacteristics(byte b, byte b1, byte b2) {
+    }
+
+    @Override
+    public void setLatencyTimer(int i) {
+    }
+
+    @Override
+    public void setBreak(boolean enable) {
+    }
+
+    @Override
+    public void skipToLikelyUsbPacketStart() {
         int cbUnmarked = markedItemQueue.removeUpToNextMarkedItemOrEnd();
         circularByteBuffer.skip(cbUnmarked);
-        }
-    @Override public boolean mightBeAtUsbPacketStart()
-        {
+    }
+
+    @Override
+    public boolean mightBeAtUsbPacketStart() {
         return markedItemQueue.isAtMarkedItem() || markedItemQueue.isEmpty();
-        }
-    @Override public void write(byte[] bytes)
-        {
+    }
+
+    @Override
+    public void write(byte[] bytes) {
         // Interpret the byte data. Note: this only works because higher levels only ever write
         // whole requests in one fell swoop
         ModernRoboticsRequest request = null;
         ModernRoboticsResponse response = null;
         try {
             request = ModernRoboticsRequest.from(requestAllocationContext, bytes);
-            if (0 != request.getFunction()) throw new IllegalArgumentException("undefined function: " + request.getFunction());
+            if (0 != request.getFunction()) {
+                throw new IllegalArgumentException("undefined function: " + request.getFunction());
+            }
 
             // Generate an appropriate response
-            if (request.isWrite())
-                {
+            if (request.isWrite()) {
                 response = ModernRoboticsResponse.newInstance(responseAllocationContext, 0);
                 response.setWrite(request.getFunction());
                 response.setAddress(request.getAddress());
-                }
-            else
-                {
+            } else {
                 response = ModernRoboticsResponse.newInstance(responseAllocationContext, request.getPayloadLength());
                 response.setRead(request.getFunction());
                 response.setAddress(request.getAddress());
                 response.setPayloadLength(request.getPayloadLength());
                 response.clearPayload();
-                }
+            }
 
             // Remember the response for a subsequent read
             circularByteBuffer.write(response.data);
             markedItemQueue.addMarkedItem();
-            markedItemQueue.addUnmarkedItems(response.data.length-1);
+            markedItemQueue.addUnmarkedItems(response.data.length - 1);
 
             // We have a bit of a dilemma: we don't actually need to take any time to, e.g.,
             // communicate with an actual piece of hardware like a non-pretend device does.
@@ -168,63 +183,59 @@ public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice
             // read(), but we don't care enough about verisimilitude to be bothered.
             try {
                 Thread.sleep(3, 500000);
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                }
             }
-        finally
-            {
-            if (response != null) response.close();
-            if (request != null) request.close();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+            if (request != null) {
+                request.close();
             }
         }
+    }
 
-    @Override public int read(byte[] bytes, int ibFirst, int cbToRead, long timeout, @Nullable TimeWindow timeWindow)
-        {
+    @Override
+    public int read(byte[] bytes, int ibFirst, int cbToRead, long timeout, @Nullable TimeWindow timeWindow) {
         // Return what we can
         int cbRead = circularByteBuffer.read(bytes, ibFirst, cbToRead);
         markedItemQueue.removeItems(cbRead);
-        if (timeWindow != null)
-            {
+        if (timeWindow != null) {
             // We don't provide timestamps on data read
             timeWindow.clear();
-            }
-        return cbRead;
         }
+        return cbRead;
+    }
 
-    @Override public void resetAndFlushBuffers()
-        {
+    @Override
+    public void resetAndFlushBuffers() {
         circularByteBuffer.clear();
         markedItemQueue.clear();
-        }
+    }
 
-    @Override @NonNull
-    public FirmwareVersion getFirmwareVersion()
-        {
+    @Override
+    @NonNull
+    public FirmwareVersion getFirmwareVersion() {
         return firmwareVersion;
-        }
+    }
 
     @Override
-    public void setFirmwareVersion(FirmwareVersion version)
-        {
+    public void setFirmwareVersion(FirmwareVersion version) {
         this.firmwareVersion = version;
-        }
+    }
 
     @Override
-    public void requestReadInterrupt(boolean interruptRequested)
-        {
+    public void requestReadInterrupt(boolean interruptRequested) {
         this.interruptRequested = interruptRequested;
-        }
+    }
 
     @Override
-    public USBIdentifiers getUsbIdentifiers()
-        {
+    public USBIdentifiers getUsbIdentifiers() {
         USBIdentifiers result = new USBIdentifiers();
         result.vendorId = 0x0403;   // FTDI
         result.productId = 0;       // fake
         result.bcdDevice = 0;       // fake
         return result;
-        }
     }
+}

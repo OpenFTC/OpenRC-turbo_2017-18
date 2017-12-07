@@ -67,8 +67,11 @@ import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 /**
  * Created by bob on 2016-10-21.
  */
-public class EditI2cDevicesActivity extends EditI2cDevicesActivityAbstract<DeviceConfiguration>
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
-    public static final RequestCode requestCode = RequestCode.EDIT_I2C_PORT;
+public class EditI2cDevicesActivity extends EditI2cDevicesActivityAbstract<DeviceConfiguration> {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
+
+    public static final RequestCode requestCode = RequestCode.EDIT_I2C_PORT;
+}

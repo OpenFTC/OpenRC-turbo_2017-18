@@ -40,8 +40,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetMotorConstantPowerResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetMotorConstantPowerResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,36 +53,32 @@ public class LynxGetMotorConstantPowerResponse extends LynxDekaInterfaceResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorConstantPowerResponse(LynxModuleIntf module)
-        {
+    public LynxGetMotorConstantPowerResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getPower()
-        {
+    public int getPower() {
         return this.power;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.putShort(this.power);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.power = buffer.getShort();
-        }
     }
+}

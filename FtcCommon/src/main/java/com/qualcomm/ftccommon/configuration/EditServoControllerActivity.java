@@ -65,21 +65,22 @@ package com.qualcomm.ftccommon.configuration;
 import com.qualcomm.ftccommon.R;
 import com.qualcomm.robotcore.hardware.configuration.ServoControllerConfiguration;
 
-public class EditServoControllerActivity extends EditServoListActivity
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditServoControllerActivity extends EditServoListActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_SERVO_CONTROLLER;
 
-    public EditServoControllerActivity()
-        {
+    public EditServoControllerActivity() {
         super();
         this.layoutControllerNameBanner = R.layout.servo_controller_banner;
-        }
+    }
 
     @Override
-    public void finishOk()
-        {
-        ((ServoControllerConfiguration)controllerConfiguration).setServos(this.itemList);
+    public void finishOk() {
+        ((ServoControllerConfiguration) controllerConfiguration).setServos(this.itemList);
         super.finishOk();
-        }
     }
+}

@@ -56,8 +56,7 @@ import java.util.concurrent.TimeoutException;
  * Recovery for crashed processes is provided.
  */
 @SuppressWarnings("WeakerAccess")
-public class FileBasedLock
-    {
+public class FileBasedLock {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -68,69 +67,61 @@ public class FileBasedLock
     protected File lockFile;
     protected final Random random = new Random();
     protected final int msDeadlineInterval = 4000;
-    protected final int msRefreshInterval  = 1000;
-    protected final int msClockSlop        = 2000;
+    protected final int msRefreshInterval = 1000;
+    protected final int msClockSlop = 2000;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public FileBasedLock(File rootDir)
-        {
+    public FileBasedLock(File rootDir) {
         this.rootDir = rootDir.getAbsoluteFile();
         this.lockFile = new File(this.rootDir, "lock.dat");
 
         AppUtil.getInstance().ensureDirectoryExists(rootDir);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    protected class NeverThrown extends Exception {};
+    protected class NeverThrown extends Exception {
+    }
 
-    public void lockWhile(final Runnable runnable) throws InterruptedException
-        {
-        lockWhile(new Supplier<Void>()
-            {
-            @Override public Void get()
-                {
+    ;
+
+    public void lockWhile(final Runnable runnable) throws InterruptedException {
+        lockWhile(new Supplier<Void>() {
+            @Override
+            public Void get() {
                 runnable.run();
                 return null;
+            }
+        });
+    }
+
+    public <T> T lockWhile(final Supplier<T> supplier) throws InterruptedException {
+        try {
+            return lockWhile(new ThrowingCallable<T, NeverThrown>() {
+                @Override
+                public T call() {
+                    return supplier.get();
                 }
             });
-        }
-
-    public <T> T lockWhile(final Supplier<T> supplier) throws InterruptedException
-        {
-        try {
-            return lockWhile(new ThrowingCallable<T, NeverThrown>()
-                {
-                @Override public T call()
-                    {
-                    return supplier.get();
-                    }
-                });
-            }
-        catch (NeverThrown throwable)
-            {
+        } catch (NeverThrown throwable) {
             throw AppUtil.getInstance().unreachable(TAG, throwable);
-            }
         }
+    }
 
-    public <T,E extends Throwable> T lockWhile(ThrowingCallable<T,E> throwingCallable) throws InterruptedException, E
-        {
+    public <T, E extends Throwable> T lockWhile(ThrowingCallable<T, E> throwingCallable) throws InterruptedException, E {
         try {
             return lockWhile(Long.MAX_VALUE, TimeUnit.MILLISECONDS, throwingCallable);
-            }
-        catch (TimeoutException e)
-            {
+        } catch (TimeoutException e) {
             throw AppUtil.getInstance().unreachable(TAG, e);
-            }
         }
+    }
 
-    public <T,E extends Throwable> T lockWhile(long timeout, TimeUnit timeUnit, ThrowingCallable<T, E> throwingCallable) throws TimeoutException, InterruptedException, E
-        {
+    public <T, E extends Throwable> T lockWhile(long timeout, TimeUnit timeUnit, ThrowingCallable<T, E> throwingCallable) throws TimeoutException, InterruptedException, E {
         T result = null;
 
         // Try to acquire the lock
@@ -138,48 +129,41 @@ public class FileBasedLock
 
         try {
             // Set a watcher a-going that updates our intended deadline while the user's code runs
-            Future deadlineUpdater = ThreadPool.getDefault().submit(new Runnable()
-                {
-                @Override public void run()
-                    {
+            Future deadlineUpdater = ThreadPool.getDefault().submit(new Runnable() {
+                @Override
+                public void run() {
                     // Wait a while, stopping when asked
-                    while (!Thread.currentThread().isInterrupted())
-                        {
+                    while (!Thread.currentThread().isInterrupted()) {
                         try {
                             // Err a bit on the side of safety wrt how often we update the deadline
                             Thread.sleep(msRefreshInterval, 0);
-                            }
-                        catch (InterruptedException e)
-                            {
+                        } catch (InterruptedException e) {
                             return;
-                            }
+                        }
 
                         // Update the deadline on the lock file
                         RobotLog.vv(TAG, "refreshing lock %s", lockFile.getPath());
                         refreshDeadline(lockFile);
-                        }
                     }
-                });
+                }
+            });
 
             // Run the user's code
             try {
                 result = throwingCallable.call();
-                }
-            finally
-                {
+            } finally {
                 deadlineUpdater.cancel(true);
-                }
             }
-        finally
-            {
+        } finally {
             unlock();
-            }
-        return result;
         }
+        return result;
+    }
 
-    protected void lock(long timeout, TimeUnit timeUnit) throws TimeoutException, InterruptedException
-        {
-        if (timeout < 0) throw new IllegalArgumentException(String.format("timeout must be >= 0: %d", timeout));
+    protected void lock(long timeout, TimeUnit timeUnit) throws TimeoutException, InterruptedException {
+        if (timeout < 0) {
+            throw new IllegalArgumentException(String.format("timeout must be >= 0: %d", timeout));
+        }
 
         // Create the file we will use to carry out our lock attempt. The timestamp on this file
         // will be the time at which we intend to give up the lock. When renamed to 'lockFile',
@@ -188,41 +172,35 @@ public class FileBasedLock
         try {
             FileOutputStream outputStream = new FileOutputStream(progenetor);
             outputStream.close();
-            }
-        catch (IOException e)
-            {
+        } catch (IOException e) {
             throw new RuntimeException(String.format("unable to create %s", progenetor.getPath()), e);
-            }
+        }
 
         // Establish the deadline. Be careful of REALLY big timeouts
         long msTimeout = timeUnit.toMillis(timeout);
-        long msNow     = msNow();
+        long msNow = msNow();
         long timeoutDeadline = msTimeout + msNow >= msNow ? msTimeout + msNow : Long.MAX_VALUE;
 
         // Try to rename progenetor to lock file
-        for (;;)
-            {
-            if (Thread.interrupted())
-                {
+        for (; ; ) {
+            if (Thread.interrupted()) {
                 throw new InterruptedException(String.format("interrupt while acquiring lock %s", rootDir.getPath()));
-                }
+            }
 
-            if (msNow() > timeoutDeadline)
-                {
+            if (msNow() > timeoutDeadline) {
                 //noinspection ResultOfMethodCallIgnored
                 progenetor.delete();
                 throw new TimeoutException(String.format("unable to acquire lock %s", rootDir.getPath()));
-                }
+            }
 
             // Initialize the deadline
             refreshDeadline(progenetor);
 
             // Attempt a rename to acquire the lock
-            if (progenetor.renameTo(lockFile))
-                {
+            if (progenetor.renameTo(lockFile)) {
                 RobotLog.vv(TAG, "locked %s", lockFile.getPath());
                 return; // Acquired the lock
-                }
+            }
 
             // Didn't acquire the lock. Should we break the lock? Note that an ACTIVE lock
             // holder will never let the deadline get close enough to triggering so as to
@@ -230,34 +208,30 @@ public class FileBasedLock
             // means that the race inherent in multiple simultaneous break attempts doesn't matter.
             long msRecordedDeadline = getDeadline(lockFile);
             if (msRecordedDeadline != 0)    // zero means error. race on deletion? either way, try again
-                {
+            {
                 msRecordedDeadline += msClockSlop;  // clock slop allows for network time sync issues (not well tested)
-                if (msRecordedDeadline > msNow())
-                    {
+                if (msRecordedDeadline > msNow()) {
                     // We're past the intended deadline. Break the lock
                     RobotLog.vv(TAG, "breaking lock %s", lockFile.getPath());
                     releaseLock();
-                    }
                 }
+            }
 
             // Be gracious
             Thread.yield();
-            }
         }
+    }
 
-    protected File newTempFile()
-        {
+    protected File newTempFile() {
         return new File(rootDir, UUID.randomUUID().toString() + ".tmp");
-        }
+    }
 
-    protected void unlock()
-        {
+    protected void unlock() {
         RobotLog.vv(TAG, "unlocking %s", lockFile.getPath());
         releaseLock();
-        }
+    }
 
-    protected void refreshDeadline(File file)
-        {
+    protected void refreshDeadline(File file) {
         // Be aware that file systems can have quite coarse granularity with which they
         // store modification stamps. DOS was notorious for two-second granularity, for instance.
         // Android seems intrinsically to be able to do no better than 1000ms granularity on ANY
@@ -276,54 +250,41 @@ public class FileBasedLock
         int token = random.nextInt();   // could use a UUID, but would be larger, so longer write times, more torn writes, maybe
         String contents = String.format(Locale.getDefault(), "%d|%d|%d", token, deadline, token);
         ReadWriteFile.writeFile(file, contents);
-        }
+    }
 
-    protected long getDeadline(File file)
-        {
-        for (;;)
-            {
+    protected long getDeadline(File file) {
+        for (; ; ) {
             String contents;
             try {
                 contents = ReadWriteFile.readFileOrThrow(file);
-                }
-            catch (IOException e)
-                {
+            } catch (IOException e) {
                 return 0;
-                }
+            }
             String[] splits = contents.split("\\|");
-            if (splits.length == 3)
-                {
+            if (splits.length == 3) {
                 int firstToken = Integer.valueOf(splits[0]);
                 int lastToken = Integer.valueOf(splits[2]);
-                if (firstToken == lastToken)
-                    {
+                if (firstToken == lastToken) {
                     return Long.valueOf(splits[1]);
-                    }
                 }
             }
-        }
-
-    protected void releaseLock()
-        {
-        File toDelete = newTempFile();
-        if (lockFile.renameTo(toDelete))
-            {
-            if (!toDelete.delete())
-                {
-                RobotLog.ee(TAG, "unable to delete %s", toDelete.getPath());
-                }
-            }
-        else
-            {
-            if (lockFile.exists())
-                {
-                RobotLog.ee(TAG, "unable to rename %s to %s for deletion", lockFile.getPath(), toDelete.getPath());
-                }
-            }
-        }
-
-    protected long msNow()
-        {
-        return System.currentTimeMillis();
         }
     }
+
+    protected void releaseLock() {
+        File toDelete = newTempFile();
+        if (lockFile.renameTo(toDelete)) {
+            if (!toDelete.delete()) {
+                RobotLog.ee(TAG, "unable to delete %s", toDelete.getPath());
+            }
+        } else {
+            if (lockFile.exists()) {
+                RobotLog.ee(TAG, "unable to rename %s to %s for deletion", lockFile.getPath(), toDelete.getPath());
+            }
+        }
+    }
+
+    protected long msNow() {
+        return System.currentTimeMillis();
+    }
+}

@@ -43,9 +43,8 @@ import java.util.List;
  * types of Vuforia trackables, such as VuMark templates and VuMark targets.
  */
 @SuppressWarnings("WeakerAccess")
-public interface VuforiaTrackableContainer
-    {
+public interface VuforiaTrackableContainer {
     List<VuforiaTrackable> children();
 
     VuforiaTrackable getChild(VuMarkTarget vuMarkTarget);
-    }
+}

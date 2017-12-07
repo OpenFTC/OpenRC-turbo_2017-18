@@ -43,49 +43,47 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 /**
  * Created by bob on 2016-03-12.
  */
-public class LynxVoltageSensor extends LynxController implements VoltageSensor
-    {
+public class LynxVoltageSensor extends LynxController implements VoltageSensor {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxVoltageSensor";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     public LynxVoltageSensor(final Context context, final LynxModule module)
-            throws RobotCoreException, InterruptedException
-        {
+            throws RobotCoreException, InterruptedException {
         super(context, module);
         finishConstruction();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice interface
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return this.context.getString(R.string.lynxVoltageSensorDisplayName);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // VoltageSensor interface
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public double getVoltage()
-        {
+    public double getVoltage() {
         LynxGetADCCommand command = new LynxGetADCCommand(this.getModule(), LynxGetADCCommand.Channel.BATTERY_MONITOR, LynxGetADCCommand.Mode.ENGINEERING);
         try {
             LynxGetADCResponse response = command.sendReceive();
             int mv = response.getValue();
             return mv * 0.001;
-            }
-        catch (InterruptedException|RuntimeException|LynxNackException e)
-            {
+        } catch (InterruptedException | RuntimeException | LynxNackException e) {
             handleException(e);
-            }
-        return LynxUsbUtil.makePlaceholderValue(0.0);
         }
+        return LynxUsbUtil.makePlaceholderValue(0.0);
     }
+}

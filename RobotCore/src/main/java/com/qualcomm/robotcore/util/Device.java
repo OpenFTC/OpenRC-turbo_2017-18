@@ -38,32 +38,32 @@ import android.os.Build;
 @SuppressWarnings("WeakerAccess")
 public class Device {
 
-  public final static String MANUFACTURER_ZTE = "zte";
-  public final static String MODEL_ZTE_SPEED = "N9130";
+    public final static String MANUFACTURER_ZTE = "zte";
+    public final static String MODEL_ZTE_SPEED = "N9130";
 
-  /**
-   * Answers whether this is a ZTE Speed phone. For the Speed's, the model number
-   * is sufficiently distinctive and universal that we can reasonably key off of that.
-   * Generally, however, this is not true, as model numbers are by definition primarlily
-   * for human consumption, not programmatic use
-   */
-  public static boolean isZteSpeed() {
-    return Build.MANUFACTURER.equalsIgnoreCase(MANUFACTURER_ZTE) && Build.MODEL.equalsIgnoreCase(MODEL_ZTE_SPEED);
+    /**
+     * Answers whether this is a ZTE Speed phone. For the Speed's, the model number
+     * is sufficiently distinctive and universal that we can reasonably key off of that.
+     * Generally, however, this is not true, as model numbers are by definition primarlily
+     * for human consumption, not programmatic use
+     */
+    public static boolean isZteSpeed() {
+        return Build.MANUFACTURER.equalsIgnoreCase(MANUFACTURER_ZTE) && Build.MODEL.equalsIgnoreCase(MODEL_ZTE_SPEED);
     }
 
-  /**
-   * When running on the ZTE, should we use the ZTE-provided channel-changing utility app,
-   * or should we just go with our own UI. Testing shows that we don't have any method of
-   * channel changing on the ZTEs that will work other than using the ZTE app. Unfortunate.
-   */
-  public static boolean useZteProvidedWifiChannelEditorOnZteSpeeds() {
-    return true;
-  }
+    /**
+     * When running on the ZTE, should we use the ZTE-provided channel-changing utility app,
+     * or should we just go with our own UI. Testing shows that we don't have any method of
+     * channel changing on the ZTEs that will work other than using the ZTE app. Unfortunate.
+     */
+    public static boolean useZteProvidedWifiChannelEditorOnZteSpeeds() {
+        return true;
+    }
 
-  /**
-   * Is it possible to remote channel change from a driver station to this device?
-   */
-  public static boolean wifiP2pRemoteChannelChangeWorks() {
-    return !(isZteSpeed() && useZteProvidedWifiChannelEditorOnZteSpeeds());
-  }
+    /**
+     * Is it possible to remote channel change from a driver station to this device?
+     */
+    public static boolean wifiP2pRemoteChannelChangeWorks() {
+        return !(isZteSpeed() && useZteProvidedWifiChannelEditorOnZteSpeeds());
+    }
 }

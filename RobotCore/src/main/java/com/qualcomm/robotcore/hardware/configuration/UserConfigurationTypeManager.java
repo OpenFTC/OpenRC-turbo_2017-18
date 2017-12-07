@@ -70,8 +70,7 @@ import java.util.Set;
  */
 @SuppressWarnings("WeakerAccess")
 @SuppressLint("StaticFieldLeak")
-public class UserConfigurationTypeManager implements ClassFilter
-    {
+public class UserConfigurationTypeManager implements ClassFilter {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -81,110 +80,100 @@ public class UserConfigurationTypeManager implements ClassFilter
 
     protected static UserConfigurationTypeManager theInstance = new UserConfigurationTypeManager();
 
-    public static UserConfigurationTypeManager getInstance()
-        {
+    public static UserConfigurationTypeManager getInstance() {
         return theInstance;
-        }
+    }
 
-    protected Context                       context;
+    protected Context context;
     protected Map<String, UserConfigurationType> mapTagToUserType = new HashMap<String, UserConfigurationType>();
-    protected Set<String>                   existingXmlTags = new HashSet<String>();
-    protected Set<String>                   existingTypeDisplayNames = new HashSet<String>();
-    protected static String                 unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class.getAnnotation(MotorType.class));
+    protected Set<String> existingXmlTags = new HashSet<String>();
+    protected Set<String> existingTypeDisplayNames = new HashSet<String>();
+    protected static String unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class.getAnnotation(MotorType.class));
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public UserConfigurationTypeManager()
-        {
+    public UserConfigurationTypeManager() {
         this.context = AppUtil.getInstance().getApplication();
         addBuiltinConfigurationTypes();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Retrieval
     //----------------------------------------------------------------------------------------------
 
-    public MotorConfigurationType getUnspecifiedMotorType()
-        {
-        return (MotorConfigurationType)userTypeFromTag(unspecifiedMotorTypeXmlTag);
-        }
+    public MotorConfigurationType getUnspecifiedMotorType() {
+        return (MotorConfigurationType) userTypeFromTag(unspecifiedMotorTypeXmlTag);
+    }
 
-    public ConfigurationType configurationTypeFromTag(String xmlTag)
-        {
+    public ConfigurationType configurationTypeFromTag(String xmlTag) {
         ConfigurationType result = BuiltInConfigurationType.fromXmlTag(xmlTag);
-        if (result == BuiltInConfigurationType.UNKNOWN)
-            {
+        if (result == BuiltInConfigurationType.UNKNOWN) {
             result = userTypeFromTag(xmlTag);
-            if (result == null)
-                {
+            if (result == null) {
                 result = BuiltInConfigurationType.UNKNOWN;
-                }
             }
+        }
         return result;
-        }
+    }
 
-    public @Nullable UserConfigurationType userTypeFromTag(@NonNull String xmlTag)
-        {
+    public
+    @Nullable
+    UserConfigurationType userTypeFromTag(@NonNull String xmlTag) {
         return mapTagToUserType.get(xmlTag);
-        }
+    }
 
-    public @Nullable
-    UserConfigurationType userTypeFromClass(UserConfigurationType.Flavor flavor, Class<?> clazz)
-        {
+    public
+    @Nullable
+    UserConfigurationType userTypeFromClass(UserConfigurationType.Flavor flavor, Class<?> clazz) {
         String xmlTag = null;
-        switch (flavor)
-            {
+        switch (flavor) {
             case I2C:
                 I2cSensor i2cSensor = clazz.getAnnotation(I2cSensor.class);
-                if (i2cSensor != null)
-                    {
+                if (i2cSensor != null) {
                     xmlTag = getXmlTag(i2cSensor);
-                    }
+                }
                 break;
             case MOTOR:
                 MotorType motorType = clazz.getAnnotation(MotorType.class);
-                if (motorType != null)
-                    {
+                if (motorType != null) {
                     xmlTag = getXmlTag(motorType);
-                    }
-                break;
-            }
-        return xmlTag==null ? null : userTypeFromTag(xmlTag);
-        }
-
-    public @Nullable UserConfigurationType userTypeFromTag(String xmlTag, UserConfigurationType.Flavor flavor)
-        {
-        UserConfigurationType result = mapTagToUserType.get(xmlTag);
-        if (result != null && result.getFlavor() != flavor)
-            {
-            result = null;
-            }
-        return result;
-        }
-
-    public @NonNull Collection<UserConfigurationType> allUserTypes(UserConfigurationType.Flavor flavor)
-        {
-        List<UserConfigurationType> result = new LinkedList<UserConfigurationType>();
-        for (UserConfigurationType userConfigurationType : mapTagToUserType.values())
-            {
-            if (userConfigurationType.flavor == flavor)
-                {
-                result.add(userConfigurationType);
                 }
-            }
-        return result;
+                break;
         }
+        return xmlTag == null ? null : userTypeFromTag(xmlTag);
+    }
+
+    public
+    @Nullable
+    UserConfigurationType userTypeFromTag(String xmlTag, UserConfigurationType.Flavor flavor) {
+        UserConfigurationType result = mapTagToUserType.get(xmlTag);
+        if (result != null && result.getFlavor() != flavor) {
+            result = null;
+        }
+        return result;
+    }
+
+    public
+    @NonNull
+    Collection<UserConfigurationType> allUserTypes(UserConfigurationType.Flavor flavor) {
+        List<UserConfigurationType> result = new LinkedList<UserConfigurationType>();
+        for (UserConfigurationType userConfigurationType : mapTagToUserType.values()) {
+            if (userConfigurationType.flavor == flavor) {
+                result.add(userConfigurationType);
+            }
+        }
+        return result;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization
     //----------------------------------------------------------------------------------------------
 
-    protected Gson newGson()
-        {
+    protected Gson newGson() {
         RuntimeTypeAdapterFactory<UserConfigurationType> userDeviceTypeAdapterFactory
-            = RuntimeTypeAdapterFactory.of(UserConfigurationType.class, "flavor")
+                = RuntimeTypeAdapterFactory.of(UserConfigurationType.class, "flavor")
                 .registerSubtype(UserI2cSensorType.class, UserConfigurationType.Flavor.I2C.toString())
                 .registerSubtype(MotorConfigurationType.class, UserConfigurationType.Flavor.MOTOR.toString());
 
@@ -192,155 +181,136 @@ public class UserConfigurationTypeManager implements ClassFilter
                 .excludeFieldsWithoutExposeAnnotation()
                 .registerTypeAdapterFactory(userDeviceTypeAdapterFactory)
                 .create();
-        }
+    }
 
-    public String serializeUserDeviceTypes()
-        {
+    public String serializeUserDeviceTypes() {
         return newGson().toJson(mapTagToUserType.values());
-        }
+    }
 
-    public void sendUserDeviceTypes()
-        {
+    public void sendUserDeviceTypes() {
         String userDeviceTypes = this.serializeUserDeviceTypes();
         NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_USER_DEVICE_LIST, userDeviceTypes));
-        }
+    }
 
 
     // Replace the current user device types with the ones contained in the serialization
-    public void deserializeUserDeviceTypes(String serialization)
-        {
+    public void deserializeUserDeviceTypes(String serialization) {
         clearUserTypes();
         //
         UserConfigurationType[] newTypes = newGson().fromJson(serialization, UserConfigurationType[].class);
-        for (UserConfigurationType deviceType : newTypes)
-            {
+        for (UserConfigurationType deviceType : newTypes) {
             add(deviceType);
-            }
-
-        if (DEBUG)
-            {
-            for (Map.Entry<String, UserConfigurationType> pair : mapTagToUserType.entrySet())
-                {
-                RobotLog.vv(TAG, "deserialized: xmltag=%s name=%s class=%s", pair.getValue().getXmlTag(), pair.getValue().getName(), pair.getValue().getClass().getSimpleName());
-                }
-            }
         }
 
-    protected void addBuiltinConfigurationTypes()
-        {
-        for (BuiltInConfigurationType type : BuiltInConfigurationType.values())
-            {
+        if (DEBUG) {
+            for (Map.Entry<String, UserConfigurationType> pair : mapTagToUserType.entrySet()) {
+                RobotLog.vv(TAG, "deserialized: xmltag=%s name=%s class=%s", pair.getValue().getXmlTag(), pair.getValue().getName(), pair.getValue().getClass().getSimpleName());
+            }
+        }
+    }
+
+    protected void addBuiltinConfigurationTypes() {
+        for (BuiltInConfigurationType type : BuiltInConfigurationType.values()) {
             existingXmlTags.add(type.getXmlTag());
             existingTypeDisplayNames.add(type.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal, this.context));
             existingTypeDisplayNames.add(type.getDisplayName(ConfigurationType.DisplayNameFlavor.Legacy, this.context));
-            }
         }
+    }
 
-    protected void add(UserConfigurationType deviceType)
-        {
+    protected void add(UserConfigurationType deviceType) {
         mapTagToUserType.put(deviceType.getXmlTag(), deviceType);
         existingTypeDisplayNames.add(deviceType.getName());
         existingXmlTags.add(deviceType.getXmlTag());
-        }
+    }
 
-    protected void clearUserTypes()
-        {
+    protected void clearUserTypes() {
         List<UserConfigurationType> extant = new ArrayList<>(mapTagToUserType.values()); // capture to avoid deleting while iterating
 
-        for (UserConfigurationType userType : extant)
-            {
+        for (UserConfigurationType userType : extant) {
             existingTypeDisplayNames.remove(userType.getName());
             existingXmlTags.remove(userType.getXmlTag());
             mapTagToUserType.remove(userType.getXmlTag());
-            }
         }
+    }
 
-    protected void clearOnBotJavaTypes()
-        {
+    protected void clearOnBotJavaTypes() {
         List<UserConfigurationType> extantUserTypes = new ArrayList<>(mapTagToUserType.values());  // capture to avoid deleting while iterating
 
-        for (UserConfigurationType userType : extantUserTypes)
-            {
-            if (userType.isOnBotJava)
-                {
+        for (UserConfigurationType userType : extantUserTypes) {
+            if (userType.isOnBotJava) {
                 existingTypeDisplayNames.remove(userType.getName());
                 existingXmlTags.remove(userType.getXmlTag());
                 mapTagToUserType.remove(userType.getXmlTag());
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Annotation parsing
     //----------------------------------------------------------------------------------------------
 
-    @Override public void filterAllClassesStart()
-        {
+    @Override
+    public void filterAllClassesStart() {
         clearUserTypes();
-        }
+    }
 
-    @Override public void filterOnBotJavaClassesStart()
-        {
+    @Override
+    public void filterOnBotJavaClassesStart() {
         clearOnBotJavaTypes();
-        }
+    }
 
-    @Override public void filterClass(Class clazz)
-        {
+    @Override
+    public void filterClass(Class clazz) {
         filterMotorType(clazz);
         filterI2c(clazz);
-        }
+    }
 
-    @Override public void filterOnBotJavaClass(Class clazz)
-        {
+    @Override
+    public void filterOnBotJavaClass(Class clazz) {
         filterClass(clazz);
-        }
+    }
 
-    @Override public void filterAllClassesComplete()
-        {
+    @Override
+    public void filterAllClassesComplete() {
         // Nothing to do
-        }
+    }
 
-    @Override public void filterOnBotJavaClassesComplete()
-        {
+    @Override
+    public void filterOnBotJavaClassesComplete() {
         filterAllClassesComplete();
-        }
+    }
 
-    public void filterMotorType(Class clazz)
-        {
+    public void filterMotorType(Class clazz) {
         MotorConfigurationType motorType = isUserMotorType(clazz);
-        if (motorType != null)
-            {
+        if (motorType != null) {
             // There's some things we need to check about the actual class
-            if (!checkMotorTypeClassConstraints(motorType))
+            if (!checkMotorTypeClassConstraints(motorType)) {
                 return;
+            }
 
             add(motorType);
-            }
         }
+    }
 
-    protected void filterI2c(Class clazz)
-        {
-        if (isHardwareDevice(clazz))
-            {
-            Class<? extends HardwareDevice> clazzHardwareDevice = (Class<? extends HardwareDevice>)clazz;
+    protected void filterI2c(Class clazz) {
+        if (isHardwareDevice(clazz)) {
+            Class<? extends HardwareDevice> clazzHardwareDevice = (Class<? extends HardwareDevice>) clazz;
 
             // Is this an I2C sensor?
             UserI2cSensorType sensorType = isUserI2cSensor(clazzHardwareDevice);
-            if (sensorType != null)
-                {
+            if (sensorType != null) {
                 // There's some things we need to check about the actual class
-                if (!checkI2cSensorClassConstraints(sensorType))
+                if (!checkI2cSensorClassConstraints(sensorType)) {
                     return;
+                }
 
                 add(sensorType);
-                }
             }
         }
+    }
 
-    MotorConfigurationType isUserMotorType(Class<?> clazz)
-        {
-        if (clazz.isAnnotationPresent(MotorType.class))
-            {
+    MotorConfigurationType isUserMotorType(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(MotorType.class)) {
             MotorType motorType = clazz.getAnnotation(MotorType.class);
             MotorConfigurationType result = new MotorConfigurationType(clazz, getXmlTag(motorType));
             result.processAnnotation(motorType);
@@ -350,193 +320,177 @@ public class UserConfigurationTypeManager implements ClassFilter
             result.processAnnotation(findAnnotation(clazz, DistributorInfo.class));
             result.finishedAnnotations(clazz);
             return result;
-            }
-        return null;
         }
+        return null;
+    }
 
-    UserI2cSensorType isUserI2cSensor(Class<? extends HardwareDevice> clazz)
-        {
-        if (clazz.isAnnotationPresent(I2cSensor.class))
-            {
+    UserI2cSensorType isUserI2cSensor(Class<? extends HardwareDevice> clazz) {
+        if (clazz.isAnnotationPresent(I2cSensor.class)) {
             I2cSensor i2cSensor = clazz.getAnnotation(I2cSensor.class);
             UserI2cSensorType result = new UserI2cSensorType(clazz, getXmlTag(i2cSensor));
             result.processAnnotation(i2cSensor);
             result.finishedAnnotations(clazz);
             return result;
-            }
-        return null;
         }
+        return null;
+    }
 
-    /** Allow annotations to be inherited if we want them to. */
-    protected <A extends Annotation> A findAnnotation(Class<?> clazz, final Class<A> annotationType)
-        {
+    /**
+     * Allow annotations to be inherited if we want them to.
+     */
+    protected <A extends Annotation> A findAnnotation(Class<?> clazz, final Class<A> annotationType) {
         final ArrayList<A> result = new ArrayList<A>(1);
         result.add(null);
 
-        ClassUtil.searchInheritance(clazz, new Predicate<Class<?>>()
-            {
-            @Override public boolean test(Class<?> aClass)
-                {
+        ClassUtil.searchInheritance(clazz, new Predicate<Class<?>>() {
+            @Override
+            public boolean test(Class<?> aClass) {
                 A annotation = aClass.getAnnotation(annotationType);
-                if (annotation != null)
-                    {
+                if (annotation != null) {
                     result.set(0, annotation);
                     return true;
-                    }
-                else
+                } else {
                     return false;
                 }
-            });
+            }
+        });
 
         return result.get(0);
-        }
+    }
 
-    protected boolean checkMotorTypeClassConstraints(MotorConfigurationType motorType)
-        {
+    protected boolean checkMotorTypeClassConstraints(MotorConfigurationType motorType) {
         // Check the user-visible form of the sensor name
-        if (!isLegalMotorTypeName(motorType.getName()))
-            {
+        if (!isLegalMotorTypeName(motorType.getName())) {
             reportConfigurationError("\"%s\" is not a legal motor type name", motorType.getName());
             return false;
-            }
-        if (existingTypeDisplayNames.contains(motorType.getName()))
-            {
+        }
+        if (existingTypeDisplayNames.contains(motorType.getName())) {
             reportConfigurationError("the motor type \"%s\" is already defined", motorType.getName());
             return false;
-            }
-
-        // Check the XML tag
-        if (!isLegalXmlTag(motorType.getXmlTag()))
-            {
-            reportConfigurationError("\"%s\" is not a legal XML tag for the motor type \"%s\"", motorType.getXmlTag(), motorType.getName());
-            return false;
-            }
-        if (existingXmlTags.contains(motorType.getXmlTag()))
-            {
-            reportConfigurationError("the XML tag \"%s\" is already defined", motorType.getXmlTag());
-            return false;
-            }
-
-        return true;
         }
 
-    protected boolean checkI2cSensorClassConstraints(UserI2cSensorType sensorType)
-        {
+        // Check the XML tag
+        if (!isLegalXmlTag(motorType.getXmlTag())) {
+            reportConfigurationError("\"%s\" is not a legal XML tag for the motor type \"%s\"", motorType.getXmlTag(), motorType.getName());
+            return false;
+        }
+        if (existingXmlTags.contains(motorType.getXmlTag())) {
+            reportConfigurationError("the XML tag \"%s\" is already defined", motorType.getXmlTag());
+            return false;
+        }
+
+        return true;
+    }
+
+    protected boolean checkI2cSensorClassConstraints(UserI2cSensorType sensorType) {
         // If the class doesn't extend HardwareDevice, that's an error, we'll ignore it
-        if (!isHardwareDevice(sensorType.getClazz()))
-            {
+        if (!isHardwareDevice(sensorType.getClazz())) {
             reportConfigurationError("'%s' class doesn't inherit from the class 'HardwareDevice'", sensorType.getClazz().getSimpleName());
             return false;
-            }
+        }
 
         // If it's not 'public', it can't be loaded by the system and won't work. We report
         // the error and ignore
-        if (!Modifier.isPublic(sensorType.getClazz().getModifiers()))
-            {
+        if (!Modifier.isPublic(sensorType.getClazz().getModifiers())) {
             reportConfigurationError("'%s' class is not declared 'public'", sensorType.getClazz().getSimpleName());
             return false;
-            }
+        }
 
         // Can we instantiate?
-        if (!sensorType.hasConstructors())
-            {
+        if (!sensorType.hasConstructors()) {
             reportConfigurationError("'%s' class lacks necessary constructor", sensorType.getClazz().getSimpleName());
             return false;
-            }
+        }
 
         // Check the user-visible form of the sensor name
-        if (!isLegalSensorName(sensorType.getName()))
-            {
+        if (!isLegalSensorName(sensorType.getName())) {
             reportConfigurationError("\"%s\" is not a legal sensor name", sensorType.getName());
             return false;
-            }
-        if (existingTypeDisplayNames.contains(sensorType.getName()))
-            {
+        }
+        if (existingTypeDisplayNames.contains(sensorType.getName())) {
             reportConfigurationError("the sensor \"%s\" is already defined", sensorType.getName());
             return false;
-            }
+        }
 
         // Check the XML tag
-        if (!isLegalXmlTag(sensorType.getXmlTag()))
-            {
+        if (!isLegalXmlTag(sensorType.getXmlTag())) {
             reportConfigurationError("\"%s\" is not a legal XML tag for the sensor \"%s\"", sensorType.getXmlTag(), sensorType.getName());
             return false;
-            }
-        if (existingXmlTags.contains(sensorType.getXmlTag()))
-            {
+        }
+        if (existingXmlTags.contains(sensorType.getXmlTag())) {
             reportConfigurationError("the XML tag \"%s\" is already defined", sensorType.getXmlTag());
             return false;
-            }
-
-        return true;
         }
 
-    protected boolean isLegalMotorTypeName(String name)
-        {
-        if (!isGoodString(name))
+        return true;
+    }
+
+    protected boolean isLegalMotorTypeName(String name) {
+        if (!isGoodString(name)) {
             return false;
-
-        return true;
         }
 
-    protected boolean isLegalSensorName(String name)
-        {
-        if (!isGoodString(name))
+        return true;
+    }
+
+    protected boolean isLegalSensorName(String name) {
+        if (!isGoodString(name)) {
             return false;
+        }
 
         return true;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected  boolean isGoodString(String string)
-        {
-        if (string == null)
+    protected boolean isGoodString(String string) {
+        if (string == null) {
             return false;
-        if (!string.trim().equals(string))
+        }
+        if (!string.trim().equals(string)) {
             return false;
-        if (string.length()==0)
+        }
+        if (string.length() == 0) {
             return false;
-
-        return true;
         }
 
-    protected void reportConfigurationError(String format, Object... args)
-        {
+        return true;
+    }
+
+    protected void reportConfigurationError(String format, Object... args) {
         String message = String.format(format, args);
         RobotLog.ee(TAG, String.format("configuration error: %s", message));
         RobotLog.setGlobalErrorMsg(message);
-        }
+    }
 
-    protected boolean isHardwareDevice(Class clazz)
-        {
+    protected boolean isHardwareDevice(Class clazz) {
         return ClassUtil.inheritsFrom(clazz, HardwareDevice.class);
-        }
+    }
 
-    protected boolean isLegalXmlTag(String xmlTag)
-        {
-        if (!isGoodString(xmlTag))
+    protected boolean isLegalXmlTag(String xmlTag) {
+        if (!isGoodString(xmlTag)) {
             return false;
+        }
 
         // For simplicity, we only allow a restricted subset of what XML allows
         //  https://www.w3.org/TR/REC-xml/#NT-NameStartChar
         String nameStartChar = "\\p{Alpha}_:";
-        String nameChar      = nameStartChar + "0-9\\-\\.";
+        String nameChar = nameStartChar + "0-9\\-\\.";
 
-        if (!xmlTag.matches("^["+ nameStartChar +"]["+ nameChar +"]*$"))
+        if (!xmlTag.matches("^[" + nameStartChar + "][" + nameChar + "]*$")) {
             return false;
+        }
 
         return true;
-        }
-
-    public static String getXmlTag(I2cSensor i2cSensor)
-        {
-        return ClassUtil.decodeStringRes(i2cSensor.xmlTag().trim());
-        }
-    public static String getXmlTag(MotorType motorType)
-        {
-        return ClassUtil.decodeStringRes(motorType.xmlTag().trim());
-        }
     }
+
+    public static String getXmlTag(I2cSensor i2cSensor) {
+        return ClassUtil.decodeStringRes(i2cSensor.xmlTag().trim());
+    }
+
+    public static String getXmlTag(MotorType motorType) {
+        return ClassUtil.decodeStringRes(motorType.xmlTag().trim());
+    }
+}

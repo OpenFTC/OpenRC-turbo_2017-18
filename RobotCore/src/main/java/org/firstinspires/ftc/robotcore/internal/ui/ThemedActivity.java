@@ -50,8 +50,7 @@ import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
  * on API 19
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class ThemedActivity extends Activity
-    {
+public abstract class ThemedActivity extends Activity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -62,14 +61,13 @@ public abstract class ThemedActivity extends Activity
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
-    @Override protected void onCreate(@Nullable Bundle savedInstanceState)
-        {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         appAppThemeToActivity(getTag(), this);
         super.onCreate(savedInstanceState);
-        }
+    }
 
-    public static void appAppThemeToActivity(String tag, Activity activity)
-        {
+    public static void appAppThemeToActivity(String tag, Activity activity) {
         // Find / initialize the app theme
         PreferencesHelper preferencesHelper = new PreferencesHelper(tag, activity);
         String pref_app_theme = activity.getString(R.string.pref_app_theme);
@@ -80,46 +78,39 @@ public abstract class ThemedActivity extends Activity
         TypedArray ar = activity.getResources().obtainTypedArray(R.array.app_theme_ids);
 
         boolean found = false;
-        for (int i = 0; i < tokens.length; i++)
-            {
-            if (tokens[i].equals(tokenCur))
-                {
+        for (int i = 0; i < tokens.length; i++) {
+            if (tokens[i].equals(tokenCur)) {
                 int themeId = ar.getResourceId(i, 0);
                 activity.setTheme(themeId);
                 found = true;
                 break;
-                }
             }
-        if (!found)
-            {
+        }
+        if (!found) {
             activity.setTheme(ar.getResourceId(0, 0));
-            }
+        }
         ar.recycle();
-        }
+    }
 
-    public void restartForAppThemeChange(@StringRes final int idToast)
-        {
+    public void restartForAppThemeChange(@StringRes final int idToast) {
         restartForAppThemeChange(getTag(), getString(idToast));
-        }
+    }
 
-    public static void restartForAppThemeChange(final String tag, final String toast)
-        {
+    public static void restartForAppThemeChange(final String tag, final String toast) {
         final AppUtil appUtil = AppUtil.getInstance();
 
         RobotLog.vv(tag, "app theme changed: restarting app: %s", toast);
-        appUtil.runOnUiThread(new Runnable()
-            {
-            @Override public void run()
-                {
+        appUtil.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 appUtil.showToast(UILocation.BOTH, toast);
-                (new Handler()).postDelayed(new Runnable()
-                    {
-                    @Override public void run()
-                        {
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
                         appUtil.restartApp(0);
-                        }
-                    }, 1250);
-                }
-            });
-        }
+                    }
+                }, 1250);
+            }
+        });
     }
+}

@@ -38,13 +38,12 @@ import android.support.annotation.NonNull;
 /**
  * {@link OpModeMeta} provides information about an OpMode.
  */
-public class OpModeMeta
-    {
+public class OpModeMeta {
     //----------------------------------------------------------------------------------------------
     // Types and constants
     //----------------------------------------------------------------------------------------------
 
-    public enum Flavor { AUTONOMOUS, TELEOP }
+    public enum Flavor {AUTONOMOUS, TELEOP}
 
     // arbitrary, but unlikely to be used by users. Sorts early
     public static final String DefaultGroup = "$$$$$$$";
@@ -53,73 +52,76 @@ public class OpModeMeta
     // State
     //----------------------------------------------------------------------------------------------
 
-    public final @NonNull Flavor flavor;
-    public final @NonNull String group;
-    public final @NonNull String name;
+    public final
+    @NonNull
+    Flavor flavor;
+    public final
+    @NonNull
+    String group;
+    public final
+    @NonNull
+    String name;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OpModeMeta()
-        {
+    public OpModeMeta() {
         this("");
-        }
-    public OpModeMeta(@NonNull String name)
-        {
+    }
+
+    public OpModeMeta(@NonNull String name) {
         this(name, Flavor.TELEOP);
-        }
-    public OpModeMeta(@NonNull String name, @NonNull Flavor flavor)
-        {
+    }
+
+    public OpModeMeta(@NonNull String name, @NonNull Flavor flavor) {
         this(name, flavor, DefaultGroup);
-        }
-    public OpModeMeta(@NonNull Flavor flavor, @NonNull String group)
-        {
+    }
+
+    public OpModeMeta(@NonNull Flavor flavor, @NonNull String group) {
         this("", flavor, group);
-        }
-    public OpModeMeta(@NonNull String name, @NonNull Flavor flavor, @NonNull String group)
-        {
+    }
+
+    public OpModeMeta(@NonNull String name, @NonNull Flavor flavor, @NonNull String group) {
         this.name = name;
         this.flavor = flavor;
         this.group = group;
-        }
+    }
 
-    public static OpModeMeta forName(@NonNull String name, @NonNull OpModeMeta base)
-        {
+    public static OpModeMeta forName(@NonNull String name, @NonNull OpModeMeta base) {
         return new OpModeMeta(name, base.flavor, base.group);
-        }
-    public static OpModeMeta forGroup(@NonNull String group, @NonNull OpModeMeta base)
-        {
+    }
+
+    public static OpModeMeta forGroup(@NonNull String group, @NonNull OpModeMeta base) {
         return new OpModeMeta(base.name, base.flavor, group);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
     // Format as name for convenient use in dialogs
-    @Override public String toString()
-        {
+    @Override
+    public String toString() {
         return this.name;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Comparison
     //----------------------------------------------------------------------------------------------
 
     // Equate only by name for convenient use in legacy code here
-    @Override public boolean equals(Object o)
-        {
-        if (o instanceof OpModeMeta)
-            {
-            return this.name.equals(((OpModeMeta)o).name);
-            }
-        else
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof OpModeMeta) {
+            return this.name.equals(((OpModeMeta) o).name);
+        } else {
             return false;
         }
-
-    @Override public int hashCode()
-        {
-        return this.name.hashCode();
-        }
     }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
+}

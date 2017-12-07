@@ -13,8 +13,7 @@ import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
 
 import java.nio.Buffer;
 
-public class Teapot extends MeshObject
-    {
+public class Teapot extends MeshObject {
     private Buffer mVertBuff;
     private Buffer mTexCoordBuff;
     private Buffer mNormBuff;
@@ -23,16 +22,14 @@ public class Teapot extends MeshObject
     private int indicesNumber = 0;
     private int verticesNumber = 0;
 
-    public Teapot()
-        {
+    public Teapot() {
         setVerts();
         setTexCoords();
         setNorms();
         setIndices();
-        }
+    }
 
-    private void setVerts()
-        {
+    private void setVerts() {
         double[] TEAPOT_VERTS = {11.222200, 0.110300, 20.030291, 10.302300,
                 -4.461498, 20.030291, 10.152300, -4.397198, 20.644890,
                 11.059500, 0.110900, 20.644890, 11.059500, 0.110900, 20.644890,
@@ -489,11 +486,10 @@ public class Teapot extends MeshObject
                 8.929396, -16.952299, 1.617799, 7.150197};
         mVertBuff = fillBuffer(TEAPOT_VERTS);
         verticesNumber = TEAPOT_VERTS.length / 3;
-        }
+    }
 
 
-    private void setTexCoords()
-        {
+    private void setTexCoords() {
         double[] TEAPOT_TEX_COORDS = {0.608828, 0.354913, 0.609037, 0.414650,
                 0.627128, 0.412296, 0.626946, 0.353747, 0.626946, 0.353747,
                 0.627128, 0.412296, 0.645212, 0.412296, 0.645121, 0.354854,
@@ -771,11 +767,10 @@ public class Teapot extends MeshObject
                 0.174243, 0.394528, 0.180175, 0.298414, 0.189013, 0.199932};
         mTexCoordBuff = fillBuffer(TEAPOT_TEX_COORDS);
 
-        }
+    }
 
 
-    private void setNorms()
-        {
+    private void setNorms() {
         double[] TEAPOT_NORMS = {-0.964496, 0.067011, -0.255454, -0.865037,
                 0.431362, -0.256198, -0.914727, 0.312709, -0.255904, -0.964979,
                 -0.059958, -0.255382, -0.734604, 0.051028, 0.676574, -0.657992,
@@ -1197,11 +1192,10 @@ public class Teapot extends MeshObject
                 0.773683, 0.222907, 0.593066, 0.590633, 0.196416, 0.782671,
                 0.516476, 0.182725, 0.836579};
         mNormBuff = fillBuffer(TEAPOT_NORMS);
-        }
+    }
 
 
-    private void setIndices()
-        {
+    private void setIndices() {
         short[] TEAPOT_INDICES = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 8, 9,
                 10, 10, 11, 8, 11, 10, 12, 12, 13, 11, 1, 14, 15, 15, 2, 1, 5,
                 16, 17, 17, 6, 5, 9, 18, 19, 19, 10, 9, 10, 19, 20, 20, 12, 10,
@@ -1452,25 +1446,21 @@ public class Teapot extends MeshObject
                 821, 822, 772, 774, 774, 823, 822};
         mIndBuff = fillBuffer(TEAPOT_INDICES);
         indicesNumber = TEAPOT_INDICES.length;
-        }
+    }
 
-    public int getNumObjectIndex()
-        {
+    public int getNumObjectIndex() {
         return indicesNumber;
-        }
+    }
 
     @Override
-    public int getNumObjectVertex()
-        {
+    public int getNumObjectVertex() {
         return verticesNumber;
-        }
+    }
 
     @Override
-    public Buffer getBuffer(BUFFER_TYPE bufferType)
-        {
+    public Buffer getBuffer(BUFFER_TYPE bufferType) {
         Buffer result = null;
-        switch (bufferType)
-            {
+        switch (bufferType) {
             case BUFFER_TYPE_VERTEX:
                 result = mVertBuff;
                 break;
@@ -1484,9 +1474,9 @@ public class Teapot extends MeshObject
                 result = mIndBuff;
             default:
                 break;
-            }
-
-        return result;
         }
 
+        return result;
     }
+
+}

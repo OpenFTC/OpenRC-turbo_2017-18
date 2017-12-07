@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="choice_array_analogInput">
-    <item>NOTHING</item>
-    <item>OPTICAL_DISTANCE_SENSOR</item>
-    <item>ANALOG_INPUT</item>
-    <item>MR_ANALOG_TOUCH_SENSOR</item>
-  </string-array>
+        <item>NOTHING</item>
+        <item>OPTICAL_DISTANCE_SENSOR</item>
+        <item>ANALOG_INPUT</item>
+        <item>MR_ANALOG_TOUCH_SENSOR</item>
+    </string-array>
     <string-array name="choice_array_analogOutput">
-    <item>NOTHING</item>
-    <item>ANALOG_OUTPUT</item>
-  </string-array>
+        <item>NOTHING</item>
+        <item>ANALOG_OUTPUT</item>
+    </string-array>
     <string-array name="choice_array_digital_device">
-    <item>NOTHING</item>
-    <item>TOUCH_SENSOR</item>
-    <item>LED</item>
-    <item>DIGITAL_DEVICE</item>
-  </string-array>
+        <item>NOTHING</item>
+        <item>TOUCH_SENSOR</item>
+        <item>LED</item>
+        <item>DIGITAL_DEVICE</item>
+    </string-array>
     <string-array name="choice_array_digital_device_lynx">
-    <item>NOTHING</item>
-    <item>LED</item>
-    <item>DIGITAL_DEVICE</item>
-  </string-array>
+        <item>NOTHING</item>
+        <item>LED</item>
+        <item>DIGITAL_DEVICE</item>
+    </string-array>
     <string-array name="choice_array_legacy_module">
-    <item>GYRO</item>
-    <item>TOUCH_SENSOR</item>
-    <item>COMPASS</item>
-    <item>IR_SEEKER</item>
-    <item>LIGHT_SENSOR</item>
-    <item>ACCELEROMETER</item>
-    <item>ULTRASONIC_SENSOR</item>
-    <item>MOTOR_CONTROLLER</item>
-    <item>SERVO_CONTROLLER</item>
-    <item>MATRIX_CONTROLLER</item>
-    <item>TOUCH_SENSOR_MULTIPLEXER</item>
-    <item>COLOR_SENSOR</item>
-    <item>NOTHING</item>
-  </string-array>
+        <item>GYRO</item>
+        <item>TOUCH_SENSOR</item>
+        <item>COMPASS</item>
+        <item>IR_SEEKER</item>
+        <item>LIGHT_SENSOR</item>
+        <item>ACCELEROMETER</item>
+        <item>ULTRASONIC_SENSOR</item>
+        <item>MOTOR_CONTROLLER</item>
+        <item>SERVO_CONTROLLER</item>
+        <item>MATRIX_CONTROLLER</item>
+        <item>TOUCH_SENSOR_MULTIPLEXER</item>
+        <item>COLOR_SENSOR</item>
+        <item>NOTHING</item>
+    </string-array>
     <string-array name="choice_array_servo">
-    <item>NOTHING</item>
-    <item>SERVO</item>
-    <item>CONTINUOUS_ROTATION_SERVO</item>
-  </string-array>
+        <item>NOTHING</item>
+        <item>SERVO</item>
+        <item>CONTINUOUS_ROTATION_SERVO</item>
+    </string-array>
     <string-array name="device_interface_module_options_array">
-    <item>PWM Devices|EDIT_PWM_PORT</item>
-    <item>I2C Devices|EDIT_I2C_PORT</item>
-    <item>Analog Input Devices|EDIT_ANALOG_INPUT</item>
-    <item>Digital Devices|EDIT_DIGITAL</item>
-    <item>Analog Output Devices|EDIT_ANALOG_OUTPUT</item>
-  </string-array>
+        <item>PWM Devices|EDIT_PWM_PORT</item>
+        <item>I2C Devices|EDIT_I2C_PORT</item>
+        <item>Analog Input Devices|EDIT_ANALOG_INPUT</item>
+        <item>Digital Devices|EDIT_DIGITAL</item>
+        <item>Analog Output Devices|EDIT_ANALOG_OUTPUT</item>
+    </string-array>
     <string-array name="lynx_module_options_array">
-    <item>Motors|EDIT_MOTOR_LIST</item>
-    <item>Servos|EDIT_SERVO_LIST</item>
-    <item>Digital Devices|EDIT_DIGITAL</item>
-    <item>PWM Devices|EDIT_PWM_PORT</item>
-    <item>Analog Input Devices|EDIT_ANALOG_INPUT</item>
-    <item>I2C Bus 0|EDIT_I2C_BUS0</item>
-    <item>I2C Bus 1|EDIT_I2C_BUS1</item>
-    <item>I2C Bus 2|EDIT_I2C_BUS2</item>
-    <item>I2C Bus 3|EDIT_I2C_BUS3</item>
-  </string-array>
+        <item>Motors|EDIT_MOTOR_LIST</item>
+        <item>Servos|EDIT_SERVO_LIST</item>
+        <item>Digital Devices|EDIT_DIGITAL</item>
+        <item>PWM Devices|EDIT_PWM_PORT</item>
+        <item>Analog Input Devices|EDIT_ANALOG_INPUT</item>
+        <item>I2C Bus 0|EDIT_I2C_BUS0</item>
+        <item>I2C Bus 1|EDIT_I2C_BUS1</item>
+        <item>I2C Bus 2|EDIT_I2C_BUS2</item>
+        <item>I2C Bus 3|EDIT_I2C_BUS3</item>
+    </string-array>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <string name="about_activity">About</string>

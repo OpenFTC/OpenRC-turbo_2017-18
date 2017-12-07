@@ -40,16 +40,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
  * {@link OpModeMetaAndInstance} ties together an OpMode instance with metadata concerning same.
  */
 @SuppressWarnings("WeakerAccess")
-public class OpModeMetaAndInstance
-    {
+public class OpModeMetaAndInstance {
     public final OpModeMeta meta;
     public final OpMode instance;
     public final InstanceOpModeRegistrar instanceOpModeRegistrar;
 
-    public OpModeMetaAndInstance(OpModeMeta meta, OpMode instance, @Nullable InstanceOpModeRegistrar instanceOpModeRegistrar)
-        {
+    public OpModeMetaAndInstance(OpModeMeta meta, OpMode instance, @Nullable InstanceOpModeRegistrar instanceOpModeRegistrar) {
         this.meta = meta;
         this.instance = instance;
         this.instanceOpModeRegistrar = instanceOpModeRegistrar;
-        }
     }
+}

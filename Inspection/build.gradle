@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "25.0.3"
 
 
     defaultConfig {
@@ -31,6 +30,6 @@ repositories {
 }
 
 dependencies {
-    compile project(':RobotCore')
-    compile project(':OpenFTC')
+    implementation project(':RobotCore')
+    implementation project(':OpenFTC')
 }

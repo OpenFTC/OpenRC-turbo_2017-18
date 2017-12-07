@@ -37,64 +37,58 @@ import com.qualcomm.hardware.lynx.LynxModule;
 /**
  * LynxSetDebugLogLevelCommand controls the tracing that is sent out through the debug port.
  */
-public class LynxSetDebugLogLevelCommand extends LynxStandardCommand<LynxAck>
-    {
+public class LynxSetDebugLogLevelCommand extends LynxStandardCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     LynxModule.DebugGroup debugGroup = LynxModule.DebugGroup.MAIN;
 
-    /** 0==off, higher number==more verbose. Supported levels are 0 (none) through 3 (verbose). */
+    /**
+     * 0==off, higher number==more verbose. Supported levels are 0 (none) through 3 (verbose).
+     */
     LynxModule.DebugVerbosity verbosity = LynxModule.DebugVerbosity.OFF;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetDebugLogLevelCommand(LynxModule module)
-        {
+    public LynxSetDebugLogLevelCommand(LynxModule module) {
         super(module);
-        }
+    }
 
-    public LynxSetDebugLogLevelCommand(LynxModule module, LynxModule.DebugGroup debugGroup, LynxModule.DebugVerbosity verbosity)
-        {
+    public LynxSetDebugLogLevelCommand(LynxModule module, LynxModule.DebugGroup debugGroup, LynxModule.DebugVerbosity verbosity) {
         this(module);
         this.debugGroup = debugGroup;
         this.verbosity = verbosity;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_DEBUG_LOG_LEVEL;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return getStandardCommandNumber();
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { debugGroup.bVal, verbosity.bVal };
-        }
+    public byte[] toPayloadByteArray() {
+        return new byte[]{debugGroup.bVal, verbosity.bVal};
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         this.debugGroup = LynxModule.DebugGroup.fromInt(rgb[0]);
         this.verbosity = LynxModule.DebugVerbosity.fromInt(rgb[1]);
-        }
     }
+}

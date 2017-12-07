@@ -40,6 +40,5 @@ package com.qualcomm.robotcore.hardware;
  *
  * @see DistanceSensor
  */
-public interface OpticalDistanceSensor extends LightSensor
-    {
-    }
+public interface OpticalDistanceSensor extends LightSensor {
+}

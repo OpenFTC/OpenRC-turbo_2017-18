@@ -45,15 +45,15 @@ import com.qualcomm.hardware.lynx.LynxNackException;
  * guarantees that to be between 1 ~ 2 msec) between each. Any connected Child should respond to
  * the Discovery packet effectively immediately, taking brief control over the child bus to do so.
  * Discovery completes in about 500msec.
- *
+ * <p>
  * Once discovered, a Child requires a Keep Alive addressed directly to it (rather than a broadcast
  * message) within the usual KA interval to lock in the child status. If no Keep Alive is received
  * by the Child in time, it reverts to ready-to-discover mode.
- *
+ * <p>
  * The discovery packet is sent from the host to the broadcast address (255). Note that the message
  * number of a broadcast message is completely ignored by receivers, as it cannot be guaranteed
  * to be a non-duplicate across all receivers.
- *
+ * <p>
  * Note that sending a LynxDiscoveryCommand can in theory result in up to 254 response messages; thus
  * the 'finished' processing of LynxDiscoveryCommands will be special. First, an incoming
  * LynxDiscoveryResponse should be processed unilaterally; the original LynxDiscoveryCommand will NOT
@@ -61,106 +61,89 @@ import com.qualcomm.hardware.lynx.LynxNackException;
  * will wait for a sufficient time to receive all possible responses before ever sending any further
  * messages.
  */
-public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually no ack is expected */>
-    {
+public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually no ack is expected */> {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxDiscoveryCommand(LynxModule module)
-        {
+    public LynxDiscoveryCommand(LynxModule module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transmission
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public int getDestModuleAddress()
-        {
+    public int getDestModuleAddress() {
         // Discovery commands are always transmitted to the broadcast address
         return 0xff;
-        }
-
-    @Override public void send() throws LynxNackException, InterruptedException
-        {
-        try {
-            this.module.sendCommand(this);
-            }
-        catch (LynxUnsupportedCommandNumberException e)
-            {
-            throwNackForUnsupportedCommand(e);
-            }
-        }
+    }
 
     @Override
-    public LynxAck sendReceive() throws LynxNackException, InterruptedException
-        {
+    public void send() throws LynxNackException, InterruptedException {
         try {
             this.module.sendCommand(this);
-            }
-        catch (LynxUnsupportedCommandNumberException e)
-            {
+        } catch (LynxUnsupportedCommandNumberException e) {
             throwNackForUnsupportedCommand(e);
-            }
+        }
+    }
+
+    @Override
+    public LynxAck sendReceive() throws LynxNackException, InterruptedException {
+        try {
+            this.module.sendCommand(this);
+        } catch (LynxUnsupportedCommandNumberException e) {
+            throwNackForUnsupportedCommand(e);
+        }
         return null;
-        }
+    }
 
     @Override
-    public boolean isAckable()
-        {
+    public boolean isAckable() {
         return false;
-        }
+    }
 
     @Override
-    public boolean isRetransmittable()
-        {
+    public boolean isRetransmittable() {
         return false;
-        }
+    }
 
     @Override
-    protected void noteAttentionRequired()
-        {
+    protected void noteAttentionRequired() {
         // nothing to do (in fact, discovery commands aren't even ack'd any more)
-        }
+    }
 
     @Override
-    public void acquireNetworkLock() throws InterruptedException
-        {
+    public void acquireNetworkLock() throws InterruptedException {
         // TODO discovery doesn't lock (REVIEW)
-        }
+    }
 
     @Override
-    public void releaseNetworkLock() throws InterruptedException
-        {
+    public void releaseNetworkLock() throws InterruptedException {
         // TODO discovery doesn't lock (REVIEW)
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_DISCOVERY;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        }
-
     }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+    }
+
+}

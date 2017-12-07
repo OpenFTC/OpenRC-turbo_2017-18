@@ -41,8 +41,9 @@ import java.util.List;
  * that is available to the RobotCore module.
  */
 @SuppressWarnings("WeakerAccess")
-public interface RobotCoreGamepadManager
-    {
-    /** Returns the list of the gamepads whose state should be transmitted */
+public interface RobotCoreGamepadManager {
+    /**
+     * Returns the list of the gamepads whose state should be transmitted
+     */
     List<Gamepad> getGamepadsForTransmission();
-    }
+}

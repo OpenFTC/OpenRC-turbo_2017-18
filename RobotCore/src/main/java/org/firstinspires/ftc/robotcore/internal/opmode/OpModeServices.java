@@ -40,15 +40,14 @@ import com.qualcomm.robotcore.robocol.TelemetryMessage;
  * to an OpMode. The interface is declared package-scope so as to prevent its direct use by
  * OpMode's; it may only be used indirectly through wrappers provided in the OpMode class itself.
  */
-public interface OpModeServices
-    {
+public interface OpModeServices {
     /**
      * Update's the user portion of the driver station screen with the contents of the telemetry object
      * here provided if a sufficiently long duration has passed since the last update.
+     *
      * @param telemetry the telemetry object to send
      * @param sInterval the required minimum interval. NaN indicates that a system default interval should be used.
-     *                  A value of zero will cause immediate transmission.    
-     *
+     *                  A value of zero will cause immediate transmission.
      * @see com.qualcomm.robotcore.eventloop.EventLoop#TELEMETRY_DEFAULT_INTERVAL
      */
     void refreshUserTelemetry(TelemetryMessage telemetry, double sInterval);
@@ -56,8 +55,9 @@ public interface OpModeServices
     /**
      * If the indicated OpMode is the currently active OpMode, cause that OpMode to stop as if
      * the stop button had been pressed on the driver station
+     *
      * @param opModeToStopIfActive the OpMode to stop if it is the currently active OpMode
      * @see OpMode#requestOpModeStop()
      */
     void requestOpModeStop(OpMode opModeToStopIfActive);
-    }
+}

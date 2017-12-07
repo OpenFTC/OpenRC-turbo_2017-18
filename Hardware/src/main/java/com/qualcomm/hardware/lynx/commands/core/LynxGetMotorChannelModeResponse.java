@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetMotorChannelModeResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetMotorChannelModeResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -57,49 +56,46 @@ public class LynxGetMotorChannelModeResponse extends LynxDekaInterfaceResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorChannelModeResponse(LynxModuleIntf module)
-        {
+    public LynxGetMotorChannelModeResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public DcMotor.RunMode getMode()
-        {
-        switch (this.mode)
-            {
-            case 0: return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-            case 1: return DcMotor.RunMode.RUN_USING_ENCODER;
-            case 2: return DcMotor.RunMode.RUN_TO_POSITION;
-            }
+    public DcMotor.RunMode getMode() {
+        switch (this.mode) {
+            case 0:
+                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+            case 1:
+                return DcMotor.RunMode.RUN_USING_ENCODER;
+            case 2:
+                return DcMotor.RunMode.RUN_TO_POSITION;
+        }
         throw new IllegalStateException(String.format("illegal mode byte: 0x%02x", this.mode));
-        }
+    }
 
-    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior()
-        {
-        return this.floatAtZero==0 ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT;
-        }
+    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior() {
+        return this.floatAtZero == 0 ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.mode);
         buffer.put(this.floatAtZero);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.mode = buffer.get();
         this.floatAtZero = buffer.get();
-        }
     }
+}

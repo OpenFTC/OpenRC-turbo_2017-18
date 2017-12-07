@@ -43,8 +43,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-09.
  */
-public class LynxSetPWMPulseWidthCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetPWMPulseWidthCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -60,44 +59,41 @@ public class LynxSetPWMPulseWidthCommand extends LynxDekaInterfaceCommand<LynxAc
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetPWMPulseWidthCommand(LynxModuleIntf module)
-        {
+    public LynxSetPWMPulseWidthCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetPWMPulseWidthCommand(LynxModuleIntf module, int channelZ, int usPulseWidth)
-        {
+    public LynxSetPWMPulseWidthCommand(LynxModuleIntf module, int channelZ, int usPulseWidth) {
         this(module);
         LynxConstants.validatePwmChannelZ(channelZ);
-        if (usPulseWidth < apiPulseWidthFirst || usPulseWidth > apiPulseWidthLast) throw new IllegalArgumentException(String.format("illegal pulse width: %d", usPulseWidth));
-        this.channel = (byte)channelZ;
-        this.pulseWidth = (short) usPulseWidth;
+        if (usPulseWidth < apiPulseWidthFirst || usPulseWidth > apiPulseWidthLast) {
+            throw new IllegalArgumentException(String.format("illegal pulse width: %d", usPulseWidth));
         }
+        this.channel = (byte) channelZ;
+        this.pulseWidth = (short) usPulseWidth;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.channel);
         buffer.putShort(this.pulseWidth);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.channel = buffer.get();
         this.pulseWidth = buffer.getShort();
-        }
     }
+}

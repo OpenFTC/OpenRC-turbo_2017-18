@@ -38,13 +38,14 @@ package com.qualcomm.robotcore.hardware;
  * sensor responds to on the I2C bus; rather, it configures software to interact with a
  * a hardware sensor living at a different I2C address than the one at which the software
  * is configured to use by default.
+ *
  * @see I2cAddressableDevice
  */
-public interface I2cAddrConfig extends I2cAddressableDevice
-    {
+public interface I2cAddrConfig extends I2cAddressableDevice {
     /**
      * Configures a new I2C address to use
+     *
      * @param newAddress the new I2C address to use
      */
     void setI2cAddress(I2cAddr newAddress);
-    }
+}

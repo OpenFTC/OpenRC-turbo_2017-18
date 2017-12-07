@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-09-01.
  */
-public class LynxI2cConfigureChannelCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxI2cConfigureChannelCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -53,65 +52,63 @@ public class LynxI2cConfigureChannelCommand extends LynxDekaInterfaceCommand<Lyn
     private byte i2cBus;
     private byte speedCode;
 
-    public enum SpeedCode
-        {
+    public enum SpeedCode {
         UNKNOWN(-1), STANDARD_100K(0), FAST_400K(1), FASTPLUS_1M(2), HIGH_3_4M(3);
         public byte bVal;
-        SpeedCode(int value) { this.bVal = (byte)value; }
-        public static SpeedCode fromByte(int bVal)
-            {
-            for (SpeedCode code : values())
-                {
-                if (code.bVal == bVal) return code;
-                }
-            return UNKNOWN;
-            }
+
+        SpeedCode(int value) {
+            this.bVal = (byte) value;
         }
+
+        public static SpeedCode fromByte(int bVal) {
+            for (SpeedCode code : values()) {
+                if (code.bVal == bVal) {
+                    return code;
+                }
+            }
+            return UNKNOWN;
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cConfigureChannelCommand(LynxModuleIntf module)
-        {
+    public LynxI2cConfigureChannelCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxI2cConfigureChannelCommand(LynxModuleIntf module, int busZ, SpeedCode speedCode)
-        {
+    public LynxI2cConfigureChannelCommand(LynxModuleIntf module, int busZ, SpeedCode speedCode) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        this.i2cBus     = (byte)busZ;
-        this.speedCode  = speedCode.bVal;
-        }
+        this.i2cBus = (byte) busZ;
+        this.speedCode = speedCode.bVal;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Access
     //----------------------------------------------------------------------------------------------
 
-    public SpeedCode getSpeedCode()
-        {
+    public SpeedCode getSpeedCode() {
         return SpeedCode.fromByte(this.speedCode);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         buffer.put(this.speedCode);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
         this.speedCode = buffer.get();
-        }
     }
+}

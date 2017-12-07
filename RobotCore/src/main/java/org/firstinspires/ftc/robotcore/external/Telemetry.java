@@ -42,38 +42,38 @@ import java.util.Locale;
 /**
  * Instances of {@link Telemetry} provide a means by which data can be transmitted from the
  * robot controller to the driver station and displayed on the driver station screen.
- *
+ * <p>
  * <p>Simple use of {@link Telemetry} consists of a series of {@link #addData(String, String, Object...)
  * addData()} calls, followed by a call to {@link #update()}. For example:</p>
- *
+ * <p>
  * <pre>
  *     // LinearOpMode
  *     telemetry.addData("count", currentCount);
  *     telemetry.addData("elapsedTime", "%.3f", elapsedSeconds);
  *     telemetry.update();
  * </pre>
- *
+ * <p>
  * <p>In the 2015/16 season, the call to {@link #update()} was not required; now, however,
  * in a {@link LinearOpMode}, unless {@link #update()} is called, nothing will appear on the
  * driver station screen. In other, loop-based opmodes, {@link #update()} continues to be called
  * automatically at the end of {@link OpMode#loop()} and {@link OpMode#init_loop()}; no call to
  * {@link #update()} is required in loop-based opmodes.</p>
- *
+ * <p>
  * <pre>
  *     // loop-based opmode
  *     telemetry.addData("count", currentCount);
  *     telemetry.addData("elapsedTime", "%.3f", elapsedSeconds);
  * </pre>
-
+ * <p>
  * <p>By default (but see {@link #setAutoClear(boolean) setAutoClear()}), data is cleared from the
  * telemetry after each call to {@link #update()}; thus, you need to issue {@link #addData(String,
  * Object) addData()} for the entire contents of the telemetry screen on each update cycle.
  * This behavior is just as it was in the 2015/16 season.</p>
- *
+ * <p>
  * <p>A more complicated use of {@link Telemetry} might have different parts of the program update
  * different items on the display in a decoupled, decentralized manner. Such situations might
  * usefully avail themselves of turning off the auto-clear setting. For example:</p>
- *
+ * <p>
  * <pre>
  *     telemetry.setAutoClear(false);
  *     Telemetry.Item countItem = telemetry.addData("count", 0);
@@ -85,7 +85,7 @@ import java.util.Locale;
  *         telemetry.update();
  *         ...
  *     }
-
+ *
  *     void anotherPartOfYourCode() {
  *         ...
  *         elapsedItem.setValue("%.3f", elapsedSeconds);
@@ -93,32 +93,32 @@ import java.util.Locale;
  *         ...
  *     }
  * </pre>
- *
+ * <p>
  * <p>In this way different parts of the code can update only a portion of the telemetry screen
  * without disturbing other parts.</p>
- *
+ * <p>
  * <p>Below the list of caption, value, pairs, on the screen a {@link Telemetry} also displays
  * a short, unstructured log of messages. Use {@link Log#add(String, Object...) log().add()}
  * to add to the log. See also {@link #log()}.</p>
- *
+ * <p>
  * <p>Actual transmission to the driver station is throttled to avoid use of excessive bandwidth.
  * By default, transmission will occur at most every 250ms. This interval can be controlled with
  * {@link #setMsTransmissionInterval(int) setMsTransmissionInterval()}. Any {@link #update()}s which
  * occur more frequently will not be transmitted if superseded by a subsequent {@link #update()}
  * before the transmission interval expires.</p>
- *
+ * <p>
  * <p>As mentioned above, by default, after each call to {@link #update()}, the method {@link #clear()}
  * is automatically called. Thus, in simple usage, after each {@link #update()}, you'll want to issue
  * {@link #addData(String, Object) addData()} calls to rebuild the entire driver station telemetry
  * screen that you wish to observe. This simple usage can be modified in two ways.</p>
- *
+ * <p>
  * <p>First, the automatic issuance of calls to {@link #clear()} can be altered by means of
  * {@link #setAutoClear(boolean)}. If auto clearing is set to false, previously added telemetry
  * items remain present from {@link #update()} to {@link #update()}, but their value can still be altered
  * using {@link Item#setValue(Object) Item.setValue()}, items can be removed using {@link #removeItem(Item)},
  * and new items can be added using {@link #addData(String, Object) addData()} and {@link Item#addData(String,
  * Object) Item.addData()}.</p>
- *
+ * <p>
  * <p>Second, telemetry items created in a functional form using {@link #addData(String, Func)} or
  * {@link Item#addData(String, Func)} are <em>not</em> automatically removed when {@link #clear()}
  * is called, either implicitly or explicitly (though they are removed when {@link #clearAll()} is
@@ -128,11 +128,11 @@ import java.util.Locale;
  * be transmitted to the driver station (and so a value is required). This approach can be particularly
  * useful if the acquisition of the data to be displayed is relatively expensive or time consuming, as
  * that cost is only expended when actually useful.
- *
+ * <p>
  * In addition to one-item-per-line display on the driver station, multiple items per line can
  * be displayed by starting with a call to {@link #addLine()} and then following up with one or more
  * {@link #addData(String, Object)} calls. For example:
- *
+ * <p>
  * <pre>
  *     telemetry.addLine()
  *          .addData("count", currentCount)
@@ -142,16 +142,15 @@ import java.util.Locale;
  *          .addData("orientation", "%s", getOrientation());
  *     telemetry.update();
  * </pre>
- *
+ * <p>
  * <p>Items on the same line are separated by the {@link #getItemSeparator() item separator}. Caption
  * and value within an item are separated by the {@link #getCaptionValueSeparator() caption value separator}.</p>
- *
+ * <p>
  * <p>Note: in the 2015/16 season, it was possible for {@link Telemetry} instances to be automatically
  * sorted in alphabetical order by caption. This functionality is no longer supported.</p>
  */
 @SuppressWarnings("javadoc")
-public interface Telemetry
-    {
+public interface Telemetry {
     //----------------------------------------------------------------------------------------------
     // Core usage
     //----------------------------------------------------------------------------------------------
@@ -163,11 +162,10 @@ public interface Telemetry
      * separated by the {@link #getCaptionValueSeparator() caption value separator}. The item
      * is removed if {@link #clear()} or {@link #clearAll()} is called.
      *
-     * @param caption   the caption to use
-     * @param format    the string by which the arguments are to be formatted
-     * @param args      the arguments to format
-     * @return          an {@link Item} that can be used to update the value or append further {@link Item}s
-     *
+     * @param caption the caption to use
+     * @param format  the string by which the arguments are to be formatted
+     * @param args    the arguments to format
+     * @return an {@link Item} that can be used to update the value or append further {@link Item}s
      * @see #addData(String, Object)
      * @see #addData(String, Func)
      */
@@ -180,10 +178,9 @@ public interface Telemetry
      * #getCaptionValueSeparator() caption value separator}. The item is removed if {@link #clear()}
      * or {@link #clearAll()} is called.
      *
-     * @param caption   the caption to use
-     * @param value     the value to display
-     * @return          an {@link Item} that can be used to update the value or append further {@link Item}s
-     *
+     * @param caption the caption to use
+     * @param value   the value to display
+     * @return an {@link Item} that can be used to update the value or append further {@link Item}s
      * @see #addData(String, String, Object...)
      * @see #addData(String, Func)
      */
@@ -196,16 +193,15 @@ public interface Telemetry
      * shown on the driver station separated by the {@link #getCaptionValueSeparator() caption value
      * separator}. The item is removed if {@link #clearAll()} is called, but <em>not</em> if
      * {@link #clear()} is called.
-     *
+     * <p>
      * <p>The valueProducer is evaluated only if actual transmission to the driver station
      * is to occur. This is important, as it provides a means of displaying telemetry which
      * is relatively expensive to evaluate while avoiding computation or delay on evaluations
      * which won't be transmitted due to transmission interval throttling.</p>
      *
-     * @param caption           the caption to use
-     * @param valueProducer     the object which will provide the value to display
-     * @return                  an {@link Item} that can be used to update the value or append further {@link Item}s
-     *
+     * @param caption       the caption to use
+     * @param valueProducer the object which will provide the value to display
+     * @return an {@link Item} that can be used to update the value or append further {@link Item}s
      * @see #addData(String, String, Object...)
      * @see #addData(String, Object)
      * @see #addData(String, String, Func)
@@ -219,16 +215,15 @@ public interface Telemetry
      * valueProducer.{@link Func#value()} value()}. The caption and value are shown on the driver station
      * separated by the {@link #getCaptionValueSeparator() caption value separator}. The item is removed
      * if {@link #clearAll()} is called, but <em>not</em> if {@link #clear()} is called.
-     *
+     * <p>
      * <p>The valueProducer is evaluated only if actual transmission to the driver station
      * is to occur. This is important, as it provides a means of displaying telemetry which
      * is relatively expensive to evaluate while avoiding computation or delay on evaluations
      * which won't be transmitted due to transmission interval throttling.</p>
      *
-     * @param caption           the caption to use
-     * @param valueProducer     the object which will provide the value to display
-     * @return                  an {@link Item} that can be used to update the value or append further {@link Item}s
-     *
+     * @param caption       the caption to use
+     * @param valueProducer the object which will provide the value to display
+     * @return an {@link Item} that can be used to update the value or append further {@link Item}s
      * @see #addData(String, String, Object...)
      * @see #addData(String, Object)
      * @see #addData(String, Func)
@@ -238,13 +233,15 @@ public interface Telemetry
 
     /**
      * Removes an item from the receiver telemetry, if present.
-     * @param item  the item to remove
-     * @return      true if any change was made to the receive (ie: the item was present); false otherwise
+     *
+     * @param item the item to remove
+     * @return true if any change was made to the receive (ie: the item was present); false otherwise
      */
     boolean removeItem(Item item);
 
     /**
      * Removes all items from the receiver whose value is not to be retained.
+     *
      * @see Item#setRetained(Boolean)
      * @see Item#isRetained()
      * @see #clearAll()
@@ -265,12 +262,12 @@ public interface Telemetry
      * lines are composed just prior to transmission. A typical use of such actions is to
      * initialize some state variable, parts of which are subsequently displayed in items.
      * This can help avoid needless re-evaluation.
-     *
+     * <p>
      * <p>Actions are cleared with {@link #clearAll()}, and can be removed with {@link
      * #removeAction(Object) removeAction()}.</p>
      *
-     * @param action    the action to execute before composing the lines telemetry
-     * @return          a token by which the action can be later removed.
+     * @param action the action to execute before composing the lines telemetry
+     * @return a token by which the action can be later removed.
      * @see #addData(String, Object)
      * @see #removeAction(Object)
      * @see #addLine()
@@ -280,6 +277,7 @@ public interface Telemetry
 
     /**
      * Removes a previously added action from the receiver.
+     *
      * @param token the token previously returned from {@link #addAction(Runnable) addAction()}.
      * @return whether any change was made to the receiver
      */
@@ -294,6 +292,7 @@ public interface Telemetry
      * transmission interval} has elapsed since the last transmission, or schedules the transmission
      * of the receiver should no subsequent {@link Telemetry} state be scheduled for transmission before
      * the {@link #getMsTransmissionInterval() transmission interval} expires.
+     *
      * @return whether a transmission to the driver station occurred or not
      */
     boolean update();
@@ -305,38 +304,46 @@ public interface Telemetry
     /**
      * Instances of {@link Line} build lines of data on the driver station telemetry display.
      */
-    interface Line
-        {
+    interface Line {
         /**
          * Adds a new data item at the end of the line which is the receiver.
+         *
          * @see Telemetry#addData(String, String, Object...)
          */
         Item addData(String caption, String format, Object... args);
+
         /**
          * Adds a new data item at the end of the line which is the receiver.
+         *
          * @see Telemetry#addData(String, Object)
          */
         Item addData(String caption, Object value);
+
         /**
          * Adds a new data item at the end of the line which is the receiver.
+         *
          * @see Telemetry#addData(String, Func)
          */
         <T> Item addData(String caption, Func<T> valueProducer);
+
         /**
          * Adds a new data item at the end of the line which is the receiver.
+         *
          * @see Telemetry#addData(String, String, Func)
          */
         <T> Item addData(String caption, String format, Func<T> valueProducer);
-        }
+    }
 
     /**
      * Creates and returns a new line in the receiver {@link Telemetry}.
+     *
      * @return a new line in the receiver {@link Telemetry}
      */
     Line addLine();
 
     /**
      * Creates and returns a new line in the receiver {@link Telemetry}.
+     *
      * @param lineCaption the caption for the line
      * @return a new line in the receiver {@link Telemetry}
      */
@@ -344,6 +351,7 @@ public interface Telemetry
 
     /**
      * Removes a line from the receiver telemetry, if present.
+     *
      * @param line the line to be removed
      * @return whether any change was made to the receiver
      */
@@ -358,10 +366,10 @@ public interface Telemetry
      *
      * @see {@link #addData(String, Object)}
      */
-    interface Item
-        {
+    interface Item {
         /**
          * Returns the caption associated with this item.
+         *
          * @return the caption associated with this item.
          * @see #setCaption(String)
          * @see #addData(String, Object)
@@ -370,6 +378,7 @@ public interface Telemetry
 
         /**
          * Sets the caption associated with this item.
+         *
          * @param caption the new caption associated with this item.
          * @return the receiver
          * @see #getCaption()
@@ -378,16 +387,18 @@ public interface Telemetry
 
         /**
          * Updates the value of this item to be the result of the indicated string formatting operation.
-         * @param format    the format of the data
-         * @param args      the arguments associated with the format
+         *
+         * @param format the format of the data
+         * @param args   the arguments associated with the format
          * @return the receiver
          * @see #addData(String, String, Object...)
          */
-        Item setValue(String format, Object...args);
+        Item setValue(String format, Object... args);
 
         /**
          * Updates the value of this item to be the result of applying {@link Object#toString()}
          * to the indicated object.
+         *
          * @param value the object to which {@link Object#toString()} should be applied
          * @return the receiver
          * @see #addData(String, Object)
@@ -396,6 +407,7 @@ public interface Telemetry
 
         /**
          * Updates the value of this item to be the indicated value producer.
+         *
          * @param valueProducer an object that produces values to be rendered.
          * @return the receiver
          * @see #addData(String, Func)
@@ -404,6 +416,7 @@ public interface Telemetry
 
         /**
          * Updates the value of this item to be the indicated value producer.
+         *
          * @param format        this string used to format values produced
          * @param valueProducer an object that produces values to be rendered.
          * @return the receiver
@@ -415,6 +428,7 @@ public interface Telemetry
          * Sets whether the item is to be retained in clear() operation or not.
          * This is initially true for items that whose value is computed with a
          * value producer; otherwise, it is initially false.
+         *
          * @param retained if true, then the value will be retained during a clear(). Null will
          *                 return the setting to its initial value.
          * @return the receiver
@@ -425,6 +439,7 @@ public interface Telemetry
 
         /**
          * Returns whether the item is to be retained in a clear() operation.
+         *
          * @return whether the item is to be retained in a clear() operation.
          * @see #setRetained(Boolean)
          */
@@ -432,28 +447,32 @@ public interface Telemetry
 
         /**
          * Adds a new data item in the associated {@link Telemetry} immediately following the receiver.
+         *
          * @see #addData(String, String, Object...)
          */
         Item addData(String caption, String format, Object... args);
 
         /**
          * Adds a new data item in the associated {@link Telemetry} immediately following the receiver.
+         *
          * @see #addData(String, Object)
          */
         Item addData(String caption, Object value);
 
         /**
          * Adds a new data item in the associated {@link Telemetry} immediately following the receiver.
+         *
          * @see #addData(String, Func)
          */
         <T> Item addData(String caption, Func<T> valueProducer);
 
         /**
          * Adds a new data item in the associated {@link Telemetry} immediately following the receiver.
+         *
          * @see #addData(String, String, Func)
          */
         <T> Item addData(String caption, String format, Func<T> valueProducer);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Properties
@@ -461,6 +480,7 @@ public interface Telemetry
 
     /**
      * Answers whether {@link #clear()} is automatically called after each call to {@link #update()}.
+     *
      * @return whether {@link #clear()} is automatically called after each call to {@link #update()}.
      * @see #setAutoClear(boolean)
      */
@@ -468,6 +488,7 @@ public interface Telemetry
 
     /**
      * Sets whether {@link #clear()} is automatically called after each call to {@link #update()}.
+     *
      * @param autoClear if true, {@link #clear()} is automatically called after each call to {@link #update()}.
      */
     void setAutoClear(boolean autoClear);
@@ -475,6 +496,7 @@ public interface Telemetry
     /**
      * Returns the minimum interval between {@link Telemetry} transmissions from the robot controller
      * to the driver station
+     *
      * @return the minimum interval between {@link Telemetry} transmissions from the robot controller to the diver station
      * @see #setMsTransmissionInterval(int)
      */
@@ -483,8 +505,9 @@ public interface Telemetry
     /**
      * Sets the minimum interval between {@link Telemetry} transmissions from the robot controller
      * to the driver station.
-     * @param msTransmissionInterval  the minimum interval between {@link Telemetry} transmissions
-     *                                from the robot controller to the driver station
+     *
+     * @param msTransmissionInterval the minimum interval between {@link Telemetry} transmissions
+     *                               from the robot controller to the driver station
      * @see #getMsTransmissionInterval()
      */
     void setMsTransmissionInterval(int msTransmissionInterval);
@@ -492,6 +515,7 @@ public interface Telemetry
     /**
      * Returns the string which is used to separate {@link Item}s contained within a line. The default
      * separator is " | ".
+     *
      * @return the string which is use to separate {@link Item}s contained within a line.
      * @see #setItemSeparator(String)
      * @see #addLine()
@@ -506,6 +530,7 @@ public interface Telemetry
     /**
      * Returns the string which is used to separate caption from value within a {@link Telemetry}
      * {@link Item}. The default separator is " : ";
+     *
      * @return the string which is used to separate caption from value within a {@link Telemetry} {@link Item}.
      */
     String getCaptionValueSeparator();
@@ -522,19 +547,22 @@ public interface Telemetry
     /**
      * The {@link Log} in a {@link Telemetry} instance provides an append-only list of messages
      * that appear on the driver station below the {@link Item}s of the {@link Telemetry}.
+     *
      * @see #log()
      * @see #addData(String, Object)
      */
-    interface Log
-        {
+    interface Log {
         /**
          * {@link DisplayOrder} instances indicate the desired ordering of a {@link #log()}.
          */
-        enum DisplayOrder { NEWEST_FIRST, OLDEST_FIRST }
+        enum DisplayOrder {
+            NEWEST_FIRST, OLDEST_FIRST
+        }
 
         /**
          * Returns the maximum number of lines which will be retained in a {@link #log()()} and
          * shown on the driver station display.
+         *
          * @return the maximum number of lines which will be retained in a {@link #log()()}
          * @see #setCapacity(int)
          */
@@ -547,6 +575,7 @@ public interface Telemetry
 
         /**
          * Returns the order in which data in log is to be displayed on the driver station.
+         *
          * @return the order in which data in log is to be displayed on the driver station.
          * @see #setDisplayOrder(DisplayOrder)
          */
@@ -560,28 +589,31 @@ public interface Telemetry
         /**
          * Adds a new entry the the log. Transmits the updated log to the driver station at the
          * earliest opportunity.
-         * @param entry     the new log entry to add
+         *
+         * @param entry the new log entry to add
          */
         void add(String entry);
 
         /**
          * Adds a new entry to the log. Transmits the updated log to the driver station at the
          * earliest opportunity.
-         * @param format    the format string used to format the log entry
-         * @param args      the data used to format the log entry
+         *
+         * @param format the format string used to format the log entry
+         * @param args   the data used to format the log entry
          */
-        void add(String format, Object...args);
+        void add(String format, Object... args);
 
         /**
          * Removes all entries from this {@link Log}
          */
         void clear();
-        }
+    }
 
     /**
      * Returns the log of this {@link Telemetry} to which log entries may be appended.
+     *
      * @return the log of this {@link Telemetry} to which log entries may be appended.
      * @see Log#addData(String, Object)
      */
     Log log();
-    }
+}

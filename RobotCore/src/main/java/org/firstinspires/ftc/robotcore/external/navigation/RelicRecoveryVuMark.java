@@ -39,50 +39,38 @@ import android.support.annotation.Nullable;
  * FTC competition of 2017-18.
  */
 @SuppressWarnings("WeakerAccess")
-public enum RelicRecoveryVuMark
-    {
-        UNKNOWN,
-        LEFT,
-        CENTER,
-        RIGHT;
+public enum RelicRecoveryVuMark {
+    UNKNOWN,
+    LEFT,
+    CENTER,
+    RIGHT;
 
-    public static RelicRecoveryVuMark from(@Nullable VuforiaTrackable trackable)
-        {
-        if (trackable != null)
-            {
+    public static RelicRecoveryVuMark from(@Nullable VuforiaTrackable trackable) {
+        if (trackable != null) {
             return from(trackable.getListener());
-            }
+        }
         return UNKNOWN;
-        }
-
-    public static RelicRecoveryVuMark from(@Nullable VuforiaTrackable.Listener listener)
-        {
-        if (listener instanceof VuforiaTrackableDefaultListener)
-            {
-            return from(((VuforiaTrackableDefaultListener)listener).getVuMarkInstanceId());
-            }
-        return UNKNOWN;
-        }
-
-    public static RelicRecoveryVuMark from(@Nullable VuMarkInstanceId instanceId)
-        {
-        RelicRecoveryVuMark result = UNKNOWN;
-        if (instanceId != null && instanceId.getType()==VuMarkInstanceId.Type.NUMERIC)
-            {
-            long value = instanceId.getNumericValue();
-            if (value==1)
-                {
-                result = LEFT;
-                }
-            else if (value==2)
-                {
-                result = CENTER;
-                }
-            else if (value==3)
-                {
-                result = RIGHT;
-                }
-            }
-        return result;
-        }
     }
+
+    public static RelicRecoveryVuMark from(@Nullable VuforiaTrackable.Listener listener) {
+        if (listener instanceof VuforiaTrackableDefaultListener) {
+            return from(((VuforiaTrackableDefaultListener) listener).getVuMarkInstanceId());
+        }
+        return UNKNOWN;
+    }
+
+    public static RelicRecoveryVuMark from(@Nullable VuMarkInstanceId instanceId) {
+        RelicRecoveryVuMark result = UNKNOWN;
+        if (instanceId != null && instanceId.getType() == VuMarkInstanceId.Type.NUMERIC) {
+            long value = instanceId.getNumericValue();
+            if (value == 1) {
+                result = LEFT;
+            } else if (value == 2) {
+                result = CENTER;
+            } else if (value == 3) {
+                result = RIGHT;
+            }
+        }
+        return result;
+    }
+}

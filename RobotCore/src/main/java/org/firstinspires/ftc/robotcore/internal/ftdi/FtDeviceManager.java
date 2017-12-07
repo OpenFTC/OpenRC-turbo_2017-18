@@ -58,8 +58,7 @@ import java.util.List;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FtDeviceManager extends FtConstants
-    {
+public class FtDeviceManager extends FtConstants {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -94,267 +93,205 @@ public class FtDeviceManager extends FtConstants
 
     private ArrayList<FtDevice> mFtdiDevices;
 
-    private BroadcastReceiver mUsbPlugEvents = new BroadcastReceiver()
-        {
-        public void onReceive(Context context, Intent intent)
-            {
+    private BroadcastReceiver mUsbPlugEvents = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action))
-                {
+            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbDevice dev = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 RobotLog.vv(TAG, "ACTION_USB_DEVICE_DETACHED: %s", dev.getDeviceName());
 
-                for (FtDevice ftDev = FtDeviceManager.this.findDevice(dev); ftDev != null; ftDev = FtDeviceManager.this.findDevice(dev))
-                    {
+                for (FtDevice ftDev = FtDeviceManager.this.findDevice(dev); ftDev != null; ftDev = FtDeviceManager.this.findDevice(dev)) {
                     ftDev.close();
-                    synchronized (FtDeviceManager.this.mFtdiDevices)
-                        {
+                    synchronized (FtDeviceManager.this.mFtdiDevices) {
                         FtDeviceManager.this.mFtdiDevices.remove(ftDev);
-                        }
                     }
                 }
-
-            else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action))
-                {
+            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
                 UsbDevice dev = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 RobotLog.vv(TAG, "ACTION_USB_DEVICE_ATTACHED: %s", dev.getDeviceName());
 
                 FtDeviceManager.this.addOrUpdateUsbDevice(dev);
-                }
             }
-        };
+        }
+    };
 
-    private static BroadcastReceiver mUsbDevicePermissions = new BroadcastReceiver()
-        {
-        public void onReceive(Context context, Intent intent)
-            {
+    private static BroadcastReceiver mUsbDevicePermissions = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (ACTION_FTDI_USB_PERMISSION.equals(action))
-                {
-                synchronized (this)
-                    {
+            if (ACTION_FTDI_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
                     UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
-                        {
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         RobotLog.vv(TAG, "permission granted for device " + device.getDeviceName());
-                        }
-                    else
-                        {
+                    } else {
                         RobotLog.ee(TAG, "permission denied for device " + device.getDeviceName());
-                        }
                     }
                 }
-
             }
-        };
+
+        }
+    };
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    private FtDeviceManager(Context parentContext) throws FtDeviceIOException
-        {
-        if (parentContext == null)
-            {
+    private FtDeviceManager(Context parentContext) throws FtDeviceIOException {
+        if (parentContext == null) {
             throw new FtDeviceIOException("parentContext is null");
-            }
-        else
-            {
+        } else {
             updateContext(parentContext);
-            if (!findUsbManger())
-                {
+            if (!findUsbManger()) {
                 throw new FtDeviceIOException("unable to find usb manager");
-                }
+            }
 
             this.mFtdiDevices = new ArrayList<FtDevice>();
             IntentFilter filter = new IntentFilter();
             filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
             filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
             parentContext.getApplicationContext().registerReceiver(this.mUsbPlugEvents, filter);
-            }
+        }
+    }
+
+    public static synchronized FtDeviceManager getInstance(Context parentContext) throws FtDeviceIOException {
+        if (theInstance == null) {
+            theInstance = new FtDeviceManager(parentContext);
         }
 
-    public static synchronized FtDeviceManager getInstance(Context parentContext) throws FtDeviceIOException
-        {
-        if (theInstance == null)
-            {
-            theInstance = new FtDeviceManager(parentContext);
-            }
-
-        if (parentContext != null)
-            {
+        if (parentContext != null) {
             updateContext(parentContext);
-            }
+        }
 
         return theInstance;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    private FtDevice findDevice(UsbDevice usbDev)
-        {
-        synchronized (this.mFtdiDevices)
-            {
-            for (FtDevice ftDevice : this.mFtdiDevices)
-                {
-                if (ftDevice.getUsbDevice().equals(usbDev))
-                    {
+    private FtDevice findDevice(UsbDevice usbDev) {
+        synchronized (this.mFtdiDevices) {
+            for (FtDevice ftDevice : this.mFtdiDevices) {
+                if (ftDevice.getUsbDevice().equals(usbDev)) {
                     return ftDevice;
-                    }
                 }
             }
+        }
         return null;
-        }
+    }
 
-    public boolean isFtDevice(UsbDevice dev)
-        {
+    public boolean isFtDevice(UsbDevice dev) {
         boolean result = false;
-        if (mContext == null)
-            {
+        if (mContext == null) {
             return result;
-            }
-        else
-            {
+        } else {
             VendorAndProductIds vidPid = new VendorAndProductIds(dev.getVendorId(), dev.getProductId());
-            if (mSupportedDevices.contains(vidPid))
-                {
+            if (mSupportedDevices.contains(vidPid)) {
                 result = true;
-                }
+            }
             return result;
-            }
         }
+    }
 
-    private static synchronized boolean updateContext(Context context)
-        {
+    private static synchronized boolean updateContext(Context context) {
         boolean result = false;
-        if (context == null)
-            {
-            }
-        else
-            {
+        if (context == null) {
+        } else {
             // TODO: this should compare application contexts, shouldn't it?
-            if (mContext != context)
-                {
+            if (mContext != context) {
                 mContext = context;
                 mPendingIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 0, new Intent(ACTION_FTDI_USB_PERMISSION), /*134217728*/ /*0x8000000*/ PendingIntent.FLAG_UPDATE_CURRENT);
                 mContext.getApplicationContext().registerReceiver(mUsbDevicePermissions, new IntentFilter(ACTION_FTDI_USB_PERMISSION));
-                }
+            }
 
             result = true;
-            }
-        return result;
         }
+        return result;
+    }
 
-    private boolean isPermitted(UsbDevice dev)
-        {
+    private boolean isPermitted(UsbDevice dev) {
         boolean result = false;
-        if (!mUsbManager.hasPermission(dev))
-            {
+        if (!mUsbManager.hasPermission(dev)) {
             RobotLog.vv(TAG, "requesting permissions for device=%s", dev.getDeviceName());
             mUsbManager.requestPermission(dev, mPendingIntent);
-            }
+        }
 
-        if (mUsbManager.hasPermission(dev))
-            {
+        if (mUsbManager.hasPermission(dev)) {
             result = true;
-            }
+        }
 
         return result;
-        }
+    }
 
-    private static boolean findUsbManger()
-        {
-        if (mUsbManager == null && mContext != null)
-            {
+    private static boolean findUsbManger() {
+        if (mUsbManager == null && mContext != null) {
             mUsbManager = (UsbManager) mContext.getApplicationContext().getSystemService(Context.USB_SERVICE);
-            }
+        }
 
         return mUsbManager != null;
-        }
+    }
 
-    public boolean setVIDPID(int vendorId, int productId)
-        {
+    public boolean setVIDPID(int vendorId, int productId) {
         boolean rc = false;
-        if (vendorId != 0 && productId != 0)
-            {
+        if (vendorId != 0 && productId != 0) {
             VendorAndProductIds vidpid = new VendorAndProductIds(vendorId, productId);
-            if (mSupportedDevices.contains(vidpid))
-                {
+            if (mSupportedDevices.contains(vidpid)) {
                 return true;
-                }
+            }
 
-            if (!mSupportedDevices.add(vidpid))
-                {
-                }
-            else
-                {
+            if (!mSupportedDevices.add(vidpid)) {
+            } else {
                 rc = true;
-                }
             }
-        else
-            {
+        } else {
             RobotLog.ee(TAG, "Invalid parameter to setVIDPID");
-            }
+        }
 
         return rc;
-        }
+    }
 
-    public int[][] getVIDPID()
-        {
+    public int[][] getVIDPID() {
         int listSize = mSupportedDevices.size();
         int[][] arrayVIDPID = new int[2][listSize];
 
-        for (int i = 0; i < listSize; ++i)
-            {
+        for (int i = 0; i < listSize; ++i) {
             VendorAndProductIds vidpid = (VendorAndProductIds) mSupportedDevices.get(i);
             arrayVIDPID[0][i] = vidpid.getVendorId();
             arrayVIDPID[1][i] = vidpid.getProductId();
-            }
+        }
 
         return arrayVIDPID;
-        }
+    }
 
-    private void clearDevices()
-        {
-        synchronized (this.mFtdiDevices)
-            {
+    private void clearDevices() {
+        synchronized (this.mFtdiDevices) {
             int nr_dev = this.mFtdiDevices.size();
 
-            for (int i = 0; i < nr_dev; ++i)
-                {
+            for (int i = 0; i < nr_dev; ++i) {
                 this.mFtdiDevices.remove(0);
-                }
-
             }
-        }
 
-    public int createDeviceInfoList(Context parentContext)
-        {
+        }
+    }
+
+    public int createDeviceInfoList(Context parentContext) {
         HashMap deviceList = mUsbManager.getDeviceList();
         Iterator deviceIterator = deviceList.values().iterator();
         ArrayList<FtDevice> devices = new ArrayList<FtDevice>();
         byte rc = 0;
-        if (parentContext == null)
-            {
+        if (parentContext == null) {
             return rc;
-            }
-        else
-            {
+        } else {
             updateContext(parentContext);
 
-            while (true)
-                {
+            while (true) {
                 // Find the next FT-compatible USB device
                 UsbDevice usbDevice;
-                do  {
-                    if (!deviceIterator.hasNext())
-                        {
+                do {
+                    if (!deviceIterator.hasNext()) {
                         // We're done: swap in the new device list
-                        synchronized (this.mFtdiDevices)
-                            {
+                        synchronized (this.mFtdiDevices) {
                             this.clearDevices();
                             this.mFtdiDevices = devices;
 
@@ -362,319 +299,246 @@ public class FtDeviceManager extends FtConstants
                             int deviceCount = this.mFtdiDevices.size();
                             RobotLog.vv(TAG, "createDeviceInfoList(): %d USB devices", deviceCount);
                             return deviceCount;
-                            }
                         }
+                    }
 
                     usbDevice = (UsbDevice) deviceIterator.next();
-                    }
+                }
                 while (!this.isFtDevice(usbDevice));
 
                 int numInterfaces = usbDevice.getInterfaceCount();
 
-                for (int i = 0; i < numInterfaces; ++i)
-                    {
+                for (int i = 0; i < numInterfaces; ++i) {
                     if (this.isPermitted(usbDevice))    // TODO: why check perms INSIDE of loop?
-                        {
+                    {
                         addOrUpdatePermittedUsbDevice(devices, usbDevice, usbDevice.getInterface(i));
-                        }
                     }
                 }
             }
         }
+    }
 
-    public synchronized int getDeviceInfoList(int numDevs, FtDeviceInfo[] deviceList)
-        {
-        for (int i = 0; i < numDevs; ++i)
-            {
+    public synchronized int getDeviceInfoList(int numDevs, FtDeviceInfo[] deviceList) {
+        for (int i = 0; i < numDevs; ++i) {
             deviceList[i] = (this.mFtdiDevices.get(i)).mDeviceInfo;
-            }
-
-        return this.mFtdiDevices.size();
         }
 
-    public synchronized FtDeviceInfo getDeviceInfoListDetail(int index)
-        {
+        return this.mFtdiDevices.size();
+    }
+
+    public synchronized FtDeviceInfo getDeviceInfoListDetail(int index) {
         return index <= this.mFtdiDevices.size() && index >= 0
                 ? (this.mFtdiDevices.get(index)).mDeviceInfo
                 : null;
-        }
+    }
 
-    public static int getLibraryVersion()
-        {
+    public static int getLibraryVersion() {
         return 540016640 /*0x20300000*/;
-        }
+    }
 
-    private boolean tryOpen(Context parentContext, FtDevice ftDev, FtDeviceManagerParams params)
-        {
+    private boolean tryOpen(Context parentContext, FtDevice ftDev, FtDeviceManagerParams params) {
         boolean result = false;
-        if (ftDev == null)
-            {
-            }
-        else if (parentContext == null)
-            {
-            }
-        else
-            {
+        if (ftDev == null) {
+        } else if (parentContext == null) {
+        } else {
             ftDev.setContext(parentContext);
-            if (params != null)
-                {
+            if (params != null) {
                 ftDev.setDriverParameters(params);
-                }
+            }
 
             try {
-                if (ftDev.openDevice(mUsbManager) && ftDev.isOpen())
-                    {
+                if (ftDev.openDevice(mUsbManager) && ftDev.isOpen()) {
                     result = true;
-                    }
                 }
-            catch (FtDeviceIOException e)
-                {
+            } catch (FtDeviceIOException e) {
                 // ignore
-                }
             }
-        return result;
         }
+        return result;
+    }
 
-    public synchronized FtDevice openByUsbDevice(Context parentContext, UsbDevice dev, FtDeviceManagerParams params)
-        {
+    public synchronized FtDevice openByUsbDevice(Context parentContext, UsbDevice dev, FtDeviceManagerParams params) {
         RobotLog.vv(TAG, "openByUsbDevice(%s)", VendorAndProductIds.from(dev));
         FtDevice ftDev = null;
-        if (this.isFtDevice(dev))
-            {
+        if (this.isFtDevice(dev)) {
             // Try to find this device in our list of enumerated devices
             ftDev = this.findDevice(dev);
 
             // If we can't find it, then see if it's currently attached (we might be in an attachment
             // notification race) and attach it now if so
-            if (ftDev == null)
-                {
+            if (ftDev == null) {
                 RobotLog.vv(TAG, "device not found: adding it on the fly");
                 //
                 addOrUpdateUsbDevice(dev);
                 ftDev = this.findDevice(dev);
                 //
-                if (ftDev==null)
-                    {
+                if (ftDev == null) {
                     RobotLog.ee(TAG, "add failed");
-                    }
                 }
+            }
 
-            if (!this.tryOpen(parentContext, ftDev, params))
-                {
+            if (!this.tryOpen(parentContext, ftDev, params)) {
                 ftDev = null;
-                }
             }
+        }
         return ftDev;
-        }
+    }
 
-    public synchronized FtDevice openByUsbDevice(Context parentContext, UsbDevice dev)
-        {
+    public synchronized FtDevice openByUsbDevice(Context parentContext, UsbDevice dev) {
         return this.openByUsbDevice(parentContext, dev, (FtDeviceManagerParams) null);
-        }
+    }
 
-    public synchronized FtDevice openByIndex(Context parentContext, int index, FtDeviceManagerParams params)
-        {
+    public synchronized FtDevice openByIndex(Context parentContext, int index, FtDeviceManagerParams params) {
         FtDevice ftDev = null;
-        if (index < 0)
-            {
-            }
-        else if (parentContext == null)
-            {
-            }
-        else
-            {
+        if (index < 0) {
+        } else if (parentContext == null) {
+        } else {
             updateContext(parentContext);
             ftDev = this.mFtdiDevices.get(index);
-            if (!this.tryOpen(parentContext, ftDev, params))
-                {
+            if (!this.tryOpen(parentContext, ftDev, params)) {
                 ftDev = null;
-                }
             }
-        return ftDev;
         }
+        return ftDev;
+    }
 
-    public synchronized FtDevice openByIndex(Context parentContext, int index)
-        {
+    public synchronized FtDevice openByIndex(Context parentContext, int index) {
         return this.openByIndex(parentContext, index, (FtDeviceManagerParams) null);
-        }
+    }
 
-    public synchronized FtDevice openBySerialNumber(Context parentContext, String serialNumber, FtDeviceManagerParams params)
-        {
+    public synchronized FtDevice openBySerialNumber(Context parentContext, String serialNumber, FtDeviceManagerParams params) {
         FtDeviceInfo devInfo = null;
         FtDevice ftDev = null;
-        if (parentContext == null)
-            {
-            }
-        else
-            {
+        if (parentContext == null) {
+        } else {
             updateContext(parentContext);
 
-            for (int i = 0; i < this.mFtdiDevices.size(); ++i)
-                {
+            for (int i = 0; i < this.mFtdiDevices.size(); ++i) {
                 FtDevice tmpDev = (FtDevice) this.mFtdiDevices.get(i);
-                if (tmpDev != null)
-                    {
+                if (tmpDev != null) {
                     devInfo = tmpDev.mDeviceInfo;
-                    if (devInfo == null)
-                        {
+                    if (devInfo == null) {
                         RobotLog.ee(TAG, "***devInfo cannot be null***");
-                        }
-                    else if (devInfo.serialNumber.equals(serialNumber))
-                        {
+                    } else if (devInfo.serialNumber.equals(serialNumber)) {
                         ftDev = tmpDev;
                         break;
-                        }
                     }
                 }
-
-            if (!this.tryOpen(parentContext, ftDev, params))
-                {
-                ftDev = null;
-                }
             }
+
+            if (!this.tryOpen(parentContext, ftDev, params)) {
+                ftDev = null;
+            }
+        }
         return ftDev;
-        }
+    }
 
-    public synchronized FtDevice openBySerialNumber(Context parentContext, String serialNumber)
-        {
+    public synchronized FtDevice openBySerialNumber(Context parentContext, String serialNumber) {
         return this.openBySerialNumber(parentContext, serialNumber, (FtDeviceManagerParams) null);
-        }
+    }
 
-    public synchronized FtDevice openByDescription(Context parentContext, String description, FtDeviceManagerParams params)
-        {
+    public synchronized FtDevice openByDescription(Context parentContext, String description, FtDeviceManagerParams params) {
         FtDeviceInfo devInfo = null;
         FtDevice ftDev = null;
-        if (parentContext == null)
-            {
+        if (parentContext == null) {
             return ftDev;
-            }
-        else
-            {
+        } else {
             updateContext(parentContext);
 
-            for (int i = 0; i < this.mFtdiDevices.size(); ++i)
-                {
+            for (int i = 0; i < this.mFtdiDevices.size(); ++i) {
                 FtDevice tmpDev = this.mFtdiDevices.get(i);
-                if (tmpDev != null)
-                    {
+                if (tmpDev != null) {
                     devInfo = tmpDev.mDeviceInfo;
-                    if (devInfo == null)
-                        {
+                    if (devInfo == null) {
                         RobotLog.ee(TAG, "***devInfo cannot be null***");
-                        }
-                    else if (devInfo.description.equals(description))
-                        {
+                    } else if (devInfo.description.equals(description)) {
                         ftDev = tmpDev;
                         break;
-                        }
                     }
                 }
+            }
 
-            if (!this.tryOpen(parentContext, ftDev, params))
-                {
+            if (!this.tryOpen(parentContext, ftDev, params)) {
                 ftDev = null;
-                }
+            }
 
             return ftDev;
-            }
         }
+    }
 
-    public synchronized FtDevice openByDescription(Context parentContext, String description)
-        {
+    public synchronized FtDevice openByDescription(Context parentContext, String description) {
         return this.openByDescription(parentContext, description, (FtDeviceManagerParams) null);
-        }
+    }
 
-    public synchronized FtDevice openByLocation(Context parentContext, int location, FtDeviceManagerParams params)
-        {
+    public synchronized FtDevice openByLocation(Context parentContext, int location, FtDeviceManagerParams params) {
         FtDeviceInfo devInfo = null;
         FtDevice ftDev = null;
-        if (parentContext == null)
-            {
+        if (parentContext == null) {
             return ftDev;
-            }
-        else
-            {
+        } else {
             updateContext(parentContext);
 
-            for (int i = 0; i < this.mFtdiDevices.size(); ++i)
-                {
+            for (int i = 0; i < this.mFtdiDevices.size(); ++i) {
                 FtDevice tmpDev = (FtDevice) this.mFtdiDevices.get(i);
-                if (tmpDev != null)
-                    {
+                if (tmpDev != null) {
                     devInfo = tmpDev.mDeviceInfo;
-                    if (devInfo == null)
-                        {
+                    if (devInfo == null) {
                         RobotLog.ee(TAG, "***devInfo cannot be null***");
-                        }
-                    else if (devInfo.location == location)
-                        {
+                    } else if (devInfo.location == location) {
                         ftDev = tmpDev;
                         break;
-                        }
                     }
                 }
+            }
 
-            if (!this.tryOpen(parentContext, ftDev, params))
-                {
+            if (!this.tryOpen(parentContext, ftDev, params)) {
                 ftDev = null;
-                }
+            }
 
             return ftDev;
-            }
         }
+    }
 
-    public synchronized FtDevice openByLocation(Context parentContext, int location)
-        {
+    public synchronized FtDevice openByLocation(Context parentContext, int location) {
         return this.openByLocation(parentContext, location, (FtDeviceManagerParams) null);
-        }
+    }
 
-    public int addOrUpdateUsbDevice(UsbDevice usbDevice)
-        {
+    public int addOrUpdateUsbDevice(UsbDevice usbDevice) {
         RobotLog.vv(TAG, "addOrUpdateUsbDevice(%s)", VendorAndProductIds.from(usbDevice));
         int result = 0;
-        if (this.isFtDevice(usbDevice))
-            {
+        if (this.isFtDevice(usbDevice)) {
             int numInterfaces = usbDevice.getInterfaceCount();
-            for (int i = 0; i < numInterfaces; ++i)
-                {
+            for (int i = 0; i < numInterfaces; ++i) {
                 if (this.isPermitted(usbDevice))  // TODO: Why keep asking isPermitted() inside of loop?
-                    {
-                    if (addOrUpdatePermittedUsbDevice(this.mFtdiDevices, usbDevice, usbDevice.getInterface(i)))
-                        {
+                {
+                    if (addOrUpdatePermittedUsbDevice(this.mFtdiDevices, usbDevice, usbDevice.getInterface(i))) {
                         ++result;
-                        }
                     }
                 }
             }
-
-        return result;
         }
 
-    protected boolean addOrUpdatePermittedUsbDevice(List<FtDevice> devices, UsbDevice usbDevice, UsbInterface usbInterface)
-        {
-        synchronized (this.mFtdiDevices)
-            {
+        return result;
+    }
+
+    protected boolean addOrUpdatePermittedUsbDevice(List<FtDevice> devices, UsbDevice usbDevice, UsbInterface usbInterface) {
+        synchronized (this.mFtdiDevices) {
             try {
                 FtDevice ftDev = this.findDevice(usbDevice);
-                if (ftDev == null)
-                    {
+                if (ftDev == null) {
                     ftDev = new FtDevice(mContext, mUsbManager, usbDevice, usbInterface);
-                    }
-                else
-                    {
+                } else {
                     ftDev.setContext(mContext);
                     this.mFtdiDevices.remove(ftDev);
-                    }
+                }
 
                 devices.add(ftDev);
                 return true;
-                }
-            catch (FtDeviceIOException|RobotUsbException e)
-                {
+            } catch (FtDeviceIOException | RobotUsbException e) {
                 RobotLog.ee(TAG, e, "can't open FT_Device(%s) on interface(%s)", usbDevice, usbInterface);
-                }
             }
-        return false;
         }
-
+        return false;
     }
+
+}

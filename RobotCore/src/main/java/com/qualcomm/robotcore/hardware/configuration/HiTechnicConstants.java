@@ -36,6 +36,5 @@ package com.qualcomm.robotcore.hardware.configuration;
  * HiTechnicConstants documents the various number of attachments that can be made
  * to HiTechnic controllers
  */
-public class HiTechnicConstants
-    {
-    }
+public class HiTechnicConstants {
+}

@@ -40,105 +40,109 @@ import com.qualcomm.robotcore.hardware.configuration.MotorConfigurationType;
 @SuppressWarnings("unused")
 public interface DcMotorController extends HardwareDevice {
 
-  /**
-   * Informs the motor controller of the type of a particular motor. This is normally used
-   * only as part of the initialization of a motor.
-   *
-   * @param motor port of the motor in question
-   * @param motorType the motor type.
-   */
-  void setMotorType(int motor, MotorConfigurationType motorType);
+    /**
+     * Informs the motor controller of the type of a particular motor. This is normally used
+     * only as part of the initialization of a motor.
+     *
+     * @param motor     port of the motor in question
+     * @param motorType the motor type.
+     */
+    void setMotorType(int motor, MotorConfigurationType motorType);
 
-  /**
-   * Retrieves the motor type configured for this motor
-   * @param motor the motor in question
-   * @return the configured type for that motor, or {@link MotorConfigurationType#getUnspecifiedMotorType()}
-   * if no type has been configured
-   */
-  MotorConfigurationType getMotorType(int motor);
+    /**
+     * Retrieves the motor type configured for this motor
+     *
+     * @param motor the motor in question
+     * @return the configured type for that motor, or {@link MotorConfigurationType#getUnspecifiedMotorType()}
+     * if no type has been configured
+     */
+    MotorConfigurationType getMotorType(int motor);
 
-  /**
-   * Set the current motor mode. {@link DcMotor.RunMode}
-   *
-   * @param motor port of motor
-   * @param mode run mode
-   */
-  void setMotorMode(int motor, DcMotor.RunMode mode);
+    /**
+     * Set the current motor mode. {@link DcMotor.RunMode}
+     *
+     * @param motor port of motor
+     * @param mode  run mode
+     */
+    void setMotorMode(int motor, DcMotor.RunMode mode);
 
-  /**
-   * Get the current motor mode. Returns the current "run mode".
-   *
-   * @param motor port of motor
-   * @return run mode
-   */
-  DcMotor.RunMode getMotorMode(int motor);
+    /**
+     * Get the current motor mode. Returns the current "run mode".
+     *
+     * @param motor port of motor
+     * @return run mode
+     */
+    DcMotor.RunMode getMotorMode(int motor);
 
-  /**
-   * Set the current motor power
-   *
-   * @param motor port of motor
-   * @param power from -1.0 to 1.0
-   */
-  void setMotorPower(int motor, double power);
+    /**
+     * Set the current motor power
+     *
+     * @param motor port of motor
+     * @param power from -1.0 to 1.0
+     */
+    void setMotorPower(int motor, double power);
 
-  /**
-   * Get the current motor power
-   *
-   * @param motor port of motor
-   * @return scaled from -1.0 to 1.0
-   */
-  double getMotorPower(int motor);
+    /**
+     * Get the current motor power
+     *
+     * @param motor port of motor
+     * @return scaled from -1.0 to 1.0
+     */
+    double getMotorPower(int motor);
 
-  /**
-   * Is the motor busy?
-   *
-   * @param motor port of motor
-   * @return true if the motor is busy
-   */
-  boolean isBusy(int motor);
+    /**
+     * Is the motor busy?
+     *
+     * @param motor port of motor
+     * @return true if the motor is busy
+     */
+    boolean isBusy(int motor);
 
-  /**
-   * Sets the behavior of the motor when zero power is applied.
-   * @param zeroPowerBehavior the behavior of the motor when zero power is applied.
-   */
-  void setMotorZeroPowerBehavior(int motor, DcMotor.ZeroPowerBehavior zeroPowerBehavior);
+    /**
+     * Sets the behavior of the motor when zero power is applied.
+     *
+     * @param zeroPowerBehavior the behavior of the motor when zero power is applied.
+     */
+    void setMotorZeroPowerBehavior(int motor, DcMotor.ZeroPowerBehavior zeroPowerBehavior);
 
-  /**
-   * Returns the current zero power behavior of the motor.
-   * @return the current zero power behavior of the motor.
-   */
-  DcMotor.ZeroPowerBehavior getMotorZeroPowerBehavior(int motor);
+    /**
+     * Returns the current zero power behavior of the motor.
+     *
+     * @return the current zero power behavior of the motor.
+     */
+    DcMotor.ZeroPowerBehavior getMotorZeroPowerBehavior(int motor);
 
-  /**
-   * Is motor power set to float?
-   *
-   * @param motor port of motor
-   * @return true of motor is set to float
-   */
-  boolean getMotorPowerFloat(int motor);
+    /**
+     * Is motor power set to float?
+     *
+     * @param motor port of motor
+     * @return true of motor is set to float
+     */
+    boolean getMotorPowerFloat(int motor);
 
-  /**
-   * Set the motor target position. This takes in an integer, which is not scaled.
-   *
-   * Motor power should be positive if using run to position
-   *  @param motor port of motor
-   * @param position range from Integer.MIN_VALUE to Integer.MAX_VALUE
-   */
-  void setMotorTargetPosition(int motor, int position);
+    /**
+     * Set the motor target position. This takes in an integer, which is not scaled.
+     * <p>
+     * Motor power should be positive if using run to position
+     *
+     * @param motor    port of motor
+     * @param position range from Integer.MIN_VALUE to Integer.MAX_VALUE
+     */
+    void setMotorTargetPosition(int motor, int position);
 
-  /**
-   * Get the current motor target position
-   *
-   * @param motor port of motor
-   * @return integer, unscaled
-   */
-  int getMotorTargetPosition(int motor);
+    /**
+     * Get the current motor target position
+     *
+     * @param motor port of motor
+     * @return integer, unscaled
+     */
+    int getMotorTargetPosition(int motor);
 
-  /**
-   * Get the current motor position
-   *
-   * @param motor port of motor
-   * @return integer, unscaled
-   */
-  int getMotorCurrentPosition(int motor);
+    /**
+     * Get the current motor position
+     *
+     * @param motor port of motor
+     * @return integer, unscaled
+     */
+    int getMotorCurrentPosition(int motor);
 }

@@ -48,8 +48,8 @@ import java.util.concurrent.TimeUnit;
  * {@link CallbackLooper} provides a looper thread which is *not* the main app thread.
  * This at times helps us receive and wait for callbacks without causing deadlock.
  */
-@SuppressWarnings("WeakerAccess") public class CallbackLooper
-    {
+@SuppressWarnings("WeakerAccess")
+public class CallbackLooper {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -58,68 +58,67 @@ import java.util.concurrent.TimeUnit;
 
     // It's useful to have a default, but at times others may want their own, too
     protected static CallbackLooper defaultInstance;
-    public static CallbackLooper getDefault() { return defaultInstance; }
-    static { defaultInstance = new CallbackLooper(); defaultInstance.start(); }
 
-    protected ExecutorService   executorService;
-    protected Looper            looper;
-    protected Handler           handler;
-    protected Thread            thread;
+    public static CallbackLooper getDefault() {
+        return defaultInstance;
+    }
+
+    static {
+        defaultInstance = new CallbackLooper();
+        defaultInstance.start();
+    }
+
+    protected ExecutorService executorService;
+    protected Looper looper;
+    protected Handler handler;
+    protected Thread thread;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public CallbackLooper()
-        {
+    public CallbackLooper() {
         executorService = null;
         looper = null;
         handler = null;
         thread = null;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public synchronized void post(Runnable runnable)
-        {
+    public synchronized void post(Runnable runnable) {
         handler.post(runnable);
-        }
+    }
 
-    public synchronized Looper getLooper()
-        {
+    public synchronized Looper getLooper() {
         return looper;
-        }
+    }
 
-    public synchronized Handler getHandler()
-        {
+    public synchronized Handler getHandler() {
         return handler;
-        }
+    }
 
-    public boolean isLooperThread()
-        {
+    public boolean isLooperThread() {
         Assert.assertNotNull(looper);
         Assert.assertNotNull(looper.getThread());
         return looper.getThread() == Thread.currentThread();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Start / stop
     //----------------------------------------------------------------------------------------------
 
-    public synchronized void start()
-        {
-        if (executorService == null)
-            {
+    public synchronized void start() {
+        if (executorService == null) {
             // Start a new thread so that callbacks happen on some thread that no one else knows about
             // and so don't cause deadlock. This is a good thing.
             executorService = ThreadPool.newSingleThreadExecutor("CallbackLooper");
             final CountDownLatch latch = new CountDownLatch(1);
-            executorService.submit(new Runnable()
-                {
-                @Override public void run()
-                    {
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
                     thread = Thread.currentThread();
                     thread.setName("callback looper");
                     RobotLog.vv(TAG, "thread=%d", thread.getId());
@@ -131,23 +130,29 @@ import java.util.concurrent.TimeUnit;
                     latch.countDown();  // let start() return
                     //
                     Looper.loop();      // doesn't return until we stop()
-                    }
-                });
-            try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                }
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
+    }
 
-    public synchronized void stop()
-        {
-        if (executorService != null)
-            {
+    public synchronized void stop() {
+        if (executorService != null) {
             executorService.shutdownNow();
-            try { ThreadPool.awaitTermination(executorService, 3, TimeUnit.SECONDS, "CallbackLooper"); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            try {
+                ThreadPool.awaitTermination(executorService, 3, TimeUnit.SECONDS, "CallbackLooper");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             executorService = null;
             looper = null;
             handler = null;
             thread = null;
-            }
         }
-
     }
+
+}

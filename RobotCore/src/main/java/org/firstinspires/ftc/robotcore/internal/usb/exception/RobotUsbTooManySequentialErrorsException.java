@@ -38,25 +38,20 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * more prevalent, but changes in the USB synchronization logic have made this relatively rare now.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbTooManySequentialErrorsException extends RobotUsbException
-    {
-    public RobotUsbTooManySequentialErrorsException(String message)
-        {
+public class RobotUsbTooManySequentialErrorsException extends RobotUsbException {
+    public RobotUsbTooManySequentialErrorsException(String message) {
         super(message);
-        }
-
-    public RobotUsbTooManySequentialErrorsException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbTooManySequentialErrorsException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbTooManySequentialErrorsException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbTooManySequentialErrorsException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbTooManySequentialErrorsException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbTooManySequentialErrorsException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbTooManySequentialErrorsException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbTooManySequentialErrorsException(String.format(format, args), e);
+    }
+}

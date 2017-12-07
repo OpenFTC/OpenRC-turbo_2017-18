@@ -37,25 +37,20 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * no other more-specific exception is appropriate.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbUnspecifiedException extends RobotUsbException
-    {
-    public RobotUsbUnspecifiedException(String message)
-        {
+public class RobotUsbUnspecifiedException extends RobotUsbException {
+    public RobotUsbUnspecifiedException(String message) {
         super(message);
-        }
-
-    public RobotUsbUnspecifiedException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbUnspecifiedException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbUnspecifiedException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbUnspecifiedException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbUnspecifiedException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbUnspecifiedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbUnspecifiedException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbUnspecifiedException(String.format(format, args), e);
+    }
+}

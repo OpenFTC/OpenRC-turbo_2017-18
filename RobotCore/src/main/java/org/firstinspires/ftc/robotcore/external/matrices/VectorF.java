@@ -47,8 +47,7 @@ import org.firstinspires.ftc.robotcore.external.NonConst;
  * @see RowMatrixF
  * @see ColumnMatrixF
  */
-public class VectorF
-    {
+public class VectorF {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -61,85 +60,81 @@ public class VectorF
 
     /**
      * Creates a new vector of the indicated length. The vector will contain zeros.
+     *
      * @param length the length of the new vector to return
      * @return the newly created vector
      */
-    public static VectorF length(int length)
-        {
+    public static VectorF length(int length) {
         return new VectorF(new float[length]);
-        }
+    }
 
-    public VectorF(float[] data)
-        {
+    public VectorF(float[] data) {
         this.data = data;
-        }
+    }
 
-    public VectorF(float x)
-        {
+    public VectorF(float x) {
         this.data = new float[1];
         this.data[0] = x;
-        }
+    }
 
-    public VectorF(float x, float y)
-        {
+    public VectorF(float x, float y) {
         this.data = new float[2];
         this.data[0] = x;
         this.data[1] = y;
-        }
+    }
 
-    public VectorF(float x, float y, float z)
-        {
+    public VectorF(float x, float y, float z) {
         this.data = new float[3];
         this.data[0] = x;
         this.data[1] = y;
         this.data[2] = z;
-        }
+    }
 
-    public VectorF(float x, float y, float z, float w)
-        {
+    public VectorF(float x, float y, float z, float w) {
         this.data = new float[4];
         this.data[0] = x;
         this.data[1] = y;
         this.data[2] = z;
         this.data[3] = w;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Const public float[] getData()
-        {
+    @Const
+    public float[] getData() {
         return this.data;
-        }
+    }
 
-    @Const public int length()
-        {
+    @Const
+    public int length() {
         return this.data.length;
-        }
+    }
 
-    @Const public float get(int index)
-        {
+    @Const
+    public float get(int index) {
         return this.data[index];
-        }
+    }
 
-    @NonConst public void put(int index, float value)
-        {
+    @NonConst
+    public void put(int index, float value) {
         this.data[index] = value;
-        }
+    }
 
-    @Override public String toString()
-        {
+    @Override
+    public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("{");
-        for (int i = 0; i < this.length(); i++)
-            {
-            if (i > 0) result.append(" ");
-            result.append(String.format("%.2f", this.data[i]));
+        for (int i = 0; i < this.length(); i++) {
+            if (i > 0) {
+                result.append(" ");
             }
+            result.append(String.format("%.2f", this.data[i]));
+        }
         result.append("}");
         return result.toString();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transformation matrix operations
@@ -149,170 +144,154 @@ public class VectorF
      * Consider this vector as a 3D coordinate or 3D homogeneous coordinate, and, if the
      * latter, return its normalized form. In either case, the result is of length three, and
      * contains coordinate values for x, y, and z at indices 0, 1, and 2 respectively.
-     * @return the normalized form of this coordinate vector
      *
+     * @return the normalized form of this coordinate vector
      * @see <a href="https://en.wikipedia.org/wiki/Homogeneous_coordinates">Homogeneous coordinates</a>
      */
-    @Const public VectorF normalized3D()
-        {
-        if (this.length()==3)
-            {
+    @Const
+    public VectorF normalized3D() {
+        if (this.length() == 3) {
             return this;
-            }
-        else if (this.length()==4)
-            {
+        } else if (this.length() == 4) {
             return new VectorF(
-                    this.data[0]/this.data[3],
-                    this.data[1]/this.data[3],
-                    this.data[2]/this.data[3]);
-            }
-        else
+                    this.data[0] / this.data[3],
+                    this.data[1] / this.data[3],
+                    this.data[2] / this.data[3]);
+        } else {
             throw dimensionsError();
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Matrix Operations
     //----------------------------------------------------------------------------------------------
 
-    @Const public float magnitude()
-        {
-        return (float)Math.sqrt(this.dotProduct(this));
-        }
+    @Const
+    public float magnitude() {
+        return (float) Math.sqrt(this.dotProduct(this));
+    }
 
     /**
      * Returns the dot product of this vector and another.
+     *
      * @param him the other vector with whom the dot product is to be formed
      * @return the dot product of this vector and another.
-     *
      * @see <a href="https://en.wikipedia.org/wiki/Dot_product">Dot product</a>
      */
-    @Const public float dotProduct(VectorF him)
-        {
-        if (this.length() == him.length())
-            {
+    @Const
+    public float dotProduct(VectorF him) {
+        if (this.length() == him.length()) {
             float sum = 0;
-            for (int i = 0; i < this.length(); i++)
-                {
+            for (int i = 0; i < this.length(); i++) {
                 sum += this.get(i) * him.get(i);
-                }
-            return sum;
             }
-        else
+            return sum;
+        } else {
             throw dimensionsError();
         }
+    }
 
     /**
      * Multiplies this vector, taken as a row vector, against the indicated matrix.
      */
-    @Const public MatrixF multiplied(MatrixF him)
-        {
+    @Const
+    public MatrixF multiplied(MatrixF him) {
         return new RowMatrixF(this).multiplied(him);
-        }
+    }
 
     /**
      * Adds this vector, taken as a row vector against, to the indicated matrix.
      */
-    @Const public MatrixF added(MatrixF addend)
-        {
+    @Const
+    public MatrixF added(MatrixF addend) {
         return new RowMatrixF(this).added(addend);
-        }
+    }
 
-    @Const public VectorF added(VectorF addend)
-        {
-        if (this.length() == addend.length())
-            {
+    @Const
+    public VectorF added(VectorF addend) {
+        if (this.length() == addend.length()) {
             VectorF result = VectorF.length(this.length());
-            for (int i = 0; i < this.length(); i++)
-                {
+            for (int i = 0; i < this.length(); i++) {
                 result.put(i, this.get(i) + addend.get(i));
-                }
+            }
             return result;
-            }
-        else
+        } else {
             throw dimensionsError();
         }
+    }
 
-    @NonConst public void add(VectorF addend)
-        {
-        if (this.length() == addend.length())
-            {
-            for (int i = 0; i < this.length(); i++)
-                {
+    @NonConst
+    public void add(VectorF addend) {
+        if (this.length() == addend.length()) {
+            for (int i = 0; i < this.length(); i++) {
                 this.put(i, this.get(i) + addend.get(i));
-                }
             }
-        else
+        } else {
             throw dimensionsError();
         }
+    }
 
     /**
      * Subtracts the indicated matrix from this vector, taken as a row vector.
      */
-    @Const public MatrixF subtracted(MatrixF subtrahend)
-        {
+    @Const
+    public MatrixF subtracted(MatrixF subtrahend) {
         return new RowMatrixF(this).subtracted(subtrahend);
-        }
+    }
 
-    @Const public VectorF subtracted(VectorF subtrahend)
-        {
-        if (this.length() == subtrahend.length())
-            {
+    @Const
+    public VectorF subtracted(VectorF subtrahend) {
+        if (this.length() == subtrahend.length()) {
             VectorF result = VectorF.length(this.length());
-            for (int i = 0; i < this.length(); i++)
-                {
+            for (int i = 0; i < this.length(); i++) {
                 result.put(i, this.get(i) - subtrahend.get(i));
-                }
+            }
             return result;
-            }
-        else
+        } else {
             throw dimensionsError();
         }
+    }
 
-    @NonConst public void subtract(VectorF subtrahend)
-        {
-        if (this.length() == subtrahend.length())
-            {
-            for (int i = 0; i < this.length(); i++)
-                {
+    @NonConst
+    public void subtract(VectorF subtrahend) {
+        if (this.length() == subtrahend.length()) {
+            for (int i = 0; i < this.length(); i++) {
                 this.put(i, this.get(i) - subtrahend.get(i));
-                }
             }
-        else
+        } else {
             throw dimensionsError();
         }
+    }
 
     /**
      * Returns a new vector containing the elements of this vector scaled by the indicated factor.
      */
-    @Const public VectorF multiplied(float scale)
-        {
+    @Const
+    public VectorF multiplied(float scale) {
         VectorF result = VectorF.length(this.length());
-        for (int i = 0; i < this.length(); i++)
-            {
+        for (int i = 0; i < this.length(); i++) {
             result.put(i, this.get(i) * scale);
-            }
+        }
         return result;
-        }
+    }
 
-    @NonConst public void multiply(float scale)
-        {
-        for (int i = 0; i < this.length(); i++)
-            {
+    @NonConst
+    public void multiply(float scale) {
+        for (int i = 0; i < this.length(); i++) {
             this.put(i, this.get(i) * scale);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected RuntimeException dimensionsError()
-        {
+    protected RuntimeException dimensionsError() {
         return dimensionsError(this.length());
-        }
-
-    @SuppressLint("DefaultLocale") protected static RuntimeException dimensionsError(int length)
-        {
-        return new IllegalArgumentException(String.format("vector dimensions are incorrect: length=%d", length));
-        }
     }
+
+    @SuppressLint("DefaultLocale")
+    protected static RuntimeException dimensionsError(int length) {
+        return new IllegalArgumentException(String.format("vector dimensions are incorrect: length=%d", length));
+    }
+}

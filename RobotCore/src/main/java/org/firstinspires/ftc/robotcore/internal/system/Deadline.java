@@ -40,41 +40,34 @@ import java.util.concurrent.TimeUnit;
  * {@link Deadline} enhances {@link ElapsedTime} with an explicit duration.
  */
 @SuppressWarnings("WeakerAccess")
-public class Deadline extends ElapsedTime
-    {
+public class Deadline extends ElapsedTime {
     protected final long nsDuration;
-    protected       long nsDeadline;
+    protected long nsDeadline;
 
-    public Deadline(long duration, TimeUnit unit)
-        {
+    public Deadline(long duration, TimeUnit unit) {
         nsDuration = unit.toNanos(duration);
         nsDeadline = nsStartTime + nsDuration;
-        }
+    }
 
-    public void reset()
-        {
+    public void reset() {
         super.reset();
         nsDeadline = nsStartTime + nsDuration;
-        }
+    }
 
-    public long getDuration(TimeUnit unit)
-        {
+    public long getDuration(TimeUnit unit) {
         return unit.convert(nsDuration, TimeUnit.NANOSECONDS);
-        }
+    }
 
-    public long getDeadline(TimeUnit unit)
-        {
+    public long getDeadline(TimeUnit unit) {
         return unit.convert(nsDeadline, TimeUnit.NANOSECONDS);
-        }
+    }
 
-    public long timeRemaining(TimeUnit unit)
-        {
+    public long timeRemaining(TimeUnit unit) {
         long nsRemaining = Math.max(0, nsDeadline - nsNow());
         return unit.convert(nsRemaining, TimeUnit.NANOSECONDS);
-        }
-
-    public boolean hasExpired()
-        {
-        return timeRemaining(TimeUnit.NANOSECONDS) <= 0;
-        }
     }
+
+    public boolean hasExpired() {
+        return timeRemaining(TimeUnit.NANOSECONDS) <= 0;
+    }
+}

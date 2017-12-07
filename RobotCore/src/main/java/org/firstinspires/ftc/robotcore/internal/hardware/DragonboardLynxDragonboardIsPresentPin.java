@@ -37,24 +37,29 @@ package org.firstinspires.ftc.robotcore.internal.hardware;
  * believes there to be an attached Dragonboard or not.
  */
 @SuppressWarnings("WeakerAccess")
-public class DragonboardLynxDragonboardIsPresentPin extends DragonboardGPIOPin
-    {
+public class DragonboardLynxDragonboardIsPresentPin extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxDragonboardIsPresentPin";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     protected static final DragonboardLynxDragonboardIsPresentPin theInstance = new DragonboardLynxDragonboardIsPresentPin();
-    public static DragonboardLynxDragonboardIsPresentPin getInstance() { return theInstance; }
+
+    public static DragonboardLynxDragonboardIsPresentPin getInstance() {
+        return theInstance;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected DragonboardLynxDragonboardIsPresentPin()
-        {
+    protected DragonboardLynxDragonboardIsPresentPin() {
         super(19, true, Active.LOW);
-        }
     }
+}

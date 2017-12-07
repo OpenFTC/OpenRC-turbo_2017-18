@@ -36,7 +36,6 @@ package com.qualcomm.robotcore.hardware.configuration;
  * {@link UnspecifiedMotor} is a motor type which represents a motor whose type is not indicated.
  * For historical reasons, the motor type data used is that of the Tetrix motor.
  */
-@MotorType(xmlTag="Motor", name="Unspecified Motor", ticksPerRev=1440, gearing=52, maxRPM=165)
-public interface UnspecifiedMotor
-    {
-    }
+@MotorType(xmlTag = "Motor", name = "Unspecified Motor", ticksPerRev = 1440, gearing = 52, maxRPM = 165)
+public interface UnspecifiedMotor {
+}

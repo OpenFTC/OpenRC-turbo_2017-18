@@ -38,25 +38,20 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * lock, and is stuck.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbWriteLockException extends RobotUsbException
-    {
-    public RobotUsbWriteLockException(String message)
-        {
+public class RobotUsbWriteLockException extends RobotUsbException {
+    public RobotUsbWriteLockException(String message) {
         super(message);
-        }
-
-    public RobotUsbWriteLockException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbWriteLockException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbWriteLockException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbWriteLockException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbWriteLockException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbWriteLockException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbWriteLockException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbWriteLockException(String.format(format, args), e);
+    }
+}

@@ -49,8 +49,7 @@ import android.support.annotation.Nullable;
  * {@link Paint} to draw a {@link Path}
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class PaintedPathDrawable extends Drawable
-    {
+public abstract class PaintedPathDrawable extends Drawable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -62,58 +61,53 @@ public abstract class PaintedPathDrawable extends Drawable
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected PaintedPathDrawable(@ColorInt int color)
-        {
+    protected PaintedPathDrawable(@ColorInt int color) {
         this.paint = new Paint();
         this.paint.setAntiAlias(true);
         this.paint.setColor(color);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Drawing
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setAlpha(@IntRange(from = 0, to = 255) int alpha)
-        {
+    public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
         paint.setAlpha(alpha);
-        }
+    }
 
-    @Override public int getAlpha()
-        {
+    @Override
+    public int getAlpha() {
         return paint.getAlpha();
-        }
+    }
 
     @Override
-    public void setColorFilter(ColorFilter cf)
-        {
+    public void setColorFilter(ColorFilter cf) {
         paint.setColorFilter(cf);
-        }
+    }
 
-    @Nullable @Override public ColorFilter getColorFilter()
-        {
+    @Nullable
+    @Override
+    public ColorFilter getColorFilter() {
         return paint.getColorFilter();
-        }
+    }
 
     @Override
-    public int getOpacity()
-        {
+    public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
-        }
+    }
 
     @Override
-    public void draw(@NonNull Canvas canvas)
-        {
+    public void draw(@NonNull Canvas canvas) {
         canvas.drawPath(path, paint);
-        }
+    }
 
     @Override
-    protected void onBoundsChange(Rect bounds)
-        {
+    protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
         computePath(bounds);
         invalidateSelf();
-        }
+    }
 
     protected abstract void computePath(Rect bounds);
-    }
+}

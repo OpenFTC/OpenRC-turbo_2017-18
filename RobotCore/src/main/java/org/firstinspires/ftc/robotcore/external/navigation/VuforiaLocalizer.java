@@ -50,15 +50,14 @@ import java.util.concurrent.BlockingQueue;
  *
  * @see <a href="https://en.wikipedia.org/wiki/Mobile_robot_navigation">Mobile robot navigation</a>
  */
-public interface VuforiaLocalizer
-    {
+public interface VuforiaLocalizer {
     /**
      * Loads a Vuforia dataset from the indicated application asset, which must be of
      * type .XML. The corresponding .DAT asset must be a sibling. Note that this operation
      * can be extremely lengthy, possibly taking a few seconds to execute. Loading datasets
      * from an asset you stored in your application APK is the recommended approach to
      * packaging datasets so they always travel along with your code.
-     *
+     * <p>
      * <p>Datasets are created using the <a href=https://developer.vuforia.com/target-manager>Vuforia Target Manager</a></p>
      *
      * @param assetName the name of the .XML dataset asset to load
@@ -72,7 +71,7 @@ public interface VuforiaLocalizer
      * and contain the full file path. The corresponding .DAT file must be a sibling
      * file in the same directory. Note that this operation can be extremely lengthy,
      * possibly taking a few seconds to execute.
-     *
+     * <p>
      * <p>Datasets are created using the <a href=https://developer.vuforia.com/target-manager>Vuforia Target Manager</a></p>
      *
      * @param absoluteFileName the full path to the .XML file of the dataset
@@ -83,8 +82,8 @@ public interface VuforiaLocalizer
 
     /**
      * (Advanced) Returns information about Vuforia's knowledge of the camera that it is using.
-     * @return information about Vuforia's knowledge of the camera that it is using.
      *
+     * @return information about Vuforia's knowledge of the camera that it is using.
      * @see com.vuforia.Tool#getProjectionGL(CameraCalibration, float, float)
      */
     CameraCalibration getCameraCalibration();
@@ -93,23 +92,22 @@ public interface VuforiaLocalizer
      * (Advanced) Returns a queue into which, if requested, Vuforia {@link Frame}s are placed
      * as they become available. This provides a means by which camera image data can be accessed
      * even while the Vuforia engine is running.
-     *
+     * <p>
      * <p>While the Vuforia engine is running, it takes exclusive ownership of the camera it is
      * using. This impedes the ability to also use that camera image data in alternative visual
      * processing algorithms. However, periodically (at a rate of tens of Hz), the Vuforia engine
      * makes available {@link Frame}s containing snapshots from the camera, and through which
      * camera image data can be retrieved. These can optionally be retrieved through the frame
      * queue.</p>
-     *
+     * <p>
      * <p>To access these {@link Frame}s, call {@link #setFrameQueueCapacity(int)} to enable the
      * frame queue. Once enabled, the frame queue can be accessed using {@link #getFrameQueue()}
      * and the methods thereon used to access {@link Frame}s as they become available.</p>
-     *
+     * <p>
      * <p>When {@link #setFrameQueueCapacity(int)} is called, any frame queue returned previously by
      * {@link #getFrameQueue()} becomes invalid and must be re-fetched.</p>
      *
      * @return a queue through which Vuforia {@link Frame}s may be retrieved.
-     *
      * @see #setFrameQueueCapacity(int)
      * @see <a href="https://library.vuforia.com/sites/default/api/java/classcom_1_1vuforia_1_1Frame.html">Frame (Java)</a>
      * @see <a href="https://library.vuforia.com/sites/default/api/cpp/classVuforia_1_1Frame.html">Frame (C++)</a>
@@ -121,7 +119,7 @@ public interface VuforiaLocalizer
      * Sets the maximum number of {@link Frame}s that will simultaneously be stored in the
      * frame queue. If the queue is full and new {@link Frame}s become available, older frames
      * will be discarded. The frame queue initially has a capacity of zero.
-     *
+     * <p>
      * <p>Note that calling this method invalidates any frame queue retreived previously
      * through {@link #getFrameQueue()}.</p>
      *
@@ -133,57 +131,60 @@ public interface VuforiaLocalizer
 
     /**
      * Returns the current capacity of the frame queue.
+     *
      * @return the current capacity of the frame queue.
      * @see #setFrameQueueCapacity(int)
      * @see #getFrameQueue()
      */
     int getFrameQueueCapacity();
 
-    /** {@link CloseableFrame} exposes a close() method so that one can proactively
-     * reduce memory pressure when we're done with a Frame */
-    class CloseableFrame extends Frame
-        {
-        /** creating a CloseableFrame also has an effect equivalent to calling frame.clone() */
-        public CloseableFrame(Frame frame)
-            {
+    /**
+     * {@link CloseableFrame} exposes a close() method so that one can proactively
+     * reduce memory pressure when we're done with a Frame
+     */
+    class CloseableFrame extends Frame {
+        /**
+         * creating a CloseableFrame also has an effect equivalent to calling frame.clone()
+         */
+        public CloseableFrame(Frame frame) {
             super(frame);
-            }
-        public void close()
-            {
-            super.delete();
-            }
         }
+
+        public void close() {
+            super.delete();
+        }
+    }
 
     /**
      * {@link CameraDirection} enumerates the identities of the cameras that Vuforia can use.
+     *
      * @see Parameters#cameraDirection
      */
-    enum CameraDirection
-        {
+    enum CameraDirection {
         BACK(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_BACK),
         FRONT(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_FRONT);
 
         public final int direction;
 
-        CameraDirection(int direction)
-            {
+        CameraDirection(int direction) {
             this.direction = direction;
-            }
-        };
+        }
+    }
+
+    ;
 
     /**
      * {@link Parameters} provides configuration information for instantiating the Vuforia localizer
      */
-    class Parameters
-        {
+    class Parameters {
         /**
          * The license key with which to use Vuforia. Vuforia will not load without a valid license being
          * provided. Vuforia 'Development' license keys, which is what is needed here, can be obtained
          * free of charge from the Vuforia developer web site at https://developer.vuforia.com/license-manager
-         *
+         * <p>
          * Valid Vuforia license keys are always 380 characters long, and look as if they contain mostly
          * random data. As an example, here is a example of a fragment of a valid key:
-         *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+         * ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
          * Once you've obtained a license key, copy the string form of the key from the Vuforia web site
          * and paste it in to your code as the value of the 'vuforiaLicenseKey' field of the
          * {@link Parameters} instance with which you initialize Vuforia.
@@ -192,6 +193,7 @@ public interface VuforiaLocalizer
 
         /**
          * Indicates the camera which Vuforia should use.
+         *
          * @see CameraDirection
          */
         public CameraDirection cameraDirection = CameraDirection.BACK;
@@ -207,18 +209,24 @@ public interface VuforiaLocalizer
         /**
          * {@link CameraMonitorFeedback} enumerates the kinds of positioning feedback that
          * may be drawn in the camera monitor window.
+         *
          * @see #cameraMonitorViewIdParent
          * @see #cameraMonitorFeedback
          */
-        public enum CameraMonitorFeedback { NONE, AXES , TEAPOT, BUILDINGS };
+        public enum CameraMonitorFeedback {
+            NONE, AXES, TEAPOT, BUILDINGS
+        }
+
+        ;
 
         /**
          * Indicates the style of camera monitoring feedback to use. Null indicates that
          * a default feedback style is to be used. {@link CameraMonitorFeedback#NONE None} indicates
          * that the camera monitoring is to be provided, but no feedback is to be drawn thereon.
+         *
          * @see CameraMonitorFeedback
          * @see #cameraMonitorViewIdParent
-          */
+         */
         public CameraMonitorFeedback cameraMonitorFeedback = CameraMonitorFeedback.AXES;
 
         /**
@@ -228,10 +236,13 @@ public interface VuforiaLocalizer
          * are specified, {@link #cameraMonitorViewParent} is used and {@link #cameraMonitorViewIdParent}
          * is ignored. Optional: if no view monitor parent is indicated, then no camera
          * monitoring is provided. The default is zero, which does not indicate a view parent.
+         *
          * @see #cameraMonitorViewParent
          * @see #fillCameraMonitorViewParent
          */
-        public @IdRes int cameraMonitorViewIdParent = 0;
+        public
+        @IdRes
+        int cameraMonitorViewIdParent = 0;
 
         /**
          * The view that will be used as the parent for a live monitor which provides
@@ -239,6 +250,7 @@ public interface VuforiaLocalizer
          * and {@link #cameraMonitorViewParent} are specified, {@link #cameraMonitorViewParent} is used
          * and {@link #cameraMonitorViewIdParent} is ignored. Optional: if no view monitor parent is
          * indicated, then no camera monitoring is provided. The default is null.
+         *
          * @see #cameraMonitorViewIdParent
          * @see #fillCameraMonitorViewParent
          */
@@ -249,6 +261,7 @@ public interface VuforiaLocalizer
          * or not. If true, then, depending on the aspect ratios of the camera and the view, some
          * of the camera's data might not be seen. The default is false, which renders the entire
          * camera image in the camera monitor view (if the latter is specified).
+         *
          * @see #cameraMonitorViewIdParent
          * @see #cameraMonitorViewParent
          */
@@ -260,7 +273,11 @@ public interface VuforiaLocalizer
          */
         public Activity activity = null;
 
-        public Parameters() {}
-        public Parameters(@IdRes int cameraMonitorViewIdParent) { this.cameraMonitorViewIdParent = cameraMonitorViewIdParent; }
+        public Parameters() {
+        }
+
+        public Parameters(@IdRes int cameraMonitorViewIdParent) {
+            this.cameraMonitorViewIdParent = cameraMonitorViewIdParent;
         }
     }
+}

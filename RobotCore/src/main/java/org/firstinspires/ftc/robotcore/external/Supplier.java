@@ -37,7 +37,6 @@ package org.firstinspires.ftc.robotcore.external;
  * There is no requirement that a new or distinct result be returned each time the supplier is invoked.
  * This is a functional interface whose functional method is get().
  */
-public interface Supplier<T>
-    {
+public interface Supplier<T> {
     T get();
-    }
+}

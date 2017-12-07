@@ -51,25 +51,23 @@ import java.util.concurrent.TimeUnit;
  * expects a response) or a LynxAck if not; a negative response is in the form of a LynxNack.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends LynxMessage
-    {
+public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends LynxMessage {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected boolean        isAckOrResponseReceived;
-    protected LynxNack       nackReceived;
+    protected boolean isAckOrResponseReceived;
+    protected LynxNack nackReceived;
     protected CountDownLatch ackOrNackReceived;
-    protected int            retransmissionsRemaining;
+    protected int retransmissionsRemaining;
     protected CountDownLatch responseOrNackReceived;
-    protected RESPONSE       response;
+    protected RESPONSE response;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxRespondable(LynxModuleIntf module)
-        {
+    public LynxRespondable(LynxModuleIntf module) {
         super(module);
         this.isAckOrResponseReceived = false;
         this.nackReceived = null;
@@ -77,134 +75,121 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         this.retransmissionsRemaining = 5;
         this.responseOrNackReceived = new CountDownLatch(1);
         this.response = null;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transmission
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void onPretendTransmit() throws InterruptedException
-        {
+    public void onPretendTransmit() throws InterruptedException {
         super.onPretendTransmit();
         this.pretendFinish();
-        }
+    }
 
-    public boolean isRetransmittable()
-        {
+    public boolean isRetransmittable() {
         return this.retransmissionsRemaining > 0;
-        }
+    }
 
-    public void setUnretransmittable()
-        {
+    public void setUnretransmittable() {
         this.retransmissionsRemaining = 0;
-        }
+    }
 
     @Override
-    public void noteRetransmission()
-        {
+    public void noteRetransmission() {
         this.retransmissionsRemaining--;
-        if (this.retransmissionsRemaining < 0) this.retransmissionsRemaining = 0;
+        if (this.retransmissionsRemaining < 0) {
+            this.retransmissionsRemaining = 0;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean hasBeenAcknowledged()
-        {
+    public boolean hasBeenAcknowledged() {
         return this.isAckOrResponseReceived() || this.isNackReceived();
-        }
-    public boolean isAckOrResponseReceived()
-        {
+    }
+
+    public boolean isAckOrResponseReceived() {
         return this.isAckOrResponseReceived;
-        }
-    public boolean isNackReceived()
-        {
+    }
+
+    public boolean isNackReceived() {
         return this.nackReceived != null;
-        }
-    public LynxNack getNackReceived()
-        {
+    }
+
+    public LynxNack getNackReceived() {
         return this.nackReceived;
-        }
+    }
+
     @Override
-    public boolean isAckable()
-        {
+    public boolean isAckable() {
         return true;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Completions
     //----------------------------------------------------------------------------------------------
 
-    public void pretendFinish() throws InterruptedException
-        {
+    public void pretendFinish() throws InterruptedException {
         // Pretend we got an ack or response
         this.isAckOrResponseReceived = true;
 
-        if (isResponseExpected())
-            {
+        if (isResponseExpected()) {
             /*
              * We'll just use the (phony) response object with which we initialized ourselves
              * Fix up our time window.  It was initialized to null.
              */
             this.response.setPayloadTimeWindow(new TimeWindow());
             onResponseReceived();
-            }
+        }
 
         // Finish bookkeeping
-        if (this.module != null) this.module.finishedWithMessage(this);
+        if (this.module != null) {
+            this.module.finishedWithMessage(this);
+        }
 
         // Wake up waiters
         this.ackOrNackReceived.countDown();
-        }
+    }
 
     // called on datagram receive thread
-    public void onAckReceived(LynxAck ack)
-        {
+    public void onAckReceived(LynxAck ack) {
         if (!this.isAckOrResponseReceived)    // paranoia
-            {
-            this.isAckOrResponseReceived = true;
-            if (ack.isAttentionRequired())
-                {
-                this.noteAttentionRequired();
-                }
-            this.ackOrNackReceived.countDown();
-            }
-        }
-
-    protected void noteAttentionRequired()
         {
-        this.module.noteAttentionRequired();
+            this.isAckOrResponseReceived = true;
+            if (ack.isAttentionRequired()) {
+                this.noteAttentionRequired();
+            }
+            this.ackOrNackReceived.countDown();
         }
+    }
+
+    protected void noteAttentionRequired() {
+        this.module.noteAttentionRequired();
+    }
 
     // Called on the datagram receive thread
-    public void onResponseReceived(LynxMessage response)
-        {
-        this.response = (RESPONSE)response;
+    public void onResponseReceived(LynxMessage response) {
+        this.response = (RESPONSE) response;
         this.onResponseReceived();
-        }
+    }
 
     // Called internally, here
-    private void onResponseReceived()
-        {
-        if (isResponseExpected())
-            {
+    private void onResponseReceived() {
+        if (isResponseExpected()) {
             this.isAckOrResponseReceived = true;
             this.responseOrNackReceived.countDown();
-            }
-        else
-            {
+        } else {
             RobotLog.e("internal error: unexpected response received for msg#=%d", this.getMessageNumber());
-            }
         }
+    }
 
     // called on the datagram receive thread, or internally, here
-    public void onNackReceived(LynxNack nack)
-        {
+    public void onNackReceived(LynxNack nack) {
         // Avoid logging 'expected' nacks
-        switch (nack.getNackReasonCode())
-            {
+        switch (nack.getNackReasonCode()) {
             case COMMAND_IMPL_PENDING:
             case I2C_NO_RESULTS_PENDING:
             case I2C_OPERATION_IN_PROGRESS:
@@ -212,79 +197,64 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
             default:
                 RobotLog.v("nack rec'd mod=%d msg#=%d ref#=%d reason=%s:%d", this.getModuleAddress(), this.getMessageNumber(), this.getReferenceNumber(), nack.getNackReasonCode().toString(), nack.getNackReasonCode().getValue());
                 break;
-            }
+        }
         this.nackReceived = nack;
         this.ackOrNackReceived.countDown();
         this.responseOrNackReceived.countDown();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Waits
     //----------------------------------------------------------------------------------------------
 
-    public void send() throws InterruptedException, LynxNackException
-        {
+    public void send() throws InterruptedException, LynxNackException {
         acquireNetworkLock();
         try {
             try {
                 this.module.sendCommand(this);
                 RobotLog.d("Sending command.");
                 logSerializationStatus(); //At this point, this command should have its serialization set.
-                }
-            catch (LynxUnsupportedCommandNumberException e)
-                {
+            } catch (LynxUnsupportedCommandNumberException e) {
                 // The module doesn't actually support this command, as it has an older sense of some interface.
                 // Act like we got a nack from the module
                 throwNackForUnsupportedCommand(e);
-                }
+            }
             awaitAckResponseOrNack();
             throwIfNack();
-            }
-        finally
-            {
+        } finally {
             releaseNetworkLock();
-            }
         }
+    }
 
-    public RESPONSE sendReceive() throws InterruptedException, LynxNackException
-        {
+    public RESPONSE sendReceive() throws InterruptedException, LynxNackException {
         acquireNetworkLock();
         try {
             try {
                 this.module.sendCommand(this);
                 awaitAckResponseOrNack();
                 return responseOrThrow();
-                }
-            catch (LynxNackException e)
-                {
-                if (e.getNack().getNackReasonCode().isUnsupportedReason())
-                    {
+            } catch (LynxNackException e) {
+                if (e.getNack().getNackReasonCode().isUnsupportedReason()) {
                     // The module SAID he supported this command, but it turns out he didn't (liar).
                     // Deal with it as if he had told us in the first place that he hadn't supported it.
-                    if (usePretendResponseIfRealModuleDoesntSupport() && this.response != null)
-                        {
+                    if (usePretendResponseIfRealModuleDoesntSupport() && this.response != null) {
                         return this.response;
-                        }
                     }
-                throw e;
                 }
-            catch (LynxUnsupportedCommandNumberException e)
-                {
+                throw e;
+            } catch (LynxUnsupportedCommandNumberException e) {
                 // The module doesn't actually support this command, as it has an older sense of some interface.
                 // Return the default response for the command, if any; otherwise, act like we got a nack from the module.
-                if (usePretendResponseIfRealModuleDoesntSupport() && this.response != null)
-                    {
+                if (usePretendResponseIfRealModuleDoesntSupport() && this.response != null) {
                     return this.response;
-                    }
+                }
                 throwNackForUnsupportedCommand(e);
                 return null;    // not reached
-                }
             }
-        finally
-            {
+        } finally {
             releaseNetworkLock();
-            }
         }
+    }
 
     /**
      * Command normally pre-create responses that get used when the usb device is in pretend mode.
@@ -293,98 +263,86 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
      * question doesn't in fact support the command (perhaps it has an older, shorter notion of a
      * particular interface, for example).
      */
-    protected boolean usePretendResponseIfRealModuleDoesntSupport()
-        {
+    protected boolean usePretendResponseIfRealModuleDoesntSupport() {
         return false;
-        }
+    }
 
-    protected void throwNackForUnsupportedCommand(LynxUnsupportedCommandNumberException e) throws LynxNackException
-        {
+    protected void throwNackForUnsupportedCommand(LynxUnsupportedCommandNumberException e) throws LynxNackException {
         this.nackReceived = new LynxNack(this.getModule(), LynxNack.ReasonCode.COMMAND_ROUTING_ERROR);
         throw new LynxNackException(this, "%s: command #0x%04x not supported by mod#=%d",
                 this.getClass().getSimpleName(),
                 e.getCommandNumber(),
                 this.getModuleAddress());
-        }
+    }
 
-    protected RESPONSE responseOrThrow() throws LynxNackException
-        {
-        if (this.isNackReceived())
+    protected RESPONSE responseOrThrow() throws LynxNackException {
+        if (this.isNackReceived()) {
             throw new LynxNackException(this, "%s: nack received: %s:%d",
-                    this.getClass().getSimpleName(),
-                    this.nackReceived.getNackReasonCode().toString(),
-                    this.nackReceived.getNackReasonCode().getValue());
+                this.getClass().getSimpleName(),
+                this.nackReceived.getNackReasonCode().toString(),
+                this.nackReceived.getNackReasonCode().getValue());
+        }
         return this.response;
-        }
+    }
 
-    protected void throwIfNack() throws LynxNackException
-        {
-        if (this.isNackReceived())
+    protected void throwIfNack() throws LynxNackException {
+        if (this.isNackReceived()) {
             throw new LynxNackException(this, "%s: nack received: %s:%d",
-                    this.getClass().getSimpleName(),
-                    this.nackReceived.getNackReasonCode().toString(),
-                    this.nackReceived.getNackReasonCode().getValue());
+                this.getClass().getSimpleName(),
+                this.nackReceived.getNackReasonCode().toString(),
+                this.nackReceived.getNackReasonCode().getValue());
         }
+    }
 
-    protected int getMsAwaitInterval()
-        {
+    protected int getMsAwaitInterval() {
         return 250;
-        }
+    }
 
-    protected int getMsRetransmissionInterval()
-        {
+    protected int getMsRetransmissionInterval() {
         return 100;
-        }
+    }
 
-    protected void awaitAndRetransmit(CountDownLatch latch, LynxNack.ReasonCode nackCode, String message) throws InterruptedException
-        {
+    protected void awaitAndRetransmit(CountDownLatch latch, LynxNack.ReasonCode nackCode, String message) throws InterruptedException {
         final long nsDeadline = System.nanoTime() + getMsAwaitInterval() * ElapsedTime.MILLIS_IN_NANO;
         final int msWaitInterval = getMsAwaitInterval();
         final int msRetransmit = getMsRetransmissionInterval();
 
-        for (;;)
-            {
+        for (; ; ) {
             long nsRemaining = nsDeadline - System.nanoTime();
-            if (nsRemaining <= 0)
-                {
+            if (nsRemaining <= 0) {
                 // Timed out. Pretend we got a nack.
                 RobotLog.v("timeout: abandoning waiting %dms for %s: cmd=%s mod=%d msg#=%d", msWaitInterval, message, this.getClass().getSimpleName(), this.getModuleAddress(), this.getMessageNumber());
                 this.onNackReceived(new LynxNack(this.module, nackCode));
                 return;
-                }
+            }
 
-            int  msRemaining = (int)(nsRemaining / ElapsedTime.MILLIS_IN_NANO);
-            int  msWait      = Math.min(msRemaining, msRetransmit);
+            int msRemaining = (int) (nsRemaining / ElapsedTime.MILLIS_IN_NANO);
+            int msWait = Math.min(msRemaining, msRetransmit);
 
-            if (latch.await(msWait, TimeUnit.MILLISECONDS))
-                {
+            if (latch.await(msWait, TimeUnit.MILLISECONDS)) {
                 // all is well
                 return;
-                }
+            }
 
             // Retransmit
-                RobotLog.d("Retransmitting.");
-                logSerializationStatus(); // Is the serialization status still correct?
+            RobotLog.d("Retransmitting.");
+            logSerializationStatus(); // Is the serialization status still correct?
             this.module.retransmit(this);
-            }
         }
-
-    protected void awaitAckResponseOrNack() throws InterruptedException
-        {
-        if (this.isResponseExpected())
-            {
-            awaitAndRetransmit(this.responseOrNackReceived, LynxNack.ReasonCode.ABANDONED_WAITING_FOR_RESPONSE, "response");
-            }
-        else
-            {
-            awaitAndRetransmit(this.ackOrNackReceived, LynxNack.ReasonCode.ABANDONED_WAITING_FOR_ACK, "ack");
-            }
-        }
-
-      private void logSerializationStatus() {
-          String serializationStatus = (serialization == null) ? "unset" : "set";
-          RobotLog.d("Initial command sent. Serialization status: " + serializationStatus);
-      }
     }
+
+    protected void awaitAckResponseOrNack() throws InterruptedException {
+        if (this.isResponseExpected()) {
+            awaitAndRetransmit(this.responseOrNackReceived, LynxNack.ReasonCode.ABANDONED_WAITING_FOR_RESPONSE, "response");
+        } else {
+            awaitAndRetransmit(this.ackOrNackReceived, LynxNack.ReasonCode.ABANDONED_WAITING_FOR_ACK, "ack");
+        }
+    }
+
+    private void logSerializationStatus() {
+        String serializationStatus = (serialization == null) ? "unset" : "set";
+        RobotLog.d("Initial command sent. Serialization status: " + serializationStatus);
+    }
+}
 
 

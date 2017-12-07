@@ -90,17 +90,20 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import java.util.Arrays;
 
 @SuppressWarnings("WeakerAccess")
-public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity implements AdapterView.OnItemClickListener
-    {
+public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity implements AdapterView.OnItemClickListener {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcWifiDirectChannelSelectorActivity";
-    @Override public String getTag() { return TAG; }
 
-    private boolean                  remoteConfigure = AppUtil.getInstance().isDriverStation();
-    private PreferencesHelper        preferencesHelper = new PreferencesHelper(TAG);
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
+    private boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
+    private PreferencesHelper preferencesHelper = new PreferencesHelper(TAG);
     private WifiDirectChannelChanger configurer = null;
 
     //----------------------------------------------------------------------------------------------
@@ -108,8 +111,7 @@ public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity impleme
     //----------------------------------------------------------------------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-        {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftc_wifi_channel_selector);
 
@@ -118,103 +120,92 @@ public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity impleme
         channelPickList.setOnItemClickListener(this);
         channelPickList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 
-        if (!remoteConfigure)
-            {
+        if (!remoteConfigure) {
             configurer = new WifiDirectChannelChanger();
-            }
         }
+    }
 
     @Override
-    protected void onStart()
-        {
+    protected void onStart() {
         super.onStart();
         // To do: select the current channel in the liast
-        }
+    }
 
-    @Override protected void onDestroy()
-        {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Spinner
     //----------------------------------------------------------------------------------------------
 
-    protected ArrayAdapter<WifiDirectChannelAndDescription> getAdapter(AdapterView<?> av)
-        {
+    protected ArrayAdapter<WifiDirectChannelAndDescription> getAdapter(AdapterView<?> av) {
         return (ArrayAdapter<WifiDirectChannelAndDescription>) av.getAdapter();
-        }
+    }
 
-    protected void loadAdapter(ListView itemsListView)
-        {
+    protected void loadAdapter(ListView itemsListView) {
         WifiDirectChannelAndDescription[] items = WifiDirectChannelAndDescription.load().toArray(new WifiDirectChannelAndDescription[0]);
         Arrays.sort(items);
         ArrayAdapter<WifiDirectChannelAndDescription> adapter = new WifiChannelItemAdapter(this, android.R.layout.simple_spinner_dropdown_item, items);  // simple_spinner_item, simple_spinner_dropdown_item
         itemsListView.setAdapter(adapter);
-        }
+    }
 
-    protected class WifiChannelItemAdapter extends ArrayAdapter<WifiDirectChannelAndDescription>
-        {
-        @AnyRes int checkmark;
+    protected class WifiChannelItemAdapter extends ArrayAdapter<WifiDirectChannelAndDescription> {
+        @AnyRes
+        int checkmark;
 
-        public WifiChannelItemAdapter(Context context, @LayoutRes int resource, @NonNull WifiDirectChannelAndDescription[] objects)
-            {
+        public WifiChannelItemAdapter(Context context, @LayoutRes int resource, @NonNull WifiDirectChannelAndDescription[] objects) {
             super(context, resource, objects);
 
             // Find the checkmark appropriate to the current theme
             TypedValue typedValue = new TypedValue();
             FtcWifiDirectChannelSelectorActivity.this.getTheme().resolveAttribute(android.R.attr.listChoiceIndicatorSingle, typedValue, true);
             checkmark = typedValue.resourceId;
-            }
+        }
 
-        @NonNull @Override public View getView(int position, View convertView, ViewGroup parent)
-            {
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
             // Create the view
             View view = super.getView(position, convertView, parent);
 
             // Set its checkmark image
-            CheckedTextView checkedTextView = (CheckedTextView)view;
+            CheckedTextView checkedTextView = (CheckedTextView) view;
             checkedTextView.setCheckMarkDrawable(checkmark);
 
             // Return the new view
             return view;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Actions
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-        {
-        if (configurer == null || !configurer.isBusy())
-            {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (configurer == null || !configurer.isBusy()) {
             ArrayAdapter<WifiDirectChannelAndDescription> adapter = getAdapter(parent);
             WifiDirectChannelAndDescription item = adapter.getItem(position);
 
             // Give UI feedback
-            CheckedTextView checkedTextView = (CheckedTextView)view;
+            CheckedTextView checkedTextView = (CheckedTextView) view;
             checkedTextView.setChecked(true);
 
             // Change to the indicated item
-            if (remoteConfigure)
-                {
-                if (preferencesHelper.writePrefIfDifferent(getString(R.string.pref_wifip2p_channel), item.getChannel()))
-                    {
+            if (remoteConfigure) {
+                if (preferencesHelper.writePrefIfDifferent(getString(R.string.pref_wifip2p_channel), item.getChannel())) {
                     AppUtil.getInstance().showToast(UILocation.ONLY_LOCAL, getString(R.string.toastWifiP2pChannelChangeRequestedDS, item.getDescription()));
-                    }
                 }
-            else
-                {
+            } else {
                 configurer.changeToChannel(item.getChannel());
-                }
             }
         }
+    }
 
-    public void onWifiSettingsClicked(View view)
-        {
+    public void onWifiSettingsClicked(View view) {
         RobotLog.vv(TAG, "launch wifi settings");
         startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
-        }
     }
+}

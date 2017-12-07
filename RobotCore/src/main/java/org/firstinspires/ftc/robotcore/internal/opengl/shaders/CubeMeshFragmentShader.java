@@ -39,21 +39,19 @@ import com.qualcomm.robotcore.R;
 
 import org.firstinspires.ftc.robotcore.internal.opengl.Texture;
 
-public class CubeMeshFragmentShader
-    {
+public class CubeMeshFragmentShader {
     protected final int u_texSampler2DHandle;
 
-    @RawRes public static final int resourceId = R.raw.cube_mesh_fragment_shader;
+    @RawRes
+    public static final int resourceId = R.raw.cube_mesh_fragment_shader;
 
-    public CubeMeshFragmentShader(int programId)
-        {
+    public CubeMeshFragmentShader(int programId) {
         u_texSampler2DHandle = GLES20.glGetUniformLocation(programId, "texSampler2D");
-        }
+    }
 
-    public void setTexture(Texture texture)
-        {
+    public void setTexture(Texture texture) {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.mTextureID[0]);
         GLES20.glUniform1i(u_texSampler2DHandle, 0);
-        }
     }
+}

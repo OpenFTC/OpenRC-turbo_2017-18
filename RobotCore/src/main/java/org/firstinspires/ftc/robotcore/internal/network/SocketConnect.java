@@ -36,7 +36,6 @@ package org.firstinspires.ftc.robotcore.internal.network;
  * {@link SocketConnect} controls whether, in certain situations, sockets should be
  * connected immediately or whether connection should be deferred until later.
  */
-public enum SocketConnect
-    {
-        CONNECTION_OWNER, DEFER
-    }
+public enum SocketConnect {
+    CONNECTION_OWNER, DEFER
+}

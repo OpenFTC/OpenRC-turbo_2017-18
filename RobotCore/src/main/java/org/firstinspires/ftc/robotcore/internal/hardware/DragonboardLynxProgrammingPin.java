@@ -37,24 +37,29 @@ package org.firstinspires.ftc.robotcore.internal.hardware;
  * attached embedded lynx
  */
 @SuppressWarnings("WeakerAccess")
-public class DragonboardLynxProgrammingPin extends DragonboardGPIOPin
-    {
+public class DragonboardLynxProgrammingPin extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxProgrammingPin";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     protected static final DragonboardLynxProgrammingPin theInstance = new DragonboardLynxProgrammingPin();
-    public static DragonboardLynxProgrammingPin getInstance() { return theInstance; }
+
+    public static DragonboardLynxProgrammingPin getInstance() {
+        return theInstance;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected DragonboardLynxProgrammingPin()
-        {
+    protected DragonboardLynxProgrammingPin() {
         super(36, false, Active.LOW);
-        }
     }
+}

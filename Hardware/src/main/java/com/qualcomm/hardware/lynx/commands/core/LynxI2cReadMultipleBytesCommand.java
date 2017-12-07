@@ -43,15 +43,14 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-09.
  */
-public class LynxI2cReadMultipleBytesCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxI2cReadMultipleBytesCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final static int cbPayload = 3;
     public final static int cbPayloadFirst = 1;
-    public final static int cbPayloadLast  = 100;
+    public final static int cbPayloadLast = 100;
 
     private byte i2cBus;
     private byte i2cAddr7Bit;
@@ -61,41 +60,39 @@ public class LynxI2cReadMultipleBytesCommand extends LynxDekaInterfaceCommand<Ly
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cReadMultipleBytesCommand(LynxModuleIntf module)
-        {
+    public LynxI2cReadMultipleBytesCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxI2cReadMultipleBytesCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int cbToRead)
-        {
+    public LynxI2cReadMultipleBytesCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int cbToRead) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        if (cbToRead < cbPayloadFirst || cbToRead > cbPayloadLast) throw new IllegalArgumentException(String.format("illegal payload length: %d", cbToRead));
-        this.i2cBus      = (byte)busZ;
-        this.i2cAddr7Bit = (byte)i2cAddr.get7Bit();
-        this.cbToRead    = (byte)cbToRead;
+        if (cbToRead < cbPayloadFirst || cbToRead > cbPayloadLast) {
+            throw new IllegalArgumentException(String.format("illegal payload length: %d", cbToRead));
         }
+        this.i2cBus = (byte) busZ;
+        this.i2cAddr7Bit = (byte) i2cAddr.get7Bit();
+        this.cbToRead = (byte) cbToRead;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         buffer.put(this.i2cAddr7Bit);
         buffer.put(this.cbToRead);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
-        this.i2cBus      = buffer.get();
+        this.i2cBus = buffer.get();
         this.i2cAddr7Bit = buffer.get();
-        this.cbToRead    = buffer.get();
-        }
+        this.cbToRead = buffer.get();
     }
+}

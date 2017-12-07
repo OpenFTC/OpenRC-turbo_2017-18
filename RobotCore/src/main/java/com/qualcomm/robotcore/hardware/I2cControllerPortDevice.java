@@ -37,17 +37,18 @@ package com.qualcomm.robotcore.hardware;
  * occupy a port on an I2cController. It provides a means by which the controller
  * and the port so occupied can be retrieved.
  */
-public interface I2cControllerPortDevice
-    {
+public interface I2cControllerPortDevice {
     /**
      * Returns the controller associated with this device.
+     *
      * @return the controller associated with this device
      */
     I2cController getI2cController();
 
     /**
      * Returns the port on the associated controller that this device occupies.
+     *
      * @return the port on the associated controller that this device occupies
      */
     int getPort();
-    }
+}

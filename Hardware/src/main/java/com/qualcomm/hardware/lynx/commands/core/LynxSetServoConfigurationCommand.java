@@ -43,15 +43,14 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-09.
  */
-public class LynxSetServoConfigurationCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetServoConfigurationCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final static int cbPayload = 3;
     public final static int apiFramePeriodFirst = 0;
-    public final static int apiFramePeriodLast  = 65535;
+    public final static int apiFramePeriodLast = 65535;
 
     private byte channel;
     private short framePeriod;
@@ -60,44 +59,41 @@ public class LynxSetServoConfigurationCommand extends LynxDekaInterfaceCommand<L
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetServoConfigurationCommand(LynxModuleIntf module)
-        {
+    public LynxSetServoConfigurationCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetServoConfigurationCommand(LynxModuleIntf module, int channelZ, int framePeriod)
-        {
+    public LynxSetServoConfigurationCommand(LynxModuleIntf module, int channelZ, int framePeriod) {
         this(module);
         LynxConstants.validateServoChannelZ(channelZ);
-        if (framePeriod < apiFramePeriodFirst || framePeriod > apiFramePeriodLast) throw new IllegalArgumentException(String.format("illegal frame period: %d", framePeriod));
-        this.channel = (byte)channelZ;
-        this.framePeriod = (short)framePeriod;
+        if (framePeriod < apiFramePeriodFirst || framePeriod > apiFramePeriodLast) {
+            throw new IllegalArgumentException(String.format("illegal frame period: %d", framePeriod));
         }
+        this.channel = (byte) channelZ;
+        this.framePeriod = (short) framePeriod;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.channel);
         buffer.putShort(this.framePeriod);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.channel = buffer.get();
         this.framePeriod = buffer.getShort();
-        }
     }
+}

@@ -37,49 +37,41 @@ package org.firstinspires.ftc.robotcore.internal.network;
  * on behalf of one of its clients
  */
 @SuppressWarnings("WeakerAccess")
-public class StartResult
-    {
+public class StartResult {
     private WifiStartStoppable startStoppable;
-    private int             startCount;
+    private int startCount;
 
-    public StartResult()
-        {
+    public StartResult() {
         this(null, 0);
-        }
-
-    public StartResult(WifiStartStoppable startStoppable, int startCount)
-        {
-        this.startStoppable = startStoppable;
-        this.startCount     = startCount;
-        }
-
-    public void setStartStoppable(WifiStartStoppable startStoppable)
-        {
-        this.startStoppable = startStoppable;
-        }
-
-    public WifiStartStoppable getStartStoppable()
-        {
-        return this.startStoppable;
-        }
-
-    public void setStartCount(int startCount)
-        {
-        this.startCount = startCount;
-        }
-
-    public int getStartCount()
-        {
-        return startCount;
-        }
-
-    public void incrementStartCount()
-        {
-        startCount++;
-        }
-    public void decrementStartCount()
-        {
-        startCount--;
-        }
-
     }
+
+    public StartResult(WifiStartStoppable startStoppable, int startCount) {
+        this.startStoppable = startStoppable;
+        this.startCount = startCount;
+    }
+
+    public void setStartStoppable(WifiStartStoppable startStoppable) {
+        this.startStoppable = startStoppable;
+    }
+
+    public WifiStartStoppable getStartStoppable() {
+        return this.startStoppable;
+    }
+
+    public void setStartCount(int startCount) {
+        this.startCount = startCount;
+    }
+
+    public int getStartCount() {
+        return startCount;
+    }
+
+    public void incrementStartCount() {
+        startCount++;
+    }
+
+    public void decrementStartCount() {
+        startCount--;
+    }
+
+}

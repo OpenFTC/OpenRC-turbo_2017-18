@@ -59,14 +59,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public abstract class InspectionActivity extends ThemedActivity
-    {
+public abstract class InspectionActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "InspectionActivity";
-    @Override public String getTag() { return TAG; }
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
 
     private static final String goodMark = "\u2713";    // a check mark
     private static final String badMark = "X";
@@ -94,8 +97,7 @@ public abstract class InspectionActivity extends ThemedActivity
     //----------------------------------------------------------------------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-        {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection);
 
@@ -118,8 +120,8 @@ public abstract class InspectionActivity extends ThemedActivity
         txtAppVersion = (TextView) findViewById(R.id.textDeviceName);
 
         txtAppVersion.setText(inspectingRobotController()
-            ? getString(R.string.titleInspectionReportRC)
-            : getString(R.string.titleInspectionReportDS));
+                ? getString(R.string.titleInspectionReportRC)
+                : getString(R.string.titleInspectionReportDS));
 
         txtManufacturer = (TextView) findViewById(R.id.txtManufacturer);
         txtModel = (TextView) findViewById(R.id.txtModel);
@@ -127,41 +129,34 @@ public abstract class InspectionActivity extends ThemedActivity
         teamNoRegex = Pattern.compile("^\\d{1,5}(-\\w)?-(RC|DS)\\z", Pattern.CASE_INSENSITIVE);
 
         ImageButton buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
-        if (useMenu())
-            {
-            buttonMenu.setOnClickListener(new View.OnClickListener()
-                {
+        if (useMenu()) {
+            buttonMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                    {
+                public void onClick(View v) {
                     AppUtil.getInstance().openOptionsMenuFor(InspectionActivity.this);
-                    }
-                });
-            }
-        else
-            {
+                }
+            });
+        } else {
             buttonMenu.setEnabled(false);
             buttonMenu.setVisibility(View.INVISIBLE);
-            }
+        }
 
         nameManager = DeviceNameManager.getInstance();
         nameManagerStartResult = nameManager.start();
 
         // Off to the races
         refresh();
-        }
+    }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-        {
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
-        }
+    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
         // Historical note: we used to have other items on the menu as well, but
         // the ability to clear remembered groups is now available on the Settings screen,
         // and the ability to clear all wifi networks is (apparently) not available from M
@@ -169,48 +164,39 @@ public abstract class InspectionActivity extends ThemedActivity
         // been removed.
 
         int id = item.getItemId();
-        if (id == R.id.disconnect_from_wifidirect)
-            {
-            if (!remoteConfigure)
-                {
-                if (WifiDirectAgent.getInstance().disconnectFromWifiDirect())
-                    {
+        if (id == R.id.disconnect_from_wifidirect) {
+            if (!remoteConfigure) {
+                if (WifiDirectAgent.getInstance().disconnectFromWifiDirect()) {
                     showToast(getString(R.string.toastDisconnectedFromWifiDirect));
-                    }
-                else
-                    {
+                } else {
                     showToast(getString(R.string.toastErrorDisconnectingFromWifiDirect));
-                    }
                 }
-            else
-                {
+            } else {
                 NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_DISCONNECT_FROM_WIFI_DIRECT));
-                }
-            return true;
             }
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
-        }
+    }
 
     @Override
-    protected void onResume()
-        {
+    protected void onResume() {
         super.onResume();
         startRefreshing();
-        }
+    }
 
     @Override
-    protected void onPause()
-        {
+    protected void onPause() {
         super.onPause();
         stopRefreshing();
-        }
+    }
 
-    @Override protected void onDestroy()
-        {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         nameManager.stop(nameManagerStartResult);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Refreshing
@@ -220,9 +206,11 @@ public abstract class InspectionActivity extends ThemedActivity
         stopRefreshing();
         int msInterval = 5000;
         refreshFuture = ThreadPool.getDefaultScheduler().scheduleAtFixedRate(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 AppUtil.getInstance().runOnUiThread(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         refresh();
                     }
                 });
@@ -237,67 +225,55 @@ public abstract class InspectionActivity extends ThemedActivity
         }
     }
 
-    private void refresh(TextView view, boolean value)
-        {
+    private void refresh(TextView view, boolean value) {
         refresh(view, value, true);
-        }
-    private void refresh(TextView view, boolean value, boolean validValue)
-        {
+    }
+
+    private void refresh(TextView view, boolean value, boolean validValue) {
         view.setText(value ? goodMark : badMark);
-        view.setTextColor(value==validValue ? textOk : textError);
-        }
-    private void refresh(TextView view, String value, boolean valid)
-        {
+        view.setTextColor(value == validValue ? textOk : textError);
+    }
+
+    private void refresh(TextView view, String value, boolean valid) {
         view.setText(value);
         view.setTextColor(valid ? textOk : textError);
-        }
-    private boolean refreshOptional(TextView view, String appVersion, boolean required)
-        {
+    }
+
+    private boolean refreshOptional(TextView view, String appVersion, boolean required) {
         boolean exists = InspectionState.isPackageInstalled(appVersion);
-        if (required)
-            {
+        if (required) {
             refresh(view, exists);
             return exists;
-            }
-        else
-            {
+        } else {
             view.setText(notApplicable);
             view.setTextColor(textOk);
             return true;
-            }
         }
-    private boolean refreshPackage(TextView view, String version, int versionCode, int minVersion)
-        {
-        if (InspectionState.isPackageInstalled(version))
-            {
+    }
+
+    private boolean refreshPackage(TextView view, String version, int versionCode, int minVersion) {
+        if (InspectionState.isPackageInstalled(version)) {
             view.setText(version);
-            if (versionCode < minVersion)
-                {
+            if (versionCode < minVersion) {
                 view.setTextColor(textWarning);
                 return false;
-                }
-            else
-                {
+            } else {
                 view.setTextColor(textOk);
-                }
             }
-        else
-            {
+        } else {
             view.setText(badMark);
             view.setTextColor(textOk);
-            }
-        return true;
         }
+        return true;
+    }
 
-    protected void refresh()
-        {
+    protected void refresh() {
         InspectionState state = new InspectionState();
         state.initializeLocal(nameManager);
         refresh(state);
-        }
+    }
 
-    protected void refresh(InspectionState state)
-        {
+    protected void refresh(InspectionState state) {
         // Set values
         refresh(widiConnected, state.wifiDirectConnected);
         refresh(wifiEnabled, state.wifiEnabled);
@@ -320,53 +296,50 @@ public abstract class InspectionActivity extends ThemedActivity
         refresh(txtOpenFTCVersion, org.openftc.BuildConfig.VERSION_COMPLETE, true);
 
         if (!state.isRobotControllerInstalled() && !state.isDriverStationInstalled()
-            || state.isRobotControllerInstalled() && state.isDriverStationInstalled())
-            {
+                || state.isRobotControllerInstalled() && state.isDriverStationInstalled()) {
             // you should have at least one or the other installed, but not both
             appsOkay = false;
             txtIsDSInstalled.setTextColor(textError);
             txtIsRCInstalled.setTextColor(textError);
-            }
+        }
 
         appsOkay = validateAppsInstalled(state) && appsOkay;
         appsStatus.setTextColor(appsOkay ? textOk : textError);
         appsStatus.setText(appsOkay ? goodMark : badMark);
-        }
+    }
 
-    public boolean isValidOsVersion(InspectionState state)
-        {
-        if (Device.MANUFACTURER_ZTE.equalsIgnoreCase(state.manufacturer) && Device.MODEL_ZTE_SPEED.equalsIgnoreCase(state.model))
-            {
+    public boolean isValidOsVersion(InspectionState state) {
+        if (Device.MANUFACTURER_ZTE.equalsIgnoreCase(state.manufacturer) && Device.MODEL_ZTE_SPEED.equalsIgnoreCase(state.model)) {
             // ZTE Speed should be Kit Kat. ZTE did not upgrade Speed beyond Kit Kat (that we know of, at least)
             return (state.sdkInt >= Build.VERSION_CODES.KITKAT);
-            }
-        else
-            {
+        } else {
             // for 2016-2017 season we recommend Marshmallow or higher.
             return (state.sdkInt >= Build.VERSION_CODES.M);
-            }
         }
+    }
 
-    public boolean isValidDeviceName(InspectionState state)
-        {
-        if (state.deviceName.contains("\n") || state.deviceName.contains("\r")) return false;
-        return (teamNoRegex.matcher(state.deviceName)).find();
+    public boolean isValidDeviceName(InspectionState state) {
+        if (state.deviceName.contains("\n") || state.deviceName.contains("\r")) {
+            return false;
         }
+        return (teamNoRegex.matcher(state.deviceName)).find();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Subclass queries
     //----------------------------------------------------------------------------------------------
 
     protected abstract boolean validateAppsInstalled(InspectionState state);
+
     protected abstract boolean inspectingRobotController();
+
     protected abstract boolean useMenu();
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
-    
-    private void showToast(String message)
-        {
+
+    private void showToast(String message) {
         AppUtil.getInstance().showToast(UILocation.BOTH, message);
-        }
     }
+}

@@ -44,29 +44,28 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  * {@link LynxEmbeddedIMU} represents a BNO055 IMU embedded on the lynx board.
  */
 @I2cSensor(name = "@string/lynx_embedded_imu_name", xmlTag = "@string/lynx_embedded_imu_xmltag", description = "@string/lynx_embedded_imu_description")
-public class LynxEmbeddedIMU extends BNO055IMUImpl
-    {
+public class LynxEmbeddedIMU extends BNO055IMUImpl {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     /**
      * This constructor is used by {@link UserConfigurationType#createInstance(I2cController, int)}
+     *
      * @see UserConfigurationType#createInstance(I2cController, int)
      * @see I2cSensor
      */
-    public LynxEmbeddedIMU(I2cDeviceSynch deviceClient)
-        {
+    public LynxEmbeddedIMU(I2cDeviceSynch deviceClient) {
         super(deviceClient);
-        }
-
-    @Override public String getDeviceName()
-        {
-        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.lynx_embedded_imu_name);
-        }
-
-    @Override public Manufacturer getManufacturer()
-        {
-        return Manufacturer.Lynx;
-        }
     }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.lynx_embedded_imu_name);
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.Lynx;
+    }
+}

@@ -48,237 +48,222 @@ import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 @SuppressWarnings("WeakerAccess")
 @SuppressLint("DefaultLocale")
 public final class MotorConfigurationType extends UserConfigurationType implements Cloneable // final because of serialization concerns
-    {
+{
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    private @Expose double ticksPerRev;
-    private @Expose double gearing;
-    private @Expose double maxRPM;
-    private @Expose double achieveableMaxRPMFraction;
-    private @Expose Rotation orientation;
+    private
+    @Expose
+    double ticksPerRev;
+    private
+    @Expose
+    double gearing;
+    private
+    @Expose
+    double maxRPM;
+    private
+    @Expose
+    double achieveableMaxRPMFraction;
+    private
+    @Expose
+    Rotation orientation;
 
-    private @Expose @NonNull DistributorInfoState distributorInfo = new DistributorInfoState();
-    private @Expose @NonNull ModernRoboticsMotorControllerParamsState modernRoboticsParams = new ModernRoboticsMotorControllerParamsState();
-    private @Expose @NonNull ExpansionHubMotorControllerParamsState hubVelocityParams = new ExpansionHubMotorControllerParamsState();
-    private @Expose @NonNull ExpansionHubMotorControllerParamsState hubPositionParams = new ExpansionHubMotorControllerParamsState();
+    private
+    @Expose
+    @NonNull
+    DistributorInfoState distributorInfo = new DistributorInfoState();
+    private
+    @Expose
+    @NonNull
+    ModernRoboticsMotorControllerParamsState modernRoboticsParams = new ModernRoboticsMotorControllerParamsState();
+    private
+    @Expose
+    @NonNull
+    ExpansionHubMotorControllerParamsState hubVelocityParams = new ExpansionHubMotorControllerParamsState();
+    private
+    @Expose
+    @NonNull
+    ExpansionHubMotorControllerParamsState hubPositionParams = new ExpansionHubMotorControllerParamsState();
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public double getTicksPerRev()
-        {
+    public double getTicksPerRev() {
         return ticksPerRev;
-        }
+    }
 
-    public double getAchieveableMaxTicksPerSecond()
-        {
+    public double getAchieveableMaxTicksPerSecond() {
         final double encoderTicksPerRev = this.getTicksPerRev();
-        final double maxRPM             = this.getMaxRPM() * this.getAchieveableMaxRPMFraction();
-        final double secondsPerMinute   = 60;
+        final double maxRPM = this.getMaxRPM() * this.getAchieveableMaxRPMFraction();
+        final double secondsPerMinute = 60;
         return encoderTicksPerRev * maxRPM / secondsPerMinute;
-        }
-    public int getAchieveableMaxTicksPerSecondRounded()
-        {
-        return (int)Math.round(getAchieveableMaxTicksPerSecond());
-        }
+    }
 
-    public void setTicksPerRev(double ticksPerRev)
-        {
+    public int getAchieveableMaxTicksPerSecondRounded() {
+        return (int) Math.round(getAchieveableMaxTicksPerSecond());
+    }
+
+    public void setTicksPerRev(double ticksPerRev) {
         this.ticksPerRev = ticksPerRev;
-        }
+    }
 
-    public double getGearing()
-        {
+    public double getGearing() {
         return gearing;
-        }
+    }
 
-    public void setGearing(double gearing)
-        {
+    public void setGearing(double gearing) {
         this.gearing = gearing;
-        }
+    }
 
-    public double getMaxRPM()
-        {
+    public double getMaxRPM() {
         return maxRPM;
-        }
+    }
 
-    public void setMaxRPM(double maxRPM)
-        {
+    public void setMaxRPM(double maxRPM) {
         this.maxRPM = maxRPM;
-        }
+    }
 
-    public double getAchieveableMaxRPMFraction()
-        {
+    public double getAchieveableMaxRPMFraction() {
         return achieveableMaxRPMFraction;
-        }
+    }
 
-    public void setAchieveableMaxRPMFraction(double achieveableMaxRPMFraction)
-        {
+    public void setAchieveableMaxRPMFraction(double achieveableMaxRPMFraction) {
         this.achieveableMaxRPMFraction = achieveableMaxRPMFraction;
-        }
+    }
 
-    public Rotation getOrientation()
-        {
+    public Rotation getOrientation() {
         return orientation;
-        }
+    }
 
-    public void setOrientation(Rotation orientation)
-        {
+    public void setOrientation(Rotation orientation) {
         this.orientation = orientation;
-        }
+    }
 
-    public boolean hasModernRoboticsParams()
-        {
+    public boolean hasModernRoboticsParams() {
         return !modernRoboticsParams.isDefault();
-        }
+    }
 
-    public @NonNull ModernRoboticsMotorControllerParamsState getModernRoboticsParams()
-        {
+    public
+    @NonNull
+    ModernRoboticsMotorControllerParamsState getModernRoboticsParams() {
         return modernRoboticsParams;
-        }
+    }
 
-    public boolean hasExpansionHubVelocityParams()
-        {
+    public boolean hasExpansionHubVelocityParams() {
         return !hubVelocityParams.isDefault();
-        }
+    }
 
-    public ExpansionHubMotorControllerParamsState getHubVelocityParams()
-        {
+    public ExpansionHubMotorControllerParamsState getHubVelocityParams() {
         return hubVelocityParams;
-        }
+    }
 
-    public boolean hasExpansionHubPositionParams()
-        {
+    public boolean hasExpansionHubPositionParams() {
         return !hubPositionParams.isDefault();
-        }
+    }
 
-    public ExpansionHubMotorControllerParamsState getHubPositionParams()
-        {
+    public ExpansionHubMotorControllerParamsState getHubPositionParams() {
         return hubPositionParams;
-        }
+    }
 
-    public @NonNull DistributorInfoState getDistributorInfo()
-        {
+    public
+    @NonNull
+    DistributorInfoState getDistributorInfo() {
         return distributorInfo;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public static MotorConfigurationType getUnspecifiedMotorType()
-        {
+    public static MotorConfigurationType getUnspecifiedMotorType() {
         return UserConfigurationTypeManager.getInstance().getUnspecifiedMotorType();
-        }
+    }
 
-    public static MotorConfigurationType getMotorType(Class<?> clazz)
-        {
-        return (MotorConfigurationType)UserConfigurationTypeManager.getInstance().userTypeFromClass(Flavor.MOTOR, clazz);
-        }
+    public static MotorConfigurationType getMotorType(Class<?> clazz) {
+        return (MotorConfigurationType) UserConfigurationTypeManager.getInstance().userTypeFromClass(Flavor.MOTOR, clazz);
+    }
 
-    public MotorConfigurationType(Class clazz, String xmlTag)
-        {
+    public MotorConfigurationType(Class clazz, String xmlTag) {
         super(clazz, Flavor.MOTOR, xmlTag);
-        }
+    }
 
     // Used by gson deserialization
-    public MotorConfigurationType()
-        {
+    public MotorConfigurationType() {
         super(Flavor.MOTOR);
-        }
+    }
 
-    public MotorConfigurationType clone()
-        {
+    public MotorConfigurationType clone() {
         try {
-            MotorConfigurationType result = (MotorConfigurationType)super.clone();
+            MotorConfigurationType result = (MotorConfigurationType) super.clone();
             result.distributorInfo = distributorInfo.clone();
             result.modernRoboticsParams = modernRoboticsParams.clone();
             result.hubVelocityParams = hubVelocityParams.clone();
             result.hubPositionParams = hubPositionParams.clone();
             return result;
-            }
-        catch (CloneNotSupportedException e)
-            {
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException("internal error: Parameters not cloneable");
-            }
         }
+    }
 
-    public void processAnnotation(@Nullable MotorType motorType)
-        {
-        if (motorType != null)
-            {
-            if (name==null || name.isEmpty())
-                {
+    public void processAnnotation(@Nullable MotorType motorType) {
+        if (motorType != null) {
+            if (name == null || name.isEmpty()) {
                 name = ClassUtil.decodeStringRes(motorType.name().trim());
-                }
+            }
 
             ticksPerRev = motorType.ticksPerRev();
             gearing = motorType.gearing();
             maxRPM = motorType.maxRPM();
             achieveableMaxRPMFraction = motorType.achieveableMaxRPMFraction();
             orientation = motorType.orientation();
-            }
         }
+    }
 
-    public void processAnnotation(@Nullable ModernRoboticsMotorControllerParams params)
-        {
-        if (params != null)
-            {
+    public void processAnnotation(@Nullable ModernRoboticsMotorControllerParams params) {
+        if (params != null) {
             modernRoboticsParams = new ModernRoboticsMotorControllerParamsState(params);
-            }
         }
+    }
 
-    public void processAnnotation(@Nullable ExpansionHubMotorControllerVelocityParams params)
-        {
-        if (params != null)
-            {
+    public void processAnnotation(@Nullable ExpansionHubMotorControllerVelocityParams params) {
+        if (params != null) {
             hubVelocityParams = new ExpansionHubMotorControllerParamsState(params);
-            }
         }
+    }
 
-    public void processAnnotation(@Nullable ExpansionHubMotorControllerPositionParams params)
-        {
-        if (params != null)
-            {
+    public void processAnnotation(@Nullable ExpansionHubMotorControllerPositionParams params) {
+        if (params != null) {
             hubPositionParams = new ExpansionHubMotorControllerParamsState(params);
-            }
         }
+    }
 
-    public void processAnnotation(@Nullable DistributorInfo info)
-        {
-        if (info != null)
-            {
-            if (name==null || name.isEmpty())
-                {
+    public void processAnnotation(@Nullable DistributorInfo info) {
+        if (info != null) {
+            if (name == null || name.isEmpty()) {
                 String distributor = ClassUtil.decodeStringRes(info.distributor().trim());
                 String model = ClassUtil.decodeStringRes(info.model().trim());
-                if (!distributor.isEmpty() && !model.isEmpty())
-                    {
+                if (!distributor.isEmpty() && !model.isEmpty()) {
                     name = distributor + " " + model;
-                    }
                 }
+            }
 
             distributorInfo = DistributorInfoState.from(info);
-            }
         }
+    }
 
-    public void finishedAnnotations(Class clazz)
-        {
-        if (name==null || name.isEmpty())
-            {
+    public void finishedAnnotations(Class clazz) {
+        if (name == null || name.isEmpty()) {
             name = clazz.getSimpleName();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization (used in local marshalling during configuration editing)
     //----------------------------------------------------------------------------------------------
 
-    private Object writeReplace()
-        {
+    private Object writeReplace() {
         return new SerializationProxy(this);
-        }
     }
+}

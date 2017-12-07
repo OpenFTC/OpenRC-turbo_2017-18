@@ -43,8 +43,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-09.
  */
-public class LynxI2cWriteSingleByteCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxI2cWriteSingleByteCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,40 +58,36 @@ public class LynxI2cWriteSingleByteCommand extends LynxDekaInterfaceCommand<Lynx
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cWriteSingleByteCommand(LynxModuleIntf module)
-        {
+    public LynxI2cWriteSingleByteCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxI2cWriteSingleByteCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int bValue)
-        {
+    public LynxI2cWriteSingleByteCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr, int bValue) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        this.i2cBus      = (byte)busZ;
-        this.i2cAddr7Bit = (byte)i2cAddr.get7Bit();
-        this.bValue      = (byte)bValue;
-        }
+        this.i2cBus = (byte) busZ;
+        this.i2cAddr7Bit = (byte) i2cAddr.get7Bit();
+        this.bValue = (byte) bValue;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         buffer.put(this.i2cAddr7Bit);
         buffer.put(this.bValue);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
         this.i2cAddr7Bit = buffer.get();
         this.bValue = buffer.get();
-        }
     }
+}

@@ -40,20 +40,17 @@ import java.nio.charset.Charset;
  * Created by bob on 3/27/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class UsbStringDescriptor extends UsbDescriptorHeader
-    {
+public class UsbStringDescriptor extends UsbDescriptorHeader {
     public String string;
 
-    public UsbStringDescriptor(byte[] bytes)
-        {
+    public UsbStringDescriptor(byte[] bytes) {
         this(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN));
-        }
+    }
 
-    public UsbStringDescriptor(ByteBuffer descriptor)
-        {
+    public UsbStringDescriptor(ByteBuffer descriptor) {
         super(descriptor);                                                          // 0,1
-        byte[] data = new byte[bLength-super.cbOverhead()];
+        byte[] data = new byte[bLength - super.cbOverhead()];
         descriptor.get(data);
         string = new String(data, Charset.forName("UTF-16LE"));
-        }
     }
+}

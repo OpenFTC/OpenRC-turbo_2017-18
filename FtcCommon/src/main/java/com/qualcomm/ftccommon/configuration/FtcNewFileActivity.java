@@ -39,24 +39,23 @@ import android.os.Bundle;
  * It's like any other config XML file editor, except that it auto-populates its
  * contents from a scan of the USB bus on startup.
  */
-public class FtcNewFileActivity extends FtcConfigurationActivity
-    {
+public class FtcNewFileActivity extends FtcConfigurationActivity {
     public static final RequestCode requestCode = RequestCode.NEW_FILE;
 
-    @Override protected void onCreate(Bundle savedInstanceState)
-        {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Populate the list on creation
         dirtyCheckThenSingletonUSBScanAndUpdateUI(false);
-        }
+    }
 
-    @Override protected void ensureConfigFileIsFresh()
-        {
+    @Override
+    protected void ensureConfigFileIsFresh() {
         // We do nothing here: we're a new configuration, so there's nothing to
         // retrieve. This is important in the remoteConfig case, as the auto usb scan
         // we do just above would race with the retrieval and population of the unneeded
         // old config that was active when we launched, which might include lynx usb devices,
         // whose discovery thereon might race with the auto usb scan and cause problems.
-        }
     }
+}

@@ -52,7 +52,7 @@ import java.util.Collection;
 
 /**
  * Metadata for a config file.
- *
+ * <p>
  * If this is modified, then the Robocol version number needs to be bumped as this
  * is shared via serialization with the DriverStation.
  */
@@ -63,43 +63,42 @@ public class RobotConfigFile {
         NONE,
         LOCAL_STORAGE,
         RESOURCE,
-    };
+    }
+
+    ;
 
     private final static String LOGGER_TAG = "RobotConfigFile";
 
     private String name;
-    private @XmlRes int resourceId;
+    private
+    @XmlRes
+    int resourceId;
     private FileLocation location;
     private boolean isDirty;
 
-    public static RobotConfigFile noConfig(RobotConfigFileManager configFileManager)
-    {
+    public static RobotConfigFile noConfig(RobotConfigFileManager configFileManager) {
         return new RobotConfigFile(configFileManager, configFileManager.noConfig);
     }
 
-    public RobotConfigFile(RobotConfigFileManager configFileManager, String name)
-    {
+    public RobotConfigFile(RobotConfigFileManager configFileManager, String name) {
         this.name = RobotConfigFileManager.stripFileNameExtension(name);
         this.resourceId = 0;
         this.location = this.name.equalsIgnoreCase(configFileManager.noConfig) ? FileLocation.NONE : FileLocation.LOCAL_STORAGE;
         this.isDirty = false;
     }
 
-    public RobotConfigFile(String name, @XmlRes int resourceId)
-    {
+    public RobotConfigFile(String name, @XmlRes int resourceId) {
         this.name = name;
         this.resourceId = resourceId;
         this.location = FileLocation.RESOURCE;
         this.isDirty = false;
     }
 
-    public boolean isReadOnly()
-    {
-        return location==FileLocation.RESOURCE || location==FileLocation.NONE;
+    public boolean isReadOnly() {
+        return location == FileLocation.RESOURCE || location == FileLocation.NONE;
     }
 
-    public boolean containedIn(Collection<RobotConfigFile> configFiles)
-    {
+    public boolean containedIn(Collection<RobotConfigFile> configFiles) {
         for (RobotConfigFile him : configFiles) {
             if (him.name.equalsIgnoreCase(this.name)) {
                 return true;
@@ -108,57 +107,50 @@ public class RobotConfigFile {
         return false;
     }
 
-    public void markDirty()
-    {
+    public void markDirty() {
         isDirty = true;
     }
 
-    public void markClean()
-    {
+    public void markClean() {
         isDirty = false;
     }
 
-    public boolean isDirty()
-    {
+    public boolean isDirty() {
         return isDirty;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public File getFullPath()
-    {
+    public File getFullPath() {
         return RobotConfigFileManager.getFullPath(this.getName());
     }
 
-    public int getResourceId()
-    {
+    public int getResourceId() {
         return resourceId;
     }
 
-    public FileLocation getLocation()
-    {
+    public FileLocation getLocation() {
         return location;
     }
 
-    public @Nullable XmlPullParser getXml()
-    {
+    public
+    @Nullable
+    XmlPullParser getXml() {
         switch (location) {
-        case LOCAL_STORAGE:
-            return getXmlLocalStorage();
-        case RESOURCE:
-            return getXmlResource();
-        case NONE:
-            return getXmlNone();
+            case LOCAL_STORAGE:
+                return getXmlLocalStorage();
+            case RESOURCE:
+                return getXmlResource();
+            case NONE:
+                return getXmlNone();
         }
         return null;
     }
 
     // In the 'none' case we simply return an XmlPullParser on a degenerate, empty, configuration
-    protected XmlPullParser getXmlNone()
-    {
+    protected XmlPullParser getXmlNone() {
         XmlPullParser result = null;
         try {
             String emptyXml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n" +
@@ -168,15 +160,13 @@ public class RobotConfigFile {
             factory.setNamespaceAware(true);
             result = factory.newPullParser();
             result.setInput(stringReader);
-        }
-        catch (XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             RobotLog.logStacktrace(e);
         }
         return result;
     }
 
-    protected XmlPullParser getXmlLocalStorage()
-    {
+    protected XmlPullParser getXmlLocalStorage() {
         FileInputStream inputStream;
         XmlPullParserFactory factory;
         XmlPullParser parser;
@@ -189,26 +179,25 @@ public class RobotConfigFile {
             factory.setNamespaceAware(true);
             parser = factory.newPullParser();
             parser.setInput(inputStream, null);
-        } catch (XmlPullParserException|FileNotFoundException e) {
+        } catch (XmlPullParserException | FileNotFoundException e) {
             RobotLog.logStacktrace(e);
         }
 
         return parser;
     }
 
-    protected XmlPullParser getXmlResource()
-    {
+    protected XmlPullParser getXmlResource() {
         Context context = AppUtil.getInstance().getApplication();
         return context.getResources().getXml(resourceId);
     }
 
-    public boolean isNoConfig()
-    {
+    public boolean isNoConfig() {
         return (location == FileLocation.NONE);
     }
 
-    public @NonNull String toString()
-    {
+    public
+    @NonNull
+    String toString() {
         return SimpleGson.getInstance().toJson(this);
     }
 
@@ -217,8 +206,9 @@ public class RobotConfigFile {
      * can't parse the json into the appropriate object.  In both cases, we will return a new,
      * empty RobotConfigFile.  Otherwise return the parsed object.
      */
-    public static @NonNull RobotConfigFile fromString(RobotConfigFileManager configFileManager, String serializedForm)
-    {
+    public static
+    @NonNull
+    RobotConfigFile fromString(RobotConfigFileManager configFileManager, String serializedForm) {
         try {
             RobotConfigFile file = SimpleGson.getInstance().fromJson(serializedForm, RobotConfigFile.class);
             if (file == null) {

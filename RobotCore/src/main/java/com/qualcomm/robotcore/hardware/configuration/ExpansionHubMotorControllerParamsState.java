@@ -50,84 +50,84 @@ import java.io.Serializable;
  * @see ExpansionHubMotorControllerPositionParams
  */
 @SuppressWarnings("WeakerAccess")
-public class ExpansionHubMotorControllerParamsState implements Serializable, Cloneable
-    {
-    /** Only {@link DcMotor.RunMode#RUN_USING_ENCODER} and {@link DcMotor.RunMode#RUN_TO_POSITION}
-     * are legal for {@link #mode}. */
-    public @Expose @Nullable DcMotor.RunMode mode = null;
-    public @Expose double p = 0;
-    public @Expose double i = 0;
-    public @Expose double d = 0;
+public class ExpansionHubMotorControllerParamsState implements Serializable, Cloneable {
+    /**
+     * Only {@link DcMotor.RunMode#RUN_USING_ENCODER} and {@link DcMotor.RunMode#RUN_TO_POSITION}
+     * are legal for {@link #mode}.
+     */
+    public
+    @Expose
+    @Nullable
+    DcMotor.RunMode mode = null;
+    public
+    @Expose
+    double p = 0;
+    public
+    @Expose
+    double i = 0;
+    public
+    @Expose
+    double d = 0;
 
-    public ExpansionHubMotorControllerParamsState()
-        {
+    public ExpansionHubMotorControllerParamsState() {
         Assert.assertTrue(this.isDefault());
-        }
+    }
 
-    public ExpansionHubMotorControllerParamsState(@NonNull DcMotor.RunMode mode, double p, double i, double d)
-        {
-        Assert.assertTrue(mode.isPIDMode() && mode.migrate()==mode);
+    public ExpansionHubMotorControllerParamsState(@NonNull DcMotor.RunMode mode, double p, double i, double d) {
+        Assert.assertTrue(mode.isPIDMode() && mode.migrate() == mode);
         this.mode = mode;
         this.p = p;
         this.i = i;
         this.d = d;
-        }
+    }
 
-    public ExpansionHubMotorControllerParamsState(@NonNull ExpansionHubMotorControllerPositionParams params)
-        {
+    public ExpansionHubMotorControllerParamsState(@NonNull ExpansionHubMotorControllerPositionParams params) {
         this.mode = DcMotor.RunMode.RUN_TO_POSITION;
         this.p = params.P();
         this.i = params.I();
         this.d = params.D();
-        }
+    }
 
-    public ExpansionHubMotorControllerParamsState(@Nullable ExpansionHubMotorControllerVelocityParams params)
-        {
+    public ExpansionHubMotorControllerParamsState(@Nullable ExpansionHubMotorControllerVelocityParams params) {
         this.mode = DcMotor.RunMode.RUN_USING_ENCODER;
         this.p = params.P();
         this.i = params.I();
         this.d = params.D();
-        }
+    }
 
-    public ExpansionHubMotorControllerParamsState clone()
-        {
+    public ExpansionHubMotorControllerParamsState clone() {
         try {
-            return (ExpansionHubMotorControllerParamsState)super.clone();
-            }
-        catch (CloneNotSupportedException e)
-            {
+            return (ExpansionHubMotorControllerParamsState) super.clone();
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException("internal error: Parameters not cloneable");
-            }
-        }
-
-    public boolean isDefault()
-        {
-        return mode==null;
-        }
-
-    @Override public boolean equals(Object o)
-        {
-        if (o instanceof ExpansionHubMotorControllerParamsState)
-            {
-            ExpansionHubMotorControllerParamsState them = (ExpansionHubMotorControllerParamsState) o;
-            return this.mode == them.mode && this.p == them.p && this.i == them.i && this.d == them.d;
-            }
-        else
-            return false;
-        }
-
-    @Override public int hashCode()
-        {
-        return mode.hashCode() ^ (hash(p) << 3) ^ (hash(i) << 6) ^ (hash(d) << 9) ^ 0xCCAE348C;
-        }
-
-    protected int hash(double d)
-        {
-        return (new Double(d)).hashCode();
-        }
-
-    @Override public String toString()
-        {
-        return String.format("mode=%s,p=%d,i=%d,d=%d", mode, p, i, d);
         }
     }
+
+    public boolean isDefault() {
+        return mode == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ExpansionHubMotorControllerParamsState) {
+            ExpansionHubMotorControllerParamsState them = (ExpansionHubMotorControllerParamsState) o;
+            return this.mode == them.mode && this.p == them.p && this.i == them.i && this.d == them.d;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return mode.hashCode() ^ (hash(p) << 3) ^ (hash(i) << 6) ^ (hash(d) << 9) ^ 0xCCAE348C;
+    }
+
+    protected int hash(double d) {
+        return (new Double(d)).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("mode=%s,p=%d,i=%d,d=%d", mode, p, i, d);
+    }
+}

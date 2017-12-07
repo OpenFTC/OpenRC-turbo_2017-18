@@ -48,21 +48,26 @@ import java.util.Set;
  * on the robot controller and transmitting them to the driver station
  */
 @SuppressWarnings("WeakerAccess")
-public class PreferenceRemoterRC extends PreferenceRemoter
-    {
+public class PreferenceRemoterRC extends PreferenceRemoter {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_prefremrc";
-    public String getTag() { return TAG; }
 
-    @SuppressLint("StaticFieldLeak") protected static PreferenceRemoterRC theInstance = null;
-    public synchronized static PreferenceRemoterRC getInstance()
-        {
-        if (null == theInstance) theInstance = new PreferenceRemoterRC();
-        return theInstance;
+    public String getTag() {
+        return TAG;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    protected static PreferenceRemoterRC theInstance = null;
+
+    public synchronized static PreferenceRemoterRC getInstance() {
+        if (null == theInstance) {
+            theInstance = new PreferenceRemoterRC();
         }
+        return theInstance;
+    }
 
     protected Set<String> rcPrefsOfInterestToDS;
 
@@ -70,84 +75,70 @@ public class PreferenceRemoterRC extends PreferenceRemoter
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public PreferenceRemoterRC()
-        {
+    public PreferenceRemoterRC() {
         rcPrefsOfInterestToDS = new HashSet<String>();
         rcPrefsOfInterestToDS.add(context.getString(R.string.pref_device_name));
         rcPrefsOfInterestToDS.add(context.getString(R.string.pref_app_theme));
         rcPrefsOfInterestToDS.add(context.getString(R.string.pref_sound_on_off));
         rcPrefsOfInterestToDS.add(context.getString(R.string.pref_wifip2p_remote_channel_change_works));
         rcPrefsOfInterestToDS.add(context.getString(R.string.pref_has_independent_phone_battery));
-        }
+    }
 
     @Override
-    protected SharedPreferences.OnSharedPreferenceChangeListener makeSharedPrefListener()
-        {
+    protected SharedPreferences.OnSharedPreferenceChangeListener makeSharedPrefListener() {
         return new SharedPreferencesListenerRC();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Remoting
     //----------------------------------------------------------------------------------------------
 
-    @Override public CallbackResult handleCommandRobotControllerPreference(String extra)
-        {
+    @Override
+    public CallbackResult handleCommandRobotControllerPreference(String extra) {
         RobotControllerPreference pair = RobotControllerPreference.deserialize(extra);
 
-        if (pair.getPrefName().equals(AppUtil.getDefContext().getString(R.string.pref_wifip2p_channel)))
-            {
-            if (pair.getValue() != null && pair.getValue() instanceof Integer)
-                {
+        if (pair.getPrefName().equals(AppUtil.getDefContext().getString(R.string.pref_wifip2p_channel))) {
+            if (pair.getValue() != null && pair.getValue() instanceof Integer) {
                 // Just change the WifiP2p channel
-                (new WifiDirectChannelChanger()).changeToChannel((Integer)pair.getValue());
-                }
-            else
-                {
+                (new WifiDirectChannelChanger()).changeToChannel((Integer) pair.getValue());
+            } else {
                 RobotLog.ee(TAG, "incorrect preference value type: " + pair.getValue());
-                }
             }
-        else
-            {
+        } else {
             // Otherwise, if we're asked to write a preference setting, we just do it
             preferencesHelper.writePrefIfDifferent(pair.getPrefName(), pair.getValue());
-            }
+        }
 
         return CallbackResult.HANDLED;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Preferences
     //----------------------------------------------------------------------------------------------
 
-    protected class SharedPreferencesListenerRC implements SharedPreferences.OnSharedPreferenceChangeListener
-        {
-        @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String rcPrefName)
-            {
+    protected class SharedPreferencesListenerRC implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String rcPrefName) {
             RobotLog.vv(TAG, "onSharedPreferenceChanged(name=%s, value=%s)", rcPrefName, preferencesHelper.readPref(rcPrefName));
 
             // If the DS wants to know about this one, then tell him
-            if (rcPrefsOfInterestToDS.contains(rcPrefName))
-                {
+            if (rcPrefsOfInterestToDS.contains(rcPrefName)) {
                 sendPreference(rcPrefName);
-                }
-            }
-        }
-
-    protected void sendPreference(String rcPrefName)
-        {
-        Object value = preferencesHelper.readPref(rcPrefName);
-        if (value != null)
-            {
-            sendPreference(new RobotControllerPreference(rcPrefName, value));
-            }
-        }
-
-    public void sendAllPreferences()
-        {
-        RobotLog.vv(TAG, "sendAllPreferences()");
-        for (String rcPrefName : rcPrefsOfInterestToDS)
-            {
-            sendPreference(rcPrefName);
             }
         }
     }
+
+    protected void sendPreference(String rcPrefName) {
+        Object value = preferencesHelper.readPref(rcPrefName);
+        if (value != null) {
+            sendPreference(new RobotControllerPreference(rcPrefName, value));
+        }
+    }
+
+    public void sendAllPreferences() {
+        RobotLog.vv(TAG, "sendAllPreferences()");
+        for (String rcPrefName : rcPrefsOfInterestToDS) {
+            sendPreference(rcPrefName);
+        }
+    }
+}

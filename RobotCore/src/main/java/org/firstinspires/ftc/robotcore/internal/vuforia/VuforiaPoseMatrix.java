@@ -43,8 +43,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.RowMajorMatrixF;
  * {@link VuforiaPoseMatrix} is a matrix that is returned from, e.g., the
  * {@link TrackableResult#getPose()} API.
  */
-public class VuforiaPoseMatrix extends RowMajorMatrixF
-    {
+public class VuforiaPoseMatrix extends RowMajorMatrixF {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,50 +54,43 @@ public class VuforiaPoseMatrix extends RowMajorMatrixF
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public VuforiaPoseMatrix()
-        {
-        super(3,4);
-        this.data = new float[3*4];
-        }
+    public VuforiaPoseMatrix() {
+        super(3, 4);
+        this.data = new float[3 * 4];
+    }
 
-    public VuforiaPoseMatrix(Matrix34F matrix)
-        {
-        super(3,4);
+    public VuforiaPoseMatrix(Matrix34F matrix) {
+        super(3, 4);
         this.data = matrix.getData();
-        }
+    }
 
-    @Override public MatrixF emptyMatrix(int numRows, int numCols)
-        {
-        if (numRows==3 && numCols==4)
-            {
+    @Override
+    public MatrixF emptyMatrix(int numRows, int numCols) {
+        if (numRows == 3 && numCols == 4) {
             return new VuforiaPoseMatrix();
-            }
-        else
-            {
+        } else {
             return new GeneralMatrixF(numRows, numCols);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Override public float[] getData()
-        {
+    @Override
+    public float[] getData() {
         return this.data;
-        }
+    }
 
-    public Matrix34F getMatrix34F()
-        {
+    public Matrix34F getMatrix34F() {
         Matrix34F result = new Matrix34F();
         result.setData(this.data);
         return result;
-        }
+    }
 
-    public OpenGLMatrix toOpenGL()
-        {
+    public OpenGLMatrix toOpenGL() {
         Matrix34F matrix34F = getMatrix34F();
         Matrix44F matrix44F = com.vuforia.Tool.convertPose2GLMatrix(matrix34F);
         return new OpenGLMatrix(matrix44F);
-        }
     }
+}

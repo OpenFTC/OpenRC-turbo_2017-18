@@ -42,37 +42,31 @@ import java.util.Locale;
  * LynxNackExceptions are thrown in response to the receipt by the host of a 'nack' packet
  * from the module when a command is sent.
  */
-public class LynxNackException extends Exception
-    {
+public class LynxNackException extends Exception {
     private LynxRespondable command;
 
-    public LynxNackException(LynxRespondable command, String message)
-        {
+    public LynxNackException(LynxRespondable command, String message) {
         super(message);
         this.command = command;
-        }
+    }
 
-    public LynxNackException(LynxRespondable command, String format, Object... args)
-        {
+    public LynxNackException(LynxRespondable command, String format, Object... args) {
         super(String.format(Locale.getDefault(), "(%s #%d) %s",
                 command.getModule().getSerialNumber(),
                 command.getModuleAddress(),
-                String.format(Locale.getDefault(),format, args)));
+                String.format(Locale.getDefault(), format, args)));
         this.command = command;
-        }
-
-    public RobotCoreException wrap()
-        {
-        return RobotCoreException.createChained(this, this.getMessage());
-        }
-
-    public LynxRespondable getCommand()
-        {
-        return this.command;
-        }
-
-    public LynxNack getNack()
-        {
-        return this.command.getNackReceived();
-        }
     }
+
+    public RobotCoreException wrap() {
+        return RobotCoreException.createChained(this, this.getMessage());
+    }
+
+    public LynxRespondable getCommand() {
+        return this.command;
+    }
+
+    public LynxNack getNack() {
+        return this.command.getNackReceived();
+    }
+}

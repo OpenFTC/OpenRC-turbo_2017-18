@@ -36,20 +36,22 @@ import com.qualcomm.robotcore.util.SerialNumber;
 
 /**
  * Created by bob on 2016-03-12.
+ *
  * @see RobotUsbModule
  */
-public interface RobotArmingStateNotifier
-    {
-    enum ARMINGSTATE { ARMED, PRETENDING, DISARMED, CLOSED, TO_ARMED, TO_PRETENDING, TO_DISARMED }
+public interface RobotArmingStateNotifier {
+    enum ARMINGSTATE {ARMED, PRETENDING, DISARMED, CLOSED, TO_ARMED, TO_PRETENDING, TO_DISARMED}
 
     /**
      * Returns the serial number of this USB module
+     *
      * @return the serial number of this USB module
      */
     SerialNumber getSerialNumber();
 
     /**
      * Returns the current arming state of the object.
+     *
      * @return the current arming state of the object
      */
     ARMINGSTATE getArmingState();
@@ -78,18 +80,16 @@ public interface RobotArmingStateNotifier
      * The Callback interface can be used to receive notifications when a module changes
      * its arming state.
      */
-    interface Callback
-        {
+    interface Callback {
         /**
          * Notifies the callback that a module with which it has registered for notifications
          * has undergone a change of state.
          *
-         * @param module    the module whose state has changed
-         * @param state     the state into which that module has transitioned
-         *
+         * @param module the module whose state has changed
+         * @param state  the state into which that module has transitioned
          * @see #registerCallback(Callback)
          */
         void onModuleStateChange(RobotArmingStateNotifier module, ARMINGSTATE state);
-        }
-
     }
+
+}

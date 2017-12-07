@@ -35,35 +35,37 @@ package com.qualcomm.robotcore.util;
  */
 public class DifferentialControlLoopCoefficients {
 
-  /**
-   * p coefficient
-   */
-  public double p = 0.0;
+    /**
+     * p coefficient
+     */
+    public double p = 0.0;
 
-  /**
-   * i coefficient
-   */
-  public double i = 0.0;
+    /**
+     * i coefficient
+     */
+    public double i = 0.0;
 
-  /**
-   * d coefficient
-   */
-  public double d = 0.0;
+    /**
+     * d coefficient
+     */
+    public double d = 0.0;
 
-  /**
-   * Constructor with coefficients set to 0.0
-   */
-  public DifferentialControlLoopCoefficients() {}
+    /**
+     * Constructor with coefficients set to 0.0
+     */
+    public DifferentialControlLoopCoefficients() {
+    }
 
-  /**
-   * Constructor with coefficients supplied
-   * @param p
-   * @param i
-   * @param d
-   */
-  public DifferentialControlLoopCoefficients(double p, double i, double d) {
-    this.p = p;
-    this.i = i;
-    this.d = d;
-  }
+    /**
+     * Constructor with coefficients supplied
+     *
+     * @param p
+     * @param i
+     * @param d
+     */
+    public DifferentialControlLoopCoefficients(double p, double i, double d) {
+        this.p = p;
+        this.i = i;
+        this.d = d;
+    }
 }

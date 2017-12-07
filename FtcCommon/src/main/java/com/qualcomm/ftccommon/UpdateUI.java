@@ -56,316 +56,339 @@ import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
 @SuppressWarnings("WeakerAccess")
 public class UpdateUI {
 
-  //------------------------------------------------------------------------------------------------
-  // Callback
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Callback
+    //------------------------------------------------------------------------------------------------
 
-  public class Callback {
+    public class Callback {
 
-    RobotStateMonitor         stateMonitor              = null;
-    DeviceNameManagerCallback deviceNameManagerCallback = new DeviceNameManagerCallback();
+        RobotStateMonitor stateMonitor = null;
+        DeviceNameManagerCallback deviceNameManagerCallback = new DeviceNameManagerCallback();
 
-    public Callback() {
-      DeviceNameManager.getInstance().registerCallback(deviceNameManagerCallback);
-    }
+        public Callback() {
+            DeviceNameManager.getInstance().registerCallback(deviceNameManagerCallback);
+        }
 
-    public void close() {
-      DeviceNameManager.getInstance().unregisterCallback(deviceNameManagerCallback);
-    }
+        public void close() {
+            DeviceNameManager.getInstance().unregisterCallback(deviceNameManagerCallback);
+        }
 
-    public RobotStateMonitor getStateMonitor() {
-      return stateMonitor;
-    }
+        public RobotStateMonitor getStateMonitor() {
+            return stateMonitor;
+        }
 
-    public void setStateMonitor(RobotStateMonitor stateMonitor) {
-      this.stateMonitor = stateMonitor;
-    }
+        public void setStateMonitor(RobotStateMonitor stateMonitor) {
+            this.stateMonitor = stateMonitor;
+        }
 
-    /**
-     * callback method to restart the robot
-     */
-    public void restartRobot() {
-      // Ensure independence from this thread, but do the real work on the UI thread
-      // where it has to be run
-      ThreadPool.getDefault().submit(new Runnable() {
-        @Override public void run() {
-          AppUtil.getInstance().runOnUiThread(new Runnable() {
-            @Override public void run() {
-              // Actually restart the robot on the UI thread, just as the user would if
-              // using the robot controller menus
-              requestRobotRestart();
+        /**
+         * callback method to restart the robot
+         */
+        public void restartRobot() {
+            // Ensure independence from this thread, but do the real work on the UI thread
+            // where it has to be run
+            ThreadPool.getDefault().submit(new Runnable() {
+                @Override
+                public void run() {
+                    AppUtil.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Actually restart the robot on the UI thread, just as the user would if
+                            // using the robot controller menus
+                            requestRobotRestart();
+                        }
+                    });
+                }
+            });
+        }
+
+        public void updateUi(final String opModeName, final Gamepad[] gamepads) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (textGamepad != null) {
+                        for (int i = 0; (i < textGamepad.length) && (i < gamepads.length); i++) {
+                            if (gamepads[i].getGamepadId() == Gamepad.ID_UNASSOCIATED) {
+                                setText(textGamepad[i], "");
+                            } else {
+                                setText(textGamepad[i], gamepads[i].toString());
+                            }
+                        }
+                    }
+
+                    String opModeShow;
+                    if (opModeName.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) {
+                        opModeShow = activity.getString(R.string.defaultOpModeName);
+                    } else {
+                        opModeShow = opModeName;
+                    }
+                    setText(textOpMode, "Op Mode: " + opModeShow);
+
+                    refreshTextErrorMessage();
+                }
+            });
+        }
+
+        public void networkConnectionUpdate(final WifiDirectAssistant.Event event) {
+
+            switch (event) {
+                case UNKNOWN:
+                    updateNetworkConnectionStatus(NetworkStatus.UNKNOWN);
+                    break;
+                case DISCONNECTED:
+                    updateNetworkConnectionStatus(NetworkStatus.INACTIVE);
+                    break;
+                case CONNECTED_AS_GROUP_OWNER:
+                    updateNetworkConnectionStatus(NetworkStatus.ENABLED);
+                    break;
+                case ERROR:
+                    updateNetworkConnectionStatus(NetworkStatus.ERROR);
+                    break;
+                case CONNECTION_INFO_AVAILABLE:
+                    updateNetworkConnectionStatus(NetworkStatus.ACTIVE);
+                    break;
+                case AP_CREATED:
+                    NetworkConnection networkConnection = controllerService.getNetworkConnection();
+                    updateNetworkConnectionStatus(NetworkStatus.CREATED_AP_CONNECTION, networkConnection.getConnectionOwnerName());
+                    break;
+                default:
+                    break;
             }
-          });
         }
-      });
-    }
 
-    public void updateUi(final String opModeName, final Gamepad[] gamepads) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          if (textGamepad != null) {
-            for (int i = 0; (i < textGamepad.length) && (i < gamepads.length); i++) {
-              if (gamepads[i].getGamepadId() == Gamepad.ID_UNASSOCIATED) {
-                setText(textGamepad[i], "");
-              } else {
-                setText(textGamepad[i], gamepads[i].toString());
-              }
+        protected class DeviceNameManagerCallback implements DeviceNameManager.Callback {
+            @Override
+            public void onDeviceNameChanged(String newDeviceName) {
+                displayDeviceName(newDeviceName);
             }
-          }
-
-          String opModeShow;
-          if (opModeName.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) {
-            opModeShow = activity.getString(R.string.defaultOpModeName);
-          } else {
-            opModeShow = opModeName;
-          }
-          setText(textOpMode, "Op Mode: " + opModeShow);
-
-          refreshTextErrorMessage();
         }
-      });
-    }
 
-    public void networkConnectionUpdate(final WifiDirectAssistant.Event event) {
-
-      switch (event) {
-        case UNKNOWN:
-          updateNetworkConnectionStatus(NetworkStatus.UNKNOWN);
-          break;
-        case DISCONNECTED:
-          updateNetworkConnectionStatus(NetworkStatus.INACTIVE);
-          break;
-        case CONNECTED_AS_GROUP_OWNER:
-          updateNetworkConnectionStatus(NetworkStatus.ENABLED);
-          break;
-        case ERROR:
-          updateNetworkConnectionStatus(NetworkStatus.ERROR);
-          break;
-        case CONNECTION_INFO_AVAILABLE:
-          updateNetworkConnectionStatus(NetworkStatus.ACTIVE);
-          break;
-        case AP_CREATED:
-          NetworkConnection networkConnection = controllerService.getNetworkConnection();
-          updateNetworkConnectionStatus(NetworkStatus.CREATED_AP_CONNECTION, networkConnection.getConnectionOwnerName());
-          break;
-        default:
-          break;
-      }
-    }
-
-    protected class DeviceNameManagerCallback implements DeviceNameManager.Callback {
-    @Override public void onDeviceNameChanged(String newDeviceName) {
-      displayDeviceName(newDeviceName);
-      }
-    }
-
-    protected void displayDeviceName(final String name) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          textDeviceName.setText(name);
+        protected void displayDeviceName(final String name) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textDeviceName.setText(name);
+                }
+            });
         }
-      });
-    }
 
-    public void updateNetworkConnectionStatus(final NetworkStatus networkStatus) {
-      if (UpdateUI.this.networkStatus != networkStatus) {
-        UpdateUI.this.networkStatus = networkStatus;
-        UpdateUI.this.networkStatusExtra = null;
-        if (stateMonitor != null) stateMonitor.updateNetworkStatus(networkStatus, null);
-        refreshNetworkStatus();
-      }
-    }
-
-    public void updateNetworkConnectionStatus(final NetworkStatus networkStatus, @NonNull final String extra) {
-      if (UpdateUI.this.networkStatus != networkStatus || !extra.equals(UpdateUI.this.networkStatusExtra)) {
-        UpdateUI.this.networkStatus = networkStatus;
-        UpdateUI.this.networkStatusExtra = extra;
-        if (stateMonitor != null) stateMonitor.updateNetworkStatus(networkStatus, extra);
-        refreshNetworkStatus();
-      }
-    }
-
-    public void updatePeerStatus(final PeerStatus peerStatus) {
-      if (UpdateUI.this.peerStatus != peerStatus) {
-        UpdateUI.this.peerStatus = peerStatus;
-        if (stateMonitor != null) stateMonitor.updatePeerStatus(peerStatus);
-        refreshNetworkStatus();
-      }
-    }
-
-    void refreshNetworkStatus() {
-      String format = activity.getString(R.string.networkStatusFormat);
-      String strNetworkStatus = networkStatus.toString(activity, networkStatusExtra);
-      String strPeerStatus    = peerStatus==PeerStatus.UNKNOWN ? "" : String.format(", %s", peerStatus.toString(activity));
-      final String message = String.format(format, strNetworkStatus, strPeerStatus);
-
-      // Log if changed
-      if (DEBUG || !message.equals(UpdateUI.this.networkStatusMessage)) RobotLog.v(message);
-      UpdateUI.this.networkStatusMessage = message;
-
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          setText(textNetworkConnectionStatus, message);
+        public void updateNetworkConnectionStatus(final NetworkStatus networkStatus) {
+            if (UpdateUI.this.networkStatus != networkStatus) {
+                UpdateUI.this.networkStatus = networkStatus;
+                UpdateUI.this.networkStatusExtra = null;
+                if (stateMonitor != null) {
+                    stateMonitor.updateNetworkStatus(networkStatus, null);
+                }
+                refreshNetworkStatus();
+            }
         }
-      });
-    }
 
-    public void updateRobotStatus(@NonNull final RobotStatus status) {
-      robotStatus = status;
-      if (stateMonitor != null) stateMonitor.updateRobotStatus(robotStatus);
-      refreshStateStatus();
-    }
-
-    public void updateRobotState(@NonNull final RobotState state) {
-      robotState = state;
-      if (stateMonitor != null) stateMonitor.updateRobotState(robotState);
-      refreshStateStatus();
-    }
-
-    protected void refreshStateStatus() {
-      String format = activity.getString(R.string.robotStatusFormat);
-      String state  = robotState.toString(activity);
-      String status = robotStatus==RobotStatus.NONE ? "" : String.format(", %s", robotStatus.toString(activity));
-      final String message = String.format(format, state, status);
-
-      // Log if changed
-      if (DEBUG || !message.equals(UpdateUI.this.stateStatusMessage)) RobotLog.v(message);
-      UpdateUI.this.stateStatusMessage = message;
-
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          setText(textRobotStatus, message);
-          refreshTextErrorMessage();
+        public void updateNetworkConnectionStatus(final NetworkStatus networkStatus, @NonNull final String extra) {
+            if (UpdateUI.this.networkStatus != networkStatus || !extra.equals(UpdateUI.this.networkStatusExtra)) {
+                UpdateUI.this.networkStatus = networkStatus;
+                UpdateUI.this.networkStatusExtra = extra;
+                if (stateMonitor != null) {
+                    stateMonitor.updateNetworkStatus(networkStatus, extra);
+                }
+                refreshNetworkStatus();
+            }
         }
-      });
-    }
 
-    public void refreshErrorTextOnUiThread() {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          refreshTextErrorMessage();
+        public void updatePeerStatus(final PeerStatus peerStatus) {
+            if (UpdateUI.this.peerStatus != peerStatus) {
+                UpdateUI.this.peerStatus = peerStatus;
+                if (stateMonitor != null) {
+                    stateMonitor.updatePeerStatus(peerStatus);
+                }
+                refreshNetworkStatus();
+            }
         }
-      });
-    }
 
-    void refreshTextErrorMessage() {
+        void refreshNetworkStatus() {
+            String format = activity.getString(R.string.networkStatusFormat);
+            String strNetworkStatus = networkStatus.toString(activity, networkStatusExtra);
+            String strPeerStatus = peerStatus == PeerStatus.UNKNOWN ? "" : String.format(", %s", peerStatus.toString(activity));
+            final String message = String.format(format, strNetworkStatus, strPeerStatus);
 
-      String errorMessage   = RobotLog.getGlobalErrorMsg();
-      String warningMessage = RobotLog.getGlobalWarningMessage();
+            // Log if changed
+            if (DEBUG || !message.equals(UpdateUI.this.networkStatusMessage)) {
+                RobotLog.v(message);
+            }
+            UpdateUI.this.networkStatusMessage = message;
 
-      if (!errorMessage.isEmpty() || !warningMessage.isEmpty()) {
-        if (!errorMessage.isEmpty()) {
-          String message = activity.getString(R.string.error_text_error, trimTextErrorMessage(errorMessage));
-          setText(textErrorMessage, message);
-          textErrorMessage.setTextColor(AppUtil.getInstance().getColor(R.color.text_error));
-          if (stateMonitor != null) stateMonitor.updateErrorMessage(message);
-        } else {
-          String message = activity.getString(R.string.error_text_warning, trimTextErrorMessage(warningMessage));
-          setText(textErrorMessage, message);
-          textErrorMessage.setTextColor(AppUtil.getInstance().getColor(R.color.text_warning));
-          if (stateMonitor != null) stateMonitor.updateWarningMessage(message);
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setText(textNetworkConnectionStatus, message);
+                }
+            });
         }
-        dimmer.longBright();
-      } else {
-        setText(textErrorMessage, "");
-        textErrorMessage.setTextColor(textErrorMessageOriginalColor);
-        if (stateMonitor != null) {
-          stateMonitor.updateErrorMessage(null);
-          stateMonitor.updateWarningMessage(null);
+
+        public void updateRobotStatus(@NonNull final RobotStatus status) {
+            robotStatus = status;
+            if (stateMonitor != null) {
+                stateMonitor.updateRobotStatus(robotStatus);
+            }
+            refreshStateStatus();
         }
-      }
+
+        public void updateRobotState(@NonNull final RobotState state) {
+            robotState = state;
+            if (stateMonitor != null) {
+                stateMonitor.updateRobotState(robotState);
+            }
+            refreshStateStatus();
+        }
+
+        protected void refreshStateStatus() {
+            String format = activity.getString(R.string.robotStatusFormat);
+            String state = robotState.toString(activity);
+            String status = robotStatus == RobotStatus.NONE ? "" : String.format(", %s", robotStatus.toString(activity));
+            final String message = String.format(format, state, status);
+
+            // Log if changed
+            if (DEBUG || !message.equals(UpdateUI.this.stateStatusMessage)) {
+                RobotLog.v(message);
+            }
+            UpdateUI.this.stateStatusMessage = message;
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setText(textRobotStatus, message);
+                    refreshTextErrorMessage();
+                }
+            });
+        }
+
+        public void refreshErrorTextOnUiThread() {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    refreshTextErrorMessage();
+                }
+            });
+        }
+
+        void refreshTextErrorMessage() {
+
+            String errorMessage = RobotLog.getGlobalErrorMsg();
+            String warningMessage = RobotLog.getGlobalWarningMessage();
+
+            if (!errorMessage.isEmpty() || !warningMessage.isEmpty()) {
+                if (!errorMessage.isEmpty()) {
+                    String message = activity.getString(R.string.error_text_error, trimTextErrorMessage(errorMessage));
+                    setText(textErrorMessage, message);
+                    textErrorMessage.setTextColor(AppUtil.getInstance().getColor(R.color.text_error));
+                    if (stateMonitor != null) {
+                        stateMonitor.updateErrorMessage(message);
+                    }
+                } else {
+                    String message = activity.getString(R.string.error_text_warning, trimTextErrorMessage(warningMessage));
+                    setText(textErrorMessage, message);
+                    textErrorMessage.setTextColor(AppUtil.getInstance().getColor(R.color.text_warning));
+                    if (stateMonitor != null) {
+                        stateMonitor.updateWarningMessage(message);
+                    }
+                }
+                dimmer.longBright();
+            } else {
+                setText(textErrorMessage, "");
+                textErrorMessage.setTextColor(textErrorMessageOriginalColor);
+                if (stateMonitor != null) {
+                    stateMonitor.updateErrorMessage(null);
+                    stateMonitor.updateWarningMessage(null);
+                }
+            }
+        }
+
+        String trimTextErrorMessage(String message) {
+            // error text box is larger now; don't bother trimming
+            return message;
+        }
+
     }
 
-    String trimTextErrorMessage(String message) {
-      // error text box is larger now; don't bother trimming
-      return message;
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
+
+    public static final boolean DEBUG = false;
+    private static final int NUM_GAMEPADS = 2;
+
+    protected TextView textDeviceName;
+    protected TextView textNetworkConnectionStatus;
+    protected TextView textRobotStatus;
+    protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
+    protected TextView textOpMode;
+    protected TextView textErrorMessage;
+    protected
+    @ColorInt
+    int textErrorMessageOriginalColor;
+    protected RobotState robotState = RobotState.NOT_STARTED;
+    protected RobotStatus robotStatus = RobotStatus.NONE;
+    protected NetworkStatus networkStatus = NetworkStatus.UNKNOWN;
+    protected String networkStatusExtra = null;
+    protected PeerStatus peerStatus = PeerStatus.DISCONNECTED;
+    protected String networkStatusMessage = null;
+    protected String stateStatusMessage = null;
+
+    Restarter restarter;
+    FtcRobotControllerService controllerService;
+
+    Activity activity;
+    Dimmer dimmer;
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
+    public UpdateUI(Activity activity, Dimmer dimmer) {
+        this.activity = activity;
+        this.dimmer = dimmer;
     }
 
-  }
+    public void setTextViews(TextView textWifiDirectStatus, TextView textRobotStatus,
+                             TextView[] textGamepad, TextView textOpMode, TextView textErrorMessage,
+                             TextView textDeviceName) {
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
-
-  public static final boolean DEBUG = false;
-  private static final int NUM_GAMEPADS = 2;
-
-  protected TextView textDeviceName;
-  protected TextView textNetworkConnectionStatus;
-  protected TextView textRobotStatus;
-  protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
-  protected TextView textOpMode;
-  protected TextView textErrorMessage;
-  protected @ColorInt int textErrorMessageOriginalColor;
-  protected RobotState robotState = RobotState.NOT_STARTED;
-  protected RobotStatus robotStatus = RobotStatus.NONE;
-  protected NetworkStatus networkStatus = NetworkStatus.UNKNOWN;
-  protected String networkStatusExtra = null;
-  protected PeerStatus peerStatus = PeerStatus.DISCONNECTED;
-  protected String networkStatusMessage = null;
-  protected String stateStatusMessage = null;
-
-  Restarter restarter;
-  FtcRobotControllerService controllerService;
-
-  Activity activity;
-  Dimmer dimmer;
-
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
-
-  public UpdateUI(Activity activity, Dimmer dimmer) {
-    this.activity = activity;
-    this.dimmer = dimmer;
-  }
-
-  public void setTextViews(TextView textWifiDirectStatus, TextView textRobotStatus,
-               TextView[] textGamepad, TextView textOpMode, TextView textErrorMessage,
-               TextView textDeviceName) {
-
-    this.textNetworkConnectionStatus = textWifiDirectStatus;
-    this.textRobotStatus = textRobotStatus;
-    this.textGamepad = textGamepad;
-    this.textOpMode = textOpMode;
-    this.textErrorMessage = textErrorMessage;
-    this.textErrorMessageOriginalColor = textErrorMessage.getCurrentTextColor();
-    this.textDeviceName = textDeviceName;
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
-
-  protected void setText(TextView textView, String message) {
-    // Allow the view to be optional, change view visibility according to whether the message is empty or not
-    if (textView != null && message != null) {
-      message = message.trim();
-      if (message.length() > 0) {
-        textView.setText(message);
-        textView.setVisibility(View.VISIBLE);
-      } else {
-        textView.setVisibility(View.INVISIBLE);
-        textView.setText(" ");  // paranoia: there are rumors of Android not doing a redraw if "" is used
-      }
+        this.textNetworkConnectionStatus = textWifiDirectStatus;
+        this.textRobotStatus = textRobotStatus;
+        this.textGamepad = textGamepad;
+        this.textOpMode = textOpMode;
+        this.textErrorMessage = textErrorMessage;
+        this.textErrorMessageOriginalColor = textErrorMessage.getCurrentTextColor();
+        this.textDeviceName = textDeviceName;
     }
-  }
 
-  public void setControllerService(FtcRobotControllerService controllerService) {
-    this.controllerService = controllerService;
-  }
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
-  public void setRestarter(Restarter restarter) {
-    this.restarter = restarter;
-  }
+    protected void setText(TextView textView, String message) {
+        // Allow the view to be optional, change view visibility according to whether the message is empty or not
+        if (textView != null && message != null) {
+            message = message.trim();
+            if (message.length() > 0) {
+                textView.setText(message);
+                textView.setVisibility(View.VISIBLE);
+            } else {
+                textView.setVisibility(View.INVISIBLE);
+                textView.setText(" ");  // paranoia: there are rumors of Android not doing a redraw if "" is used
+            }
+        }
+    }
 
-  private void requestRobotRestart() {
-    restarter.requestRestart();
-  }
+    public void setControllerService(FtcRobotControllerService controllerService) {
+        this.controllerService = controllerService;
+    }
+
+    public void setRestarter(Restarter restarter) {
+        this.restarter = restarter;
+    }
+
+    private void requestRobotRestart() {
+        restarter.requestRestart();
+    }
 
 }

@@ -39,8 +39,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 /**
  * Created by bob on 2016-05-07.
  */
-public class LynxGetModuleLEDPatternCommand extends LynxStandardCommand<LynxGetModuleLEDPatternResponse>
-    {
+public class LynxGetModuleLEDPatternCommand extends LynxStandardCommand<LynxGetModuleLEDPatternResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -49,46 +48,39 @@ public class LynxGetModuleLEDPatternCommand extends LynxStandardCommand<LynxGetM
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetModuleLEDPatternCommand(LynxModule module)
-        {
+    public LynxGetModuleLEDPatternCommand(LynxModule module) {
         super(module);
         this.response = new LynxGetModuleLEDPatternResponse(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_GET_MODULE_LED_PATTERN;
-        }
-
-    public static Class<? extends LynxResponse> getResponseClass()
-        {
-        return LynxGetModuleLEDPatternResponse.class;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return true;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        }
     }
+
+    public static Class<? extends LynxResponse> getResponseClass() {
+        return LynxGetModuleLEDPatternResponse.class;
+    }
+
+    @Override
+    public boolean isResponseExpected() {
+        return true;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+    }
+}

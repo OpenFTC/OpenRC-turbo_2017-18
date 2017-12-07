@@ -54,21 +54,20 @@ import java.util.Map;
  * {@link VuforiaTrackableImpl} is our system implementation of {@link VuforiaTrackable}
  */
 @SuppressWarnings("WeakerAccess")
-public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableNotify, VuforiaTrackableContainer
-    {
+public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableNotify, VuforiaTrackableContainer {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected VuforiaTrackable      parent;
-    protected Trackable             trackable;
+    protected VuforiaTrackable parent;
+    protected Trackable trackable;
     protected VuforiaTrackablesImpl trackables;
-    protected String                name;
-    protected Listener              listener;
-    protected Object                userData;
+    protected String name;
+    protected Listener listener;
+    protected Object userData;
 
-    protected final Object          locationLock = new Object();
-    protected OpenGLMatrix          location;
+    protected final Object locationLock = new Object();
+    protected OpenGLMatrix location;
 
     protected Class<? extends VuforiaTrackable.Listener> listenerClass;
     protected final Map<VuMarkInstanceId, VuforiaTrackable> vuMarkMap = new HashMap<>();
@@ -77,12 +76,11 @@ public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableN
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public VuforiaTrackableImpl(VuforiaTrackablesImpl trackables, int index, Class<? extends VuforiaTrackable.Listener> listenerClass)
-        {
+    public VuforiaTrackableImpl(VuforiaTrackablesImpl trackables, int index, Class<? extends VuforiaTrackable.Listener> listenerClass) {
         this(null, trackables, trackables.dataSet.getTrackable(index), listenerClass);
-        }
-    public VuforiaTrackableImpl(VuforiaTrackable parent, VuforiaTrackablesImpl trackables, Trackable trackable, Class<? extends VuforiaTrackable.Listener> listenerClass)
-        {
+    }
+
+    public VuforiaTrackableImpl(VuforiaTrackable parent, VuforiaTrackablesImpl trackables, Trackable trackable, Class<? extends VuforiaTrackable.Listener> listenerClass) {
         this.parent = parent;
         this.trackable = trackable;
         this.trackables = trackables;
@@ -91,156 +89,138 @@ public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableN
         this.name = null;
         this.listenerClass = listenerClass;
         try {
-            Constructor<? extends VuforiaTrackable.Listener> ctor=listenerClass.getConstructor(VuforiaTrackable.class);
+            Constructor<? extends VuforiaTrackable.Listener> ctor = listenerClass.getConstructor(VuforiaTrackable.class);
             try {
                 this.listener = ctor.newInstance(this);
-                }
-            catch (InstantiationException|IllegalAccessException|InvocationTargetException e)
-                {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException("unable to instantiate " + listenerClass.getSimpleName(), e);
-                }
             }
-        catch (NoSuchMethodException e)
-            {
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException("class " + listenerClass.getSimpleName() + " missing VuforiaTrackable ctor");
-            }
-        this.trackable.setUserData(this);
         }
+        this.trackable.setUserData(this);
+    }
 
-    static VuforiaTrackable from(com.vuforia.Trackable trackable)
-        {
+    static VuforiaTrackable from(com.vuforia.Trackable trackable) {
         /**
          * If we have a VuMark target, then we need to dyn-create our wrapper from the template.
          */
-        if (trackable.isOfType(VuMarkTarget.getClassType()))
-            {
-            VuMarkTarget vuMarkTarget = (VuMarkTarget)trackable;
+        if (trackable.isOfType(VuMarkTarget.getClassType())) {
+            VuMarkTarget vuMarkTarget = (VuMarkTarget) trackable;
             VuMarkTemplate vuMarkTemplate = vuMarkTarget.getTemplate();
-            VuforiaTrackableContainer vuforiaTrackableContainer = (VuforiaTrackableContainer)from(vuMarkTemplate);
+            VuforiaTrackableContainer vuforiaTrackableContainer = (VuforiaTrackableContainer) from(vuMarkTemplate);
             return vuforiaTrackableContainer.getChild(vuMarkTarget);
-            }
-        else
-            {
-            return (VuforiaTrackable)trackable.getUserData();
-            }
+        } else {
+            return (VuforiaTrackable) trackable.getUserData();
         }
+    }
 
-    public static VuforiaTrackable from(TrackableResult trackableResult)
-        {
+    public static VuforiaTrackable from(TrackableResult trackableResult) {
         return from(trackableResult.getTrackable());
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // VuforiaTrackableContainer
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public VuforiaTrackable getChild(VuMarkTarget vuMarkTarget)
-        {
-        synchronized (vuMarkMap)
-            {
+    public VuforiaTrackable getChild(VuMarkTarget vuMarkTarget) {
+        synchronized (vuMarkMap) {
             VuMarkInstanceId instanceId = new VuMarkInstanceId(vuMarkTarget.getInstanceId());
             VuforiaTrackable result = vuMarkMap.get(instanceId);
-            if (null == result)
-                {
+            if (null == result) {
                 result = new VuforiaTrackableImpl(this, trackables, vuMarkTarget, listenerClass);
                 vuMarkMap.put(instanceId, result);
-                }
-            return result;
             }
+            return result;
         }
+    }
 
     @Override
-    public List<VuforiaTrackable> children()
-        {
-        synchronized (vuMarkMap)
-            {
+    public List<VuforiaTrackable> children() {
+        synchronized (vuMarkMap) {
             return new ArrayList<>(vuMarkMap.values());
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Override public synchronized void setListener(Listener listener)
-        {
+    @Override
+    public synchronized void setListener(Listener listener) {
         // We *always* have a listener
-        this.listener = listener==null ? new VuforiaTrackableDefaultListener(this) : listener;
-        }
+        this.listener = listener == null ? new VuforiaTrackableDefaultListener(this) : listener;
+    }
 
-    @Override public synchronized Listener getListener()
-        {
+    @Override
+    public synchronized Listener getListener() {
         return this.listener;
-        }
+    }
 
-    @Override public synchronized void setUserData(Object object)
-        {
+    @Override
+    public synchronized void setUserData(Object object) {
         this.userData = object;
-        }
+    }
 
-    @Override public synchronized Object getUserData()
-        {
+    @Override
+    public synchronized Object getUserData() {
         return this.userData;
-        }
+    }
 
-    @Override public VuforiaTrackables getTrackables()
-        {
+    @Override
+    public VuforiaTrackables getTrackables() {
         return trackables;
-        }
+    }
 
-    @Override public void setLocation(OpenGLMatrix location)
-        {
+    @Override
+    public void setLocation(OpenGLMatrix location) {
         /** Separate lock so as to accommodate upcalls from {@link VuforiaTrackableDefaultListener} */
-        synchronized (this.locationLock)
-            {
+        synchronized (this.locationLock) {
             this.location = location;
-            }
         }
+    }
 
-    @Override public OpenGLMatrix getLocation()
-        {
-        synchronized (this.locationLock)
-            {
+    @Override
+    public OpenGLMatrix getLocation() {
+        synchronized (this.locationLock) {
             return this.location;
-            }
         }
+    }
 
-    @Override public String getName()
-        {
+    @Override
+    public String getName() {
         return this.name;
-        }
+    }
 
-    @Override public void setName(String name)
-        {
+    @Override
+    public void setName(String name) {
         this.name = name;
-        }
+    }
 
-    public Trackable getTrackable()
-        {
+    public Trackable getTrackable() {
         return trackable;
-        }
+    }
 
-    @Override public VuforiaTrackable getParent()
-        {
+    @Override
+    public VuforiaTrackable getParent() {
         return parent;
-        }
+    }
 
-    @Override public synchronized void noteNotTracked()
-        {
+    @Override
+    public synchronized void noteNotTracked() {
         this.getListener().onNotTracked();
 
         // We do NOT notify our parent, as in general there may be several children
         // with the same parent, and only one of them visible at a time. Taking care
         // of this relationship is thus the responsibility of our caller.
-        }
+    }
 
-    @Override public synchronized void noteTracked(TrackableResult trackableResult)
-        {
+    @Override
+    public synchronized void noteTracked(TrackableResult trackableResult) {
         this.getListener().onTracked(trackableResult, null);
-        if (parent instanceof VuforiaTrackableNotify)
-            {
+        if (parent instanceof VuforiaTrackableNotify) {
             parent.getListener().onTracked(trackableResult, this);
-            }
         }
     }
+}

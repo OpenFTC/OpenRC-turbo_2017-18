@@ -39,8 +39,8 @@ import org.firstinspires.ftc.robotcore.external.Consumer;
 /**
  * A helper class for managing registration of notification callbacks
  */
-@SuppressWarnings("WeakerAccess") public class CallbackRegistrar<T>
-    {
+@SuppressWarnings("WeakerAccess")
+public class CallbackRegistrar<T> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -51,48 +51,39 @@ import org.firstinspires.ftc.robotcore.external.Consumer;
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public CallbackRegistrar()
-        {
+    public CallbackRegistrar() {
         callbacks = new WeakReferenceSet<T>();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Registration
     //----------------------------------------------------------------------------------------------
 
-    protected Object getCallbacksLock()
-        {
+    protected Object getCallbacksLock() {
         return callbacks;
-        }
+    }
 
-    public void registerCallback(T callback)
-        {
-        synchronized (getCallbacksLock())
-            {
+    public void registerCallback(T callback) {
+        synchronized (getCallbacksLock()) {
             callbacks.add(callback);
-            }
         }
+    }
 
-    public void unregisterCallback(T callback)
-        {
-        synchronized (getCallbacksLock())
-            {
+    public void unregisterCallback(T callback) {
+        synchronized (getCallbacksLock()) {
             callbacks.remove(callback);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Iteration
     //----------------------------------------------------------------------------------------------
 
-    public void callbacksDo(Consumer<T> runnable)
-        {
-        synchronized (getCallbacksLock())
-            {
-            for (T callback : callbacks)
-                {
+    public void callbacksDo(Consumer<T> runnable) {
+        synchronized (getCallbacksLock()) {
+            for (T callback : callbacks) {
                 runnable.accept(callback);
-                }
             }
         }
     }
+}

@@ -43,69 +43,64 @@ import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 /**
  * EditPortListSpinnerActivity provides a template-driven editing of a list of spinner list items
  */
-public class EditPortListSpinnerActivity<ITEM_T extends DeviceConfiguration> extends EditPortListActivity<ITEM_T>
-    {
+public class EditPortListSpinnerActivity<ITEM_T extends DeviceConfiguration> extends EditPortListActivity<ITEM_T> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-	@Override public String getTag() { return this.getClass().getSimpleName(); }
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     protected int idItemSpinner;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected EditPortListSpinnerActivity()
-        {
-        }
+    protected EditPortListSpinnerActivity() {
+    }
 
     @Override
-    protected View createItemViewForPort(int portNumber)
-        {
+    protected View createItemViewForPort(int portNumber) {
         View itemView = super.createItemViewForPort(portNumber);
         localizeSpinner(itemView);
         return itemView;
-        }
+    }
 
-    protected void localizeSpinner(View itemView)
-        {
+    protected void localizeSpinner(View itemView) {
         // We assume here that the spinner already contains ConfigurationType names. If that's not
         // the case, override this method and call a different form of localizeConfigTypeSpinner().
         Spinner spinner = (Spinner) itemView.findViewById(idItemSpinner);
         localizeConfigTypeSpinner(ConfigurationType.DisplayNameFlavor.Normal, spinner);
-        }
+    }
 
     @Override
     protected void addViewListenersOnIndex(int index)
     // Plumb up all the event handlers for the indicated item
-        {
+    {
         View itemView = findViewByIndex(index);
         DeviceConfiguration config = findConfigByIndex(index);
 
         addNameTextChangeWatcherOnIndex(index);
         handleDisabledDevice(itemView, config);
         handleSpinner(itemView, this.idItemSpinner, config);
-        }
+    }
 
-    private void handleDisabledDevice(View itemView, DeviceConfiguration deviceConfiguration)
-        {
+    private void handleDisabledDevice(View itemView, DeviceConfiguration deviceConfiguration) {
         EditText name = (EditText) itemView.findViewById(this.idItemEditTextResult);
-        if (deviceConfiguration.isEnabled())
-            {
+        if (deviceConfiguration.isEnabled()) {
             name.setText(deviceConfiguration.getName());
             name.setEnabled(true);
-            }
-        else
-            {
+        } else {
             name.setText(disabledDeviceName());
             name.setEnabled(false);
-            }
         }
+    }
 
     @Override
-    protected void clearDevice(View itemView)
-        {
+    protected void clearDevice(View itemView) {
         TextView textViewPortNumber = (TextView) itemView.findViewById(this.idItemPortNumber);
         int portNumber = Integer.parseInt(textViewPortNumber.getText().toString());
         EditText nameText = (EditText) itemView.findViewById(this.idItemEditTextResult);
@@ -115,11 +110,10 @@ public class EditPortListSpinnerActivity<ITEM_T extends DeviceConfiguration> ext
 
         DeviceConfiguration config = findConfigByPort(portNumber);
         config.setEnabled(false);
-        }
+    }
 
     @Override
-    protected void changeDevice(View itemView, ConfigurationType type)
-        {
+    protected void changeDevice(View itemView, ConfigurationType type) {
         TextView textViewPortNumber = (TextView) itemView.findViewById(this.idItemPortNumber);
         int portNumber = Integer.parseInt(textViewPortNumber.getText().toString());
         EditText nameText = (EditText) itemView.findViewById(this.idItemEditTextResult);
@@ -130,5 +124,5 @@ public class EditPortListSpinnerActivity<ITEM_T extends DeviceConfiguration> ext
         clearNameIfNecessary(nameText, config);
         config.setConfigurationType(type);
         config.setEnabled(true);
-        }
     }
+}

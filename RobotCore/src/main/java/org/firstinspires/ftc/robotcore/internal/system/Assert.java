@@ -41,107 +41,82 @@ import com.qualcomm.robotcore.util.RobotLog;
  * the app might, for example, allow a robot to continue on in a match rather than aborting
  * in the middle, depending on the nature of the failure.
  */
-public class Assert
-    {
+public class Assert {
     public static final String TAG = "Assert";
 
-    public static void assertTrue(boolean value)
-        {
-        if (!value)
-            {
+    public static void assertTrue(boolean value) {
+        if (!value) {
             assertFailed();
-            }
-        }
-
-    public static void assertFalse(boolean value)
-        {
-        if (value)
-            {
-            assertFailed();
-            }
-        }
-
-    public static void assertNull(Object value)
-        {
-        if (value != null)
-            {
-            assertFailed();
-            }
-        }
-
-    public static void assertNotNull(Object value)
-        {
-        if (value == null)
-            {
-            assertFailed();
-            }
-        }
-
-    public static void assertEquals(int expected, int actual)
-        {
-        if (expected != actual)
-            {
-            assertFailed();
-            }
-        }
-
-    //----------------------------------------------------------------------------------------------
-
-    public static void assertTrue(boolean value, String format, Object... args)
-        {
-        if (!value)
-            {
-            assertFailed(format, args);
-            }
-        }
-
-    public static void assertFalse(boolean value, String format, Object... args)
-        {
-        if (value)
-            {
-            assertFailed(format, args);
-            }
-        }
-
-    public static void assertNull(Object value, String format, Object... args)
-        {
-        if (value != null)
-            {
-            assertFailed(format, args);
-            }
-        }
-
-    public static void assertNotNull(Object value, String format, Object... args)
-        {
-        if (value == null)
-            {
-            assertFailed(format, args);
-            }
-        }
-
-    //----------------------------------------------------------------------------------------------
-
-    public static void assertFailed()
-        {
-        try {
-            throw new RuntimeException("assertion failed");
-            }
-        catch (Exception e)
-            {
-            RobotLog.aa(TAG, e, "assertion failed");
-            }
-        }
-
-    public static void assertFailed(String format, Object[] args)
-        {
-        String message = String.format(format, args);
-        String banner  = "assertion failed: " + message;
-        try {
-            throw new RuntimeException(banner);
-            }
-        catch (Exception e)
-            {
-            RobotLog.aa(TAG, e, banner);
-            }
         }
     }
+
+    public static void assertFalse(boolean value) {
+        if (value) {
+            assertFailed();
+        }
+    }
+
+    public static void assertNull(Object value) {
+        if (value != null) {
+            assertFailed();
+        }
+    }
+
+    public static void assertNotNull(Object value) {
+        if (value == null) {
+            assertFailed();
+        }
+    }
+
+    public static void assertEquals(int expected, int actual) {
+        if (expected != actual) {
+            assertFailed();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public static void assertTrue(boolean value, String format, Object... args) {
+        if (!value) {
+            assertFailed(format, args);
+        }
+    }
+
+    public static void assertFalse(boolean value, String format, Object... args) {
+        if (value) {
+            assertFailed(format, args);
+        }
+    }
+
+    public static void assertNull(Object value, String format, Object... args) {
+        if (value != null) {
+            assertFailed(format, args);
+        }
+    }
+
+    public static void assertNotNull(Object value, String format, Object... args) {
+        if (value == null) {
+            assertFailed(format, args);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public static void assertFailed() {
+        try {
+            throw new RuntimeException("assertion failed");
+        } catch (Exception e) {
+            RobotLog.aa(TAG, e, "assertion failed");
+        }
+    }
+
+    public static void assertFailed(String format, Object[] args) {
+        String message = String.format(format, args);
+        String banner = "assertion failed: " + message;
+        try {
+            throw new RuntimeException(banner);
+        } catch (Exception e) {
+            RobotLog.aa(TAG, e, banner);
+        }
+    }
+}

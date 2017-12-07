@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
  * 'Fake' serial numbers are serial numbers that will *never* appear for a real device; they
  * are useful, for example, as the serial number of a {@link ControllerConfiguration} that
  * has not yet been associated with a actual USB controller device.
- *
+ * <p>
  * Note that *all* serial numbers loaded in memory at any given instant are guaranteed unique and
  * different, even the fake ones; this allows code that processes USB-device-bound {@link
  * ControllerConfiguration}s to operate easily on unbound ones as well, a significant coding
@@ -56,89 +56,98 @@ import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
  */
 public class SerialNumber implements Serializable {
 
-  private final String serialNumber;
-  private static final String fakePrefix = "FakeUSB:";
+    private final String serialNumber;
+    private static final String fakePrefix = "FakeUSB:";
 
-  /**
-   * Constructs a new unique, fake serial number
-   */
-  public SerialNumber() {
-    serialNumber = generateFake();
-  }
-
-  private static String generateFake() {
-    return fakePrefix + UUID.randomUUID().toString();
-  }
-
-  /**
-   * Constructs a serial number using the supplied initialization string. If the initialization
-   * string is a legacy form of fake serial number, a unique fake serial number is created.
-   *
-   * @param initializer the initialization string for the serial number.
-   */
-  public SerialNumber(String initializer) {
-    this.serialNumber = isLegacyFake(initializer) ? generateFake() : initializer;
-  }
-
-  /**
-   * Returns whether or not this serial number is a fake one or not
-   * @return whether or not this serial number is a fake one or not
-   */
-  public boolean isFake() {
-    return serialNumber.startsWith(fakePrefix) || isLegacyFake(serialNumber);
-  }
-
-  /**
-   * Returns whether or not this serial number is a real one or not
-   * @return whether or not this serial number is a real one or not
-   */
-  public boolean isReal() {
-    return !isFake();
-  }
-
-  /**
-   * Returns whether the indicated serial number initialization string is one of the legacy
-   * fake serial number forms or not.
-   * @param initializer the serial number initialization string to test
-   * @return whether the the serial number initialization string is a legacy fake form of serial number
-   */
-  public static boolean isLegacyFake(String initializer) {
-    return initializer==null || initializer.equals("-1") || initializer.equalsIgnoreCase("N/A") || initializer.trim().isEmpty();
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (object == null) return false;
-    if (object == this) return true;
-
-    if (object instanceof SerialNumber) {
-      return serialNumber.equals(((SerialNumber) object).serialNumber);
+    /**
+     * Constructs a new unique, fake serial number
+     */
+    public SerialNumber() {
+        serialNumber = generateFake();
     }
 
-    if (object instanceof String) {
-      return serialNumber.equals(object);
+    private static String generateFake() {
+        return fakePrefix + UUID.randomUUID().toString();
     }
 
-    return false;
-  }
+    /**
+     * Constructs a serial number using the supplied initialization string. If the initialization
+     * string is a legacy form of fake serial number, a unique fake serial number is created.
+     *
+     * @param initializer the initialization string for the serial number.
+     */
+    public SerialNumber(String initializer) {
+        this.serialNumber = isLegacyFake(initializer) ? generateFake() : initializer;
+    }
 
-  @Override
-  public int hashCode() {
-    return serialNumber.hashCode();
-  }
+    /**
+     * Returns whether or not this serial number is a fake one or not
+     *
+     * @return whether or not this serial number is a fake one or not
+     */
+    public boolean isFake() {
+        return serialNumber.startsWith(fakePrefix) || isLegacyFake(serialNumber);
+    }
 
-  @Override
-  public String toString() {
-    return serialNumber;
-  }
+    /**
+     * Returns whether or not this serial number is a real one or not
+     *
+     * @return whether or not this serial number is a real one or not
+     */
+    public boolean isReal() {
+        return !isFake();
+    }
 
-  public String toString(Context context) {
-    return isFake() ? context.getString(R.string.noSerialNumber) : serialNumber;
-  }
+    /**
+     * Returns whether the indicated serial number initialization string is one of the legacy
+     * fake serial number forms or not.
+     *
+     * @param initializer the serial number initialization string to test
+     * @return whether the the serial number initialization string is a legacy fake form of serial number
+     */
+    public static boolean isLegacyFake(String initializer) {
+        return initializer == null || initializer.equals("-1") || initializer.equalsIgnoreCase("N/A") || initializer.trim().isEmpty();
+    }
 
-  /** @deprecated no need to use; use toString() if string form is sought */
-  @Deprecated
-  public String getSerialNumber() {
-    return serialNumber;
-  }
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+
+        if (object instanceof SerialNumber) {
+            return serialNumber.equals(((SerialNumber) object).serialNumber);
+        }
+
+        if (object instanceof String) {
+            return serialNumber.equals(object);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return serialNumber.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return serialNumber;
+    }
+
+    public String toString(Context context) {
+        return isFake() ? context.getString(R.string.noSerialNumber) : serialNumber;
+    }
+
+    /**
+     * @deprecated no need to use; use toString() if string form is sought
+     */
+    @Deprecated
+    public String getSerialNumber() {
+        return serialNumber;
+    }
 }

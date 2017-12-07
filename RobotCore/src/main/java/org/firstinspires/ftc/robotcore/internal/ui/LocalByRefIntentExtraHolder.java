@@ -43,14 +43,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * {@link LocalByRefIntentExtraHolder} can be used to pass an object reference by reference into
  * a newly launched activity. That activity, of course, MUST be in the same process as the
  * caller who launched it.
- *
+ * <p>
  * The key thing is that the creation of the holder and the retrieval of the parameter must
  * happen in the same process. It's ok that any intent to which this parameter were a black
  * box be in any process in the system.
  */
 @SuppressWarnings("WeakerAccess")
-public class LocalByRefIntentExtraHolder implements Parcelable
-    {
+public class LocalByRefIntentExtraHolder implements Parcelable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -63,49 +62,41 @@ public class LocalByRefIntentExtraHolder implements Parcelable
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LocalByRefIntentExtraHolder(Object target)
-        {
+    public LocalByRefIntentExtraHolder(Object target) {
         this.uuid = UUID.randomUUID();
         map.put(uuid, target);
-        }
+    }
 
-    private LocalByRefIntentExtraHolder(Parcel parcel)
-        {
+    private LocalByRefIntentExtraHolder(Parcel parcel) {
         uuid = UUID.fromString(parcel.readString());
-        }
+    }
 
-    public Object getTargetAndForget()
-        {
+    public Object getTargetAndForget() {
         Object result = map.get(uuid);
         map.remove(uuid);
         return result;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Parcelable
     //----------------------------------------------------------------------------------------------
 
-    public int describeContents()
-        {
+    public int describeContents() {
         return 0;
-        }
-
-    public void writeToParcel(Parcel out, int flags)
-        {
-        out.writeString(uuid.toString());
-        }
-
-    public static final Parcelable.Creator<LocalByRefIntentExtraHolder> CREATOR = new Parcelable.Creator<LocalByRefIntentExtraHolder>()
-        {
-        public LocalByRefIntentExtraHolder createFromParcel(Parcel parcel)
-            {
-            return new LocalByRefIntentExtraHolder(parcel);
-            }
-
-        public LocalByRefIntentExtraHolder[] newArray(int size)
-            {
-            return new LocalByRefIntentExtraHolder[size];
-            }
-        };
-
     }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(uuid.toString());
+    }
+
+    public static final Parcelable.Creator<LocalByRefIntentExtraHolder> CREATOR = new Parcelable.Creator<LocalByRefIntentExtraHolder>() {
+        public LocalByRefIntentExtraHolder createFromParcel(Parcel parcel) {
+            return new LocalByRefIntentExtraHolder(parcel);
+        }
+
+        public LocalByRefIntentExtraHolder[] newArray(int size) {
+            return new LocalByRefIntentExtraHolder[size];
+        }
+    };
+
+}

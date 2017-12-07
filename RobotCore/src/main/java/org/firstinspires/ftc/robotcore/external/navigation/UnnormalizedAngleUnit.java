@@ -39,155 +39,153 @@ package org.firstinspires.ftc.robotcore.external.navigation;
  * and use angle measures that may be maintained separately across various contexts.
  * <p>
  * Angles can be distinguished along (at least) two axes:
- *  <ol>
- *      <li>the fundamental unit (radians vs degrees)</li>
- *      <li>whether the angular quantity is normalized or not to the range of [-180,+180) degrees</li>
- *  </ol>
- *  Normalized angles are of most utility when dealing with physical angles, as normalization
- *  removes ambiguity of representation. In particular, two angles can be compared for equality
- *  by subtracting them, normalizing, and testing whether the absolute value of the result is
- *  smaller than some tolerance threshold. This approach neatly handles all cases of cyclical
- *  wrapping without unexpected discontinuities.
+ * <ol>
+ * <li>the fundamental unit (radians vs degrees)</li>
+ * <li>whether the angular quantity is normalized or not to the range of [-180,+180) degrees</li>
+ * </ol>
+ * Normalized angles are of most utility when dealing with physical angles, as normalization
+ * removes ambiguity of representation. In particular, two angles can be compared for equality
+ * by subtracting them, normalizing, and testing whether the absolute value of the result is
+ * smaller than some tolerance threshold. This approach neatly handles all cases of cyclical
+ * wrapping without unexpected discontinuities.
  * </p>
  * <p>
- *  Unnormalized angles can be handy when the angular quantity is not a physical angle but some
- *  related quantity such as an angular <em>velocity</em> or <em>acceleration</em>, where the
- *  quantity in question lacks the 360-degree cyclical equivalence of a physical angle.
+ * Unnormalized angles can be handy when the angular quantity is not a physical angle but some
+ * related quantity such as an angular <em>velocity</em> or <em>acceleration</em>, where the
+ * quantity in question lacks the 360-degree cyclical equivalence of a physical angle.
  * </p>
  * <p>
- *  {@link AngleUnit} expresses normalized angles, while {@link UnnormalizedAngleUnit} expresses unnormalized ones
+ * {@link AngleUnit} expresses normalized angles, while {@link UnnormalizedAngleUnit} expresses unnormalized ones
  * </p>
  */
 @SuppressWarnings("WeakerAccess")
-public enum UnnormalizedAngleUnit
-    {
+public enum UnnormalizedAngleUnit {
     DEGREES(0), RADIANS(1);
     public final byte bVal;
 
-    UnnormalizedAngleUnit(int i)
-        {
+    UnnormalizedAngleUnit(int i) {
         bVal = (byte) i;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Primitive operations
     //----------------------------------------------------------------------------------------------
 
-    public double fromDegrees(double degrees)
-        {
-        switch (this)
-            {
+    public double fromDegrees(double degrees) {
+        switch (this) {
             default:
-            case RADIANS:  return (degrees / 180.0 * Math.PI);
-            case DEGREES:  return (degrees);
-            }
+            case RADIANS:
+                return (degrees / 180.0 * Math.PI);
+            case DEGREES:
+                return (degrees);
         }
+    }
 
-    public float fromDegrees(float degrees)
-        {
-        switch (this)
-            {
+    public float fromDegrees(float degrees) {
+        switch (this) {
             default:
-            case RADIANS:  return (degrees / 180.0f * AngleUnit.Pif);
-            case DEGREES:  return (degrees);
-            }
+            case RADIANS:
+                return (degrees / 180.0f * AngleUnit.Pif);
+            case DEGREES:
+                return (degrees);
         }
+    }
 
-    public double fromRadians(double radians)
-        {
-        switch (this)
-            {
+    public double fromRadians(double radians) {
+        switch (this) {
             default:
-            case RADIANS:  return (radians);
-            case DEGREES:  return (radians / Math.PI * 180.0);
-            }
+            case RADIANS:
+                return (radians);
+            case DEGREES:
+                return (radians / Math.PI * 180.0);
         }
+    }
 
-    public float fromRadians(float radians)
-        {
-        switch (this)
-            {
+    public float fromRadians(float radians) {
+        switch (this) {
             default:
-            case RADIANS:  return (radians);
-            case DEGREES:  return (radians / AngleUnit.Pif * 180.0f);
-            }
+            case RADIANS:
+                return (radians);
+            case DEGREES:
+                return (radians / AngleUnit.Pif * 180.0f);
         }
+    }
 
-    public double fromUnit(UnnormalizedAngleUnit them, double theirs)
-        {
-        switch (them)
-            {
+    public double fromUnit(UnnormalizedAngleUnit them, double theirs) {
+        switch (them) {
             default:
-            case RADIANS:  return this.fromRadians(theirs);
-            case DEGREES:  return this.fromDegrees(theirs);
-            }
+            case RADIANS:
+                return this.fromRadians(theirs);
+            case DEGREES:
+                return this.fromDegrees(theirs);
         }
+    }
 
-    public float fromUnit(UnnormalizedAngleUnit them, float theirs)
-        {
-        switch (them)
-            {
+    public float fromUnit(UnnormalizedAngleUnit them, float theirs) {
+        switch (them) {
             default:
-            case RADIANS:  return this.fromRadians(theirs);
-            case DEGREES:  return this.fromDegrees(theirs);
-            }
+            case RADIANS:
+                return this.fromRadians(theirs);
+            case DEGREES:
+                return this.fromDegrees(theirs);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Derived operations
     //----------------------------------------------------------------------------------------------
 
-    public double toDegrees(double inOurUnits)
-        {
-        switch (this)
-            {
+    public double toDegrees(double inOurUnits) {
+        switch (this) {
             default:
-            case RADIANS:      return DEGREES.fromRadians(inOurUnits);
-            case DEGREES:      return DEGREES.fromDegrees(inOurUnits);
-            }
+            case RADIANS:
+                return DEGREES.fromRadians(inOurUnits);
+            case DEGREES:
+                return DEGREES.fromDegrees(inOurUnits);
         }
+    }
 
-    public float toDegrees(float inOurUnits)
-        {
-        switch (this)
-            {
+    public float toDegrees(float inOurUnits) {
+        switch (this) {
             default:
-            case RADIANS:      return DEGREES.fromRadians(inOurUnits);
-            case DEGREES:      return DEGREES.fromDegrees(inOurUnits);
-            }
+            case RADIANS:
+                return DEGREES.fromRadians(inOurUnits);
+            case DEGREES:
+                return DEGREES.fromDegrees(inOurUnits);
         }
+    }
 
-    public double toRadians(double inOurUnits)
-        {
-        switch (this)
-            {
+    public double toRadians(double inOurUnits) {
+        switch (this) {
             default:
-            case RADIANS:      return RADIANS.fromRadians(inOurUnits);
-            case DEGREES:      return RADIANS.fromDegrees(inOurUnits);
-            }
+            case RADIANS:
+                return RADIANS.fromRadians(inOurUnits);
+            case DEGREES:
+                return RADIANS.fromDegrees(inOurUnits);
         }
+    }
 
-    public float toRadians(float inOurUnits)
-        {
-        switch (this)
-            {
+    public float toRadians(float inOurUnits) {
+        switch (this) {
             default:
-            case RADIANS:      return RADIANS.fromRadians(inOurUnits);
-            case DEGREES:      return RADIANS.fromDegrees(inOurUnits);
-            }
+            case RADIANS:
+                return RADIANS.fromRadians(inOurUnits);
+            case DEGREES:
+                return RADIANS.fromDegrees(inOurUnits);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Normalization
     //----------------------------------------------------------------------------------------------
 
-    public AngleUnit getNormalized()
-        {
-        switch (this)
-            {
+    public AngleUnit getNormalized() {
+        switch (this) {
             default:
-            case RADIANS:  return AngleUnit.RADIANS;
-            case DEGREES:  return AngleUnit.DEGREES;
-            }
+            case RADIANS:
+                return AngleUnit.RADIANS;
+            case DEGREES:
+                return AngleUnit.DEGREES;
         }
     }
+}

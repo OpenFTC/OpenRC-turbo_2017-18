@@ -39,91 +39,94 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  */
 public class DigitalChannelImpl implements DigitalChannel {
 
-  private DigitalChannelController controller = null;
-  private int channel = -1;
+    private DigitalChannelController controller = null;
+    private int channel = -1;
 
-  /**
-   * Constructor
-   *
-   * @param controller Digital channel controller this channel is attached to
-   * @param channel channel on the digital channel controller
-   */
-  public DigitalChannelImpl(DigitalChannelController controller, int channel) {
-    this.controller = controller;
-    this.channel = channel;
-  }
+    /**
+     * Constructor
+     *
+     * @param controller Digital channel controller this channel is attached to
+     * @param channel    channel on the digital channel controller
+     */
+    public DigitalChannelImpl(DigitalChannelController controller, int channel) {
+        this.controller = controller;
+        this.channel = channel;
+    }
 
-  /**
-   * Get the channel mode
-   *
-   * @return channel mode
-   */
-  @Override
-  public DigitalChannel.Mode getMode() {
-    return controller.getDigitalChannelMode(channel);
-  }
+    /**
+     * Get the channel mode
+     *
+     * @return channel mode
+     */
+    @Override
+    public DigitalChannel.Mode getMode() {
+        return controller.getDigitalChannelMode(channel);
+    }
 
-  /**
-   * Set the channel mode
-   *
-   * @param mode
-   */
-  @Override
-  public void setMode(DigitalChannel.Mode mode) {
-    controller.setDigitalChannelMode(channel, mode);
-  }
+    /**
+     * Set the channel mode
+     *
+     * @param mode
+     */
+    @Override
+    public void setMode(DigitalChannel.Mode mode) {
+        controller.setDigitalChannelMode(channel, mode);
+    }
 
-  @Override @Deprecated public void setMode(DigitalChannelController.Mode mode) {
-    controller.setDigitalChannelMode(channel, mode);
-  }
+    @Override
+    @Deprecated
+    public void setMode(DigitalChannelController.Mode mode) {
+        controller.setDigitalChannelMode(channel, mode);
+    }
 
-/**
-   * Get the channel state
-   *
-   * @return state
-   */
-  @Override
-  public boolean getState() {
-    return controller.getDigitalChannelState(channel);
-  }
+    /**
+     * Get the channel state
+     *
+     * @return state
+     */
+    @Override
+    public boolean getState() {
+        return controller.getDigitalChannelState(channel);
+    }
 
-  /**
-   * Set the channel state
-   * <p>
-   * The behavior of this method is undefined for INPUT digital channels.
-   *
-   * @param state
-   */
-  @Override
-  public void setState(boolean state) {
-    controller.setDigitalChannelState(channel, state);
-  }
+    /**
+     * Set the channel state
+     * <p>
+     * The behavior of this method is undefined for INPUT digital channels.
+     *
+     * @param state
+     */
+    @Override
+    public void setState(boolean state) {
+        controller.setDigitalChannelState(channel, state);
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return controller.getManufacturer();
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return controller.getManufacturer();
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(R.string.configTypeDigitalDevice);
-  }
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(R.string.configTypeDigitalDevice);
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return controller.getConnectionInfo() + "; digital port " + channel;
-  }
+    @Override
+    public String getConnectionInfo() {
+        return controller.getConnectionInfo() + "; digital port " + channel;
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public int getVersion() {
+        return 1;
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
-  @Override
-  public void close() {
-    // take no action
-  }
+    @Override
+    public void close() {
+        // take no action
+    }
 }

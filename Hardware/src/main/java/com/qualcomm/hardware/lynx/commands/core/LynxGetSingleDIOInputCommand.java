@@ -44,8 +44,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetSingleDIOInputCommand extends LynxDekaInterfaceCommand<LynxGetSingleDIOInputResponse>
-    {
+public class LynxGetSingleDIOInputCommand extends LynxDekaInterfaceCommand<LynxGetSingleDIOInputResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -58,47 +57,41 @@ public class LynxGetSingleDIOInputCommand extends LynxDekaInterfaceCommand<LynxG
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetSingleDIOInputCommand(LynxModuleIntf module)
-        {
+    public LynxGetSingleDIOInputCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxGetSingleDIOInputResponse(module);
-        }
+    }
 
-    public LynxGetSingleDIOInputCommand(LynxModuleIntf module, int pin)
-        {
+    public LynxGetSingleDIOInputCommand(LynxModuleIntf module, int pin) {
         this(module);
         LynxConstants.validateDigitalIOZ(pin);
         this.pin = pin;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxGetSingleDIOInputResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
-        buffer.put((byte)this.pin);
+        buffer.put((byte) this.pin);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.pin = buffer.get();
-        }
-
     }
+
+}
