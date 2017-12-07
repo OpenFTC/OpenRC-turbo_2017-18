@@ -187,14 +187,13 @@ public abstract class FtcEventLoopBase implements EventLoop {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected FtcEventLoopBase(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext) //modified for turbo: removed programmingModeController parameter
-    {
+    protected FtcEventLoopBase(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext, ProgrammingModeController programmingModeController) {
         this.userOpmodeRegister = userOpmodeRegister;
         this.registeredOpModes = RegisteredOpModes.getInstance();
         this.activityContext = activityContext;
         this.robotCfgFileMgr = new RobotConfigFileManager(activityContext);
         this.ftcEventLoopHandler = new FtcEventLoopHandler(hardwareFactory, callback, activityContext);
-        //modified for turbo: removed programmingModeController initialization
+        // Modified for Turbo: removed programmingModeController initialization
         this.usbScanManager = null;
     }
 

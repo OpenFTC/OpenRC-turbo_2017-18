@@ -9,6 +9,7 @@ dependencies {
     openftcImplementation project(':Inspection')
     openftcImplementation project(':Hardware')
     openftcImplementation project(':FtcCommon')
+    openftcImplementation project(':Turbo')
 
     stockImplementation(name: 'Inspection-release', ext: 'aar')
     stockImplementation(name: 'Blocks-release', ext: 'aar')
