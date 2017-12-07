@@ -81,7 +81,7 @@ import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
-import org.openftc.UiUtils;
+import org.openftc.*;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -152,7 +152,7 @@ public class AboutActivity extends ThemedActivity {
 
             @Override
             public int getCount() {
-                return 5;
+                return 6; // Modified for OpenFTC: added 1 entry
             }
 
             @Override
@@ -168,6 +168,8 @@ public class AboutActivity extends ThemedActivity {
                         return getConnectionInfo();
                     case 4:
                         return getBuildTimeInfo();
+                    case 5:
+                        return getOpenFtcVersion();
                 }
                 return new Item();
             }
@@ -209,6 +211,13 @@ public class AboutActivity extends ThemedActivity {
                 Item i = new Item();
                 i.title = getString(R.string.about_build_time);
                 i.info = getBuildTime();
+                return i;
+            }
+
+            private Item getOpenFtcVersion() {
+                Item i = new Item();
+                i.title = getString(R.string.about_openftc_version);
+                i.info = org.openftc.BuildConfig.VERSION_COMPLETE;
                 return i;
             }
         };
