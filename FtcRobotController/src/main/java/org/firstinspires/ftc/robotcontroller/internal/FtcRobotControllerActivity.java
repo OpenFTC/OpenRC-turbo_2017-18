@@ -70,6 +70,7 @@ import com.qualcomm.ftccommon.configuration.EditParameters;
 import com.qualcomm.ftccommon.configuration.FtcLoadFileActivity;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
+import com.qualcomm.ftcrobotcontroller.BuildConfig;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
@@ -213,13 +214,13 @@ public class FtcRobotControllerActivity extends Activity {
         RobotLog.onApplicationStart();  // robustify against onCreate() following onDestroy() but using the same app instance, which apparently does happen
         RobotLog.vv(TAG, "onCreate()");
 
-    /*
+    /* // Modified for OpenFTC
      * Check to see if the DS app is also installed.
      * If it is, then show the user a dialog explaining
      * the situation and offer them the option to uninstall
      * either the DS app or the RC app
      */
-        if (Utils.isFtcDriverStationInstalled(getPackageManager())) {
+        if (BuildConfig.IS_OPENFTC && Utils.isFtcDriverStationInstalled(getPackageManager())) {
             UiUtils.showDsAppInstalledDialog(this);
         }
 
@@ -286,8 +287,10 @@ public class FtcRobotControllerActivity extends Activity {
         textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
         textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
 
-        textOpenFTCVersion = (TextView) findViewById(R.id.openftc_version);
-        textOpenFTCVersion.setText(org.openftc.BuildConfig.VERSION_COMPLETE);
+        if(BuildConfig.IS_OPENFTC) {
+            textOpenFTCVersion = (TextView) findViewById(R.id.openftc_version);
+            textOpenFTCVersion.setText(org.openftc.BuildConfig.VERSION_COMPLETE);
+        }
 
         immersion = new ImmersiveMode(getWindow().getDecorView());
         dimmer = new Dimmer(this);
@@ -406,16 +409,18 @@ public class FtcRobotControllerActivity extends Activity {
     }
 
     protected void logPackageVersions() {
-        RobotLog.v("THIS APP WAS MADE FROM OpenFTC, A MODIFIED VERSION OF THE SDK.");
-        RobotLog.v("You can find more information at http://OpenFTC.org or the About screen.");
-        RobotLog.v("OpenFTC Version: " + org.openftc.BuildConfig.VERSION_COMPLETE);
+        if (BuildConfig.IS_OPENFTC) {
+            RobotLog.v("THIS APP WAS MADE FROM OpenFTC, A MODIFIED VERSION OF THE SDK.");
+            RobotLog.v("You can find more information at http://OpenFTC.org or the About screen.");
+            RobotLog.v("OpenFTC Version: " + org.openftc.BuildConfig.VERSION_COMPLETE);
+            RobotLog.logBuildConfig(org.openftc.BuildConfig.class);
+        }
         RobotLog.logBuildConfig(com.qualcomm.ftcrobotcontroller.BuildConfig.class);
         RobotLog.logBuildConfig(com.qualcomm.robotcore.BuildConfig.class);
         RobotLog.logBuildConfig(com.qualcomm.hardware.BuildConfig.class);
         RobotLog.logBuildConfig(com.qualcomm.ftccommon.BuildConfig.class);
         // Modified for Turbo: don't log the blocks version
         RobotLog.logBuildConfig(org.firstinspires.inspection.BuildConfig.class);
-        RobotLog.logBuildConfig(org.openftc.BuildConfig.class);
     }
 
     protected void readNetworkType() {
