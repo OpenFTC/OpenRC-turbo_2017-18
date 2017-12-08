@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.RevbotHardware;
-import org.firstinspires.ftc.teamcode.robot.RevbotValues;
+import org.firstinspires.ftc.teamcode.robot.Revbot;
+import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
 
 /**
  * Drone Op Teleop code. Main teleop class.
@@ -15,10 +15,10 @@ import org.firstinspires.ftc.teamcode.robot.RevbotValues;
  *      LB: Activate smartDirect
  *      LT: Set hyperPrecision
  *
- *      RB: Save current drive/strafePower to directSave
+ *      RB: Save current drive/strafeDrivePower to directSave
  *      RT: (directSave) Control power
  *
- *      LStick-x: Set strafePower
+ *      LStick-x: Set strafeDrivePower
  *      LStick-y: Set left/rightPower
  *
  *      RStick-x: Set turnPower
@@ -33,12 +33,13 @@ import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 @TeleOp(name="Drone Op", group = "teleop")
 public class DroneOp extends LinearOpMode {
 
-    private RevbotHardware robot = new RevbotHardware();
+    private Revbot robot = new Revbot();
+    private TeleOpCommands teleOp = new TeleOpCommands();
 
     // Declare power variables
     private double leftPower;
     private double rightPower;
-    private double strafePower;
+    private double strafeDrivePower;
     private double turnPower;
 
     // TODO: fill in comment
@@ -62,7 +63,8 @@ public class DroneOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // IMPORTANT: Initialize the hardwareMap
-        robot.init(hardwareMap);
+        robot.init(this);
+        teleOp.init(this, robot);
 
         // Init directSave array
         for (int i = 0; i < 3; i++) {
@@ -84,11 +86,11 @@ public class DroneOp extends LinearOpMode {
 
             turnPower = gamepad1.right_stick_x;
 
-            strafePower = -gamepad1.left_stick_x;
+            strafeDrivePower = -gamepad1.left_stick_x;
             leftPower += turnPower;
             rightPower -= turnPower;
 
-            strafePower /= hyperPrecision;
+            strafeDrivePower /= hyperPrecision;
             leftPower /= hyperPrecision;
             rightPower /= hyperPrecision;
 
@@ -97,30 +99,30 @@ public class DroneOp extends LinearOpMode {
 
                 robot.leftDrive.setPower(directSave[0] * gamepad1.right_trigger);
                 robot.rightDrive.setPower(directSave[1] * gamepad1.right_trigger);
-                robot.strafe.setPower(directSave[2] * gamepad1.right_trigger);
+                robot.strafeDrive.setPower(directSave[2] * gamepad1.right_trigger);
 
             } else {
 
                 // Set drivePower conditions
-                if (!smartDirect || (Math.abs(leftPower) >= Math.abs(strafePower))) {
+                if (!smartDirect || (Math.abs(leftPower) >= Math.abs(strafeDrivePower))) {
 
                     robot.leftDrive.setPower(leftPower);
                     robot.rightDrive.setPower(rightPower);
 
-                    if (smartDirect && Math.abs(leftPower) >= Math.abs(strafePower)) {
+                    if (smartDirect && Math.abs(leftPower) >= Math.abs(strafeDrivePower)) {
 
-                        robot.strafe.setPower(0);
+                        robot.strafeDrive.setPower(0);
 
                     }
 
                 }
 
-                // Set strafePower conditions
-                if (!smartDirect || (Math.abs(leftPower) < Math.abs(strafePower))) {
+                // Set strafeDrivePower conditions
+                if (!smartDirect || (Math.abs(leftPower) < Math.abs(strafeDrivePower))) {
 
-                    robot.strafe.setPower(strafePower);
+                    robot.strafeDrive.setPower(strafeDrivePower);
 
-                    if (smartDirect && Math.abs(leftPower) < Math.abs(strafePower)) {
+                    if (smartDirect && Math.abs(leftPower) < Math.abs(strafeDrivePower)) {
 
                         robot.leftDrive.setPower(0);
                         robot.rightDrive.setPower(0);
@@ -134,70 +136,13 @@ public class DroneOp extends LinearOpMode {
 
                     directSave[0] = robot.leftDrive.getPower();
                     directSave[1] = robot.rightDrive.getPower();
-                    directSave[2] = robot.strafe.getPower();
+                    directSave[2] = robot.strafeDrive.getPower();
 
                 }
 
             }
 
-            // Set lift power
-            if (gamepad1.dpad_up) {
-
-                robot.cubeLift.setPower(1);
-
-            } else if (gamepad1.dpad_down) {
-
-                robot.cubeLift.setPower(-0.5);
-
-            } else {
-
-                robot.cubeLift.setPower(0);
-
-            }
-
-            // Set claw position
-            if (gamepad1.dpad_left) {
-
-                robot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_CLOSED_VALUE);
-                robot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_CLOSED_VALUE);
-
-            } else if (gamepad1.dpad_right) {
-
-                robot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_OPENED_VALUE);
-                robot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_OPENED_VALUE);
-
-            }
-
-            // Move fondler
-            if (gamepad1.y) {
-
-                robot.fondler.setPosition(RevbotValues.FONDLER_CENTER_VALUE);
-
-            } else if (gamepad1.x) {
-
-                robot.fondler.setPosition(RevbotValues.FONDLER_LEFT_VALUE);
-
-            } else if (gamepad1.b) {
-
-                robot.fondler.setPosition(RevbotValues.FONDLER_RIGHT_VALUE);
-
-            }
-
-            // Gamepad 2 claw fine control
-            if (gamepad2.dpad_left) {
-
-                robot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_OPENED_VALUE);
-
-            } else if (gamepad2.dpad_right) {
-
-                robot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_OPENED_VALUE);
-
-            } else if (gamepad2.dpad_up) {
-
-                robot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_CLOSED_VALUE);
-                robot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_CLOSED_VALUE);
-
-            }
+            teleOp.pollInput(false);
 
             telemetry.addData("OpMode Status", "Running");
             telemetry.addData("Hyper Precision: ", hyperPrecision);

@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 /**
  * Auto Red Top.
  */
@@ -21,8 +19,8 @@ public class AutoRedTop extends AutoBase {
         waitForStart();
 
         // add autonomous code here
-        strafeLeft(1, 0.5);
-        telemetry.addData("Auto", "Strafe Left");
+        strafeDriveLeft(1, 0.5);
+        telemetry.addData("Auto", "strafeDrive Left");
         telemetry.update();
 
         robot.beep();
@@ -31,10 +29,10 @@ public class AutoRedTop extends AutoBase {
         sleep(500);
         robot.cubeLift.setPower(0);
 
-        strafeRight(0.5);
+        strafeDriveRight(0.5);
         backward(0.5);
         sleep(900);
-        strafeRight(0);
+        strafeDriveRight(0);
         backward(0);
         robot.beep();
         sleep(500);

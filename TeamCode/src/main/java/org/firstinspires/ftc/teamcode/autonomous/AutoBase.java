@@ -6,12 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.robot.RevbotHardware;
+import org.firstinspires.ftc.teamcode.robot.Revbot;
 import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 
 /**
@@ -23,7 +22,7 @@ import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 @Disabled
 public class AutoBase extends LinearOpMode {
 
-    RevbotHardware robot = new RevbotHardware();
+    Revbot robot = new Revbot();
     ElapsedTime elapsedTime = new ElapsedTime();
     VuforiaLocalizer vuforia;
     VuforiaTrackable relicTemplate;
@@ -34,7 +33,7 @@ public class AutoBase extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        robot.init(hardwareMap);
+        robot.init(this);
         initVuforia();
         initFondler();
         closeClaw();
@@ -62,36 +61,36 @@ public class AutoBase extends LinearOpMode {
         robot.fondler.setPosition(RevbotValues.FONDLER_CENTER_VALUE);
     }
 
-    public void strafeLeft(double power) {
-        robot.strafe.setPower(power);
+    public void strafeDriveLeft(double power) {
+        robot.strafeDrive.setPower(power);
     }
 
-    public void strafeRight(double power) {
-        strafeLeft(-power);
+    public void strafeDriveRight(double power) {
+        strafeDriveLeft(-power);
     }
 
     public void stopStrafing() {
-        robot.strafe.setPower(0);
+        robot.strafeDrive.setPower(0);
     }
     
     /**
-     * Strafe left (using motor "strafe")
+     * strafeDrive left (using motor "strafeDrive")
      * @param seconds seconds to wait
      * @param power power, between 0 and 1
      */
-    public void strafeLeft(double seconds, double power) {
-        robot.strafe.setPower(power);
+    public void strafeDriveLeft(double seconds, double power) {
+        robot.strafeDrive.setPower(power);
         sleep((long) (seconds*1000));
-        robot.strafe.setPower(0);
+        robot.strafeDrive.setPower(0);
     }
 
     /**
-     * Strafe right (using motor "strafe")
+     * strafeDrive right (using motor "strafeDrive")
      * @param seconds seconds to wait
      * @param power power, between 0 and 1
      */
-    public void strafeRight(double seconds, double power){
-        strafeLeft(seconds, -power);
+    public void strafeDriveRight(double seconds, double power){
+        strafeDriveLeft(seconds, -power);
     }
 
     /**
@@ -144,7 +143,7 @@ public class AutoBase extends LinearOpMode {
     }
 
     /**
-     * Turn right (using motors "leftDrive" and "rightDrive)
+     * Turn right (using motors "leftDrive" and "rightDrive")
      * @param seconds seconds to wait
      * @param power power, between 0 and 1
      */
@@ -189,7 +188,7 @@ public class AutoBase extends LinearOpMode {
 
     }
 
-    // Vuforia Stuff
+    // VuforiaOld Stuff
     public void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -201,7 +200,7 @@ public class AutoBase extends LinearOpMode {
         this.relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
 
-        telemetry.addData("Vuforia", "Initialized");
+        telemetry.addData("VuforiaOld", "Initialized");
     }
 
     public String readImage() {
@@ -211,7 +210,19 @@ public class AutoBase extends LinearOpMode {
             return vuMark.name();
         } else {
             telemetry.addData("VuMark", "not found");
-            return ":B:roke";
+            return "[B]roke";
         }
+    }
+
+    public void raiseWinch() {
+        robot.spacerArmCR.setPower(-1);
+        sleep(2000);
+        robot.spacerArmCR.setPower(0);
+    }
+
+    public void lowerWinch() {
+        robot.spacerArmCR.setPower(1);
+        sleep(2000);
+        robot.spacerArmCR.setPower(0);
     }
 }

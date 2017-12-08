@@ -29,8 +29,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.ConceptVuforiaNavigation;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -46,16 +44,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.autonomous.AutoBase;
-import org.firstinspires.ftc.teamcode.robot.RevbotHardware;
 import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 
 /**
- * This OpMode illustrates the basics of using the Vuforia engine to determine
- * the identity of Vuforia VuMarks encountered on the field. The code is structured as
+ * This OpMode illustrates the basics of using the VuforiaOld engine to determine
+ * the identity of VuforiaOld VuMarks encountered on the field. The code is structured as
  * a LinearOpMode. It shares much structure with {@link ConceptVuforiaNavigation}; we do not here
- * duplicate the core Vuforia documentation found there, but rather instead focus on the
- * differences between the use of Vuforia for navigation vs VuMark identification.
+ * duplicate the core VuforiaOld documentation found there, but rather instead focus on the
+ * differences between the use of VuforiaOld for navigation vs VuMark identification.
  *
  * @see ConceptVuforiaNavigation
  * @see VuforiaLocalizer
@@ -65,19 +61,19 @@ import org.firstinspires.ftc.teamcode.robot.RevbotValues;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  *
- * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own VuforiaOld license key as
  * is explained in {@link ConceptVuforiaNavigation}.
  */
 
 @Autonomous(name="Concept: VuMark Id", group ="Concept")
 public class VuforiaTest extends AutoBase {
 
-    public static final String TAG = "Vuforia VuMark Sample";
+    public static final String TAG = "VuforiaOld VuMark Sample";
 
     OpenGLMatrix lastLocation = null;
 
     /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * {@link #vuforia} is the variable we will use to store our instance of the VuforiaOld
      * localization engine.
      */
     VuforiaLocalizer vuforia;
@@ -87,7 +83,7 @@ public class VuforiaTest extends AutoBase {
         super.runOpMode();
 
         /*
-         * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
+         * To start up VuforiaOld, tell it the view that we wish to use for camera monitor (on the RC phone);
          * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
          */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -97,15 +93,15 @@ public class VuforiaTest extends AutoBase {
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         /*
-         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+         * IMPORTANT: You need to obtain your own license key to use VuforiaOld. The string below with which
          * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-         * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+         * A VuforiaOld 'Development' license key, can be obtained free of charge from the VuforiaOld developer
          * web site at https://developer.vuforia.com/license-manager.
          *
-         * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+         * VuforiaOld license keys are always 380 characters long, and look as if they contain mostly
          * random data. As an example, here is a example of a fragment of a valid key:
          *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-         * Once you've obtained a license key, copy the string from the Vuforia web site
+         * Once you've obtained a license key, copy the string from the VuforiaOld web site
          * and paste it in to your code onthe next line, between the double quotes.
          */
         parameters.vuforiaLicenseKey = RevbotValues.VUFORIA_LICENSE_KEY;
@@ -177,9 +173,9 @@ public class VuforiaTest extends AutoBase {
                     double z = tZ + 240;
 
                     if (x >= 0) {
-                        strafeRight(0.5);
+                        strafeDriveRight(0.5);
                     } else if (x < 0) {
-                        strafeLeft(0.5);
+                        strafeDriveLeft(0.5);
                     }
 
                     if (z >= 0) {
