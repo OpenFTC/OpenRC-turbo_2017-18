@@ -173,15 +173,15 @@ public class VuforiaTest extends AutoBase {
                     double z = tZ + 240;
 
                     if (x >= 0) {
-                        strafeDriveRight(0.5);
+                        auto.strafeRight(0.5);
                     } else if (x < 0) {
-                        strafeDriveLeft(0.5);
+                        auto.strafeLeft(0.5);
                     }
 
                     if (z >= 0) {
-                        backward(0.5);
+                        auto.backward(0.5);
                     } else if (z < 0) {
-                        forward(0.5);
+                        auto.forward(0.5);
                     }
 
                     telemetry.addData("x", tX);
@@ -194,8 +194,8 @@ public class VuforiaTest extends AutoBase {
             }
             else {
                 telemetry.addData("VuMark", "not visible");
-                stopStrafing();
-                backward(0);
+                auto.stopStrafing();
+                auto.stopDriving();
             }
 
             telemetry.update();

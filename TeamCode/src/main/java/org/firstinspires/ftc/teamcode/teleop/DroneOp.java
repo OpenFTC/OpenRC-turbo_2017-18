@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Revbot;
-import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
+import org.firstinspires.ftc.teamcode.robot.TeleOpGamepad;
 
 /**
  * Drone Op Teleop code. Main teleop class.
@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
 public class DroneOp extends LinearOpMode {
 
     private Revbot robot = new Revbot();
-    private TeleOpCommands teleOp = new TeleOpCommands();
+    private TeleOpGamepad teleOp = new TeleOpGamepad();
 
     // Declare power variables
     private double leftPower;
@@ -43,9 +43,9 @@ public class DroneOp extends LinearOpMode {
     private double turnPower;
 
     // TODO: fill in comment
+    // Four-direction/free movement boolean togg
     private double hyperPrecision;
 
-    // Four-direction/free movement boolean toggle
     private boolean smartDirect;
 
     // Double[] for saving joystick position and replicating direction/power
@@ -75,6 +75,8 @@ public class DroneOp extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+
+        robot.beep(); //Leo did this!
 
         while (opModeIsActive()) {
 

@@ -4,7 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Revbot;
-import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
+import org.firstinspires.ftc.teamcode.robot.RevbotCommands;
+import org.firstinspires.ftc.teamcode.robot.TeleOpGamepad;
 
 /**
  * Created by josh on 12/2/17.
@@ -15,7 +16,8 @@ import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
 public class TwoJoyOp extends LinearOpMode {
 
     Revbot robot = new Revbot();
-    private TeleOpCommands teleOp = new TeleOpCommands();
+    private TeleOpGamepad teleOp = new TeleOpGamepad();
+    private RevbotCommands commands = new RevbotCommands();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,8 +31,8 @@ public class TwoJoyOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            robot.leftDrive.setPower(-gamepad1.left_stick_y);
-            robot.rightDrive.setPower(-gamepad1.right_stick_y);
+            robot.leftDrive.setPower(-gamepad1.left_stick_y - gamepad1.left_trigger);
+            robot.rightDrive.setPower(-gamepad1.right_stick_y - gamepad1.left_trigger);
 
             teleOp.pollInput(true);
 

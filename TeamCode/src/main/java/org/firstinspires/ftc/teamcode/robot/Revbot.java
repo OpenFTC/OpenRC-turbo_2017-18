@@ -164,7 +164,7 @@ public class Revbot {
      * void beep() Make the robot play a tone.
      */
     public void beep() {
-        tone.startTone(ToneGenerator.TONE_CDMA_KEYPAD_VOLUME_KEY_LITE);
+        tone.startTone(ToneGenerator.TONE_SUP_RINGTONE);
     }
 
     /**
@@ -176,4 +176,6 @@ public class Revbot {
         rightDrive.setMode(mode);
         strafeDrive.setMode(mode);
     }
+
+    public static boolean LeoIsCool(){return false;} //Leo made this!
 }

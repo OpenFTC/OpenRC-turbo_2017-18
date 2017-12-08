@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Created by josh on 12/7/17.
  */
 
-public class TeleOpCommands {
+public class TeleOpGamepad {
 
     private LinearOpMode myOpMode;
     private Revbot myRobot;
+    private RevbotCommands commands = new RevbotCommands();
 
-    public TeleOpCommands() {
+    public TeleOpGamepad() {
         
     }
     
@@ -19,6 +20,8 @@ public class TeleOpCommands {
 
         myOpMode = opMode;
         myRobot = robot;
+
+        commands.init(opMode, robot);
         
     }
     
@@ -53,7 +56,15 @@ public class TeleOpCommands {
 
         // Move fondler
         if (useAlternateStrafeButtons) {
+            if (myOpMode.gamepad1.x) {
+                commands.strafeLeft(1);
+            } else if (myOpMode.gamepad1.b) {
+                commands.strafeRight(1);
+            } else {
+                commands.stopStrafing();
+            }
 
+        } else {
             if (myOpMode.gamepad1.y) {
 
                 myRobot.fondler.setPosition(RevbotValues.FONDLER_CENTER_VALUE);
@@ -67,9 +78,6 @@ public class TeleOpCommands {
                 myRobot.fondler.setPosition(RevbotValues.FONDLER_RIGHT_VALUE);
 
             }
-
-        } else {
-
         }
 
 
