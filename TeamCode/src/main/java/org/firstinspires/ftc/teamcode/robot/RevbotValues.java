@@ -17,8 +17,9 @@ public class RevbotValues {
 
     // Fondler values
     public static final double FONDLER_CENTER_VALUE = 0.5;
-    public static final double FONDLER_LEFT_VALUE = 0.2;
+    public static final double FONDLER_LEFT_VALUE = 0.175;
     public static final double FONDLER_RIGHT_VALUE = 0.7;
+    public static final double FONDLER_FULLY_RIGHT = 0.85;
 
     // CR values
     public static final double CR_FORWARDS_VALUE = 1;

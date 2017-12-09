@@ -58,7 +58,7 @@ public class RevbotCommands {
     }
 
     public void fondleRight() {
-        myRobot.fondler.setPosition(RevbotValues.FONDLER_RIGHT_VALUE);
+        myRobot.fondler.setPosition(RevbotValues.FONDLER_FULLY_RIGHT);
     }
 
     public boolean isBlue() {
@@ -70,20 +70,20 @@ public class RevbotCommands {
     }
 
     public void fondleBalls(String teamColor) {
-        if ((teamColor.equals("blue") && isBlue()) || (teamColor.equals("red") && isRed())) {
-            myRobot.fondler.setPosition(RevbotValues.FONDLER_RIGHT_VALUE);
-        } else if ((teamColor.equals("blue") && isRed()) || (teamColor.equals("red") && isBlue())) {
-            myRobot.fondler.setPosition(RevbotValues.FONDLER_LEFT_VALUE);
-        } else {
-            myRobot.beep();
-            myRobot.beep();
-            myRobot.beep();
-        }
 
         myOpMode.telemetry.addData("isRed", myRobot.color.red());
         myOpMode.telemetry.addData("isGreen", myRobot.color.green());
         myOpMode.telemetry.addData("isBlue", myRobot.color.blue());
         myOpMode.telemetry.update();
+
+        if ((teamColor.equals("blue") && isBlue()) || (teamColor.equals("red") && isRed())) {
+            fondleRight();
+        } else if ((teamColor.equals("blue") && isRed()) || (teamColor.equals("red") && isBlue())) {
+            fondleLeft();
+        } else {
+            fondleRight();
+            fondleLeft();
+        }
 
         myOpMode.sleep(1000);
 
@@ -95,14 +95,14 @@ public class RevbotCommands {
 
     public void raiseWinch() {
         myRobot.spacerArmCR.setPower(RevbotValues.CR_FORWARDS_VALUE);
-        myOpMode.sleep(4000);
-        myRobot.spacerArmCR.setPower(0);
+        myOpMode.sleep(4250);
+        myRobot.spacerArmCR.setPower(RevbotValues.CR_STOP_VALUE);
     }
 
     public void lowerWinch() {
         myRobot.spacerArmCR.setPower(RevbotValues.CR_BACKWARDS_VALUE);
-        myOpMode.sleep(4000);
-        myRobot.spacerArmCR.setPower(0);
+        myOpMode.sleep(4250);
+        myRobot.spacerArmCR.setPower(RevbotValues.CR_STOP_VALUE);
     }
 
 
@@ -189,6 +189,13 @@ public class RevbotCommands {
     public void turnRight(long ms, double power) {
         turnLeft(ms, -power);
     }
+
+
+    //-----------------------------------------------------------------------
+    // Cube Lift methods
+
+
+
 
     //-----------------------------------------------------------------------
     // Vuforia methods

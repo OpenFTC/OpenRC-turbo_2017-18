@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
- mCZ';. '
 import org.firstinspires.ftc.teamcode.robot.RevbotCommands;
 import org.firstinspires.ftc.teamcode.robot.Revbot;
 
@@ -31,17 +30,16 @@ public class AutoBase extends LinearOpMode {
 
         robot.init(this);
         auto.init(this, robot);
-        auto.initVuforia();
+        auto.closeClaw();
         auto.initFondler();
         auto.initDrive();
         auto.initStrafe();
         auto.lowerWinch();
-        auto.closeClaw();
         robot.beep();
         telemetry.addData("Status: ", "Initialized");
         telemetry.update();
 
-        robot.cubeLift.setPower(0.5);
+        robot.cubeLift.setPower(0.25);
         sleep(500);
         robot.cubeLift.setPower(0);
 
