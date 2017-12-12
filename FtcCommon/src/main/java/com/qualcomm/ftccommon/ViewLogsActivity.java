@@ -42,7 +42,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -81,7 +80,7 @@ public class ViewLogsActivity extends ThemedActivity {
         setContentView(R.layout.activity_view_logs);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        boolean wrapLines = sharedPreferences.getBoolean(getString(R.string.pref_line_wrap_log), false);
+        boolean wrapLines = sharedPreferences.getBoolean(getString(R.string.pref_line_wrap_log_key), false);
 
 
         LinearLayout rootLayout = (LinearLayout) findViewById(R.id.viewLogsActivityLinearLayout);

@@ -1,10 +1,19 @@
 dependencies {
-    compile project(':RobotCore')
-    compile project(':Inspection')
-    compile project(':Blocks')
-    compile project(':Hardware')
-    compile project(':FtcCommon')
-    compile(name: 'Analytics-release', ext: 'aar')
-    compile(name: 'WirelessP2p-release', ext: 'aar')
-    compile project(':OpenFTC')
+    implementation(name: 'Analytics-release', ext: 'aar')
+    implementation(name: 'WirelessP2p-release', ext: 'aar')
+
+    // In FtcRobotControllerActivity, we access OpenFTC stuff behind checks
+    openftcImplementation project(':RobotCore')
+
+    implementation project(':OpenFTC')
+    openftcImplementation project(':Inspection')
+    openftcImplementation project(':Blocks')
+    openftcImplementation project(':Hardware')
+    openftcImplementation project(':FtcCommon')
+
+    stockImplementation(name: 'Inspection-release', ext: 'aar')
+    stockImplementation(name: 'Blocks-release', ext: 'aar')
+    stockImplementation(name: 'RobotCore-release', ext: 'aar')
+    stockImplementation(name: 'Hardware-release', ext: 'aar')
+    stockImplementation(name: 'FtcCommon-release', ext: 'aar')
 }
