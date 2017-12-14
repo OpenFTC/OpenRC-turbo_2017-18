@@ -68,6 +68,25 @@ public class InstantRunDexHelper {
             return classNames;
         }
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            String[] apkFiles = applicationInfo.splitSourceDirs;
+            if (apkFiles != null) {
+                for (String path : apkFiles) {
+                    try {
+                        DexFile dexFile = new DexFile(path);
+                        try {
+                            classNames.addAll(Collections.list(dexFile.entries()));
+                        } finally {
+                            dexFile.close();
+                        }
+                    } catch (IOException e) {
+                        RobotLog.ee(TAG, e,"Error accessing apk file: " + path + ", IOException: " + e.toString());
+                    }
+                }
+            }
+        }
+
+
         File[] instantRunDexes = new File(applicationInfo.dataDir, INSTANT_RUN_LOCATION).listFiles();
         if (instantRunDexes != null) {
             for (File f : instantRunDexes) {
