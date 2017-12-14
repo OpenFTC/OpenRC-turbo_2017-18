@@ -1,9 +1,10 @@
 # OpenFTC-app is to be used at your own risk. 
-#### While every change is made with care not to break anything, FIRST has not tested our modifications. Volunteers at competitions may be less willing to assist you if you use OpenFTC. Our community is very helpful though, so please create an issue or talk to us on Discord if you encounter any problems.
+##### While every change is made with care not to break anything, FIRST has NOT tested our modifications.
+##### Volunteers at competitions may be less willing to assist you if you use OpenFTC. Our community is very helpful though, so please create an issue or talk to us on Discord if you encounter any problems.
 
 [Sign up for our mailing list](https://goo.gl/forms/xFBIx0Ptk3Br7ZOD2) for notifications about updates and upcoming new projects. 
 
-[Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions.
+[Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions: [![Discord](https://img.shields.io/discord/377144270034829324.svg?style=for-the-badge)](https://discord.gg/ameFTnC)
 
 OpenFTC-app is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
@@ -11,7 +12,8 @@ The OpenFTC documentation is still under construction.
 
 ---
 
-The OpenFTC family of Robot Controller apps provide teams a new way to use the [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit). Since the AAR files have been converted to modules in the Android Studio project, it's easy to see and modify almost the entirety of the SDK's source code. In addition, the history in Git shows all changes that have been made to the core code since OpenFTC's inception. This is a very useful supplement to the changelogs that FIRST provides - teams can see exactly what code has been changed and how it will affect them.
+The OpenFTC family of Robot Controller apps are based on the official
+[FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit), but the AAR files it uses have been converted to modules in the Android Studio project. This makes it easy to see and modify almost the entirety of the SDK's source code. In addition, the history in Git shows all changes that have been made to the core code since OpenFTC's inception. This is a very useful supplement to the changelogs that FIRST provides - teams can see exactly what code has been changed and how it will affect them.
 
 This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the structure and functionality of the whole system. Most enhancements will likely be accepted as long as they _do not force teams to change their workflow._ Changes made in the OpenFTC SDK should allow teams to move from the official SDK to OpenFTC-app with no code changes required.
 
@@ -78,9 +80,3 @@ Documentation for the FTC SDK is also included with this repository.  There is a
 For technical questions regarding the SDK, please visit the FTC Technology forum:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology
-
-
-**************************************************************************************
-# Release Information
-**************************************************************************************
-
