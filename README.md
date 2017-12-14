@@ -1,10 +1,12 @@
-# OpenFTC-app is to be used at your own risk. 
+[![Discord](https://img.shields.io/discord/377144270034829324.svg?style=for-the-badge)](https://discord.gg/ameFTnC)
+
+# OpenFTC-app is to be used at your own risk.
 ##### While every change is made with care not to break anything, FIRST has NOT tested our modifications.
 ##### Volunteers at competitions may be less willing to assist you if you use OpenFTC. Our community is very helpful though, so please create an issue or talk to us on Discord if you encounter any problems.
 
 [Sign up for our mailing list](https://goo.gl/forms/xFBIx0Ptk3Br7ZOD2) for notifications about updates and upcoming new projects. 
 
-[Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions: [![Discord](https://img.shields.io/discord/377144270034829324.svg?style=for-the-badge)](https://discord.gg/ameFTnC)
+[Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions: [![Discord](https://img.shields.io/discord/377144270034829324.svg)](https://discord.gg/ameFTnC)
 
 OpenFTC-app is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
