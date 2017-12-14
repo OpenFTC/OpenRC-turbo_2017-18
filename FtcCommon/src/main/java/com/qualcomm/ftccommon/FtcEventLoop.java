@@ -120,8 +120,8 @@ public class FtcEventLoop extends FtcEventLoopBase {
     // Construction
     //------------------------------------------------------------------------------------------------
 
-    public FtcEventLoop(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext) { //modified for turbo: removed programmingModeController parameter
-        super(hardwareFactory, userOpmodeRegister, callback, activityContext); //modified for turbo: removed programmingModeController parameter
+    public FtcEventLoop(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext, ProgrammingModeController programmingModeController) {
+        super(hardwareFactory, userOpmodeRegister, callback, activityContext, programmingModeController);
         this.opModeManager = createOpModeManager(activityContext);
         this.usbModuleAttachmentHandler = new DefaultUsbModuleAttachmentHandler();
         this.recentlyAttachedUsbDevices = new ConcurrentHashMap<String, Long>();

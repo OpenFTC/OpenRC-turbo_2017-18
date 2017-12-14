@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
 public class FtcEventLoopIdle extends FtcEventLoopBase {
     public static final String TAG = "FtcEventLoopIdle";
 
-    public FtcEventLoopIdle(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext) //modified for turbo: remmove programming mode controller parameter
+    public FtcEventLoopIdle(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext, ProgrammingModeController programmingModeController)
     {
-        super(hardwareFactory, userOpmodeRegister, callback, activityContext);
+        super(hardwareFactory, userOpmodeRegister, callback, activityContext, programmingModeController);
     }
 
     @Override

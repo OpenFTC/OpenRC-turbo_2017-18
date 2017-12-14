@@ -34,7 +34,9 @@ package com.qualcomm.ftccommon;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -57,6 +59,9 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
             // Load the settings from an XML resource
             addPreferencesFromResource(R.xml.app_settings);
 
+            // Modified for OpenFTC: Add a preference for Line Wrap
+            addLineWrapPref();
+
             Preference prefViewLogs = findPreference(getString(R.string.pref_launch_viewlogs));
             prefViewLogs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -78,6 +83,19 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
                     getActivity().setResult(RESULT_OK, intent);
                 }
             }
+        }
+
+        private void addLineWrapPref() {
+            String lwPreferenceKey = getString(R.string.pref_line_wrap_log_key);
+            String logCategoryKey = getString(R.string.prefcat_logging_key);
+            PreferenceCategory logCategory = (PreferenceCategory) findPreference(logCategoryKey);
+            SwitchPreference lwPreference = new SwitchPreference(getActivity());
+            lwPreference.setTitle(R.string.pref_line_wrap_log_title);
+            lwPreference.setSummary(R.string.pref_line_wrap_log_summary);
+            lwPreference.setKey(lwPreferenceKey);
+            lwPreference.setDefaultValue(false);
+            lwPreference.setOrder(0);
+            logCategory.addPreference(lwPreference);
         }
     }
 

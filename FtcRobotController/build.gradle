@@ -10,6 +10,20 @@ android {
         targetSdkVersion 19
     }
 
+    flavorDimensions 'type'
+    productFlavors {
+        openftc {
+            dimension 'type'
+            buildConfigField 'boolean', 'IS_OPENFTC', 'true'
+            buildConfigField 'boolean', 'IS_TURBO', 'true'
+        }
+        stock {
+            dimension 'type'
+            buildConfigField 'boolean', 'IS_OPENFTC', 'false'
+            buildConfigField 'boolean', 'IS_TURBO', 'false'
+        }
+    }
+
     compileSdkVersion 23
 
     compileOptions {

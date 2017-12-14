@@ -68,6 +68,8 @@ import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterRC;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
+import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
+import org.openftc.turbo.TurboException;
 // modified for turbo: remove webserver import
 
 import java.util.List;
@@ -107,6 +109,11 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     private Future robotSetupFuture = null;
     private WifiDirectAgent wifiDirectAgent = WifiDirectAgent.getInstance();
     private final Object wifiDirectCallbackLock = new Object();
+
+    // Modified for turbo: This method is a dummy.
+    public WebServer getWebServer() {
+        throw new TurboException();
+    }
 
     // modified for turbo: removed webserver var declaration
 
