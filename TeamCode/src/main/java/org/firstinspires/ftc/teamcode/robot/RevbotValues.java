@@ -44,4 +44,11 @@ public class RevbotValues {
 
     public static final double TARGET_DISTANCE = 400.0; // distance away from the target that the robot should end up, in mm
 
+    public static final String DIRECTION_LEFT = "left";
+    public static final String DIRECTION_RIGHT = "right";
+    public static final String DIRECTION_FORWARD = "forward";
+    public static final String DIRECTION_BACKWARD = "backward";
+    public static final String COLOR_RED = "red";
+    public static final String COLOR_BLUE = "blue";
+
 }

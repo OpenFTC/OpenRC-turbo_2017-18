@@ -1,13 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created by 3565 on 12/8/2017.
@@ -18,9 +11,6 @@ public class RevbotCommands {
 
     private LinearOpMode myOpMode;
     private Revbot myRobot;
-    ElapsedTime elapsedTime = new ElapsedTime();
-    VuforiaLocalizer vuforia;
-    VuforiaTrackable relicTemplate;
 
     public RevbotCommands() {
 
@@ -49,7 +39,7 @@ public class RevbotCommands {
     //-----------------------------------------------------------------------
     // Fondler methods
 
-    public void initFondler() {
+    public void fondleCenter() {
         myRobot.fondler.setPosition(RevbotValues.FONDLER_CENTER_VALUE);
     }
 
@@ -69,49 +59,9 @@ public class RevbotCommands {
         return ((myRobot.color.red() > myRobot.color.blue()));
     }
 
-    public void fondleBalls(String teamColor) {
-
-        myOpMode.telemetry.addData("isRed", myRobot.color.red());
-        myOpMode.telemetry.addData("isGreen", myRobot.color.green());
-        myOpMode.telemetry.addData("isBlue", myRobot.color.blue());
-        myOpMode.telemetry.update();
-
-        if ((teamColor.equals("blue") && isBlue()) || (teamColor.equals("red") && isRed())) {
-            fondleRight();
-        } else if ((teamColor.equals("blue") && isRed()) || (teamColor.equals("red") && isBlue())) {
-            fondleLeft();
-        } else {
-            fondleRight();
-            fondleLeft();
-        }
-
-        myOpMode.sleep(1000);
-
-    }
-
-
-    //-----------------------------------------------------------------------
-    // Winch methods
-
-    public void raiseWinch() {
-        myRobot.spacerArmCR.setPower(RevbotValues.CR_FORWARDS_VALUE);
-        myOpMode.sleep(4250);
-        myRobot.spacerArmCR.setPower(RevbotValues.CR_STOP_VALUE);
-    }
-
-    public void lowerWinch() {
-        myRobot.spacerArmCR.setPower(RevbotValues.CR_BACKWARDS_VALUE);
-        myOpMode.sleep(4250);
-        myRobot.spacerArmCR.setPower(RevbotValues.CR_STOP_VALUE);
-    }
-
 
     //-----------------------------------------------------------------------
     // Strafe methods
-
-    public void initStrafe() {
-        myRobot.strafeDrive.setPower(0);
-    }
 
     public void strafeLeft(double power) {
         myRobot.strafeDrive.setPower(power);
@@ -122,24 +72,14 @@ public class RevbotCommands {
     }
 
     public void stopStrafing() {
-        initStrafe();
-    }
-
-    public void strafeLeft(long ms, double power) {
-        strafeLeft(power);
-        myOpMode.sleep(ms);
-        stopStrafing();
-    }
-
-    public void strafeRight(long ms, double power){
-        strafeLeft(ms, -power);
+        myRobot.strafeDrive.setPower(0);
     }
 
 
     //-----------------------------------------------------------------------
     // Movement methods
 
-    public void initDrive() {
+    public void stopDriving() {
         myRobot.leftDrive.setPower(0);
         myRobot.rightDrive.setPower(0);
     }
@@ -151,20 +91,6 @@ public class RevbotCommands {
 
     public void backward(double power) {
         forward(-power);
-    }
-
-    public void stopDriving() {
-        initDrive();
-    }
-
-    public void forward(long ms, double power) {
-        forward(power);
-        myOpMode.sleep(ms);
-        stopDriving();
-    }
-
-    public void backward(long ms, double power){
-        forward(ms, -power);
     }
 
 
@@ -180,49 +106,35 @@ public class RevbotCommands {
         turnLeft(-power);
     }
 
-    public void turnLeft(long ms, double power) {
-        turnLeft(power);
-        myOpMode.sleep(ms);
-        stopDriving();
-    }
-
-    public void turnRight(long ms, double power) {
-        turnLeft(ms, -power);
-    }
-
-
     //-----------------------------------------------------------------------
     // Cube Lift methods
 
+    public void raiseLift(double power) {
+        myRobot.cubeLift.setPower(power);
+    }
 
+    public void lowerLift(double power) {
+        raiseLift(-power);
+    }
+
+    public void stopLift() {
+        myRobot.cubeLift.setPower(0);
+    }
 
 
     //-----------------------------------------------------------------------
-    // Vuforia methods
+    // Winch methods
 
-    public void initVuforia() {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = RevbotValues.VUFORIA_LICENSE_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        this.relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
-
-        myOpMode.telemetry.addData("VuforiaOld", "Initialized");
+    public void raiseWinch() {
+        myRobot.spacerArmCR.setPower(RevbotValues.CR_FORWARDS_VALUE);
     }
 
-    public String readImage() {
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            myOpMode.telemetry.addData("VuMark", "%s visible",vuMark);
-            return vuMark.name();
-        } else {
-            myOpMode.telemetry.addData("VuMark", "not found");
-            return "[B]roke";
-        }
+    public void lowerWinch() {
+        myRobot.spacerArmCR.setPower(RevbotValues.CR_BACKWARDS_VALUE);
+    }
+
+    public void stopWinch() {
+        myRobot.spacerArmCR.setPower(0);
     }
 
 }

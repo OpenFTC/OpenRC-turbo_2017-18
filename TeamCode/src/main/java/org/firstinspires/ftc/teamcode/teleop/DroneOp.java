@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Revbot;
-import org.firstinspires.ftc.teamcode.robot.TeleOpGamepad;
+import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
 
 /**
  * Drone Op Teleop code. Main teleop class.
@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.robot.TeleOpGamepad;
 public class DroneOp extends LinearOpMode {
 
     private Revbot robot = new Revbot();
-    private TeleOpGamepad teleOp = new TeleOpGamepad();
+    private TeleOpCommands teleOp = new TeleOpCommands();
 
     // Declare power variables
     private double leftPower;
@@ -52,7 +52,7 @@ public class DroneOp extends LinearOpMode {
     private double[] directSave = new double[3];
 
     // Strength/weight of hyperPrecision variable
-    private static final double HP_STRENGTH = 4;
+    private static final double HP_STRENGTH = 3;
 
     // Other constants used
     private static final double MIN_DIRECTSAVE_VALUE = 0.1;
@@ -144,7 +144,7 @@ public class DroneOp extends LinearOpMode {
 
             }
 
-            teleOp.pollInput(false);
+            teleOp.pollAllButtons();
 
             telemetry.addData("OpMode Status", "Running");
             telemetry.addData("Hyper Precision: ", hyperPrecision);
