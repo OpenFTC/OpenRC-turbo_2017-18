@@ -9,8 +9,8 @@
 
     <application
         android:allowBackup="true"
-        android:largeHeap="true"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/AppThemeRedRC">
 
         <!-- The main robot controller activity -->
@@ -19,19 +19,6 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask">
-
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter"/>
         </activity>
 
         <!-- The robot controller service in which most of the robot functionality is managed -->
@@ -39,6 +26,24 @@
             android:name="com.qualcomm.ftccommon.FtcRobotControllerService"
             android:enabled="true"/>
 
+        <activity
+            android:name="org.firstinspires.ftc.robotcontroller.internal.SplashActivity"
+            android:theme="@style/SplashTheme">
+
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter"/>
+
+        </activity>
     </application>
 
 </manifest>
