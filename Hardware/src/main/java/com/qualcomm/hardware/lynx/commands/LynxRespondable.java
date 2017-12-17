@@ -212,8 +212,9 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         try {
             try {
                 this.module.sendCommand(this);
-                RobotLog.d("Sending command.");
-                logSerializationStatus(); //At this point, this command should have its serialization set.
+//              Modified for OpenFTC
+//              RobotLog.d("Sending command.");
+//              logSerializationStatus(); //At this point, this command should have its serialization set.
             } catch (LynxUnsupportedCommandNumberException e) {
                 // The module doesn't actually support this command, as it has an older sense of some interface.
                 // Act like we got a nack from the module
