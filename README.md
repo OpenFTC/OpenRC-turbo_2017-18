@@ -6,7 +6,8 @@
 
 [Sign up for our mailing list](https://goo.gl/forms/xFBIx0Ptk3Br7ZOD2) for notifications about updates and upcoming new projects. 
 
-[Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions: [![Discord](https://img.shields.io/discord/377144270034829324.svg)](https://discord.gg/ameFTnC)
+[Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions.
+
 
 OpenFTC-app is currently based on version 3.5 of the SDK. Do not attempt to manually update beyond that yourself. OpenFTC will be updated within a week of new official app releases.
 
