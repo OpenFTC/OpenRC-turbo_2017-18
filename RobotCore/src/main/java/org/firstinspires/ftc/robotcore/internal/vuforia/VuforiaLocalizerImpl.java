@@ -166,13 +166,15 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected CubeMeshProgram cubeMeshProgram = null;
     protected SimpleColorProgram simpleColorProgram = null;
     protected List<Texture> textures = null;
-    protected Texture teapotTexture = null;
-    protected Teapot teapot = null;
-    protected float teapotScale = 3.0f;
+    // Modified for Turbo - removed extraneous assets
+//    protected Texture teapotTexture = null;
+//    protected Teapot teapot = null;
+//    protected float teapotScale = 3.0f;
     protected CoordinateAxes coordinateAxes = new CoordinateAxes();
-    protected Texture buildingsTexture = null;
-    protected SavedMeshObject buildingsModel = null;
-    protected float buildingsScale = 12.0f;
+    // Modified for Turbo - removed extraneous assets
+//    protected Texture buildingsTexture = null;
+//    protected SavedMeshObject buildingsModel = null;
+//    protected float buildingsScale = 12.0f;
     protected final Object updateCallbackLock = new Object();
     protected final List<VuforiaTrackablesImpl> loadedTrackableSets = new LinkedList<VuforiaTrackablesImpl>();
     protected boolean isExtendedTrackingActive = false;
@@ -206,7 +208,8 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             setMonitorViewParent(parameters.cameraMonitorViewIdParent);
         }
         makeLoadingIndicator();
-        loadTextures();
+        /// Modified for Turbo - removed extraneous assets
+        //loadTextures();
         startAR();
     }
 
@@ -755,7 +758,8 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         cubeMeshProgram = new CubeMeshProgram(this.activity);
         simpleColorProgram = new SimpleColorProgram(this.activity);
 
-        if (teapotRequired()) {
+        // Modified for Turbo - removed extraneous assets
+        /*if (teapotRequired()) {
             teapot = new Teapot();
         }
 
@@ -766,7 +770,7 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             } catch (IOException e) {
                 throwFailure(e);
             }
-        }
+        }*/
     }
 
     protected boolean buildingsRequired() {
@@ -781,13 +785,14 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     // Rendering
     //----------------------------------------------------------------------------------------------
 
-    protected void loadTextures() {
+    // Modified for Turbo - removed extraneous assets
+    /*protected void loadTextures() {
         this.buildingsTexture = Texture.loadTextureFromApk("Buildings.jpeg", this.activity.getAssets());
         this.teapotTexture = Texture.loadTextureFromApk("TextureTeapotBrass.png", this.activity.getAssets());
         this.textures = new LinkedList<Texture>();
         this.textures.add(buildingsTexture);
         this.textures.add(teapotTexture);
-    }
+    }*/
 
     protected class GLSurfaceViewRenderer implements GLSurfaceView.Renderer {
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -848,10 +853,12 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
                     case NONE:
                         break;
                     case BUILDINGS:
-                        drawBuildings(poseMatrix);
+                        // Modified for Turbo - removed extraneous assets
+                        //drawBuildings(poseMatrix);
                         break;
                     case TEAPOT:
-                        drawTeapot(poseMatrix);
+                        // Modified for Turbo - removed extraneous assets
+                        //drawTeapot(poseMatrix);
                         break;
                     case AXES:
                         drawAxes(poseMatrix);
@@ -915,7 +922,8 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }
     }
 
-    protected void drawTeapot(float[] poseMatrix) {
+    // Modified for Turbo - removed extraneous assets
+    /*protected void drawTeapot(float[] poseMatrix) {
         Assert.assertTrue(teapotRequired());
 
         // Rotate / scale / position the teapot
@@ -955,7 +963,7 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, buildingsModel.getNumObjectVertex());
 
         cubeMeshProgram.vertex.disableAttributes();
-    }
+    }*/
 
     //----------------------------------------------------------------------------------------------
     // Frame Queue management
