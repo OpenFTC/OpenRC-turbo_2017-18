@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 
 import com.cyanogenmod.updater.utils.MD5;
@@ -51,9 +52,9 @@ public class SplashActivity extends Activity
 
     private boolean shouldProceedWithRcLaunch()
     {
-        libInProtectedStorage = new File("/data/data/com.qualcomm.ftcrobotcontroller/extra/libVuforiaReal.so");
-        protectedExtraFolder = new File("/data/data/com.qualcomm.ftcrobotcontroller/extra/");
-        libOnSdcard = new File("/sdcard/FIRST/libVuforia.so");
+        libInProtectedStorage = new File(getFilesDir() + "extra/libVuforiaReal.so");
+        protectedExtraFolder = new File(getFilesDir() + "extra/");
+        libOnSdcard = new File(Environment.getExternalStorageDirectory() + "FIRST/libVuforia.so");
 
         /*
          * First, check to see if it exists in the protected storage.
