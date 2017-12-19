@@ -744,8 +744,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected void initRendering() {
         this.renderer = Renderer.getInstance();
 
+        // Modified for Turbo - removed extraneous assets
         // Specify the red, green, blue, and alpha values used when the color buffers are cleared
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
+        /*GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
 
         for (Texture t : textures) {
             GLES20.glGenTextures(1, t.mTextureID, 0);
@@ -753,12 +754,11 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, t.mWidth, t.mHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, t.mData);
-        }
+        }*/
 
         cubeMeshProgram = new CubeMeshProgram(this.activity);
         simpleColorProgram = new SimpleColorProgram(this.activity);
 
-        // Modified for Turbo - removed extraneous assets
         /*if (teapotRequired()) {
             teapot = new Teapot();
         }
