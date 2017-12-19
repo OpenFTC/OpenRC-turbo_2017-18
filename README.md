@@ -40,8 +40,8 @@ To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGE
 * Added the OpenFTC version to the main screen
 * Added "About OpenFTC" button to the about screen
 * Allowed Gradle to use more RAM (up to 2GB) for faster build times
-### Turbo-specific changes
-*Initial Turbo release that removes the Blocks and OnBotJava features
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turbo-specific changes
+* Initial Turbo release that removes the Blocks and OnBotJava features
 
 
 ## Welcome!
