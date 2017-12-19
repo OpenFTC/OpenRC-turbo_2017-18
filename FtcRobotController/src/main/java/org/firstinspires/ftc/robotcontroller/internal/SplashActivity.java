@@ -6,9 +6,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.cyanogenmod.updater.utils.MD5;
+
+import org.openftc.exceptions.VuforiaCurruptedException;
+import org.openftc.exceptions.VuforiaNotFoundOnSdcardException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,13 +38,18 @@ public class SplashActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 
-        if(shouldProceedWithRcLaunch())
+        try
         {
+            /*
+             * Attempt to set up the Vuforai library for loading in
+             * the next statement
+             */
+            setupVuforiaFilesForLaunch();
+
             /*
              * We've been given the go-ahead! Load up libVuforiaReal.so
              */
             System.load(libInProtectedStorage.getAbsolutePath());
-            Log.e("lib", "loaded!");
 
             /*
              * Start loading the main activity. After it's loaded, close
@@ -48,87 +59,95 @@ public class SplashActivity extends Activity
             startActivity(intent);
             finish();
         }
+        catch (VuforiaNotFoundOnSdcardException e)
+        {
+            e.printStackTrace();
+            showLibNotOnSdcardDialog();
+        }
+        catch (VuforiaCurruptedException e)
+        {
+            e.printStackTrace();
+            showLibCorruptedDialog();
+        }
     }
 
-    private boolean shouldProceedWithRcLaunch()
+    private void setupVuforiaFilesForLaunch() throws VuforiaNotFoundOnSdcardException, VuforiaCurruptedException
     {
-        libInProtectedStorage = new File(getFilesDir() + "extra/libVuforiaReal.so");
-        protectedExtraFolder = new File(getFilesDir() + "extra/");
-        libOnSdcard = new File(Environment.getExternalStorageDirectory() + "FIRST/libVuforia.so");
+        libInProtectedStorage = new File(getFilesDir() + "/extra/libVuforiaReal.so");
+        protectedExtraFolder = new File(getFilesDir() + "/extra/");
+        libOnSdcard = new File(Environment.getExternalStorageDirectory() + "/FIRST/libVuforia.so");
 
         /*
          * First, check to see if it exists in the protected storage.
          * No need to check the MD5 hash since it would be have been
          * checked prior to being copied in here
          */
-        if(libInProtectedStorage.exists())
-        {
-            return true;
-        }
-
-        /*
-         * Ok, so it's not in the protected storage. Check if it exists
-         * in the FIRST folder on the SDcard
-         */
-        if(libOnSdcard.exists())
+        if(!libInProtectedStorage.exists())
         {
             /*
-             * Yup, it exists, but we need to verify the integrity of the file
-             * with the MD5 hash before we copy it, otherwise bad things might
-             * happen when we try to load a corrupted lib...
+             * Ok, so it's not in the protected storage. Check if it exists
+             * in the FIRST folder on the SDcard
              */
-            if(MD5.checkMD5("0f79da7f3a0c10c68978f823e02bffdf", libOnSdcard))
+            if(libOnSdcard.exists())
             {
                 /*
-                 * Alright, everything checks out, so copy it to the protected
-                 * storage and continue with the app launch!
+                 * Yup, it exists, but we need to verify the integrity of the file
+                 * with the MD5 hash before we copy it, otherwise bad things might
+                 * happen when we try to load a corrupted lib...
                  */
-                copyLibFromSdcardToProtectedStorage();
-                return true;
+                if(MD5.checkMD5("0f79da7f3a0c10c68978f823e02bffdf", libOnSdcard))
+                {
+                    /*
+                     * Alright, everything checks out, so copy it to the protected
+                     * storage and continue with the app launch!
+                     */
+                    copyLibFromSdcardToProtectedStorage();
+                }
+                else
+                {
+                    /*
+                     * Oooh, not good - it's corrupted.
+                     * Show the user a dialog explaining the situation
+                     */
+                    throw new VuforiaCurruptedException();
+                }
             }
             else
             {
                 /*
-                 * Oooh, not good - it's corrupted.
+                 * Welp, it doesn't exist on the SDcard either :(
                  * Show the user a dialog explaining the situation
                  */
-                showLibCorruptedDialog();
+                throw new VuforiaNotFoundOnSdcardException();
             }
         }
-        else
-        {
-            /*
-             * Welp, it doesn't exist on the SDcard either :(
-             * Show the user a dialog explaining the situation
-             */
-            showLibNotOnSdcardDialog();
-        }
-
-        return false;
     }
 
     private void showLibNotOnSdcardDialog()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("libVuforia.so not found!");
-        builder.setMessage("Please copy it to the FIRST folder on the root of the sdcard.");
-        builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        String msg = "Please copy it to the FIRST folder on the root of the sdcard.<br><br><a href='https://github.com/OpenFTC/OpenFTC-app-turbo/raw/develop/doc/libVuforia.so'>You can find it in the 'doc' folder of the repository.</a>";
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+        .setTitle("libVuforia.so not found!")
+        .setMessage(Html.fromHtml(msg))
+        .setCancelable(false)
+        .setPositiveButton("OK", new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 finish();
             }
-        });
-        builder.show();
+        }).create();
+        dialog.show();
+        ((TextView)dialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void showLibCorruptedDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("libVuforia.so corrupted!");
-        builder.setMessage("libVuforia.so is present in the FIRST folder on the SDcard, however, the MD5 sum does not match what is expected.");
+        builder.setMessage("libVuforia.so is present in the FIRST folder on the SDcard, however, the MD5 checksum does not match what is expected.");
         builder.setCancelable(false);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener()
         {
