@@ -121,7 +121,7 @@ public class SplashActivity extends Activity
     {
         String msg = "Please copy it to the FIRST folder on the phone's storage.<br><br>" +
 
-                "<a href='https://github.com/OpenFTC/OpenFTC-app-turbo/raw/develop/doc/libVuforia.so'>" +
+                "<a href='https://github.com/OpenFTC/OpenFTC-app-turbo/blob/5b706b920252ed810038849e4c52c7c5c89e56ef/doc/libVuforia.so?raw=true'>" +
                 "You can find libVuforia.so in the 'doc' folder of the OpenFTC repository</a>.<br><br>" +
 
                 "You can copy it from your laptop, or download it to your phone from the above link " +
