@@ -166,13 +166,15 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected CubeMeshProgram cubeMeshProgram = null;
     protected SimpleColorProgram simpleColorProgram = null;
     protected List<Texture> textures = null;
-    protected Texture teapotTexture = null;
-    protected Teapot teapot = null;
-    protected float teapotScale = 3.0f;
+    // Modified for Turbo - removed extraneous assets
+//    protected Texture teapotTexture = null;
+//    protected Teapot teapot = null;
+//    protected float teapotScale = 3.0f;
     protected CoordinateAxes coordinateAxes = new CoordinateAxes();
-    protected Texture buildingsTexture = null;
-    protected SavedMeshObject buildingsModel = null;
-    protected float buildingsScale = 12.0f;
+    // Modified for Turbo - removed extraneous assets
+//    protected Texture buildingsTexture = null;
+//    protected SavedMeshObject buildingsModel = null;
+//    protected float buildingsScale = 12.0f;
     protected final Object updateCallbackLock = new Object();
     protected final List<VuforiaTrackablesImpl> loadedTrackableSets = new LinkedList<VuforiaTrackablesImpl>();
     protected boolean isExtendedTrackingActive = false;
@@ -206,7 +208,8 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             setMonitorViewParent(parameters.cameraMonitorViewIdParent);
         }
         makeLoadingIndicator();
-        loadTextures();
+        /// Modified for Turbo - removed extraneous assets
+        //loadTextures();
         startAR();
     }
 
@@ -741,8 +744,9 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected void initRendering() {
         this.renderer = Renderer.getInstance();
 
+        // Modified for Turbo - removed extraneous assets
         // Specify the red, green, blue, and alpha values used when the color buffers are cleared
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
+        /*GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
 
         for (Texture t : textures) {
             GLES20.glGenTextures(1, t.mTextureID, 0);
@@ -750,12 +754,12 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, t.mWidth, t.mHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, t.mData);
-        }
+        }*/
 
         cubeMeshProgram = new CubeMeshProgram(this.activity);
         simpleColorProgram = new SimpleColorProgram(this.activity);
 
-        if (teapotRequired()) {
+        /*if (teapotRequired()) {
             teapot = new Teapot();
         }
 
@@ -766,7 +770,7 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
             } catch (IOException e) {
                 throwFailure(e);
             }
-        }
+        }*/
     }
 
     protected boolean buildingsRequired() {
@@ -781,13 +785,14 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     // Rendering
     //----------------------------------------------------------------------------------------------
 
-    protected void loadTextures() {
+    // Modified for Turbo - removed extraneous assets
+    /*protected void loadTextures() {
         this.buildingsTexture = Texture.loadTextureFromApk("Buildings.jpeg", this.activity.getAssets());
         this.teapotTexture = Texture.loadTextureFromApk("TextureTeapotBrass.png", this.activity.getAssets());
         this.textures = new LinkedList<Texture>();
         this.textures.add(buildingsTexture);
         this.textures.add(teapotTexture);
-    }
+    }*/
 
     protected class GLSurfaceViewRenderer implements GLSurfaceView.Renderer {
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -856,10 +861,12 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
                     case NONE:
                         break;
                     case BUILDINGS:
-                        drawBuildings(poseMatrix);
+                        // Modified for Turbo - removed extraneous assets
+                        //drawBuildings(poseMatrix);
                         break;
                     case TEAPOT:
-                        drawTeapot(poseMatrix);
+                        // Modified for Turbo - removed extraneous assets
+                        //drawTeapot(poseMatrix);
                         break;
                     case AXES:
                         drawAxes(poseMatrix);
@@ -926,7 +933,8 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }
     }
 
-    protected void drawTeapot(float[] poseMatrix) {
+    // Modified for Turbo - removed extraneous assets
+    /*protected void drawTeapot(float[] poseMatrix) {
         Assert.assertTrue(teapotRequired());
 
         // Rotate / scale / position the teapot
@@ -966,7 +974,7 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, buildingsModel.getNumObjectVertex());
 
         cubeMeshProgram.vertex.disableAttributes();
-    }
+    }*/
 
     //----------------------------------------------------------------------------------------------
     // Frame Queue management
