@@ -10,7 +10,7 @@ function fetchProjects(callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     fetchProjectsViaBlocksIO(callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     fetchProjectsViaHttp(callback);
   }
@@ -23,7 +23,7 @@ function fetchSamples(callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     fetchSamplesViaBlocksIO(callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     fetchSamplesViaHttp(callback);
   }
@@ -36,7 +36,7 @@ function openProjectBlocks(projectName) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     openProjectBlocksViaBlocksIO(projectName);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     openProjectBlocksViaHttp(projectName);
   }
@@ -49,7 +49,7 @@ function fetchBlkFileContent(projectName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     fetchBlkFileContentViaBlocksIO(projectName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     fetchBlkFileContentViaHttp(projectName, callback);
   }
@@ -59,7 +59,7 @@ function newProject(projectName, sampleName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     newProjectViaBlocksIO(projectName, sampleName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     newProjectViaHttp(projectName, sampleName, callback);
   }
@@ -69,7 +69,7 @@ function saveProject(projectName, blkContent, jsFileContent, flavor, group, enab
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     saveProjectViaBlocksIO(projectName, blkContent, jsFileContent, flavor, group, enable, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     saveProjectViaHttp(projectName, blkContent, jsFileContent, flavor, group, enable, callback);
   }
@@ -79,7 +79,7 @@ function renameProject(oldProjectName, newProjectName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     renameProjectViaBlocksIO(oldProjectName, newProjectName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     renameProjectViaHttp(oldProjectName, newProjectName, callback);
   }
@@ -89,7 +89,7 @@ function copyProject(oldProjectName, newProjectName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     copyProjectViaBlocksIO(oldProjectName, newProjectName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     copyProjectViaHttp(oldProjectName, newProjectName, callback);
   }
@@ -99,7 +99,7 @@ function enableProject(oldProjectName, enable, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     enableProjectViaBlocksIO(oldProjectName, enable, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     enableProjectViaHttp(oldProjectName, enable, callback);
   }
@@ -109,7 +109,7 @@ function deleteProjects(starDelimitedProjectNames, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     deleteProjectsViaBlocksIO(starDelimitedProjectNames, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     deleteProjectsViaHttp(starDelimitedProjectNames, callback);
   }

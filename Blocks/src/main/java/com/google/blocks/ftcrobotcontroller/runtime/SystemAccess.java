@@ -12,13 +12,13 @@ import android.webkit.JavascriptInterface;
 class SystemAccess extends Access {
 
     SystemAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "System");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public long nanoTime() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".nanoTime");
         return System.nanoTime();
     }
 }

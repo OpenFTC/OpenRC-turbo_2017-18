@@ -4,8 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 
@@ -17,37 +15,27 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 class VectorFAccess extends Access {
 
     VectorFAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "VectorF");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public int getLength(Object vector) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                return ((VectorF) vector).length();
-            } else {
-                RobotLog.e("VectorF.getLength - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.getLength - caught " + e);
+    public int getLength(Object vectorArg) {
+        startBlockExecution(BlockType.GETTER, ".Length");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            return vector.length();
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getMagnitude(Object vector) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                return ((VectorF) vector).magnitude();
-            } else {
-                RobotLog.e("VectorF.getMagnitude - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.getMagnitude - caught " + e);
+    public float getMagnitude(Object vectorArg) {
+        startBlockExecution(BlockType.GETTER, ".Magnitude");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            return vector.magnitude();
         }
         return 0;
     }
@@ -55,264 +43,165 @@ class VectorFAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public VectorF create(int length) {
-        checkIfStopRequested();
-        try {
-            return VectorF.length(length);
-        } catch (Exception e) {
-            RobotLog.e("VectorF.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return VectorF.length(length);
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float get(Object vector, int index) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                return ((VectorF) vector).get(index);
-            } else {
-                RobotLog.e("VectorF.get - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.get - caught " + e);
+    public float get(Object vectorArg, int index) {
+        startBlockExecution(BlockType.FUNCTION, ".get");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            return vector.get(index);
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void put(Object vector, int index, float value) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                ((VectorF) vector).put(index, value);
-            } else {
-                RobotLog.e("VectorF.put - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.put - caught " + e);
+    public void put(Object vectorArg, int index, float value) {
+        startBlockExecution(BlockType.FUNCTION, ".put");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            vector.put(index, value);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String toText(Object vector) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                return ((VectorF) vector).toString();
-            } else {
-                RobotLog.e("VectorF.toText - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.toText - caught " + e);
+    public String toText(Object vectorArg) {
+        startBlockExecution(BlockType.FUNCTION, ".toText");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            return vector.toString();
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public VectorF normalized3D(Object vector) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                return ((VectorF) vector).normalized3D();
-            } else {
-                RobotLog.e("VectorF.normalized3D - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.normalized3D - caught " + e);
+    public VectorF normalized3D(Object vectorArg) {
+        startBlockExecution(BlockType.FUNCTION, ".normalized3D");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            return vector.normalized3D();
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float dotProduct(Object vector1, Object vector2) {
-        checkIfStopRequested();
-        try {
-            if (vector1 instanceof VectorF) {
-                if (vector2 instanceof VectorF) {
-                    return ((VectorF) vector1).dotProduct((VectorF) vector2);
-                } else {
-                    RobotLog.e("VectorF.dotProduct - vector2 is not a VectorF");
-                }
-            } else {
-                RobotLog.e("VectorF.dotProduct - vector1 is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.dotProduct - caught " + e);
+    public float dotProduct(Object vector1Arg, Object vector2Arg) {
+        startBlockExecution(BlockType.FUNCTION, ".dotProduct");
+        VectorF vector1 = checkArg(vector1Arg, VectorF.class, "vector1");
+        VectorF vector2 = checkArg(vector2Arg, VectorF.class, "vector2");
+        if (vector1 != null && vector2 != null) {
+            return vector1.dotProduct(vector2);
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public MatrixF multiplied(Object vector, Object matrix) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                if (matrix instanceof MatrixF) {
-                    return ((VectorF) vector).multiplied((MatrixF) matrix);
-                } else {
-                    RobotLog.e("VectorF.multiplied - matrix is not a MatrixF");
-                }
-            } else {
-                RobotLog.e("VectorF.multiplied - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.multiplied - caught " + e);
+    public MatrixF multiplied(Object vectorArg, Object matrixArg) {
+        startBlockExecution(BlockType.FUNCTION, ".multiplied");
+        VectorF vector = checkVectorF(vectorArg);
+        MatrixF matrix = checkMatrixF(matrixArg);
+        if (vector != null && matrix != null) {
+            return vector.multiplied(matrix);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public MatrixF added_withMatrix(Object vector, Object matrix) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                if (matrix instanceof MatrixF) {
-                    return ((VectorF) vector).added((MatrixF) matrix);
-                } else {
-                    RobotLog.e("VectorF.added - matrix is not a MatrixF");
-                }
-            } else {
-                RobotLog.e("VectorF.added - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.added - caught " + e);
+    public MatrixF added_withMatrix(Object vectorArg, Object matrixArg) {
+        startBlockExecution(BlockType.FUNCTION, ".added");
+        VectorF vector = checkVectorF(vectorArg);
+        MatrixF matrix = checkMatrixF(matrixArg);
+        if (vector != null && matrix != null) {
+            return vector.added(matrix);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public VectorF added_withVector(Object vector1, Object vector2) {
-        checkIfStopRequested();
-        try {
-            if (vector1 instanceof VectorF) {
-                if (vector2 instanceof VectorF) {
-                    return ((VectorF) vector1).added((VectorF) vector2);
-                } else {
-                    RobotLog.e("VectorF.added - vector2 is not a VectorF");
-                }
-            } else {
-                RobotLog.e("VectorF.added - vector1 is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.added - caught " + e);
+    public VectorF added_withVector(Object vector1Arg, Object vector2Arg) {
+        startBlockExecution(BlockType.FUNCTION, ".added");
+        VectorF vector1 = checkArg(vector1Arg, VectorF.class, "vector1");
+        VectorF vector2 = checkArg(vector2Arg, VectorF.class, "vector2");
+        if (vector1 != null && vector2 != null) {
+            return vector1.added(vector2);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void add_withVector(Object vector1, Object vector2) {
-        checkIfStopRequested();
-        try {
-            if (vector1 instanceof VectorF) {
-                if (vector2 instanceof VectorF) {
-                    ((VectorF) vector1).add((VectorF) vector2);
-                } else {
-                    RobotLog.e("VectorF.add - vector2 is not a VectorF");
-                }
-            } else {
-                RobotLog.e("VectorF.add - vector1 is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.add - caught " + e);
+    public void add_withVector(Object vector1Arg, Object vector2Arg) {
+        startBlockExecution(BlockType.FUNCTION, ".add");
+        VectorF vector1 = checkArg(vector1Arg, VectorF.class, "vector1");
+        VectorF vector2 = checkArg(vector2Arg, VectorF.class, "vector2");
+        if (vector1 != null && vector2 != null) {
+            vector1.add(vector2);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public MatrixF subtracted_withMatrix(Object vector, Object matrix) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                if (matrix instanceof MatrixF) {
-                    return ((VectorF) vector).subtracted((MatrixF) matrix);
-                } else {
-                    RobotLog.e("VectorF.subtracted - matrix is not a MatrixF");
-                }
-            } else {
-                RobotLog.e("VectorF.subtracted - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.subtracted - caught " + e);
+    public MatrixF subtracted_withMatrix(Object vectorArg, Object matrixArg) {
+        startBlockExecution(BlockType.FUNCTION, ".subtracted");
+        VectorF vector = checkVectorF(vectorArg);
+        MatrixF matrix = checkMatrixF(matrixArg);
+        if (vector != null && matrix != null) {
+            return vector.subtracted(matrix);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public VectorF subtracted_withVector(Object vector1, Object vector2) {
-        checkIfStopRequested();
-        try {
-            if (vector1 instanceof VectorF) {
-                if (vector2 instanceof VectorF) {
-                    return ((VectorF) vector1).subtracted((VectorF) vector2);
-                } else {
-                    RobotLog.e("VectorF.subtracted - vector2 is not a VectorF");
-                }
-            } else {
-                RobotLog.e("VectorF.subtracted - vector1 is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.subtracted - caught " + e);
+    public VectorF subtracted_withVector(Object vector1Arg, Object vector2Arg) {
+        startBlockExecution(BlockType.FUNCTION, ".subtracted");
+        VectorF vector1 = checkArg(vector1Arg, VectorF.class, "vector1");
+        VectorF vector2 = checkArg(vector2Arg, VectorF.class, "vector2");
+        if (vector1 != null && vector2 != null) {
+            return vector1.subtracted(vector2);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void subtract_withVector(Object vector1, Object vector2) {
-        checkIfStopRequested();
-        try {
-            if (vector1 instanceof VectorF) {
-                if (vector2 instanceof VectorF) {
-                    ((VectorF) vector1).subtract((VectorF) vector2);
-                } else {
-                    RobotLog.e("VectorF.subtract - vector2 is not a VectorF");
-                }
-            } else {
-                RobotLog.e("VectorF.subtract - vector1 is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.subtract - caught " + e);
+    public void subtract_withVector(Object vector1Arg, Object vector2Arg) {
+        startBlockExecution(BlockType.FUNCTION, ".subtract");
+        VectorF vector1 = checkArg(vector1Arg, VectorF.class, "vector1");
+        VectorF vector2 = checkArg(vector2Arg, VectorF.class, "vector2");
+        if (vector1 != null && vector2 != null) {
+            vector1.subtract(vector2);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public VectorF multiplied_withScale(Object vector, float scale) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                return ((VectorF) vector).multiplied(scale);
-            } else {
-                RobotLog.e("VectorF.multiplied - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.multiplied - caught " + e);
+    public VectorF multiplied_withScale(Object vectorArg, float scale) {
+        startBlockExecution(BlockType.FUNCTION, ".multiplied");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            return vector.multiplied(scale);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void multiply_withScale(Object vector, float scale) {
-        checkIfStopRequested();
-        try {
-            if (vector instanceof VectorF) {
-                ((VectorF) vector).multiply(scale);
-            } else {
-                RobotLog.e("VectorF.multiply - vector is not a VectorF");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VectorF.multiply - caught " + e);
+    public void multiply_withScale(Object vectorArg, float scale) {
+        startBlockExecution(BlockType.FUNCTION, ".multiply");
+        VectorF vector = checkVectorF(vectorArg);
+        if (vector != null) {
+            vector.multiply(scale);
         }
     }
 }

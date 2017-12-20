@@ -1,33 +1,32 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html>
 <!--
   Author: lizlooney@google.com (Liz Looney)
 -->
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
 
-    <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <!-- Bootstrap -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="toolbox/images.css">
-    <link rel="stylesheet/less" type="text/css" href="/css/FtcBlocks.less">
+  <link rel="stylesheet" type="text/css" href="toolbox/images.css">
+  <link rel="stylesheet/less" type="text/css" href="/css/FtcBlocks.less">
 
-    <script type="text/javascript" src="/js/rc_config.js"></script>
-    <script type="text/javascript" src="/js/util.js"></script>
+  <script type="text/javascript" src="/js/rc_config.js"></script>
+  <script type="text/javascript" src="/js/util.js"></script>
 
-    <!-- http://lesscss.org/usage/#using-less-in-the-browser-setting-options -->
-    <script type="text/javascript">
+  <!-- http://lesscss.org/usage/#using-less-in-the-browser-setting-options -->
+  <script type="text/javascript">
   less = {
   };
+  </script>
+  <script type="text/javascript" src="/js/less.min.js"></script>
 
-    </script>
-    <script type="text/javascript" src="/js/less.min.js"></script>
-
-    <script type="text/javascript">
+  <script type="text/javascript">
 
   /* A note: during the inital integration of less, errors were encountered if the blockly
      scripts here were loaded before less had completed its work; loading them manually as is
@@ -115,68 +114,67 @@
       asyncLoadScripts(asyncScripts, callback);
     });
   }
+  </script>
 
-    </script>
-
-    <meta charset="utf-8">
-    <title>FTC</title>
+  <meta charset="utf-8">
+  <title>FTC</title>
 
 
 </head>
 <body>
 <table class="top" width="100%" height="100%">
-    <tr>
-        <td class="blank_td" colspan="2"></td>
-    </tr>
-    <tr>
-        <td class="buttons_td" colspan="2">
-            <table width="100%">
-                <tr>
-                    <td>
-                        <button onclick="saveButtonClicked()">Save Op Mode</button>
-                        <button onclick="downloadButtonClicked()">Download Op Mode</button>
-                        <a id="download_link"></a>
-                        <span id="saveSuccess"></span>
-                        <span id="saveFailure"></span>
-                    </td>
-                    <td align="right">
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="blank_td" colspan="2"></td>
-    </tr>
-    <tr>
-        <td class="project_name_td">Op Mode Name:&nbsp;<span id="project_name"></span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <select id="flavor" class="project_flavor">
-                <option value="teleop">TeleOp</option>
-                <option value="autonomous">Autonomous</option>
-            </select>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            Group:&nbsp;<input type="text" id="group" class="project_group"><br>
-        </td>
-        <td class="project_enabled_td" align="right">
-            <input type="checkbox" id="project_enabled" onclick="projectEnabledChanged()" checked>Enabled<br>
-        </td>
-    </tr>
-    <tr>
-        <td class="blank_td" colspan="2"></td>
-    </tr>
-    <tr>
-        <td id="blocklyArea" colspan="2"></td>
-    </tr>
+  <tr>
+    <td class="blank_td" colspan="2"></td>
+  </tr>
+  <tr>
+    <td class="buttons_td" colspan="2">
+      <table width="100%">
+        <tr>
+          <td>
+            <button onclick="saveButtonClicked()">Save Op Mode</button>
+            <button onclick="downloadButtonClicked()">Download Op Mode</button>
+            <a id="download_link"></a>
+            <span id="saveSuccess"></span>
+            <span id="saveFailure"></span>
+          </td>
+          <td align="right">
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="blank_td" colspan="2"></td>
+  </tr>
+  <tr>
+    <td class="project_name_td">Op Mode Name:&nbsp;<span id="project_name"></span>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <select id="flavor" class="project_flavor">
+        <option value="TELEOP">TeleOp</option>
+        <option value="AUTONOMOUS">Autonomous</option>
+      </select>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Group:&nbsp;<input type="text" id="group" class="project_group"><br>
+    </td>
+    <td class="project_enabled_td" align="right">
+      <input type="checkbox" id="project_enabled" onclick="projectEnabledChanged()" checked>Enabled<br>
+    </td>
+  </tr>
+  <tr>
+    <td class="blank_td" colspan="2"></td>
+  </tr>
+  <tr>
+    <td id="blocklyArea" colspan="2"></td>
+  </tr>
 </table>
 <div id="blocklyDiv" style="position: absolute"></div>
 
 <xml id="toolbox" style="display: none">
-    <category name="Miscellaneous">
-        <block type="comment">
-            <field name="COMMENT">Enter your comment here!</field>
-        </block>
-    </category>
+  <category name="Miscellaneous">
+    <block type="comment">
+        <field name="COMMENT">Enter your comment here!</field>
+    </block>
+  </category>
 </xml>
 
 <!-- https://developers.google.com/blockly/guides/configure/web/resizable -->
@@ -187,6 +185,8 @@
   // Declare necessary blockly global variables
   // var currentProjectName is defined in vars.js.
   var isDirty;
+  var missingHardware = [];
+  var countBlocksWithWarnings = 0;
   var mouseX, mouseY;
   var previousClipboardXml;
   var savedClipboardContent;
@@ -225,8 +225,28 @@
       (e || window.event).returnValue = ''; // Gecko + IE
       return ''; // Gecko + Webkit, Safari, Chrome etc.
     });
-    workspace.addChangeListener(function(e) {
+
+    workspace.addChangeListener(function(event) {
       isDirty = true;
+      var blockIds = [];
+      if (event.type == Blockly.Events.BLOCK_CREATE) {
+        Array.prototype.push.apply(blockIds, event.ids)
+      } else if (event.type == Blockly.Events.BLOCK_CHANGE) {
+        if (event.blockId) {
+          blockIds.push(event.blockId);
+        }
+      }
+      for (var i = 0; i < blockIds.length; i++) {
+        var block = workspace.getBlockById(blockIds[i]);
+        if (block) {
+          var hasWarning = checkBlock(block, missingHardware);
+          if (hasWarning) {
+            countBlocksWithWarnings++;
+          } else {
+            saveVisibleIdentifiers(block);
+          }
+        }
+      }
     });
   }
 
@@ -266,8 +286,8 @@
         newScript.setAttribute('type', 'text/javascript');
         newScript.innerHTML = jsHardware;
         document.getElementsByTagName('head')[0].appendChild(newScript);
+
         initializeToolbox();
-        initializeBlocks();
       } else  {
         alert(errorMessage);
       }
@@ -279,6 +299,10 @@
       if (xmlToolbox) {
         workspace.updateToolbox(xmlToolbox);
         addToolboxIcons(workspace);
+
+        setTimeout(function() {
+          initializeBlocks();
+        }, 10);
       } else  {
         alert(errorMessage);
       }
@@ -360,11 +384,160 @@
     document.title = 'FTC - ' + currentProjectName;
     var escapedProjectName = currentProjectName.replace(/&/g,'&amp;');
     document.getElementById('project_name').innerHTML = escapedProjectName;
+    missingHardware = [];
+    countBlocksWithWarnings = 0;
     Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(blocksContent), workspace);
-    // Use a timeout so we clear isDirty after the changeevent comes through.
+
+    // Use a timeout to allow the workspace change event to come through. Then, show an alert
+    // if any blocks have warnings. Then clear isDirty.
     setTimeout(function() {
+      if (countBlocksWithWarnings > 0) {
+        var message = (countBlocksWithWarnings == 1)
+            ? 'An error occured when trying to find the hardware devices for 1 block.\n\n'
+            : 'Errors occured when trying to find the hardware devices for ' + countBlocksWithWarnings +
+                ' blocks.\n\n';
+        if (missingHardware.length > 0) {
+          message += 'The following hardware devices were not found:\n';
+          for (var i = 0; i < missingHardware.length; i++) {
+            message += '\t"' + missingHardware[i] + '"\n';
+          }
+        }
+        message += '\nIf the current configuration is not the appropriate configuration for this ' +
+            'blocks project, please activate the appropriate configuration and reload this page.';
+        alert(message);
+      }
+
       isDirty = false;
-    }, 1);
+    }, 10);
+  }
+
+  /**
+   * Add/remove the block warning if the given block's identifier(s) are not in the active
+   * configuration. Return true if the block now has a warning, false otherwise.
+   */
+  function checkBlock(block, missingHardware) {
+    try {
+      var warningText = null; // null will remove any previous warning.
+      for (var iFieldName = 0; iFieldName < identifierFieldNames.length; iFieldName++) {
+        var identifierFieldName = identifierFieldNames[iFieldName];
+        var field = block.getField(identifierFieldName);
+        if (field) {
+          var identifierFieldValue = field.getValue();
+          var identifierFound = true;
+          var fieldHasOptions = false;
+
+          if (typeof field.getOptions === 'function') {
+            // The identifier field is a dropdown field with options.
+            // Check if identifierFieldValue is one of the options.
+            var options = field.getOptions();
+            fieldHasOptions = true;
+            identifierFound = false;
+            for (var iOption = 0; iOption < options.length; iOption++) {
+              if (options[iOption][1] == identifierFieldValue) {
+                identifierFound = true;
+                break;
+              }
+            }
+          } else {
+            // The identifier field is a noneditable field instead of a dropdown field.
+            // Since blockly doesn't allow a dropdown field to have zero options, we need to use a
+            // noneditable field (which looks similar) when there are no hardware items for this
+            // type of block.
+            identifierFound = false;
+          }
+
+          if (!identifierFound) {
+            // identifierFieldValue is the name of the identifier that will be used in generated
+            // javascript, but it is not necessarily the same as the name that is used in the
+            // hardware configuration and should be displayed on the block. For example, the
+            // visible identifier name may contain characters that are not allowed in a javascript
+            // identifier. Also, the identifier may have a suffix that allows us to distinguish
+            // between hardware devices with the same configuration name or hardware devices that
+            // support multiple hardware interfaces.
+            // We now store the visible identifier names using block.data.
+            // Here, we try to use block.data to retrieve the visible identifier name.
+            var visibleIdentifierName;
+            if (block.data) {
+              if (block.data.startsWith('{')) {
+                var visibleIdentifierNames = JSON.parse(block.data);
+                visibleIdentifierName = visibleIdentifierNames[identifierFieldName];
+              } else {
+                visibleIdentifierName = block.data;
+              }
+            } else {
+              // If the blocks file is older, we don't know what the visible name actually is.
+              // The best we can do is to remove the hardware identifier suffix if there is one.
+              visibleIdentifierName = removeHardwareIdentifierSuffix(identifierFieldValue);
+            }
+            if (typeof field.setText === 'function') {
+              field.setText(visibleIdentifierName);
+            }
+            if (!missingHardware.includes(visibleIdentifierName)) {
+              missingHardware.push(visibleIdentifierName);
+            }
+            if (warningText == null) {
+              warningText = '';
+            } else {
+              warningText += '\n\n';
+            }
+            if (fieldHasOptions) {
+              warningText += '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
+                  'Please activate the configuration that contains the hardware device named "' +
+                  visibleIdentifierName + '",\nor select a device that is in the current robot configuration.';
+            } else {
+              warningText += '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
+                  'Please activate the configuration that contains the hardware device named "' +
+                  visibleIdentifierName + '".';
+            }
+          }
+        }
+      }
+      // If warningText is null, the following will clear a previous warning.
+      block.setWarningText(warningText);
+    } catch (e) {
+      console.log('Unable to verify the following block due to exception.');
+      console.log(block);
+      console.log(e);
+    }
+    if (warningText) {
+      return true;
+    }
+    return false;
+  }
+
+  function removeHardwareIdentifierSuffix(identifierFieldValue) {
+    var suffixes = getHardwareIdentifierSuffixes();
+    for (var i = 0; i < suffixes.length; i++) {
+      var suffix = suffixes[i];
+      if (identifierFieldValue.endsWith(suffix)) {
+        identifierFieldValue =
+            identifierFieldValue.substring(0, identifierFieldValue.length - suffix.length);
+        break;
+      }
+    }
+    return identifierFieldValue;
+  }
+
+  function saveVisibleIdentifiers(block) {
+    var visibleIdentifierNames = '';
+    var delimiter = '';
+    for (var iFieldName = 0; iFieldName < identifierFieldNames.length; iFieldName++) {
+      var identifierFieldName = identifierFieldNames[iFieldName];
+      var field = block.getField(identifierFieldName);
+      if (field) {
+        if (typeof field.getOptions === 'function') {
+          // The identifier field is a dropdown field with options.
+          // Save the user visible identifiers using block.data, so we can use it in the future if
+          // the hardware device is not found in the configuration.
+          var visibleIdentifierName = field.getText();
+          visibleIdentifierNames += delimiter + '"' + identifierFieldName + '":"' + visibleIdentifierName + '"';
+          delimiter = ', ';
+        }
+      }
+    }
+    if (visibleIdentifierNames) {
+      block.data = '{' + visibleIdentifierNames + '}';
+    }
   }
 
   function onMouseMove(e) {
@@ -526,7 +699,6 @@
       });
     });
   }
-
 </script>
 </body>
 </html>

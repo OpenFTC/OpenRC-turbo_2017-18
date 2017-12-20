@@ -7,7 +7,6 @@ import android.media.SoundPool;
 import android.webkit.JavascriptInterface;
 
 import com.google.blocks.ftcrobotcontroller.util.SoundsUtil;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +25,7 @@ class AndroidSoundPoolAccess extends Access {
     private volatile Integer streamId;
 
     AndroidSoundPoolAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "AndroidSoundPool");
     }
 
     // Access methods
@@ -54,31 +53,23 @@ class AndroidSoundPoolAccess extends Access {
     @SuppressWarnings({"unused", "deprecation"})
     @JavascriptInterface
     public void initialize() {
-        checkIfStopRequested();
-        try {
-            soundPool = new SoundPool(1 /* maxStreams */, AudioManager.STREAM_MUSIC, 0);
-        } catch (Exception e) {
-            RobotLog.e("AndroidSoundPool.initialize - caught " + e);
-        }
+        startBlockExecution(BlockType.FUNCTION, ".initialize");
+        soundPool = new SoundPool(1 /* maxStreams */, AudioManager.STREAM_MUSIC, 0);
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean preloadSound(String soundName) {
-        checkIfStopRequested();
-        try {
-            if (soundPool != null) {
-                int soundId = getSoundId(soundName);
-                if (soundId != 0) {
-                    return true;
-                } else {
-                    RobotLog.e("AndroidSoundPool.preloadSound - failed to preload " + soundName);
-                }
+        startBlockExecution(BlockType.FUNCTION, ".preloadSound");
+        if (soundPool != null) {
+            int soundId = getSoundId(soundName);
+            if (soundId != 0) {
+                return true;
             } else {
-                RobotLog.e("AndroidSoundPool.preloadSound - you forgot to call AndroidSoundPool.initialize!");
+                reportWarning("Failed to preload " + soundName);
             }
-        } catch (Exception e) {
-            RobotLog.e("AndroidSoundPool.preloadSound - caught " + e);
+        } else {
+            reportWarning("You forgot to call AndroidSoundPool.initialize!");
         }
         return false;
     }
@@ -98,88 +89,80 @@ class AndroidSoundPoolAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void play(String soundName) {
-        checkIfStopRequested();
-        try {
-            if (soundPool != null) {
-                int soundId = getSoundId(soundName);
-                if (soundId != 0) {
-                    streamId = soundPool.play(soundId, volume, volume, 0 /* priority */, loop, rate);
-                } else {
-                    RobotLog.e("AndroidSoundPool.preloadSound - failed to load " + soundName);
-                }
+        startBlockExecution(BlockType.FUNCTION, ".play");
+        if (soundPool != null) {
+            int soundId = getSoundId(soundName);
+            if (soundId != 0) {
+                streamId = soundPool.play(soundId, volume, volume, 0 /* priority */, loop, rate);
             } else {
-                RobotLog.e("AndroidSoundPool.play - you forgot to call AndroidSoundPool.initialize!");
+                reportWarning("Failed to load " + soundName);
             }
-        } catch (Exception e) {
-            RobotLog.e("AndroidSoundPool.play - caught " + e);
+        } else {
+            reportWarning("You forgot to call AndroidSoundPool.initialize!");
         }
     }
 
     @SuppressWarnings({"unused"})
     @JavascriptInterface
     public void stop() {
-        checkIfStopRequested();
-        try {
-            if (streamId != null) {
-                soundPool.stop(streamId.intValue());
-                streamId = null;
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidSoundPool.stop - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".stop");
+        if (streamId != null) {
+            soundPool.stop(streamId.intValue());
+            streamId = null;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public float getVolume() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Volume");
         return volume;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setVolume(float volume) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.SETTER, ".Volume");
         if (volume >= 0.0f && volume <= 1.0f) {
             this.volume = volume;
         } else {
-            RobotLog.e("AndroidSoundPool.setVolume - volume range is 0.0 to 1.0.");
+            reportInvalidArg("", "a number between 0.0 and 1.0");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public float getRate() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Rate");
         return rate;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setRate(float rate) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.SETTER, ".Rate");
         if (rate >= 0.5f && rate <= 2.0f) {
             this.rate = rate;
         } else {
-            RobotLog.e("AndroidSoundPool.setRate - rate range is 0.5 to 2.0.");
+            reportInvalidArg("", "a number between 0.5 and 2.0");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public int getLoop() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Loop");
         return loop;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setLoop(int loop) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.SETTER, ".Loop");
         if (loop >= -1) {
             this.loop = loop;
         } else {
-            RobotLog.e("AndroidSoundPool.setRate - loop value is invalid.");
+            reportInvalidArg("", "a number greater than or equal to -1");
         }
     }
 }

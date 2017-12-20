@@ -14,10 +14,6 @@ import android.view.Surface;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /**
@@ -42,7 +38,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     private final float[] orientation = new float[3];
 
     AndroidOrientationAccess(BlocksOpMode blocksOpMode, String identifier, Activity activity) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "AndroidOrientation");
         this.activity = activity;
     }
 
@@ -190,18 +186,17 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setAngleUnit(String angleUnitString) {
-        checkIfStopRequested();
-        try {
-            angleUnit = AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
-        } catch (Exception e) {
-            RobotLog.e("AndroidOrientation.setAngelUnit - caught " + e);
+        startBlockExecution(BlockType.SETTER, ".AngleUnit");
+        AngleUnit angleUnit = checkArg(angleUnitString, AngleUnit.class, "");
+        if (angleUnit != null) {
+            this.angleUnit = angleUnit;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getAzimuth() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Azimuth");
         if (timestampAcceleration != 0 && timestampMagneticField != 0) {
             return angleUnit.fromRadians(azimuth);
         }
@@ -211,7 +206,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getPitch() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Pitch");
         if (timestampAcceleration != 0 && timestampMagneticField != 0) {
             return angleUnit.fromRadians(pitch);
         }
@@ -221,7 +216,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getRoll() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Roll");
         if (timestampAcceleration != 0 && timestampMagneticField != 0) {
             return angleUnit.fromRadians(roll);
         }
@@ -231,7 +226,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getAngle() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Angle");
         if (timestampAcceleration != 0 && timestampMagneticField != 0) {
             double angle = Math.atan2(pitch, -roll); // Invert roll to correct sign.
             return angleUnit.fromRadians(angle);
@@ -242,7 +237,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getMagnitude() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Magnitude");
         if (timestampAcceleration != 0 && timestampMagneticField != 0) {
             // Limit pitch and roll to PI/2; otherwise, the phone is upside down.
             // The official documentation falsely claims that the range of pitch and
@@ -261,14 +256,14 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String getAngleUnit() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".AngleUnit");
         return angleUnit.toString();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isAvailable() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".isAvailable");
         SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
         return !sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).isEmpty()
                 && !sensorManager.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).isEmpty();
@@ -277,7 +272,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void startListening() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".startListening");
         if (!listening) {
             SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
             Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -291,7 +286,7 @@ class AndroidOrientationAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void stopListening() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".stopListening");
         close();
     }
 }

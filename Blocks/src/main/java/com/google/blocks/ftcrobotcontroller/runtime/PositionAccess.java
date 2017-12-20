@@ -4,10 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
@@ -19,88 +15,67 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 class PositionAccess extends Access {
 
     PositionAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "Position");
+    }
+
+    private Position checkPosition(Object positionArg) {
+        return checkArg(positionArg, Position.class, "position");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String getDistanceUnit(Object position) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                DistanceUnit distanceUnit = ((Position) position).unit;
-                if (distanceUnit != null) {
-                    return distanceUnit.toString();
-                }
-            } else {
-                RobotLog.e("Position.getDistanceUnit - position is not a Position");
+    public String getDistanceUnit(Object positionArg) {
+        startBlockExecution(BlockType.GETTER, ".DistanceUnit");
+        Position position = checkPosition(positionArg);
+        if (position != null) {
+            DistanceUnit distanceUnit = ((Position) position).unit;
+            if (distanceUnit != null) {
+                return distanceUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("Position.getDistanceUnit - caught " + e);
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public double getX(Object position) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                return ((Position) position).x;
-            } else {
-                RobotLog.e("Position.getX - position is not a Position");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Position.getX - caught " + e);
+    public double getX(Object positionArg) {
+        startBlockExecution(BlockType.GETTER, ".X");
+        Position position = checkPosition(positionArg);
+        if (position != null) {
+            return position.x;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public double getY(Object position) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                return ((Position) position).y;
-            } else {
-                RobotLog.e("Position.getY - position is not a Position");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Position.getY - caught " + e);
+    public double getY(Object positionArg) {
+        startBlockExecution(BlockType.GETTER, ".Y");
+        Position position = checkPosition(positionArg);
+        if (position != null) {
+            return position.y;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public double getZ(Object position) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                return ((Position) position).z;
-            } else {
-                RobotLog.e("Position.getZ - position is not a Position");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Position.getZ - caught " + e);
+    public double getZ(Object positionArg) {
+        startBlockExecution(BlockType.GETTER, ".Z");
+        Position position = checkPosition(positionArg);
+        if (position != null) {
+            return position.z;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public long getAcquisitionTime(Object position) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                return ((Position) position).acquisitionTime;
-            } else {
-                RobotLog.e("Position.getAcquisitionTime - position is not a Position");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Position.getAcquisitionTime - caught " + e);
+    public long getAcquisitionTime(Object positionArg) {
+        startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
+        Position position = checkPosition(positionArg);
+        if (position != null) {
+            return position.acquisitionTime;
         }
         return 0;
     }
@@ -108,60 +83,41 @@ class PositionAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Position create() {
-        checkIfStopRequested();
-        try {
-            return new Position();
-        } catch (Exception e) {
-            RobotLog.e("Position.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return new Position();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Position create_withArgs(
             String distanceUnitString, double x, double y, double z, long acquisitionTime) {
-        checkIfStopRequested();
-        try {
-            DistanceUnit distanceUnit =
-                    DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
+        startBlockExecution(BlockType.CREATE, "");
+        DistanceUnit distanceUnit = checkDistanceUnit(distanceUnitString);
+        if (distanceUnit != null) {
             return new Position(distanceUnit, x, y, z, acquisitionTime);
-        } catch (Exception e) {
-            RobotLog.e("Position.create - caught " + e);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Position toDistanceUnit(Object position, String distanceUnitString) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                DistanceUnit distanceUnit =
-                        DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
-                return ((Position) position).toUnit(distanceUnit);
-            } else {
-                RobotLog.e("Position.toDistanceUnit - position is not a Position");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Position.toDistanceUnit - caught " + e);
+    public Position toDistanceUnit(Object positionArg, String distanceUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".toDistanceUnit");
+        Position position = checkPosition(positionArg);
+        DistanceUnit distanceUnit = checkDistanceUnit(distanceUnitString);
+        if (position != null && distanceUnit != null) {
+            return position.toUnit(distanceUnit);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String toText(Object position) {
-        checkIfStopRequested();
-        try {
-            if (position instanceof Position) {
-                return ((Position) position).toString();
-            } else {
-                RobotLog.e("Position.toText - position is not a Position");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Position.toText - caught " + e);
+    public String toText(Object positionArg) {
+        startBlockExecution(BlockType.FUNCTION, ".toText");
+        Position position = checkPosition(positionArg);
+        if (position != null) {
+            return position.toString();
         }
         return "";
     }

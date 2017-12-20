@@ -6,10 +6,7 @@ import android.webkit.JavascriptInterface;
 
 import com.google.blocks.ftcrobotcontroller.util.HardwareItem;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import junit.framework.Assert;
 
 /**
  * A class that provides JavaScript access to a {@link AnalogInput}.
@@ -19,10 +16,8 @@ import junit.framework.Assert;
 class AnalogInputAccess extends HardwareAccess<AnalogInput> {
     private final AnalogInput analogInput;
 
-    AnalogInputAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap,
-                      Class<? extends HardwareDevice> deviceType) {
+    AnalogInputAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap) {
         super(blocksOpMode, hardwareItem, hardwareMap, AnalogInput.class);
-        Assert.assertTrue(deviceType == AnalogInput.class);
         this.analogInput = hardwareDevice;
     }
 
@@ -30,21 +25,15 @@ class AnalogInputAccess extends HardwareAccess<AnalogInput> {
     @JavascriptInterface
     @Block(classes = AnalogInput.class, methodName = "getVoltage")
     public double getVoltage() {
-        checkIfStopRequested();
-        if (analogInput != null) {
-            return analogInput.getVoltage();
-        }
-        return 0.0;
+        startBlockExecution(BlockType.GETTER, ".Voltage");
+        return analogInput.getVoltage();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = AnalogInput.class, methodName = "getMaxVoltage")
     public double getMaxVoltage() {
-        checkIfStopRequested();
-        if (analogInput != null) {
-            return analogInput.getMaxVoltage();
-        }
-        return 0.0;
+        startBlockExecution(BlockType.GETTER, ".MaxVoltage");
+        return analogInput.getMaxVoltage();
     }
 }

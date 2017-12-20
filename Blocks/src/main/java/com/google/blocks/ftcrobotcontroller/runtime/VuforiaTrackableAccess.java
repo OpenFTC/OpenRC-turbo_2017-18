@@ -4,8 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
@@ -18,137 +16,94 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 class VuforiaTrackableAccess extends Access {
 
     VuforiaTrackableAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "VuforiaTrackable");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void setLocation(Object vuforiaTrackable, Object matrix) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                if (matrix instanceof OpenGLMatrix) {
-                    ((VuforiaTrackable) vuforiaTrackable).setLocation((OpenGLMatrix) matrix);
-                } else {
-                    RobotLog.e("VuforiaTrackable.setLocation - matrix is not an OpenGLMatrix");
-                }
-            } else {
-                RobotLog.e("VuforiaTrackable.setLocation - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.setLocation - caught " + e);
+    public void setLocation(Object vuforiaTrackableArg, Object matrixArg) {
+        startBlockExecution(BlockType.FUNCTION, ".setLocation");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        OpenGLMatrix matrix = checkOpenGLMatrix(matrixArg);
+        if (vuforiaTrackable != null && matrix != null) {
+            vuforiaTrackable.setLocation(matrix);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public OpenGLMatrix getLocation(Object vuforiaTrackable) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                return ((VuforiaTrackable) vuforiaTrackable).getLocation();
-            } else {
-                RobotLog.e("VuforiaTrackable.getLocation - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.getLocation - caught " + e);
+    public OpenGLMatrix getLocation(Object vuforiaTrackableArg) {
+        startBlockExecution(BlockType.GETTER, ".Location");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            return vuforiaTrackable.getLocation();
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void setUserData(Object vuforiaTrackable, Object userData) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                ((VuforiaTrackable) vuforiaTrackable).setUserData(userData);
-            } else {
-                RobotLog.e("VuforiaTrackable.setUserData - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.setUserData - caught " + e);
+    public void setUserData(Object vuforiaTrackableArg, Object userData) {
+        startBlockExecution(BlockType.FUNCTION, ".setUserData");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            vuforiaTrackable.setUserData(userData);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Object getUserData(Object vuforiaTrackable) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                return ((VuforiaTrackable) vuforiaTrackable).getUserData();
-            } else {
-                RobotLog.e("VuforiaTrackable.getUserData - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.getUserData - caught " + e);
+    public Object getUserData(Object vuforiaTrackableArg) {
+        startBlockExecution(BlockType.GETTER, ".UserData");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            return vuforiaTrackable.getUserData();
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public VuforiaTrackables getTrackables(Object vuforiaTrackable) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                return ((VuforiaTrackable) vuforiaTrackable).getTrackables();
-            } else {
-                RobotLog.e("VuforiaTrackable.getTrackables - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.getTrackables - caught " + e);
+    public VuforiaTrackables getTrackables(Object vuforiaTrackableArg) {
+        startBlockExecution(BlockType.GETTER, ".Trackables");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            return vuforiaTrackable.getTrackables();
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public void setName(Object vuforiaTrackable, String name) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                ((VuforiaTrackable) vuforiaTrackable).setName(name);
-            } else {
-                RobotLog.e("VuforiaTrackable.setName - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.setName - caught " + e);
+    public void setName(Object vuforiaTrackableArg, String name) {
+        startBlockExecution(BlockType.FUNCTION, ".setName");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            vuforiaTrackable.setName(name);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String getName(Object vuforiaTrackable) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                String name = ((VuforiaTrackable) vuforiaTrackable).getName();
-                if (name != null) {
-                    return name;
-                }
-            } else {
-                RobotLog.e("VuforiaTrackable.getName - vuforiaTrackable is not a VuforiaTrackable");
+    public String getName(Object vuforiaTrackableArg) {
+        startBlockExecution(BlockType.GETTER, ".Name");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            String name = vuforiaTrackable.getName();
+            if (name != null) {
+                return name;
             }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.getName - caught " + e);
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public VuforiaTrackable.Listener getListener(Object vuforiaTrackable) {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackable instanceof VuforiaTrackable) {
-                return ((VuforiaTrackable) vuforiaTrackable).getListener();
-            } else {
-                RobotLog.e("VuforiaTrackable.getListener - vuforiaTrackable is not a VuforiaTrackable");
-            }
-        } catch (Exception e) {
-            RobotLog.e("VuforiaTrackable.getListener - caught " + e);
+    public VuforiaTrackable.Listener getListener(Object vuforiaTrackableArg) {
+        startBlockExecution(BlockType.GETTER, ".Listener");
+        VuforiaTrackable vuforiaTrackable = checkVuforiaTrackable(vuforiaTrackableArg);
+        if (vuforiaTrackable != null) {
+            return vuforiaTrackable.getListener();
         }
         return null;
     }

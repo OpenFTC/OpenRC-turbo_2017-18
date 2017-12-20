@@ -5,14 +5,9 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 import android.webkit.JavascriptInterface;
 
 import com.google.blocks.ftcrobotcontroller.util.HardwareItem;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoController.PwmStatus;
-
-import java.util.Locale;
-
-import junit.framework.Assert;
 
 /**
  * A class that provides JavaScript access to a {@link ServoController}.
@@ -22,22 +17,18 @@ import junit.framework.Assert;
 class ServoControllerAccess extends HardwareAccess<ServoController> {
     private final ServoController servoController;
 
-    ServoControllerAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem,
-                          HardwareMap hardwareMap, Class<? extends HardwareDevice> deviceType) {
+    ServoControllerAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap) {
         super(blocksOpMode, hardwareItem, hardwareMap, ServoController.class);
-        Assert.assertTrue(deviceType == ServoController.class);
         this.servoController = hardwareDevice;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String getPwmStatus() {
-        checkIfStopRequested();
-        if (servoController != null) {
-            PwmStatus pwmStatus = servoController.getPwmStatus();
-            if (pwmStatus != null) {
-                return pwmStatus.toString();
-            }
+        startBlockExecution(BlockType.GETTER, ".PwmStatus");
+        PwmStatus pwmStatus = servoController.getPwmStatus();
+        if (pwmStatus != null) {
+            return pwmStatus.toString();
         }
         return "";
     }
@@ -45,18 +36,14 @@ class ServoControllerAccess extends HardwareAccess<ServoController> {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void pwmEnable() {
-        checkIfStopRequested();
-        if (servoController != null) {
-            servoController.pwmEnable();
-        }
+        startBlockExecution(BlockType.FUNCTION, ".pwmEnable");
+        servoController.pwmEnable();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void pwmDisable() {
-        checkIfStopRequested();
-        if (servoController != null) {
-            servoController.pwmDisable();
-        }
+        startBlockExecution(BlockType.FUNCTION, ".pwmDisable");
+        servoController.pwmDisable();
     }
 }

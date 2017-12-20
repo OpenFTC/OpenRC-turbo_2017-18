@@ -4,10 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 /**
@@ -18,101 +14,75 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 class QuaternionAccess extends Access {
 
     QuaternionAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "Quaternion");
+    }
+
+    private Quaternion checkQuaternion(Object quaternionArg) {
+        return checkArg(quaternionArg, Quaternion.class, "quaternion");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getW(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).w;
-            } else {
-                RobotLog.e("Quaternion.getW - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.getW - caught " + e);
+    public float getW(Object quaternionArg) {
+        startBlockExecution(BlockType.GETTER, ".W");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.w;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getX(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).x;
-            } else {
-                RobotLog.e("Quaternion.getX - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.getX - caught " + e);
+    public float getX(Object quaternionArg) {
+        startBlockExecution(BlockType.GETTER, ".X");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.x;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getY(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).y;
-            } else {
-                RobotLog.e("Quaternion.getY - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.getY - caught " + e);
+    public float getY(Object quaternionArg) {
+        startBlockExecution(BlockType.GETTER, ".Y");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.y;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getZ(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).z;
-            } else {
-                RobotLog.e("Quaternion.getZ - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.getZ - caught " + e);
+    public float getZ(Object quaternionArg) {
+        startBlockExecution(BlockType.GETTER, ".Z");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.z;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public long getAcquisitionTime(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).acquisitionTime;
-            } else {
-                RobotLog.e("Quaternion.getAcquisitionTime - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.getAcquisitionTime - caught " + e);
+    public long getAcquisitionTime(Object quaternionArg) {
+        startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.acquisitionTime;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getMagnitude(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).magnitude();
-            } else {
-                RobotLog.e("Quaternion.getMagnitude - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.getMagnitude - caught " + e);
+    public float getMagnitude(Object quaternionArg) {
+        startBlockExecution(BlockType.GETTER, ".Magnitude");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.magnitude();
         }
         return 0;
     }
@@ -120,55 +90,35 @@ class QuaternionAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Quaternion create() {
-        checkIfStopRequested();
-        try {
-            return new Quaternion();
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return new Quaternion();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Quaternion create_withArgs(float w, float x, float y, float z, long acquisitionTime) {
-        checkIfStopRequested();
-        try {
-            return new Quaternion(w, x, y, z, acquisitionTime);
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.create - caught " + e);
+        startBlockExecution(BlockType.CREATE, "");
+        return new Quaternion(w, x, y, z, acquisitionTime);
+    }
+
+    @SuppressWarnings("unused")
+    @JavascriptInterface
+    public Quaternion normalized(Object quaternionArg) {
+        startBlockExecution(BlockType.FUNCTION, ".normalized");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.normalized();
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Quaternion normalized(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).normalized();
-            } else {
-                RobotLog.e("Quaternion.normalized - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.normalized - caught " + e);
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unused")
-    @JavascriptInterface
-    public Quaternion congugate(Object quaternion) {
-        checkIfStopRequested();
-        try {
-            if (quaternion instanceof Quaternion) {
-                return ((Quaternion) quaternion).congugate();
-            } else {
-                RobotLog.e("Quaternion.congugate - quaternion is not a Quaternion");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Quaternion.congugate - caught " + e);
+    public Quaternion congugate(Object quaternionArg) {
+        startBlockExecution(BlockType.FUNCTION, ".congugate");
+        Quaternion quaternion = checkQuaternion(quaternionArg);
+        if (quaternion != null) {
+            return quaternion.congugate();
         }
         return null;
     }

@@ -6,7 +6,13 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -25,14 +31,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaTrackableContainer;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * A class that provides JavaScript access to Vuforia.
@@ -98,7 +96,7 @@ class VuforiaAccess extends Access {
     }
 
     VuforiaAccess(BlocksOpMode blocksOpMode, String identifier, Context context) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "Vuforia");
         this.context = context;
     }
 
@@ -107,14 +105,12 @@ class VuforiaAccess extends Access {
     public void initialize(String vuforiaLicenseKey,
                            String cameraDirectionString, boolean enableCameraMonitoring, String cameraMonitorFeedbackString,
                            float dx, float dy, float dz, float xAngle, float yAngle, float zAngle) {
-        checkIfStopRequested();
-        try {
-            Parameters parameters = createParameters(vuforiaLicenseKey,
-                    cameraDirectionString, enableCameraMonitoring, cameraMonitorFeedbackString);
+        startBlockExecution(BlockType.FUNCTION, ".initialize");
+        Parameters parameters = createParameters(vuforiaLicenseKey,
+                cameraDirectionString, enableCameraMonitoring, cameraMonitorFeedbackString);
+        if (parameters != null) {
             initialize(parameters, dx, dy, dz, xAngle, yAngle, zAngle,
                     true /* useCompetitionFieldTargetLocations */);
-        } catch (Exception e) {
-            RobotLog.e("Vuforia.initialize - caught " + e);
         }
     }
 
@@ -125,51 +121,58 @@ class VuforiaAccess extends Access {
                                    boolean enableCameraMonitoring, String cameraMonitorFeedbackString,
                                    float dx, float dy, float dz, float xAngle, float yAngle, float zAngle,
                                    boolean useCompetitionFieldTargetLocations) {
-        checkIfStopRequested();
-        try {
-            Parameters parameters = createParameters(vuforiaLicenseKey,
-                    cameraDirectionString, enableCameraMonitoring, cameraMonitorFeedbackString);
+        startBlockExecution(BlockType.FUNCTION, ".initialize");
+        Parameters parameters = createParameters(vuforiaLicenseKey,
+                cameraDirectionString, enableCameraMonitoring, cameraMonitorFeedbackString);
+        if (parameters != null) {
             parameters.useExtendedTracking = useExtendedTracking;
             initialize(parameters, dx, dy, dz, xAngle, yAngle, zAngle,
                     useCompetitionFieldTargetLocations);
-        } catch (Exception e) {
-            RobotLog.e("Vuforia.initializeExtended - caught " + e);
         }
     }
 
     private Parameters createParameters(String vuforiaLicenseKey, String cameraDirectionString,
                                         boolean enableCameraMonitoring, String cameraMonitorFeedbackString) {
-        Parameters parameters = new Parameters();
-        if (vuforiaLicenseKey.length() < 217) {
-            try {
-                AssetManager assetManager = AppUtil.getInstance().getRootActivity().getAssets();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(assetManager.open(vuforiaLicenseKey)));
+        CameraDirection cameraDirection = checkVuforiaLocalizerCameraDirection(cameraDirectionString);
+        boolean cameraMonitorFeedbackIsValid;
+        CameraMonitorFeedback cameraMonitorFeedback;
+        if (cameraMonitorFeedbackString.equalsIgnoreCase("DEFAULT")) {
+            cameraMonitorFeedback = null;
+            cameraMonitorFeedbackIsValid = true;
+        } else {
+            cameraMonitorFeedback = checkArg(cameraMonitorFeedbackString, CameraMonitorFeedback.class, "cameraMonitorFeedback");
+            cameraMonitorFeedbackIsValid = cameraMonitorFeedback != null;
+        }
+        if (cameraDirection != null && cameraMonitorFeedbackIsValid) {
+            Parameters parameters = new Parameters();
+            if (vuforiaLicenseKey.length() < 217) {
                 try {
-                    vuforiaLicenseKey = reader.readLine();
-                } finally {
-                    reader.close();
+                    AssetManager assetManager = AppUtil.getInstance().getRootActivity().getAssets();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(assetManager.open(vuforiaLicenseKey)));
+                    try {
+                        vuforiaLicenseKey = reader.readLine();
+                    } finally {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to read vuforia license key from asset.", e);
                 }
-            } catch (IOException e) {
-                RobotLog.e("Vuforia.createParameters - caught " + e);
             }
+            parameters.vuforiaLicenseKey = vuforiaLicenseKey;
+            parameters.cameraDirection = cameraDirection;
+            parameters.cameraMonitorFeedback = cameraMonitorFeedback;
+            if (enableCameraMonitoring) {
+                parameters.cameraMonitorViewIdParent = context.getResources().getIdentifier(
+                        "cameraMonitorViewId", "id", context.getPackageName());
+            }
+            return parameters;
         }
-        parameters.vuforiaLicenseKey = vuforiaLicenseKey;
-        parameters.cameraDirection =
-                CameraDirection.valueOf(cameraDirectionString.toUpperCase(Locale.ENGLISH));
-        cameraMonitorFeedbackString = cameraMonitorFeedbackString.toUpperCase(Locale.ENGLISH);
-        parameters.cameraMonitorFeedback = cameraMonitorFeedbackString.equals("DEFAULT")
-                ? null : CameraMonitorFeedback.valueOf(cameraMonitorFeedbackString);
-        if (enableCameraMonitoring) {
-            parameters.cameraMonitorViewIdParent = context.getResources().getIdentifier(
-                    "cameraMonitorViewId", "id", context.getPackageName());
-        }
-        return parameters;
+        return null;
     }
 
     private void initialize(final Parameters parameters,
                             float dx, float dy, float dz, float xAngle, float yAngle, float zAngle,
-                            boolean useCompetitionFieldTargetLocations)
-            throws InterruptedException {
+                            boolean useCompetitionFieldTargetLocations) {
         OpenGLMatrix locationOnField;
         if (useCompetitionFieldTargetLocations) {
             // TODO(lizlooney): Figure out how to handle the locations of the VuMarks on the field.
@@ -197,7 +200,11 @@ class VuforiaAccess extends Access {
             }
         });
         thread.start();
-        thread.join();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         vuforiaTrackables = vuforiaLocalizer.loadTrackablesFromAsset("RelicVuMark");
 
@@ -208,62 +215,50 @@ class VuforiaAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void activate() {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackables != null) {
-                vuforiaTrackables.activate();
-            } else {
-                RobotLog.e("Vuforia.activate - you forgot to call Vuforia.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Vuforia.activate - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".activate");
+        if (vuforiaTrackables != null) {
+            vuforiaTrackables.activate();
+        } else {
+            reportWarning("You forgot to call Vuforia.initialize!");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void deactivate() {
-        checkIfStopRequested();
-        try {
-            if (vuforiaTrackables != null) {
-                vuforiaTrackables.deactivate();
-            } else {
-                RobotLog.e("Vuforia.deactivate - you forgot to call Vuforia.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Vuforia.deactivate - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".deactivate");
+        if (vuforiaTrackables != null) {
+            vuforiaTrackables.deactivate();
+        } else {
+            reportWarning("You forgot to call Vuforia.initialize!");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String track(String name) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".track");
         VuforiaTrackingResults vuforiaTrackingResults = new VuforiaTrackingResults();
-        try {
-            VuforiaTrackableDefaultListener listener = getListener(name);
-            if (vuforiaTrackables != null) {
-                if (listener != null) {
-                    vuforiaTrackingResults.setVisible(listener.isVisible());
-                    vuforiaTrackingResults.setRelicRecoveryVuMark(RelicRecoveryVuMark.from(listener));
+        VuforiaTrackableDefaultListener listener = getListener(name);
+        if (vuforiaTrackables != null) {
+            if (listener != null) {
+                vuforiaTrackingResults.setVisible(listener.isVisible());
+                vuforiaTrackingResults.setRelicRecoveryVuMark(RelicRecoveryVuMark.from(listener));
 
-                    OpenGLMatrix matrix = listener.getUpdatedRobotLocation();
-                    if (matrix != null) {
-                        locationMap.put(name, matrix);
-                    } else {
-                        matrix = locationMap.get(name);
-                    }
-                    if (matrix != null) {
-                        vuforiaTrackingResults.setMatrix(matrix);
-                    }
+                OpenGLMatrix matrix = listener.getUpdatedRobotLocation();
+                if (matrix != null) {
+                    locationMap.put(name, matrix);
                 } else {
-                    RobotLog.e("Vuforia.track - name must be \"Relic\".");
+                    matrix = locationMap.get(name);
+                }
+                if (matrix != null) {
+                    vuforiaTrackingResults.setMatrix(matrix);
                 }
             } else {
-                RobotLog.e("Vuforia.track - you forgot to call Vuforia.initialize!");
+                reportInvalidArg("name", "Relic");
             }
-        } catch (Exception e) {
-            RobotLog.e("Vuforia.track - caught " + e);
+        } else {
+            reportWarning("You forgot to call Vuforia.initialize!");
         }
         return vuforiaTrackingResults.toString();
     }
@@ -271,32 +266,28 @@ class VuforiaAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String trackPose(String name) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".trackPose");
         VuforiaTrackingResults vuforiaTrackingResults = new VuforiaTrackingResults();
-        try {
-            VuforiaTrackableDefaultListener listener = getListener(name);
-            if (vuforiaTrackables != null) {
-                if (listener != null) {
-                    vuforiaTrackingResults.setVisible(listener.isVisible());
-                    vuforiaTrackingResults.setRelicRecoveryVuMark(RelicRecoveryVuMark.from(listener));
+        VuforiaTrackableDefaultListener listener = getListener(name);
+        if (vuforiaTrackables != null) {
+            if (listener != null) {
+                vuforiaTrackingResults.setVisible(listener.isVisible());
+                vuforiaTrackingResults.setRelicRecoveryVuMark(RelicRecoveryVuMark.from(listener));
 
-                    OpenGLMatrix matrix = listener.getPose();
-                    if (matrix != null) {
-                        poseMap.put(name, matrix);
-                    } else {
-                        matrix = poseMap.get(name);
-                    }
-                    if (matrix != null) {
-                        vuforiaTrackingResults.setMatrix(matrix);
-                    }
+                OpenGLMatrix matrix = listener.getPose();
+                if (matrix != null) {
+                    poseMap.put(name, matrix);
                 } else {
-                    RobotLog.e("Vuforia.trackPose - name must be \"Relic\".");
+                    matrix = poseMap.get(name);
+                }
+                if (matrix != null) {
+                    vuforiaTrackingResults.setMatrix(matrix);
                 }
             } else {
-                RobotLog.e("Vuforia.trackPose - you forgot to call Vuforia.initialize!");
+                reportInvalidArg("name", "Relic");
             }
-        } catch (Exception e) {
-            RobotLog.e("Vuforia.trackPose - caught " + e);
+        } else {
+            reportWarning("You forgot to call Vuforia.initialize!");
         }
         return vuforiaTrackingResults.toString();
     }

@@ -6,12 +6,8 @@ import android.webkit.JavascriptInterface;
 
 import com.google.blocks.ftcrobotcontroller.util.HardwareItem;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import junit.framework.Assert;
 
 /**
  * A class that provides JavaScript access to a {@link OpticalDistanceSensor}.
@@ -21,10 +17,8 @@ import junit.framework.Assert;
 class OpticalDistanceSensorAccess extends HardwareAccess<OpticalDistanceSensor> {
     private final OpticalDistanceSensor opticalDistanceSensor;
 
-    OpticalDistanceSensorAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem,
-                                HardwareMap hardwareMap, Class<? extends HardwareDevice> deviceType) {
+    OpticalDistanceSensorAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap) {
         super(blocksOpMode, hardwareItem, hardwareMap, OpticalDistanceSensor.class);
-        Assert.assertTrue(deviceType == OpticalDistanceSensor.class);
         this.opticalDistanceSensor = hardwareDevice;
     }
 
@@ -34,46 +28,31 @@ class OpticalDistanceSensorAccess extends HardwareAccess<OpticalDistanceSensor> 
     @JavascriptInterface
     @Block(classes = {ModernRoboticsAnalogOpticalDistanceSensor.class}, methodName = "getLightDetected")
     public double getLightDetected() {
-        checkIfStopRequested();
-        if (opticalDistanceSensor != null) {
-            return opticalDistanceSensor.getLightDetected();
-        }
-        return 0.0;
+        startBlockExecution(BlockType.GETTER, ".LightDetected");
+        return opticalDistanceSensor.getLightDetected();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = {ModernRoboticsAnalogOpticalDistanceSensor.class}, methodName = "getRawLightDetected")
     public double getRawLightDetected() {
-        checkIfStopRequested();
-        if (opticalDistanceSensor != null) {
-            return opticalDistanceSensor.getRawLightDetected();
-        }
-        return 0.0;
+        startBlockExecution(BlockType.GETTER, ".RawLightDetected");
+        return opticalDistanceSensor.getRawLightDetected();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = {ModernRoboticsAnalogOpticalDistanceSensor.class}, methodName = "getRawLightDetectedMax")
     public double getRawLightDetectedMax() {
-        checkIfStopRequested();
-        if (opticalDistanceSensor != null) {
-            return opticalDistanceSensor.getRawLightDetectedMax();
-        }
-        return 0.0;
+        startBlockExecution(BlockType.GETTER, ".RawLightDetectedMax");
+        return opticalDistanceSensor.getRawLightDetectedMax();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = {ModernRoboticsAnalogOpticalDistanceSensor.class}, methodName = "enableLed")
     public void enableLed(boolean enable) {
-        checkIfStopRequested();
-        try {
-            if (opticalDistanceSensor != null) {
-                opticalDistanceSensor.enableLed(enable);
-            }
-        } catch (Exception e) {
-            RobotLog.e("OpticalDistanceSensor.enableLed - caught " + e);
-        }
+        startBlockExecution(BlockType.FUNCTION, ".enableLed");
+        opticalDistanceSensor.enableLed(enable);
     }
 }

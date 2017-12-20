@@ -159,13 +159,13 @@ Blockly.Blocks['velocity_create_withArgs'] = {
         .appendField('distanceUnit')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('X_VELOC').setCheck('Number')
-        .appendField('XVeloc')
+        .appendField('xVeloc')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('Y_VELOC').setCheck('Number')
-        .appendField('YVeloc')
+        .appendField('yVeloc')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('Z_VELOC').setCheck('Number')
-        .appendField('ZVeloc')
+        .appendField('zVeloc')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ACQUISITION_TIME').setCheck('Number')
         .appendField('acquisitionTime')

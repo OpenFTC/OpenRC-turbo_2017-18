@@ -39,8 +39,8 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public class BlocksOpMode extends LinearOpMode {
-    private static final String REFERENCE_ERROR_PREFIX = "ReferenceError: ";
+public final class BlocksOpMode extends LinearOpMode {
+    private static final String BLOCK_EXECUTION_ERROR = "Error: Error calling method on NPObject.";
     private static final String LOG_PREFIX = "BlocksOpMode - ";
 
     private static final AtomicReference<String> fatalErrorMessageHolder = new AtomicReference<String>();
@@ -53,6 +53,10 @@ public class BlocksOpMode extends LinearOpMode {
     private final String project;
     private final String logPrefix;
     private final AtomicLong interruptedTime = new AtomicLong();
+
+    private volatile BlockType currentBlockType;
+    private volatile String currentBlockFirstName;
+    private volatile String currentBlockLastName;
 
     /**
      * Instantiates a BlocksOpMode that loads JavaScript from a file and executes it when the op mode
@@ -72,7 +76,33 @@ public class BlocksOpMode extends LinearOpMode {
         return logPrefix + thread.getThreadGroup().getName() + "/" + thread.getName() + " - ";
     }
 
-    void checkIfStopRequested() {
+    void startBlockExecution(BlockType blockType, String blockFirstName, String blockLastName) {
+        currentBlockType = blockType;
+        currentBlockFirstName = blockFirstName;
+        currentBlockLastName = blockLastName;
+        checkIfStopRequested();
+    }
+
+    String getFullBlockLabel() {
+        switch (currentBlockType) {
+            default:
+                return "to runOpmode";
+            case SPECIAL:
+                return currentBlockFirstName + currentBlockLastName;
+            case EVENT:
+                return "to " + currentBlockFirstName + currentBlockLastName;
+            case CREATE:
+                return "new " + currentBlockFirstName;
+            case SETTER:
+                return "set " + currentBlockFirstName + currentBlockLastName + " to";
+            case GETTER:
+                return currentBlockFirstName + currentBlockLastName;
+            case FUNCTION:
+                return "call " + currentBlockFirstName + currentBlockLastName;
+        }
+    }
+
+    private void checkIfStopRequested() {
         if (interruptedTime.get() != 0L &&
                 isStopRequested() &&
                 System.currentTimeMillis() - interruptedTime.get() >= msStuckDetectStop) {
@@ -137,6 +167,10 @@ public class BlocksOpMode extends LinearOpMode {
         cleanUpPreviousBlocksOpMode();
         try {
             fatalErrorMessageHolder.set(null);
+
+            currentBlockType = BlockType.EVENT;
+            currentBlockFirstName = "";
+            currentBlockLastName = "runOpMode";
 
             boolean interrupted = false;
             interruptedTime.set(0L);
@@ -228,13 +262,11 @@ public class BlocksOpMode extends LinearOpMode {
                 Thread.currentThread().interrupt();
             }
 
-            // If there was a fatal error in the WebView component, throw a RuntimeException.
+            // If there was a fatal error in the WebView component, set the global error message.
 
             String fatalErrorMessage = fatalErrorMessageHolder.getAndSet(null);
             if (fatalErrorMessage != null) {
-                throw new RuntimeException(
-                        "A fatal error occurred while running the Blocks op mode named " + project + ". " +
-                                fatalErrorMessage);
+                RobotLog.setGlobalErrorMsg(fatalErrorMessage);
             }
         } finally {
             long interruptedTime = this.interruptedTime.get();
@@ -336,7 +368,7 @@ public class BlocksOpMode extends LinearOpMode {
                 new GamepadAccess(this, Identifier.GAMEPAD_2.identifier, gamepad2));
         javascriptInterfaces.put(
                 Identifier.LINEAR_OP_MODE.identifier,
-                new LinearOpModeAccess(this, Identifier.LINEAR_OP_MODE.identifier));
+                new LinearOpModeAccess(this, Identifier.LINEAR_OP_MODE.identifier, project));
         javascriptInterfaces.put(
                 Identifier.MAGNETIC_FLUX.identifier,
                 new MagneticFluxAccess(this, Identifier.MAGNETIC_FLUX.identifier));
@@ -435,7 +467,7 @@ public class BlocksOpMode extends LinearOpMode {
         private final AtomicBoolean scriptFinished;
 
         private BlocksOpModeAccess(String identifier, Object scriptFinishedLock, AtomicBoolean scriptFinished) {
-            super(BlocksOpMode.this, identifier);
+            super(BlocksOpMode.this, identifier, "");
             this.scriptFinishedLock = scriptFinishedLock;
             this.scriptFinished = scriptFinished;
         }
@@ -444,6 +476,30 @@ public class BlocksOpMode extends LinearOpMode {
         @JavascriptInterface
         public void scriptStarting() {
             RobotLog.i(getLogPrefix() + "scriptStarting");
+        }
+
+        @SuppressWarnings("unused")
+        @JavascriptInterface
+        public void caughtException(String message) {
+            if (message != null) {
+                // If a hardware device is used in blocks, but has been removed (or renamed) in the
+                // configuration, the message is like "ReferenceError: left_drive is not defined".
+                if (message.startsWith("ReferenceError: ") && message.endsWith(" is not defined")) {
+                    String missingHardwareDeviceName = message.substring(16, message.length() - 15);
+                    fatalErrorMessageHolder.compareAndSet(null,
+                            "Could not find hardware device: " + missingHardwareDeviceName);
+                    return;
+                }
+
+                // If an exception occurs while a block is executed, the message is "Error: Error calling
+                // method on NPObject."
+                if (message.equals("Error: Error calling method on NPObject.")) {
+                    fatalErrorMessageHolder.compareAndSet(null,
+                            "Fatal error occurred while executing the block labeled \"" + getFullBlockLabel() + "\".");
+                }
+            }
+
+            RobotLog.e(getLogPrefix() + "caughtException - message is " + message);
         }
 
         @SuppressWarnings("unused")
@@ -472,7 +528,7 @@ public class BlocksOpMode extends LinearOpMode {
                 + "  try {\n"
                 + "    runOpMode();\n" // This calls the runOpMode method in the generated javascript.
                 + "  } catch (e) {\n"
-                + "    console.log(e);\n"
+                + "    blocksOpMode.caughtException(String(e));\n"
                 + "  }\n"
                 + "  blocksOpMode.scriptFinished();\n"
                 + "}\n"
@@ -511,16 +567,8 @@ public class BlocksOpMode extends LinearOpMode {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                RobotLog.i(LOG_PREFIX + "onConsoleMessage.message() " + consoleMessage.message());
-                RobotLog.i(LOG_PREFIX + "onConsoleMessage.lineNumber() " + consoleMessage.lineNumber());
-                // If a hardware device is used in blocks, but has been removed (or renamed) in the
-                // configuration, there will be a console message like this:
-                // "ReferenceError: left_drive is not defined".
-                String message = consoleMessage.message();
-                if (message.startsWith(REFERENCE_ERROR_PREFIX)) {
-                    RobotLog.e(LOG_PREFIX + "fatalErrorMessage: " + message);
-                    fatalErrorMessageHolder.compareAndSet(null, message);
-                }
+                RobotLog.i(LOG_PREFIX + "consoleMessage.message() " + consoleMessage.message());
+                RobotLog.i(LOG_PREFIX + "consoleMessage.lineNumber() " + consoleMessage.lineNumber());
                 return false; // continue with console logging.
             }
         });

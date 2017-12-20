@@ -8,13 +8,7 @@ import com.google.blocks.ftcrobotcontroller.util.HardwareItem;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtCompassSensor;
 import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.CompassSensor.CompassMode;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
-import junit.framework.Assert;
 
 /**
  * A class that provides JavaScript access to a {@link CompassSensor}.
@@ -24,9 +18,8 @@ import junit.framework.Assert;
 class CompassSensorAccess extends HardwareAccess<CompassSensor> {
     private final CompassSensor compassSensor;
 
-    CompassSensorAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap, Class<? extends HardwareDevice> deviceType) {
+    CompassSensorAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap) {
         super(blocksOpMode, hardwareItem, hardwareMap, CompassSensor.class);
-        Assert.assertTrue(deviceType == CompassSensor.class);
         this.compassSensor = hardwareDevice;
     }
 
@@ -34,36 +27,26 @@ class CompassSensorAccess extends HardwareAccess<CompassSensor> {
     @JavascriptInterface
     @Block(classes = {HiTechnicNxtCompassSensor.class}, methodName = "getDirection")
     public double getDirection() {
-        checkIfStopRequested();
-        if (compassSensor != null) {
-            return compassSensor.getDirection();
-        }
-        return 0.0;
+        startBlockExecution(BlockType.GETTER, ".Direction");
+        return compassSensor.getDirection();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = {HiTechnicNxtCompassSensor.class}, methodName = "calibrationFailed")
     public boolean getCalibrationFailed() {
-        checkIfStopRequested();
-        if (compassSensor != null) {
-            return compassSensor.calibrationFailed();
-        }
-        return false;
+        startBlockExecution(BlockType.GETTER, ".CalibrationFailed");
+        return compassSensor.calibrationFailed();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = {HiTechnicNxtCompassSensor.class}, methodName = "setMode")
     public void setMode(String compassModeString) {
-        checkIfStopRequested();
-        try {
-            if (compassSensor != null) {
-                CompassMode compassMode = CompassMode.valueOf(compassModeString.toUpperCase(Locale.ENGLISH));
-                compassSensor.setMode(compassMode);
-            }
-        } catch (Exception e) {
-            RobotLog.e("CompassSensor.setMode - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".Mode");
+        CompassMode compassMode = checkArg(compassModeString, CompassMode.class, "compassMode");
+        if (compassMode != null) {
+            compassSensor.setMode(compassMode);
         }
     }
 }

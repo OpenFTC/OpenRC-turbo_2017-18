@@ -10,10 +10,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 
@@ -32,7 +28,7 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     private volatile AngleUnit angleUnit = AngleUnit.RADIANS;
 
     AndroidGyroscopeAccess(BlocksOpMode blocksOpMode, String identifier, Activity activity) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "AndroidGyroscope");
         this.activity = activity;
     }
 
@@ -67,18 +63,17 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setAngleUnit(String angleUnitString) {
-        checkIfStopRequested();
-        try {
-            angleUnit = AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
-        } catch (Exception e) {
-            RobotLog.e("AndroidGyroscope.setAngelUnit - caught " + e);
+        startBlockExecution(BlockType.SETTER, ".AngleUnit");
+        AngleUnit angleUnit = checkArg(angleUnitString, AngleUnit.class, "");
+        if (angleUnit != null) {
+            this.angleUnit = angleUnit;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public float getX() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".X");
         if (timestamp != 0) {
             return angleUnit.fromRadians(x);
         }
@@ -88,7 +83,7 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public float getY() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Y");
         if (timestamp != 0) {
             return angleUnit.fromRadians(y);
         }
@@ -98,7 +93,7 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public float getZ() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Z");
         if (timestamp != 0) {
             return angleUnit.fromRadians(z);
         }
@@ -108,7 +103,7 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public AngularVelocity getAngularVelocity() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".AngularVelocity");
         if (timestamp != 0) {
             return new AngularVelocity(AngleUnit.RADIANS, x, y, z, timestamp).toAngleUnit(angleUnit);
         }
@@ -118,14 +113,14 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String getAngleUnit() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".AngleUnit");
         return angleUnit.toString();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isAvailable() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".isAvailable");
         SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
         return !sensorManager.getSensorList(Sensor.TYPE_GYROSCOPE).isEmpty();
     }
@@ -133,7 +128,7 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void startListening() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".startListening");
         if (!listening) {
             SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
             Sensor gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -145,7 +140,7 @@ class AndroidGyroscopeAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void stopListening() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".stopListening");
         close();
     }
 }

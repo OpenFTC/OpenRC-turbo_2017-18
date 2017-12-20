@@ -12,27 +12,27 @@ import android.webkit.JavascriptInterface;
 class MiscAccess extends Access {
 
     MiscAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Object getNull() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.SPECIAL, "null");
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isNull(Object value) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.SPECIAL, "isNull");
         return (value == null);
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isNotNull(Object value) {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.SPECIAL, "isNotNull");
         return (value != null);
     }
 }

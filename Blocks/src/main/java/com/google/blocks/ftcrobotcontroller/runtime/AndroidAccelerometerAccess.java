@@ -10,10 +10,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -32,7 +28,7 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     private volatile DistanceUnit distanceUnit = DistanceUnit.METER;
 
     AndroidAccelerometerAccess(BlocksOpMode blocksOpMode, String identifier, Activity activity) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "AndroidAccelerometer");
         this.activity = activity;
     }
 
@@ -67,18 +63,17 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setDistanceUnit(String distanceUnitString) {
-        checkIfStopRequested();
-        try {
-            distanceUnit = DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
-        } catch (Exception e) {
-            RobotLog.e("AndroidAccelerometer.setAngelUnit - caught " + e);
+        startBlockExecution(BlockType.SETTER, ".DistanceUnit");
+        DistanceUnit distanceUnit = checkArg(distanceUnitString, DistanceUnit.class, "");
+        if (distanceUnit != null) {
+            this.distanceUnit = distanceUnit;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getX() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".X");
         if (timestamp != 0) {
             return distanceUnit.fromMeters(x);
         }
@@ -88,7 +83,7 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getY() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Y");
         if (timestamp != 0) {
             return distanceUnit.fromMeters(y);
         }
@@ -98,7 +93,7 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public double getZ() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Z");
         if (timestamp != 0) {
             return distanceUnit.fromMeters(z);
         }
@@ -108,7 +103,7 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Acceleration getAcceleration() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Acceleration");
         if (timestamp != 0) {
             return new Acceleration(DistanceUnit.METER, x, y, z, timestamp)
                     .toUnit(distanceUnit);
@@ -119,14 +114,14 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String getDistanceUnit() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".DistanceUnit");
         return distanceUnit.toString();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isAvailable() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".isAvailable");
         SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
         return !sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).isEmpty();
     }
@@ -134,7 +129,7 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void startListening() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".startListening");
         if (!listening) {
             SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
             Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -146,7 +141,7 @@ class AndroidAccelerometerAccess extends Access implements SensorEventListener {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void stopListening() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.FUNCTION, ".stopListening");
         close();
     }
 }

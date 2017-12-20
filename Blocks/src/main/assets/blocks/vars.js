@@ -5,6 +5,8 @@ var getPropertyColor = 151;
 var functionColor = 289;
 var commentColor = 200;
 
+var identifierFieldNames = ['IDENTIFIER', 'IDENTIFIER1', 'IDENTIFIER2'];
+
 function createNonEditableField(label) {
   var field = new Blockly.FieldTextInput(label);
   field.CURSOR = '';

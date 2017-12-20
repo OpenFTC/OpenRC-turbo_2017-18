@@ -2,12 +2,12 @@
 
 package com.google.blocks.ftcrobotcontroller.runtime;
 
+import static android.speech.tts.TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.webkit.JavascriptInterface;
-
-import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.Locale;
 
@@ -22,7 +22,7 @@ class AndroidTextToSpeechAccess extends Access {
     private volatile Integer onInitStatus;
 
     AndroidTextToSpeechAccess(BlocksOpMode blocksOpMode, String identifier, Activity activity) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "AndroidTextToSpeech");
         this.activity = activity;
     }
 
@@ -42,23 +42,19 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void initialize() {
-        checkIfStopRequested();
-        try {
-            textToSpeech = new TextToSpeech(activity, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    onInitStatus = status;
-                }
-            });
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.initialize - caught " + e);
-        }
+        startBlockExecution(BlockType.FUNCTION, ".initialize");
+        textToSpeech = new TextToSpeech(activity, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                onInitStatus = status;
+            }
+        });
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public String getStatus() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Status");
         if (onInitStatus == null) {
             return "Not initialized";
         }
@@ -72,15 +68,11 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings({"unused", "deprecation"})
     @JavascriptInterface
     public String getLanguageCode() {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                return textToSpeech.getLanguage().getLanguage();
-            } else {
-                RobotLog.e("AndroidTextToSpeech.getLanguageCode - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.getLanguageCode - caught " + e);
+        startBlockExecution(BlockType.GETTER, ".LanguageCode");
+        if (textToSpeech != null) {
+            return textToSpeech.getLanguage().getLanguage();
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
         return "";
     }
@@ -88,15 +80,11 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings({"unused", "deprecation"})
     @JavascriptInterface
     public String getCountryCode() {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                return textToSpeech.getLanguage().getCountry();
-            } else {
-                RobotLog.e("AndroidTextToSpeech.getCountryCode - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.getCountryCode - caught " + e);
+        startBlockExecution(BlockType.GETTER, ".CountryCode");
+        if (textToSpeech != null) {
+            return textToSpeech.getLanguage().getCountry();
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
         return "";
     }
@@ -104,15 +92,11 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean getIsSpeaking() {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                return textToSpeech.isSpeaking();
-            } else {
-                RobotLog.e("AndroidTextToSpeech.getIsSpeaking - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.getIsSpeaking - caught " + e);
+        startBlockExecution(BlockType.GETTER, ".IsSpeaking");
+        if (textToSpeech != null) {
+            return textToSpeech.isSpeaking();
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
         return false;
     }
@@ -120,46 +104,34 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setPitch(float pitch) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                textToSpeech.setPitch(pitch);
-            } else {
-                RobotLog.e("AndroidTextToSpeech.setPitch - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.setPitch - caught " + e);
+        startBlockExecution(BlockType.SETTER, ".Pitch");
+        if (textToSpeech != null) {
+            textToSpeech.setPitch(pitch);
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setSpeechRate(float speechRate) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                textToSpeech.setSpeechRate(speechRate);
-            } else {
-                RobotLog.e("AndroidTextToSpeech.setSpeechRate - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.setSpeechRate - caught " + e);
+        startBlockExecution(BlockType.SETTER, ".SpeechRate");
+        if (textToSpeech != null) {
+            textToSpeech.setSpeechRate(speechRate);
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isLanguageAvailable(String languageCode) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                return textToSpeech.isLanguageAvailable(new Locale(languageCode)) ==
-                        TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE;
-            } else {
-                RobotLog.e("AndroidTextToSpeech.isLanguageAvailable - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.isLanguageAvailable - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".isLanguageAvailable");
+        if (textToSpeech != null) {
+            Locale locale = new Locale(languageCode);
+            return textToSpeech.isLanguageAvailable(locale) == LANG_COUNTRY_VAR_AVAILABLE;
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
         return false;
     }
@@ -167,16 +139,12 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public boolean isLanguageAndCountryAvailable(String languageCode, String countryCode) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                return textToSpeech.isLanguageAvailable(new Locale(languageCode, countryCode)) ==
-                        TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE;
-            } else {
-                RobotLog.e("AndroidTextToSpeech.isLanguageAndCountryAvailable - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.isLanguageAndCountryAvailable - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".isLanguageAndCountryAvailable");
+        if (textToSpeech != null) {
+            Locale locale = new Locale(languageCode, countryCode);
+            return textToSpeech.isLanguageAvailable(locale) == LANG_COUNTRY_VAR_AVAILABLE;
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
         return false;
     }
@@ -184,45 +152,33 @@ class AndroidTextToSpeechAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setLanguage(String languageCode) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                textToSpeech.setLanguage(new Locale(languageCode));
-            } else {
-                RobotLog.e("AndroidTextToSpeech.setLanguage - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.setLanguage - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".setLanguage");
+        if (textToSpeech != null) {
+            textToSpeech.setLanguage(new Locale(languageCode));
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     public void setLanguageAndCountry(String languageCode, String countryCode) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                textToSpeech.setLanguage(new Locale(languageCode, countryCode));
-            } else {
-                RobotLog.e("AndroidTextToSpeech.setLanguageAndCountry - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.setLanguageAndCountry - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".setLanguageAndCountry");
+        if (textToSpeech != null) {
+            textToSpeech.setLanguage(new Locale(languageCode, countryCode));
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
     }
 
     @SuppressWarnings({"unused", "deprecation"})
     @JavascriptInterface
     public void speak(String text) {
-        checkIfStopRequested();
-        try {
-            if (textToSpeech != null) {
-                textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null /* params */);
-            } else {
-                RobotLog.e("AndroidTextToSpeech.speak - you forgot to call AndroidTextToSpeech.initialize!");
-            }
-        } catch (Exception e) {
-            RobotLog.e("AndroidTextToSpeech.speak - caught " + e);
+        startBlockExecution(BlockType.FUNCTION, ".speak");
+        if (textToSpeech != null) {
+            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null /* params */);
+        } else {
+            reportWarning("You forgot to call AndroidTextToSpeech.initialize!");
         }
     }
 }

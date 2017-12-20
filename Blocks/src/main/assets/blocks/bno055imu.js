@@ -8,6 +8,7 @@
 // The following are defined in vars.js:
 // getPropertyColor
 // functionColor
+// setPropertyColor
 
 Blockly.JavaScript['bno055imu_setProperty'] = function(block) {
   var identifier = block.getFieldValue('IDENTIFIER');
