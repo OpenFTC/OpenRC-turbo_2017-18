@@ -52,72 +52,63 @@ import java.nio.charset.Charset;
  * to the system log
  */
 @SuppressWarnings("WeakerAccess")
-public class LogOutputStream extends OutputStream
-    {
+public class LogOutputStream extends OutputStream {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final int          priority;
-    protected final String       tag;
-    protected final Charset      charset;
+    protected final int priority;
+    protected final String tag;
+    protected final Charset charset;
     protected CircularByteBuffer byteBuffer;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LogOutputStream(int priority, String tag, Charset charset)
-        {
+    public LogOutputStream(int priority, String tag, Charset charset) {
         this.priority = priority;
         this.tag = tag;
         this.charset = charset;
         this.byteBuffer = new CircularByteBuffer(32);
-        }
+    }
 
-    public static PrintStream printStream(String tag)
-        {
+    public static PrintStream printStream(String tag) {
         Charset charset = Charset.forName("UTF-8");
-        try
-            {
+        try {
             return new PrintStream(new LogOutputStream(Log.ERROR, tag, charset), true, charset.name());
-            }
-        catch (UnsupportedEncodingException ignored)
-            {
+        } catch (UnsupportedEncodingException ignored) {
             throw AppUtil.getInstance().unreachable();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override public void close() throws IOException
-        {
+    @Override
+    public void close() throws IOException {
         writeToLog();   // get the last chars
-        }
+    }
 
-    @Override public void flush() throws IOException
-        {
+    @Override
+    public void flush() throws IOException {
         // Nothing to do : flush() should be callable at any time; we don't want to add chars
-        }
+    }
 
-    @Override public synchronized void write(int oneByte) throws IOException
-        {
-        byteBuffer.write(new byte[] { (byte)oneByte });
-        if (oneByte == '\n')
-            {
+    @Override
+    public synchronized void write(int oneByte) throws IOException {
+        byteBuffer.write(new byte[]{(byte) oneByte});
+        if (oneByte == '\n') {
             writeToLog();
-            }
-        }
-
-    protected void writeToLog()
-        {
-        CharBuffer chars = charset.decode(ByteBuffer.wrap(byteBuffer.readAll()));
-        if (chars.length() > 0)
-            {
-            RobotLog.internalLog(priority, tag, chars.toString());
-            }
-        byteBuffer.clear();
         }
     }
+
+    protected void writeToLog() {
+        CharBuffer chars = charset.decode(ByteBuffer.wrap(byteBuffer.readAll()));
+        if (chars.length() > 0) {
+            RobotLog.internalLog(priority, tag, chars.toString());
+        }
+        byteBuffer.clear();
+    }
+}

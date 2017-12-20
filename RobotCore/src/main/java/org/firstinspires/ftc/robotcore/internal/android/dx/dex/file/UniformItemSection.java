@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.file;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.util.Collection;
 
 /**
@@ -29,17 +30,19 @@ public abstract class UniformItemSection extends Section {
     /**
      * Constructs an instance. The file offset is initially unknown.
      *
-     * @param name {@code null-ok;} the name of this instance, for annotation
-     * purposes
-     * @param file {@code non-null;} file that this instance is part of
+     * @param name      {@code null-ok;} the name of this instance, for annotation
+     *                  purposes
+     * @param file      {@code non-null;} file that this instance is part of
      * @param alignment {@code > 0;} alignment requirement for the final output;
-     * must be a power of 2
+     *                  must be a power of 2
      */
     public UniformItemSection(String name, DexFile file, int alignment) {
         super(name, file, alignment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int writeSize() {
         Collection<? extends Item> items = items();
@@ -64,7 +67,9 @@ public abstract class UniformItemSection extends Section {
      */
     public abstract IndexedItem get(Constant cst);
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final void prepare0() {
         DexFile file = getFile();
@@ -76,7 +81,9 @@ public abstract class UniformItemSection extends Section {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final void writeTo0(AnnotatedOutput out) {
         DexFile file = getFile();
@@ -88,7 +95,9 @@ public abstract class UniformItemSection extends Section {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int getAbsoluteItemOffset(Item item) {
         /*

@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa.back;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SetFactory;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntSet;
+
 import java.util.ArrayList;
 
 /**
@@ -34,7 +35,7 @@ public class InterferenceGraph {
      * Creates a new graph.
      *
      * @param countRegs {@code >= 0;} the start count of registers in
-     * the namespace. New registers can be added subsequently.
+     *                  the namespace. New registers can be added subsequently.
      */
     public InterferenceGraph(int countRegs) {
         interference = new ArrayList<IntSet>(countRegs);
@@ -78,7 +79,7 @@ public class InterferenceGraph {
      *
      * @param reg {@code >= 0;} register
      * @param set {@code non-null;} interference set; will be merged
-     * with set for given register
+     *            with set for given register
      */
     public void mergeInterferenceSet(int reg, IntSet set) {
         if (reg < interference.size()) {

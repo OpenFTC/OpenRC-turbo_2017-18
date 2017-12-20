@@ -32,6 +32,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaInsn;
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.SsaMethod;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -41,10 +42,14 @@ import java.util.Comparator;
  * Converts a method in SSA form to ROP form.
  */
 public class SsaToRop {
-    /** local debug flag */
+    /**
+     * local debug flag
+     */
     private static final boolean DEBUG = false;
 
-    /** {@code non-null;} method to process */
+    /**
+     * {@code non-null;} method to process
+     */
     private final SsaMethod ssaMeth;
 
     /**
@@ -53,34 +58,36 @@ public class SsaToRop {
      */
     private final boolean minimizeRegisters;
 
-    /** {@code non-null;} interference graph */
+    /**
+     * {@code non-null;} interference graph
+     */
     private final InterferenceGraph interference;
 
     /**
      * Converts a method in SSA form to ROP form.
      *
-     * @param ssaMeth {@code non-null;} method to process
+     * @param ssaMeth           {@code non-null;} method to process
      * @param minimizeRegisters {@code true} if the converter should
-     * attempt to minimize the rop-form register count
+     *                          attempt to minimize the rop-form register count
      * @return {@code non-null;} rop-form output
      */
     public static RopMethod convertToRopMethod(SsaMethod ssaMeth,
-            boolean minimizeRegisters) {
+                                               boolean minimizeRegisters) {
         return new SsaToRop(ssaMeth, minimizeRegisters).convert();
     }
 
     /**
      * Constructs an instance.
      *
-     * @param ssaMeth {@code non-null;} method to process
+     * @param ssaMeth           {@code non-null;} method to process
      * @param minimizeRegisters {@code true} if the converter should
-     * attempt to minimize the rop-form register count
+     *                          attempt to minimize the rop-form register count
      */
     private SsaToRop(SsaMethod ssaMethod, boolean minimizeRegisters) {
         this.minimizeRegisters = minimizeRegisters;
         this.ssaMeth = ssaMethod;
         this.interference =
-            LivenessAnalyzer.constructInterferenceGraph(ssaMethod);
+                LivenessAnalyzer.constructInterferenceGraph(ssaMethod);
     }
 
     /**
@@ -98,14 +105,14 @@ public class SsaToRop {
         // allocator = new FirstFitAllocator(ssaMeth, interference);
 
         RegisterAllocator allocator =
-            new FirstFitLocalCombiningAllocator(ssaMeth, interference,
-                    minimizeRegisters);
+                new FirstFitLocalCombiningAllocator(ssaMeth, interference,
+                        minimizeRegisters);
 
         RegisterMapper mapper = allocator.allocateRegisters();
 
         if (DEBUG) {
             System.out.println("Printing reg map");
-            System.out.println(((BasicRegisterMapper)mapper).toHuman());
+            System.out.println(((BasicRegisterMapper) mapper).toHuman());
         }
 
         ssaMeth.setBackMode();
@@ -147,7 +154,7 @@ public class SsaToRop {
                     BitSet preds = (BitSet) b.getPredecessors().clone();
 
                     for (int i = preds.nextSetBit(0); i >= 0;
-                            i = preds.nextSetBit(i + 1)) {
+                         i = preds.nextSetBit(i + 1)) {
                         SsaBasicBlock pb = blocks.get(i);
                         pb.replaceSuccessor(b.getIndex(),
                                 b.getPrimarySuccessorIndex());

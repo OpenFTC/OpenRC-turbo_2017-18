@@ -26,7 +26,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
  * for details.
  */
 public final class Form30t extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new Form30t();
 
     /**
@@ -37,42 +39,54 @@ public final class Form30t extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         return branchString(insn);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         return branchComment(insn);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return 3;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         if (!((insn instanceof TargetInsn) &&
-              (insn.getRegisters().size() == 0))) {
+                (insn.getRegisters().size() == 0))) {
             return false;
         }
 
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean branchFits(TargetInsn insn) {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         int offset = ((TargetInsn) insn).getTargetOffset();

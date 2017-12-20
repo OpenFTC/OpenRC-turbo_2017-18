@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.rop.code;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeBearer;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityControl;
+
 import java.util.HashMap;
 
 /**
@@ -26,7 +27,9 @@ import java.util.HashMap;
  */
 public final class LocalVariableInfo
         extends MutabilityControl {
-    /** {@code >= 0;} the register count for the method */
+    /**
+     * {@code >= 0;} the register count for the method
+     */
     private final int regCount;
 
     /**
@@ -43,7 +46,9 @@ public final class LocalVariableInfo
      */
     private final RegisterSpecSet[] blockStarts;
 
-    /** {@code non-null;} map from instructions to the variable each assigns */
+    /**
+     * {@code non-null;} map from instructions to the variable each assigns
+     */
     private final HashMap<Insn, RegisterSpec> insnAssignments;
 
     /**
@@ -63,7 +68,7 @@ public final class LocalVariableInfo
         this.emptySet = new RegisterSpecSet(regCount);
         this.blockStarts = new RegisterSpecSet[maxLabel];
         this.insnAssignments =
-            new HashMap<Insn, RegisterSpec>(blocks.getInstructionCount());
+                new HashMap<Insn, RegisterSpec>(blocks.getInstructionCount());
 
         emptySet.setImmutable();
     }
@@ -99,7 +104,7 @@ public final class LocalVariableInfo
      *
      * @param label {@code >= 0;} the block label
      * @param specs {@code non-null;} the register set to merge into the start set
-     * for the block
+     *              for the block
      * @return {@code true} if the merge resulted in an actual change
      * to the associated set (including storing one for the first time) or
      * {@code false} if there was no change
@@ -169,14 +174,14 @@ public final class LocalVariableInfo
         RegisterSpecSet result = getStarts0(label);
 
         return (result != null) ?
-            result.mutableCopy() : new RegisterSpecSet(regCount);
+                result.mutableCopy() : new RegisterSpecSet(regCount);
     }
 
     /**
      * Adds an assignment association for the given instruction and
      * register spec. This throws an exception if the instruction
      * doesn't actually perform a named variable assignment.
-     *
+     * <p>
      * <b>Note:</b> Although the instruction contains its own spec for
      * the result, it still needs to be passed in explicitly to this
      * method, since the spec that is stored here should always have a
@@ -221,7 +226,7 @@ public final class LocalVariableInfo
     }
 
     public void debugDump() {
-        for (int label = 0 ; label < blockStarts.length; label++) {
+        for (int label = 0; label < blockStarts.length; label++) {
             if (blockStarts[label] == null) {
                 continue;
             }

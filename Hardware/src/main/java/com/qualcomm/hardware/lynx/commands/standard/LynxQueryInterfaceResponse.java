@@ -44,71 +44,64 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxQueryInterfaceResponse extends LynxStandardResponse
-    {
+public class LynxQueryInterfaceResponse extends LynxStandardResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    short   commandNumberFirst = LynxInterface.ERRONEOUS_COMMAND_NUMBER;
-    short   numberOfCommands   = 0;
+    short commandNumberFirst = LynxInterface.ERRONEOUS_COMMAND_NUMBER;
+    short numberOfCommands = 0;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxQueryInterfaceResponse(LynxModule module)
-        {
+    public LynxQueryInterfaceResponse(LynxModule module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getCommandNumberFirst()
-        {
+    public int getCommandNumberFirst() {
         return TypeConversion.unsignedShortToInt(this.commandNumberFirst);
-        }
-    public int getNumberOfCommands()
-        {
+    }
+
+    public int getNumberOfCommands() {
         return TypeConversion.unsignedShortToInt(this.numberOfCommands);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return LynxQueryInterfaceCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return getStandardCommandNumber();
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         return Util.concatenateByteArrays(
-            TypeConversion.shortToByteArray(this.commandNumberFirst, LynxDatagram.LYNX_ENDIAN),
-            TypeConversion.shortToByteArray(this.numberOfCommands, LynxDatagram.LYNX_ENDIAN));
-        }
+                TypeConversion.shortToByteArray(this.commandNumberFirst, LynxDatagram.LYNX_ENDIAN),
+                TypeConversion.shortToByteArray(this.numberOfCommands, LynxDatagram.LYNX_ENDIAN));
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb);
         buffer.order(LynxDatagram.LYNX_ENDIAN);
         this.commandNumberFirst = buffer.getShort();
-        this.numberOfCommands   = buffer.getShort();
-        }
+        this.numberOfCommands = buffer.getShort();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    }
+}

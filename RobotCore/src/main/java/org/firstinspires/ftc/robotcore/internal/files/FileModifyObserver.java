@@ -39,79 +39,69 @@ import java.io.File;
  * even across its deletions or recreations
  */
 @SuppressWarnings("WeakerAccess")
-public class FileModifyObserver
-    {
+public class FileModifyObserver {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = FileModifyObserver.class.getSimpleName();
 
-    protected File                  monitoredFile;
+    protected File monitoredFile;
     protected RecursiveFileObserver directoryObserver;
     protected RecursiveFileObserver fileObserver;
-    protected Listener              listener;
+    protected Listener listener;
 
-    public interface Listener
-        {
+    public interface Listener {
         void onFileChanged(int event, File file);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public FileModifyObserver(final File monitoredFile, final Listener listener)
-        {
+    public FileModifyObserver(final File monitoredFile, final Listener listener) {
         this.monitoredFile = monitoredFile;
         this.listener = listener;
 
         int dirAccess = RecursiveFileObserver.CREATE | RecursiveFileObserver.DELETE | RecursiveFileObserver.MOVED_FROM | RecursiveFileObserver.MOVED_TO;
-        this.directoryObserver = new RecursiveFileObserver(monitoredFile.getParentFile(), dirAccess, RecursiveFileObserver.Mode.NONRECURSVIVE, new RecursiveFileObserver.Listener()
-            {
-            @Override public void onEvent(int event, File file)
-                {
-                if (file.getName().equals(monitoredFile.getName()))
-                    {
+        this.directoryObserver = new RecursiveFileObserver(monitoredFile.getParentFile(), dirAccess, RecursiveFileObserver.Mode.NONRECURSVIVE, new RecursiveFileObserver.Listener() {
+            @Override
+            public void onEvent(int event, File file) {
+                if (file.getName().equals(monitoredFile.getName())) {
                     if ((event & (RecursiveFileObserver.CREATE | RecursiveFileObserver.MOVED_TO)) != 0)    // we may get more notifications than we ask for, so check
-                        {
+                    {
                         fileObserver.stopWatching();    // deal with potential rename
                         fileObserver.startWatching();
 
                         // Creation counts as a 'modification' here, since
                         // its unclear if we'd actually see a subsequent actual MODIFY
                         listener.onFileChanged(event, file);
-                        }
-                    else if ((event & (RecursiveFileObserver.DELETE | RecursiveFileObserver.MOVED_FROM)) != 0)
-                        {
+                    } else if ((event & (RecursiveFileObserver.DELETE | RecursiveFileObserver.MOVED_FROM)) != 0) {
                         fileObserver.stopWatching();
-                        }
                     }
                 }
-            });
+            }
+        });
 
         final int modifyAccess = RecursiveFileObserver.MODIFY;
-        final int fileAccess   = modifyAccess;
-        this.fileObserver = new RecursiveFileObserver(monitoredFile, fileAccess, RecursiveFileObserver.Mode.NONRECURSVIVE, new RecursiveFileObserver.Listener()
-            {
-            @Override public void onEvent(int event, File file)
-                {
-                if ((event & modifyAccess) != 0)
-                    {
+        final int fileAccess = modifyAccess;
+        this.fileObserver = new RecursiveFileObserver(monitoredFile, fileAccess, RecursiveFileObserver.Mode.NONRECURSVIVE, new RecursiveFileObserver.Listener() {
+            @Override
+            public void onEvent(int event, File file) {
+                if ((event & modifyAccess) != 0) {
                     listener.onFileChanged(event, file);
-                    }
                 }
-            });
+            }
+        });
 
         this.fileObserver.startWatching();
         this.directoryObserver.startWatching();
-        }
+    }
 
-    public void close()
-        {
+    public void close() {
         directoryObserver.stopWatching();
         fileObserver.stopWatching();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Tests
@@ -141,4 +131,4 @@ public class FileModifyObserver
 
         ReadWriteFile.writeFile(testModify, "after");
         }*/
-    }
+}

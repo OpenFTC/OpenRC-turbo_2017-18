@@ -25,13 +25,17 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
  */
 public final class DexTranslationAdvice
         implements TranslationAdvice {
-    /** {@code non-null;} standard instance of this class */
+    /**
+     * {@code non-null;} standard instance of this class
+     */
     public static final DexTranslationAdvice THE_ONE =
-        new DexTranslationAdvice();
+            new DexTranslationAdvice();
 
-    /** debug advice for disabling invoke-range optimization */
+    /**
+     * debug advice for disabling invoke-range optimization
+     */
     public static final DexTranslationAdvice NO_SOURCES_IN_ORDER =
-        new DexTranslationAdvice(true);
+            new DexTranslationAdvice(true);
 
     /**
      * The minimum source width, in register units, for an invoke
@@ -39,7 +43,9 @@ public final class DexTranslationAdvice
      */
     private static final int MIN_INVOKE_IN_ORDER = 6;
 
-    /** when true: always returns false for requiresSourcesInOrder */
+    /**
+     * when true: always returns false for requiresSourcesInOrder
+     */
     private final boolean disableSourcesInOrder;
 
     /**
@@ -53,15 +59,17 @@ public final class DexTranslationAdvice
         this.disableSourcesInOrder = disableInvokeRange;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasConstantOperation(Rop opcode,
-            RegisterSpec sourceA, RegisterSpec sourceB) {
+                                        RegisterSpec sourceA, RegisterSpec sourceB) {
         if (sourceA.getType() != Type.INT) {
             return false;
         }
 
         // Return false if second source isn't a constant
-        if (! (sourceB.getTypeBearer() instanceof CstInteger)) {
+        if (!(sourceB.getTypeBearer() instanceof CstInteger)) {
             // Except for rsub-int (reverse sub) where first source is constant
             if (sourceA.getTypeBearer() instanceof CstInteger &&
                     opcode.getOpcode() == RegOps.SUB) {
@@ -98,9 +106,11 @@ public final class DexTranslationAdvice
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean requiresSourcesInOrder(Rop opcode,
-            RegisterSpecList sources) {
+                                          RegisterSpecList sources) {
 
         return !disableSourcesInOrder && opcode.isCallLike()
                 && totalRopWidth(sources) >= MIN_INVOKE_IN_ORDER;
@@ -123,7 +133,9 @@ public final class DexTranslationAdvice
         return total;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getMaxOptimalRegisterCount() {
         return 16;
     }

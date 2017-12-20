@@ -57,7 +57,7 @@ public abstract class CstLiteralBits
      * the value.
      */
     public boolean fitsIn16Bits() {
-        if (! fitsInInt()) {
+        if (!fitsInInt()) {
             return false;
         }
 
@@ -72,7 +72,7 @@ public abstract class CstLiteralBits
      * the value.
      */
     public boolean fitsIn8Bits() {
-        if (! fitsInInt()) {
+        if (!fitsInInt()) {
             return false;
         }
 

@@ -59,318 +59,323 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
 
-  //------------------------------------------------------------------------------------------------
-  // Constants
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------
 
-  public static final String TAG = "FtcEventLoopHandler";
+    public static final String TAG = "FtcEventLoopHandler";
 
-  /** This string is sent in the robot battery telemetry payload to indicate
-   *  that no voltage sensor is available on the robot. */
-  public static final String NO_VOLTAGE_SENSOR = "$no$voltage$sensor$";
+    /**
+     * This string is sent in the robot battery telemetry payload to indicate
+     * that no voltage sensor is available on the robot.
+     */
+    public static final String NO_VOLTAGE_SENSOR = "$no$voltage$sensor$";
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  protected final UpdateUI.Callback callback;
-  protected final HardwareFactory   hardwareFactory;
-  protected final Context           robotControllerContext;
+    protected final UpdateUI.Callback callback;
+    protected final HardwareFactory hardwareFactory;
+    protected final Context robotControllerContext;
 
-  protected EventLoopManager  eventLoopManager;
+    protected EventLoopManager eventLoopManager;
 
-  protected BatteryChecker    robotControllerBatteryChecker;
-  protected double            robotControllerBatteryCheckerInterval = 180.0; // in seconds
+    protected BatteryChecker robotControllerBatteryChecker;
+    protected double robotControllerBatteryCheckerInterval = 180.0; // in seconds
 
-  protected ElapsedTime       robotBatteryTimer         = new ElapsedTime();
-  protected double            robotBatteryInterval      = 3.00; // in seconds
-  protected MovingStatistics  robotBatteryStatistics    = new MovingStatistics(10);
-  protected ElapsedTime       robotBatteryLoggingTimer  = new ElapsedTime(0); // 0 so we get an initial report
-  protected double            robotBatteryLoggingInterval = robotControllerBatteryCheckerInterval;
+    protected ElapsedTime robotBatteryTimer = new ElapsedTime();
+    protected double robotBatteryInterval = 3.00; // in seconds
+    protected MovingStatistics robotBatteryStatistics = new MovingStatistics(10);
+    protected ElapsedTime robotBatteryLoggingTimer = new ElapsedTime(0); // 0 so we get an initial report
+    protected double robotBatteryLoggingInterval = robotControllerBatteryCheckerInterval;
 
-  protected ElapsedTime       userTelemetryTimer        = new ElapsedTime(0); // 0 so we get an initial report
-  protected double            userTelemetryInterval     = 0.250; // in seconds
-  protected final Object      refreshUserTelemetryLock  = new Object();
+    protected ElapsedTime userTelemetryTimer = new ElapsedTime(0); // 0 so we get an initial report
+    protected double userTelemetryInterval = 0.250; // in seconds
+    protected final Object refreshUserTelemetryLock = new Object();
 
-  protected ElapsedTime       updateUITimer             = new ElapsedTime();
-  protected double            updateUIInterval          = 0.250; // in seconds
+    protected ElapsedTime updateUITimer = new ElapsedTime();
+    protected double updateUIInterval = 0.250; // in seconds
 
-  protected HardwareMap       hardwareMap     = null;
+    protected HardwareMap hardwareMap = null;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public FtcEventLoopHandler(HardwareFactory hardwareFactory, UpdateUI.Callback callback, Context robotControllerContext) {
-    this.hardwareFactory        = hardwareFactory;
-    this.callback               = callback;
-    this.robotControllerContext = robotControllerContext;
+    public FtcEventLoopHandler(HardwareFactory hardwareFactory, UpdateUI.Callback callback, Context robotControllerContext) {
+        this.hardwareFactory = hardwareFactory;
+        this.callback = callback;
+        this.robotControllerContext = robotControllerContext;
 
-    long milliseconds = (long)(robotControllerBatteryCheckerInterval * 1000); //milliseconds
-    robotControllerBatteryChecker = new BatteryChecker(robotControllerContext, this, milliseconds);
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Loop life cycle
-  //------------------------------------------------------------------------------------------------
-
-  public void init(EventLoopManager eventLoopManager) {
-    this.eventLoopManager = eventLoopManager;
-    robotControllerBatteryChecker.startBatteryMonitoring();
-  }
-
-  public void close() {
-    // Close motor and servo controllers first, since some of them may reside on top
-    // of legacy modules: closing first just keeps things more graceful
-    closeMotorControllers();
-    closeServoControllers();
-
-    // Now close everything that's USB-connected (yes that might re-close a motor or servo
-    // controller, but that's ok
-    closeAutoCloseOnTeardown();
-
-    // Stop the battery monitoring so we don't send stale telemetry
-    closeBatteryMonitoring();
-
-    // Paranoia: shut down interactions for absolute certain
-    eventLoopManager = null;
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Accessing
-  //------------------------------------------------------------------------------------------------
-
-  public EventLoopManager getEventLoopManager() {
-    return eventLoopManager;
-  }
-
-  public HardwareMap getHardwareMap() throws RobotCoreException, InterruptedException {
-    synchronized (hardwareFactory) {
-      if (hardwareMap==null) {
-
-        // Create a newly-active hardware map
-        hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
-      }
-      return hardwareMap;
+        long milliseconds = (long) (robotControllerBatteryCheckerInterval * 1000); //milliseconds
+        robotControllerBatteryChecker = new BatteryChecker(robotControllerContext, this, milliseconds);
     }
-  }
 
-  public List<LynxUsbDeviceImpl> getExtantLynxDeviceImpls() {
-    synchronized (hardwareFactory) {
-      List<LynxUsbDeviceImpl> result = new ArrayList<LynxUsbDeviceImpl>();
-      HardwareMap map = hardwareMap;
-      if (map != null) {
-        for (LynxUsbDevice lynxUsbDevice : map.getAll(LynxUsbDevice.class)) {
-          if (lynxUsbDevice.getArmingState()==RobotArmingStateNotifier.ARMINGSTATE.ARMED) {
-            result.add(lynxUsbDevice.getDelegationTarget());
-          }
-        }
-      }
-      return result;
+    //------------------------------------------------------------------------------------------------
+    // Loop life cycle
+    //------------------------------------------------------------------------------------------------
+
+    public void init(EventLoopManager eventLoopManager) {
+        this.eventLoopManager = eventLoopManager;
+        robotControllerBatteryChecker.startBatteryMonitoring();
     }
-  }
 
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
+    public void close() {
+        // Close motor and servo controllers first, since some of them may reside on top
+        // of legacy modules: closing first just keeps things more graceful
+        closeMotorControllers();
+        closeServoControllers();
 
-  public void displayGamePadInfo(String activeOpModeName) {
-    if (updateUITimer.time() > updateUIInterval) {
-      updateUITimer.reset();
+        // Now close everything that's USB-connected (yes that might re-close a motor or servo
+        // controller, but that's ok
+        closeAutoCloseOnTeardown();
 
-      // Get access to gamepad 1 and 2
-      Gamepad gamepads[] = getGamepads();
-      callback.updateUi(activeOpModeName, gamepads);
+        // Stop the battery monitoring so we don't send stale telemetry
+        closeBatteryMonitoring();
+
+        // Paranoia: shut down interactions for absolute certain
+        eventLoopManager = null;
     }
-  }
 
-  public Gamepad[] getGamepads() {
-    return eventLoopManager != null
-            ? eventLoopManager.getGamepads()
-            : new Gamepad[2];
-  }
+    //------------------------------------------------------------------------------------------------
+    // Accessing
+    //------------------------------------------------------------------------------------------------
 
-  /**
-   * Updates the (indicated) user's telemetry: the telemetry is transmitted if a sufficient
-   * interval has passed since the last transmission. If the telemetry is transmitted, the
-   * telemetry is cleared and the timer is reset. A battery voltage key may be added to the
-   * message before transmission.
-   *
-   * @param telemetry         the telemetry data to send
-   * @param requestedInterval the minimum interval (s) since the last transmission. NaN indicates
-   *                          that a default transmission interval should be used
-   *
-   * @see com.qualcomm.robotcore.eventloop.EventLoop#TELEMETRY_DEFAULT_INTERVAL
-   */
-  public void refreshUserTelemetry(TelemetryMessage telemetry, double requestedInterval) {
-    synchronized (this.refreshUserTelemetryLock) {
+    public EventLoopManager getEventLoopManager() {
+        return eventLoopManager;
+    }
 
-      // NaN is an indicator to use the default interval, whereas zero will
-      // cause immediate transmission.
-      if (Double.isNaN(requestedInterval))
-        requestedInterval = userTelemetryInterval;
+    public HardwareMap getHardwareMap() throws RobotCoreException, InterruptedException {
+        synchronized (hardwareFactory) {
+            if (hardwareMap == null) {
 
-      // We'll do a transmission just to see the user's new data if a sufficient interval
-      // has elapsed since the last time we did.
-      boolean transmitBecauseOfUser = userTelemetryTimer.seconds() >= requestedInterval;
+                // Create a newly-active hardware map
+                hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
+            }
+            return hardwareMap;
+        }
+    }
 
-      // The modern and legacy motor controllers have *radically* different read times for the battery
-      // voltage. For the modern controller, since the ReadWriteRunnable constantly polls this state,
-      // the read is always out of data already in cache, and takes about 30 microseconds (as measured).
-      // The legacy motor controller, on the other hand, because of the modality of the underlying
-      // legacy module, doesn't always automatically read this data. Indeed, if the user is doing mostly
-      // writes (as is often the case in OpModes that basically just set the motor power), the legacy
-      // module won't be switch to read mode ever, *except* for a voltage request here, and that switch
-      // will take tens of milliseconds. To *always* take that timing hit when refreshing user telemetry
-      // is unreasonable.
-      //
-      // Instead, we adopt an adaptive strategy. We keep track of the battery read time statistics
-      // and if they're small enough, then we transmit battery data whenever the user's going to
-      // send data OR when a sufficiently long interval has elapsed. If the battery read times are
-      // too large, then we only do the latter.
+    public List<LynxUsbDeviceImpl> getExtantLynxDeviceImpls() {
+        synchronized (hardwareFactory) {
+            List<LynxUsbDeviceImpl> result = new ArrayList<LynxUsbDeviceImpl>();
+            HardwareMap map = hardwareMap;
+            if (map != null) {
+                for (LynxUsbDevice lynxUsbDevice : map.getAll(LynxUsbDevice.class)) {
+                    if (lynxUsbDevice.getArmingState() == RobotArmingStateNotifier.ARMINGSTATE.ARMED) {
+                        result.add(lynxUsbDevice.getDelegationTarget());
+                    }
+                }
+            }
+            return result;
+        }
+    }
 
-      double msThreshold = 2;
-      boolean transmitBecauseOfBattery = (robotBatteryTimer.seconds() >= robotBatteryInterval)
-              || (transmitBecauseOfUser && robotBatteryStatistics.getMean() < msThreshold);
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
-      if (transmitBecauseOfUser || transmitBecauseOfBattery) {
+    public void displayGamePadInfo(String activeOpModeName) {
+        if (updateUITimer.time() > updateUIInterval) {
+            updateUITimer.reset();
 
-        if (transmitBecauseOfUser) {
-          userTelemetryTimer.reset();
+            // Get access to gamepad 1 and 2
+            Gamepad gamepads[] = getGamepads();
+            callback.updateUi(activeOpModeName, gamepads);
+        }
+    }
+
+    public Gamepad[] getGamepads() {
+        return eventLoopManager != null
+                ? eventLoopManager.getGamepads()
+                : new Gamepad[2];
+    }
+
+    /**
+     * Updates the (indicated) user's telemetry: the telemetry is transmitted if a sufficient
+     * interval has passed since the last transmission. If the telemetry is transmitted, the
+     * telemetry is cleared and the timer is reset. A battery voltage key may be added to the
+     * message before transmission.
+     *
+     * @param telemetry         the telemetry data to send
+     * @param requestedInterval the minimum interval (s) since the last transmission. NaN indicates
+     *                          that a default transmission interval should be used
+     * @see com.qualcomm.robotcore.eventloop.EventLoop#TELEMETRY_DEFAULT_INTERVAL
+     */
+    public void refreshUserTelemetry(TelemetryMessage telemetry, double requestedInterval) {
+        synchronized (this.refreshUserTelemetryLock) {
+
+            // NaN is an indicator to use the default interval, whereas zero will
+            // cause immediate transmission.
+            if (Double.isNaN(requestedInterval)) {
+                requestedInterval = userTelemetryInterval;
+            }
+
+            // We'll do a transmission just to see the user's new data if a sufficient interval
+            // has elapsed since the last time we did.
+            boolean transmitBecauseOfUser = userTelemetryTimer.seconds() >= requestedInterval;
+
+            // The modern and legacy motor controllers have *radically* different read times for the battery
+            // voltage. For the modern controller, since the ReadWriteRunnable constantly polls this state,
+            // the read is always out of data already in cache, and takes about 30 microseconds (as measured).
+            // The legacy motor controller, on the other hand, because of the modality of the underlying
+            // legacy module, doesn't always automatically read this data. Indeed, if the user is doing mostly
+            // writes (as is often the case in OpModes that basically just set the motor power), the legacy
+            // module won't be switch to read mode ever, *except* for a voltage request here, and that switch
+            // will take tens of milliseconds. To *always* take that timing hit when refreshing user telemetry
+            // is unreasonable.
+            //
+            // Instead, we adopt an adaptive strategy. We keep track of the battery read time statistics
+            // and if they're small enough, then we transmit battery data whenever the user's going to
+            // send data OR when a sufficiently long interval has elapsed. If the battery read times are
+            // too large, then we only do the latter.
+
+            double msThreshold = 2;
+            boolean transmitBecauseOfBattery = (robotBatteryTimer.seconds() >= robotBatteryInterval)
+                    || (transmitBecauseOfUser && robotBatteryStatistics.getMean() < msThreshold);
+
+            if (transmitBecauseOfUser || transmitBecauseOfBattery) {
+
+                if (transmitBecauseOfUser) {
+                    userTelemetryTimer.reset();
+                }
+
+                if (transmitBecauseOfBattery) {
+                    telemetry.addData(EventLoopManager.ROBOT_BATTERY_LEVEL_KEY, buildRobotBatteryMsg());
+                    robotBatteryTimer.reset();
+                    if (robotBatteryLoggingTimer.seconds() > robotBatteryLoggingInterval) {
+                        RobotLog.i("robot battery read duration: n=%d, mean=%.3fms sd=%.3fms", robotBatteryStatistics.getCount(), robotBatteryStatistics.getMean(), robotBatteryStatistics.getStandardDeviation());
+                        robotBatteryLoggingTimer.reset();
+                    }
+                }
+
+                // Send if there's anything to send. If we send, then we always clear, as the current
+                // data has already been send.
+                if (telemetry.hasData()) {
+                    if (eventLoopManager != null) {
+                        eventLoopManager.sendTelemetryData(telemetry);
+                    }
+                    telemetry.clearData();
+                }
+            }
+        }
+    }
+
+    /**
+     * Send robot phone power % and robot battery voltage level to Driver station
+     */
+    public void sendBatteryInfo() {
+        robotControllerBatteryChecker.pollBatteryLevel(this);
+        String batteryMessage = buildRobotBatteryMsg();
+        if (batteryMessage != null) {
+            sendTelemetry(EventLoopManager.ROBOT_BATTERY_LEVEL_KEY, batteryMessage);
+        }
+    }
+
+    /**
+     * Build a string which indicates the lowest measured system voltage
+     *
+     * @return String representing battery voltage
+     */
+    private String buildRobotBatteryMsg() {
+
+        // Don't do anything if we're really early in the construction cycle
+        if (this.hardwareMap == null) {
+            return null;
         }
 
-        if (transmitBecauseOfBattery) {
-          telemetry.addData(EventLoopManager.ROBOT_BATTERY_LEVEL_KEY, buildRobotBatteryMsg());
-          robotBatteryTimer.reset();
-          if (robotBatteryLoggingTimer.seconds() > robotBatteryLoggingInterval) {
-            RobotLog.i("robot battery read duration: n=%d, mean=%.3fms sd=%.3fms", robotBatteryStatistics.getCount(), robotBatteryStatistics.getMean(), robotBatteryStatistics.getStandardDeviation());
-            robotBatteryLoggingTimer.reset();
-          }
+        double minBatteryLevel = Double.POSITIVE_INFINITY;
+
+        // Determine the lowest battery voltage read from all motor controllers.
+        //
+        // If a voltage sensor becomes disconnected, it has been observed to read as zero.
+        // Thus, we must account for that eventuality. While doing so, it's convenient for us
+        // to rule out (other) unreasonable voltage levels in order to facilitate later string
+        // conversion.
+        //
+        for (VoltageSensor sensor : this.hardwareMap.voltageSensor) {
+
+            // Read the voltage, keeping track of how long it takes to do so
+            long nanoBefore = System.nanoTime();
+            double sensorVoltage = sensor.getVoltage();
+            long nanoAfter = System.nanoTime();
+
+            if (sensorVoltage >= 1.0 /* an unreasonable value to ever see in practice */) {
+                // For valid reads, we add the read-duration to our statistics, in ms.
+                robotBatteryStatistics.add((nanoAfter - nanoBefore) / (double) ElapsedTime.MILLIS_IN_NANO);
+
+                // Keep track of the minimum valid value we find
+                if (sensorVoltage < minBatteryLevel) {
+                    minBatteryLevel = sensorVoltage;
+                }
+            }
         }
 
-        // Send if there's anything to send. If we send, then we always clear, as the current
-        // data has already been send.
-        if (telemetry.hasData()) {
-          if (eventLoopManager!=null) {
+        String msg;
+
+        if (minBatteryLevel == Double.POSITIVE_INFINITY) {
+            msg = NO_VOLTAGE_SENSOR;
+
+        } else {
+            // Convert double voltage into string with *two* decimal places (fast), given the
+            // above-maintained fact the voltage is at least 1.0.
+            msg = Integer.toString((int) (minBatteryLevel * 100));
+            msg = new StringBuilder(msg).insert(msg.length() - 2, ".").toString();
+        }
+
+        return (msg);
+    }
+
+    public void sendTelemetry(String tag, String msg) {
+        TelemetryMessage telemetry = new TelemetryMessage();
+        telemetry.setTag(tag);
+        telemetry.addData(tag, msg);
+        if (eventLoopManager != null) {
             eventLoopManager.sendTelemetryData(telemetry);
-          }
-          telemetry.clearData();
+        } else {
+            RobotLog.vv(TAG, "sendTelemetry() with null EventLoopManager; ignored");
         }
-      }
+        telemetry.clearData();
     }
-  }
 
-  /**
-   * Send robot phone power % and robot battery voltage level to Driver station
-   */
-  public void sendBatteryInfo() {
-    robotControllerBatteryChecker.pollBatteryLevel(this);
-    String batteryMessage = buildRobotBatteryMsg();
-    if (batteryMessage != null) {
-      sendTelemetry(EventLoopManager.ROBOT_BATTERY_LEVEL_KEY, batteryMessage);
-    }
-  }
-
-  /**
-   * Build a string which indicates the lowest measured system voltage
-   * @return String representing battery voltage
-   */
-  private String buildRobotBatteryMsg() {
-
-    // Don't do anything if we're really early in the construction cycle
-    if (this.hardwareMap==null) return null;
-
-    double minBatteryLevel = Double.POSITIVE_INFINITY;
-
-    // Determine the lowest battery voltage read from all motor controllers.
-    //
-    // If a voltage sensor becomes disconnected, it has been observed to read as zero.
-    // Thus, we must account for that eventuality. While doing so, it's convenient for us
-    // to rule out (other) unreasonable voltage levels in order to facilitate later string
-    // conversion.
-    //
-    for (VoltageSensor sensor : this.hardwareMap.voltageSensor) {
-
-      // Read the voltage, keeping track of how long it takes to do so
-      long nanoBefore = System.nanoTime();
-      double sensorVoltage = sensor.getVoltage();
-      long nanoAfter = System.nanoTime();
-
-      if (sensorVoltage >= 1.0 /* an unreasonable value to ever see in practice */) {
-        // For valid reads, we add the read-duration to our statistics, in ms.
-        robotBatteryStatistics.add((nanoAfter - nanoBefore) / (double) ElapsedTime.MILLIS_IN_NANO);
-
-        // Keep track of the minimum valid value we find
-        if (sensorVoltage < minBatteryLevel) {
-          minBatteryLevel = sensorVoltage;
+    protected void closeMotorControllers() {
+        for (DcMotorController controller : hardwareMap.getAll(DcMotorController.class)) {
+            controller.close();
         }
-      }
     }
 
-    String msg;
-
-    if (minBatteryLevel == Double.POSITIVE_INFINITY) {
-      msg = NO_VOLTAGE_SENSOR;
-
-    } else {
-      // Convert double voltage into string with *two* decimal places (fast), given the
-      // above-maintained fact the voltage is at least 1.0.
-      msg = Integer.toString((int)(minBatteryLevel * 100));
-      msg = new StringBuilder(msg).insert(msg.length()-2, ".").toString();
+    protected void closeServoControllers() {
+        for (ServoController controller : hardwareMap.getAll(ServoController.class)) {
+            controller.close();
+        }
     }
 
-    return (msg);
-  }
-
-  public void sendTelemetry(String tag, String msg) {
-    TelemetryMessage telemetry = new TelemetryMessage();
-    telemetry.setTag(tag);
-    telemetry.addData(tag, msg);
-    if (eventLoopManager != null) {
-      eventLoopManager.sendTelemetryData(telemetry);
-    } else {
-      RobotLog.vv(TAG, "sendTelemetry() with null EventLoopManager; ignored");
+    protected void closeAutoCloseOnTeardown() {
+        for (HardwareDeviceCloseOnTearDown device : hardwareMap.getAll(HardwareDeviceCloseOnTearDown.class)) {
+            device.close();
+        }
     }
-    telemetry.clearData();
-  }
 
-  protected void closeMotorControllers() {
-    for (DcMotorController controller : hardwareMap.getAll(DcMotorController.class)) {
-      controller.close();
+    protected void closeBatteryMonitoring() {
+        robotControllerBatteryChecker.close();
     }
-  }
 
-  protected void closeServoControllers()  {
-    for (ServoController controller : hardwareMap.getAll(ServoController.class)) {
-      controller.close();
+    public void restartRobot() {
+        RobotLog.dd(TAG, "restarting robot...");
+        closeBatteryMonitoring();   // probably not needed now that close() above does this too. but harmless here if so
+        callback.restartRobot();
     }
-  }
 
-  protected void closeAutoCloseOnTeardown() {
-    for (HardwareDeviceCloseOnTearDown device : hardwareMap.getAll(HardwareDeviceCloseOnTearDown.class)) {
-      device.close();
+    public String getOpMode(String extra) {
+        if (eventLoopManager == null || eventLoopManager.state != RobotState.RUNNING) {
+            return OpModeManager.DEFAULT_OP_MODE_NAME;
+        }
+        return extra;
     }
-  }
 
-  protected void closeBatteryMonitoring() {
-    robotControllerBatteryChecker.close();
-  }
-
-  public void restartRobot() {
-    RobotLog.dd(TAG, "restarting robot...");
-    closeBatteryMonitoring();   // probably not needed now that close() above does this too. but harmless here if so
-    callback.restartRobot();
-  }
-
-  public String getOpMode(String extra) {
-    if (eventLoopManager == null || eventLoopManager.state != RobotState.RUNNING) {
-      return OpModeManager.DEFAULT_OP_MODE_NAME;
+    public void updateBatteryStatus(BatteryChecker.BatteryStatus status) {
+        sendTelemetry(EventLoopManager.RC_BATTERY_STATUS_KEY, status.serialize());
     }
-    return extra;
-  }
-
-  public void updateBatteryStatus(BatteryChecker.BatteryStatus status) {
-    sendTelemetry(EventLoopManager.RC_BATTERY_STATUS_KEY, status.serialize());
-  }
 
 }

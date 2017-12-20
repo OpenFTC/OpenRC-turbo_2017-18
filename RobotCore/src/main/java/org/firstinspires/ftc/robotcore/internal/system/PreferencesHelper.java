@@ -48,218 +48,236 @@ import java.util.Set;
  * A little utility to help with the generic reading and writing of preferences
  */
 @SuppressWarnings("WeakerAccess")
-public class PreferencesHelper
-    {
+public class PreferencesHelper {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final String            tag;
+    protected final String tag;
     protected final SharedPreferences sharedPreferences;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public PreferencesHelper(String tag)
-        {
+    public PreferencesHelper(String tag) {
         this(tag, AppUtil.getDefContext());
-        }
+    }
 
-    public PreferencesHelper(String tag, Context context)
-        {
+    public PreferencesHelper(String tag, Context context) {
         this(tag, PreferenceManager.getDefaultSharedPreferences(context));
-        }
+    }
 
-    public PreferencesHelper(String tag, SharedPreferences sharedPreferences)
-        {
+    public PreferencesHelper(String tag, SharedPreferences sharedPreferences) {
         this.tag = tag;
         this.sharedPreferences = sharedPreferences;
-        }
+    }
 
-    public SharedPreferences getSharedPreferences()
-        {
+    public SharedPreferences getSharedPreferences() {
         return sharedPreferences;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Generic accessing
     //----------------------------------------------------------------------------------------------
-    
-    /** Returns the value of the preference with the indicated name, or null if it is absent.
-     * Note: this does *not* automatically deserialize StringMaps, as we have no way of
-     * distinguishing them from just plain ordinary strings. */
-    public Object readPref(String prefName)
-        {
-        return sharedPreferences.getAll().get(prefName);
-        }
 
-    public boolean writePrefIfDifferent(String prefName, @NonNull Object newValue)
-        {
-        if (newValue instanceof String)    return writeStringPrefIfDifferent(prefName, (String)newValue);
-        if (newValue instanceof Boolean)   return writeBooleanPrefIfDifferent(prefName, (Boolean)newValue);
-        if (newValue instanceof Integer)   return writeIntPrefIfDifferent(prefName, (Integer)newValue);
-        if (newValue instanceof Long)      return writeLongPrefIfDifferent(prefName, (Long)newValue);
-        if (newValue instanceof Float)     return writeFloatPrefIfDifferent(prefName, (Float)newValue);
-        if (newValue instanceof StringMap) return writeStringMapPrefIfDifferent(prefName, (StringMap)newValue);
-        if (newValue instanceof Set)       return writeStringSetPrefIfDifferent(prefName, (Set<String>)newValue);
-        return false;
+    /**
+     * Returns the value of the preference with the indicated name, or null if it is absent.
+     * Note: this does *not* automatically deserialize StringMaps, as we have no way of
+     * distinguishing them from just plain ordinary strings.
+     */
+    public Object readPref(String prefName) {
+        return sharedPreferences.getAll().get(prefName);
+    }
+
+    public boolean writePrefIfDifferent(String prefName, @NonNull Object newValue) {
+        if (newValue instanceof String) {
+            return writeStringPrefIfDifferent(prefName, (String) newValue);
         }
+        if (newValue instanceof Boolean) {
+            return writeBooleanPrefIfDifferent(prefName, (Boolean) newValue);
+        }
+        if (newValue instanceof Integer) {
+            return writeIntPrefIfDifferent(prefName, (Integer) newValue);
+        }
+        if (newValue instanceof Long) {
+            return writeLongPrefIfDifferent(prefName, (Long) newValue);
+        }
+        if (newValue instanceof Float) {
+            return writeFloatPrefIfDifferent(prefName, (Float) newValue);
+        }
+        if (newValue instanceof StringMap) {
+            return writeStringMapPrefIfDifferent(prefName, (StringMap) newValue);
+        }
+        if (newValue instanceof Set) {
+            return writeStringSetPrefIfDifferent(prefName, (Set<String>) newValue);
+        }
+        return false;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Type-specific Accessing
     //----------------------------------------------------------------------------------------------
 
-    public String       readString(String prefName, String def)         { return sharedPreferences.getString(prefName, def); }
-    public Set<String>  readStringSet(String prefName, Set<String> def) { return sharedPreferences.getStringSet(prefName, def); }
-    public int          readInt(String prefName, int def)               { return sharedPreferences.getInt(prefName, def); }
-    public long         readLong(String prefName, long def)             { return sharedPreferences.getLong(prefName, def); }
-    public float        readFloat(String prefName, float def)           { return sharedPreferences.getFloat(prefName, def); }
-    public boolean      readBoolean(String prefName, boolean def)       { return sharedPreferences.getBoolean(prefName, def); }
-    public StringMap    readStringMap(String prefName, StringMap def)
-        {
+    public String readString(String prefName, String def) {
+        return sharedPreferences.getString(prefName, def);
+    }
+
+    public Set<String> readStringSet(String prefName, Set<String> def) {
+        return sharedPreferences.getStringSet(prefName, def);
+    }
+
+    public int readInt(String prefName, int def) {
+        return sharedPreferences.getInt(prefName, def);
+    }
+
+    public long readLong(String prefName, long def) {
+        return sharedPreferences.getLong(prefName, def);
+    }
+
+    public float readFloat(String prefName, float def) {
+        return sharedPreferences.getFloat(prefName, def);
+    }
+
+    public boolean readBoolean(String prefName, boolean def) {
+        return sharedPreferences.getBoolean(prefName, def);
+    }
+
+    public StringMap readStringMap(String prefName, StringMap def) {
         StringMap result = StringMap.deserialize(readString(prefName, null));
         return result != null ? result : def;
-        }
+    }
 
-    public boolean      contains(String prefName)                       { return sharedPreferences.contains(prefName); }
+    public boolean contains(String prefName) {
+        return sharedPreferences.contains(prefName);
+    }
 
-    public void remove(String prefName)
-        {
+    public void remove(String prefName) {
         sharedPreferences.edit()
                 .remove(prefName)
                 .apply();
-        }
+    }
 
-    public boolean writeStringPrefIfDifferent(String prefName, @NonNull String newValue)
-        {
+    public boolean writeStringPrefIfDifferent(String prefName, @NonNull String newValue) {
         Assert.assertNotNull(newValue);
         boolean changed = false;
-        for (;;)
-            {
-            if (contains(prefName) && newValue.equals(readString(prefName, "")))
+        for (; ; ) {
+            if (contains(prefName) && newValue.equals(readString(prefName, ""))) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putString(prefName, newValue)
                     .apply();
             changed = true;
-            }
-        return changed;
         }
+        return changed;
+    }
 
-    public boolean writeStringSetPrefIfDifferent(String prefName, @NonNull Set<String> newValue)
-        {
+    public boolean writeStringSetPrefIfDifferent(String prefName, @NonNull Set<String> newValue) {
         Assert.assertNotNull(newValue);
         boolean changed = false;
-        for (;;)
-            {
-            if (contains(prefName) && newValue.equals(readStringSet(prefName, (Set<String>)null)))
+        for (; ; ) {
+            if (contains(prefName) && newValue.equals(readStringSet(prefName, (Set<String>) null))) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putStringSet(prefName, newValue)
                     .apply();
             changed = true;
-            }
-        return changed;
         }
+        return changed;
+    }
 
-    public boolean writeIntPrefIfDifferent(String prefName, int newValue)
-        {
+    public boolean writeIntPrefIfDifferent(String prefName, int newValue) {
         Assert.assertNotNull(newValue);
         boolean changed = false;
-        for (;;)
-            {
-            if (contains(prefName) && newValue==readInt(prefName, 0))
+        for (; ; ) {
+            if (contains(prefName) && newValue == readInt(prefName, 0)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putInt(prefName, newValue)
                     .apply();
             changed = true;
-            }
-        return changed;
         }
+        return changed;
+    }
 
-    public boolean writeLongPrefIfDifferent(String prefName, long newValue)
-        {
+    public boolean writeLongPrefIfDifferent(String prefName, long newValue) {
         Assert.assertNotNull(newValue);
         boolean changed = false;
-        for (;;)
-            {
-            if (contains(prefName) && newValue==readLong(prefName, 0L))
+        for (; ; ) {
+            if (contains(prefName) && newValue == readLong(prefName, 0L)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putLong(prefName, newValue)
                     .apply();
             changed = true;
-            }
-        return changed;
         }
+        return changed;
+    }
 
-    public boolean writeFloatPrefIfDifferent(String prefName, float newValue)
-        {
+    public boolean writeFloatPrefIfDifferent(String prefName, float newValue) {
         Assert.assertNotNull(newValue);
         boolean changed = false;
-        for (;;)
-            {
-            if (contains(prefName) && newValue==readFloat(prefName, 0F))
+        for (; ; ) {
+            if (contains(prefName) && newValue == readFloat(prefName, 0F)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putFloat(prefName, newValue)
                     .apply();
             changed = true;
-            }
-        return changed;
         }
+        return changed;
+    }
 
-    public boolean writeBooleanPrefIfDifferent(String prefName, boolean newValue)
-        {
+    public boolean writeBooleanPrefIfDifferent(String prefName, boolean newValue) {
         Assert.assertNotNull(newValue);
         boolean changed = false;
-        for (;;)
-            {
-            if (contains(prefName) && newValue==readBoolean(prefName, false))
+        for (; ; ) {
+            if (contains(prefName) && newValue == readBoolean(prefName, false)) {
                 break;
+            }
             logWrite(prefName, newValue);
             sharedPreferences.edit()
                     .putBoolean(prefName, newValue)
                     .apply();
             changed = true;
-            }
+        }
         return changed;
-        }
+    }
 
-    public boolean writeStringMapPrefIfDifferent(String prefName, StringMap newValue)
-        {
+    public boolean writeStringMapPrefIfDifferent(String prefName, StringMap newValue) {
         return writeStringPrefIfDifferent(prefName, newValue.serialize());
-        }
+    }
 
-    protected void logWrite(String prefName, Object value)
-        {
+    protected void logWrite(String prefName, Object value) {
         RobotLog.vv(tag, "writing pref name=%s value=%s", prefName, value);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public static class StringMap extends HashMap<String, String>
-        {
-        public String serialize()
-            {
+    public static class StringMap extends HashMap<String, String> {
+        public String serialize() {
             return SimpleGson.getInstance().toJson(this);
-            }
-        public static StringMap deserialize(String serialized)
-            {
-            if (serialized == null)
+        }
+
+        public static StringMap deserialize(String serialized) {
+            if (serialized == null) {
                 return null;
-            else
+            } else {
                 return SimpleGson.getInstance().fromJson(serialized, StringMap.class);
             }
         }
-
     }
+
+}

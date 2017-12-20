@@ -70,7 +70,7 @@ public final class BasicBlockList extends LabeledList {
     /**
      * Sets the basic block at the given index.
      *
-     * @param n {@code >= 0, < size();} which index
+     * @param n  {@code >= 0, < size();} which index
      * @param bb {@code null-ok;} the element to set at {@code n}
      */
     public void set(int n, BasicBlock bb) {
@@ -311,7 +311,9 @@ public final class BasicBlockList extends LabeledList {
      */
     private static class RegCountVisitor
             implements Insn.Visitor {
-        /** {@code >= 0;} register count in-progress */
+        /**
+         * {@code >= 0;} register count in-progress
+         */
         private int regCount;
 
         /**
@@ -330,32 +332,44 @@ public final class BasicBlockList extends LabeledList {
             return regCount;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitPlainInsn(PlainInsn insn) {
             visit(insn);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitPlainCstInsn(PlainCstInsn insn) {
             visit(insn);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitSwitchInsn(SwitchInsn insn) {
             visit(insn);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitThrowingCstInsn(ThrowingCstInsn insn) {
             visit(insn);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitThrowingInsn(ThrowingInsn insn) {
             visit(insn);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void visitFillArrayDataInsn(FillArrayDataInsn insn) {
             visit(insn);
         }

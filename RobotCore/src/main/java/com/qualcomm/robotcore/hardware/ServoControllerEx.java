@@ -37,12 +37,13 @@ import android.support.annotation.NonNull;
 /**
  * ServoControllerEx is an optional servo controller interface supported by some hardware
  * that provides enhanced servo functionality.
+ *
  * @see PwmControl
  */
-public interface ServoControllerEx extends ServoController
-    {
+public interface ServoControllerEx extends ServoController {
     /**
      * Sets the PWM range of the indicated servo.
+     *
      * @param servo the servo port number on the controller
      * @param range the new range for the servo
      * @see #getServoPwmRange(int)
@@ -52,15 +53,18 @@ public interface ServoControllerEx extends ServoController
 
     /**
      * Returns the PWM range of the indicated servo on this controller.
+     *
      * @param servo the servo port number on the controller
      * @return the PWM range of the indicated servo on this controller.
      * @see #setServoPwmRange(int, PwmControl.PwmRange)
      * @see PwmControl#getPwmRange()
      */
-    @NonNull PwmControl.PwmRange getServoPwmRange(int servo);
+    @NonNull
+    PwmControl.PwmRange getServoPwmRange(int servo);
 
     /**
      * Individually denergizes the PWM for a particular servo
+     *
      * @param servo the servo port number on the controller
      * @see PwmControl#setPwmEnable()
      */
@@ -68,6 +72,7 @@ public interface ServoControllerEx extends ServoController
 
     /**
      * Returns whether the PWM is energized a this particular servo
+     *
      * @param servo the servo port number on the controller
      * @see PwmControl#setPwmDisable()
      */
@@ -75,8 +80,9 @@ public interface ServoControllerEx extends ServoController
 
     /**
      * Returns whether the PWM is energized for this particular servo
+     *
      * @param servo the servo port number on the controller
      * @see PwmControl#isPwmEnabled()
      */
     boolean isServoPwmEnabled(int servo);
-    }
+}

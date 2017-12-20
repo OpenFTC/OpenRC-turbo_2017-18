@@ -53,225 +53,211 @@ import java.util.concurrent.atomic.AtomicInteger;
  * the state transitions that a USB device can sequence through.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningSource, HardwareDeviceCloseOnTearDown
-    {
+public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningSource, HardwareDeviceCloseOnTearDown {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected abstract String getTag();
+
     public static boolean DEBUG = false;
 
-    protected final Context                 context;
-    protected final SerialNumber            serialNumber;
-    protected final EventLoopManager        eventLoopManager;
-    protected final OpenRobotUsbDevice      openRobotUsbDevice;
-    protected final AtomicInteger           referenceCount;
-    protected       RobotUsbDevice          robotUsbDevice;
+    protected final Context context;
+    protected final SerialNumber serialNumber;
+    protected final EventLoopManager eventLoopManager;
+    protected final OpenRobotUsbDevice openRobotUsbDevice;
+    protected final AtomicInteger referenceCount;
+    protected RobotUsbDevice robotUsbDevice;
 
-    protected           ARMINGSTATE             armingState;
-    protected final     Object                  armingLock                 = new Object();
-    protected final  WeakReferenceSet<Callback> registeredCallbacks        = new WeakReferenceSet<>();
-    protected final     Object                  warningMessageLock         = new Object();
-    protected           int                     warningMessageSuppressionCount;
+    protected ARMINGSTATE armingState;
+    protected final Object armingLock = new Object();
+    protected final WeakReferenceSet<Callback> registeredCallbacks = new WeakReferenceSet<>();
+    protected final Object warningMessageLock = new Object();
+    protected int warningMessageSuppressionCount;
 
-    /** The (first) warning message generating during an arm() attempt. This is auto-cleared when
-     * arm() is called; if other issues can contribute to warnings, they should be dealt with separately */
-    protected           String                  warningMessage;
+    /**
+     * The (first) warning message generating during an arm() attempt. This is auto-cleared when
+     * arm() is called; if other issues can contribute to warnings, they should be dealt with separately
+     */
+    protected String warningMessage;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public interface OpenRobotUsbDevice
-        {
+    public interface OpenRobotUsbDevice {
         RobotUsbDevice open() throws RobotCoreException, InterruptedException;
-        }
+    }
 
-    public ArmableUsbDevice(Context context, SerialNumber serialNumber, EventLoopManager manager, OpenRobotUsbDevice openRobotUsbDevice)
-        {
-        this.context              = context;
-        this.serialNumber         = serialNumber;
-        this.eventLoopManager     = manager;
-        this.openRobotUsbDevice   = openRobotUsbDevice;
-        this.referenceCount       = new AtomicInteger(1);
-        this.robotUsbDevice       = null;
-        this.armingState          = ARMINGSTATE.DISARMED;
+    public ArmableUsbDevice(Context context, SerialNumber serialNumber, EventLoopManager manager, OpenRobotUsbDevice openRobotUsbDevice) {
+        this.context = context;
+        this.serialNumber = serialNumber;
+        this.eventLoopManager = manager;
+        this.openRobotUsbDevice = openRobotUsbDevice;
+        this.referenceCount = new AtomicInteger(1);
+        this.robotUsbDevice = null;
+        this.armingState = ARMINGSTATE.DISARMED;
         this.warningMessageSuppressionCount = 0;
-        this.warningMessage       = "";
-        }
+        this.warningMessage = "";
+    }
 
-    protected void finishConstruction()
-        {
+    protected void finishConstruction() {
         RobotLog.registerGlobalWarningSource(this);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public Context getContext()
-        {
+    public Context getContext() {
         return this.context;
-        }
+    }
 
-    public RobotUsbDevice getRobotUsbDevice()
-        {
+    public RobotUsbDevice getRobotUsbDevice() {
         return this.robotUsbDevice;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbModule
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public SerialNumber getSerialNumber()
-        {
+    public SerialNumber getSerialNumber() {
         return serialNumber;
-        }
+    }
 
     @Override
-    public void registerCallback(Callback callback, boolean doInitialCallback)
-        {
+    public void registerCallback(Callback callback, boolean doInitialCallback) {
         registeredCallbacks.add(callback);
-        if (doInitialCallback)
-            {
+        if (doInitialCallback) {
             callback.onModuleStateChange(this, this.armingState);
-            }
         }
+    }
 
     @Override
-    public void unregisterCallback(Callback callback)
-        {
+    public void unregisterCallback(Callback callback) {
         registeredCallbacks.remove(callback);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // GlobalWarningSource
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getGlobalWarning()
-        {
-        synchronized (this.warningMessageLock)
-            {
+    public String getGlobalWarning() {
+        synchronized (this.warningMessageLock) {
             return this.warningMessageSuppressionCount > 0 ? "" : composeGlobalWarning();
-            }
         }
+    }
 
-    /** subclass hook for more complicated warning message structure */
-    protected String composeGlobalWarning()
-        {
+    /**
+     * subclass hook for more complicated warning message structure
+     */
+    protected String composeGlobalWarning() {
         return this.warningMessage;
-        }
+    }
 
     @Override
-    public void clearGlobalWarning()
-        {
-        synchronized (this.warningMessageLock)
-            {
+    public void clearGlobalWarning() {
+        synchronized (this.warningMessageLock) {
             internalClearGlobalWarning();
             this.warningMessageSuppressionCount = 0;
-            }
         }
+    }
 
-    protected void internalClearGlobalWarning()
-        {
-        synchronized (this.warningMessageLock)
-            {
-            if (!this.warningMessage.isEmpty()) RobotLog.vv(getTag(), "clearing extant global warning: \"%s\"", this.warningMessage);
-            this.warningMessage = "";
+    protected void internalClearGlobalWarning() {
+        synchronized (this.warningMessageLock) {
+            if (!this.warningMessage.isEmpty()) {
+                RobotLog.vv(getTag(), "clearing extant global warning: \"%s\"", this.warningMessage);
             }
+            this.warningMessage = "";
         }
+    }
 
     @Override
-    public void suppressGlobalWarning(boolean suppress)
-        {
-        synchronized (this.warningMessageLock)
-            {
-            if (suppress)
+    public void suppressGlobalWarning(boolean suppress) {
+        synchronized (this.warningMessageLock) {
+            if (suppress) {
                 this.warningMessageSuppressionCount++;
-            else
+            } else {
                 this.warningMessageSuppressionCount--;
             }
         }
+    }
 
     @Override
-    public boolean setGlobalWarning(String warning)
-        {
+    public boolean setGlobalWarning(String warning) {
         // We need to lock so we can atomically test-and-set. We can't lock on us, the whole
         // object, as that will cause deadlocks due to interactions with operational synchronized
         // methods (in subclasses). Thus, we need to use a leaf-level lock.
-        synchronized (this.warningMessageLock)
-            {
-            if (warning != null && warningMessage.isEmpty())
-                {
+        synchronized (this.warningMessageLock) {
+            if (warning != null && warningMessage.isEmpty()) {
                 this.warningMessage = warning;
                 return true;
-                }
-            return false;
             }
+            return false;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Internal arming and disarming
     //----------------------------------------------------------------------------------------------
 
-    protected void armDevice() throws RobotCoreException, InterruptedException
-        {
-        synchronized (armingLock)
-            {
+    protected void armDevice() throws RobotCoreException, InterruptedException {
+        synchronized (armingLock) {
             // An arming attempt clears any extant warning
             internalClearGlobalWarning();
 
             Assert.assertTrue(this.robotUsbDevice == null);
             RobotUsbDevice device = null;
-            try
-                {
+            try {
                 // Open the USB device
-                if (DEBUG) RobotLog.vv(getTag(), "opening %s...", serialNumber);
+                if (DEBUG) {
+                    RobotLog.vv(getTag(), "opening %s...", serialNumber);
+                }
                 device = this.openRobotUsbDevice.open();
 
-                if (DEBUG) RobotLog.vv(getTag(), "...opening, now arming %s...", serialNumber);
+                if (DEBUG) {
+                    RobotLog.vv(getTag(), "...opening, now arming %s...", serialNumber);
+                }
                 // Arm using that device
                 armDevice(device);
 
-                if (DEBUG) RobotLog.vv(getTag(), "...arming %s...", serialNumber);
+                if (DEBUG) {
+                    RobotLog.vv(getTag(), "...arming %s...", serialNumber);
                 }
-            catch (RobotCoreException|RuntimeException e)
-                {
+            } catch (RobotCoreException | RuntimeException e) {
                 RobotLog.logExceptionHeader(getTag(), e, "exception arming %s", serialNumber);
                 //
                 // NullPointerException(s) are, annoyingly (vs some non-runtime exception), thrown by the FTDI
                 // layer on abnormal termination. Here, and elsewhere in this class, we catch those in order to
                 // robustly recover from what is just a USB read or write error.
-                if (device != null) device.close();
+                if (device != null) {
+                    device.close();
+                }
                 setGlobalWarning(String.format(context.getString(R.string.warningUnableToOpen), HardwareFactory.getDeviceDisplayName(context, serialNumber)));
                 throw e;
+            } catch (InterruptedException e) {
+                if (device != null) {
+                    device.close();
                 }
-            catch (InterruptedException e)
-                {
-                if (device != null) device.close();
                 throw e;
-                }
             }
         }
+    }
 
-    protected void pretendDevice() throws RobotCoreException, InterruptedException
-        {
-        synchronized (armingLock)
-            {
+    protected void pretendDevice() throws RobotCoreException, InterruptedException {
+        synchronized (armingLock) {
             // Make a pretend device
             RobotUsbDevice device = this.getPretendDevice(this.serialNumber);
             // Arm using that device
             armDevice(device);
-            }
         }
+    }
 
-    protected RobotUsbDevice getPretendDevice(SerialNumber serialNumber)
-        {
+    protected RobotUsbDevice getPretendDevice(SerialNumber serialNumber) {
         return null;
-        }
+    }
 
     protected abstract void armDevice(RobotUsbDevice device) throws RobotCoreException, InterruptedException;
 
@@ -282,46 +268,37 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public ARMINGSTATE getArmingState()
-        {
+    public ARMINGSTATE getArmingState() {
         return this.armingState;
-        }
+    }
 
-    protected ARMINGSTATE setArmingState(ARMINGSTATE state)
-        {
+    protected ARMINGSTATE setArmingState(ARMINGSTATE state) {
         ARMINGSTATE prev = this.armingState;
         this.armingState = state;
-        for (Callback callback : registeredCallbacks)
-            {
+        for (Callback callback : registeredCallbacks) {
             callback.onModuleStateChange(this, state);
-            }
+        }
         return prev;
-        }
+    }
 
-    protected boolean isArmed()
-        {
+    protected boolean isArmed() {
         return this.armingState == ARMINGSTATE.ARMED;
-        }
-    protected boolean isArmedOrArming()
-        {
-        return this.armingState == ARMINGSTATE.ARMED || this.armingState == ARMINGSTATE.TO_ARMED;
-        }
+    }
 
-    protected boolean isPretending()
-        {
+    protected boolean isArmedOrArming() {
+        return this.armingState == ARMINGSTATE.ARMED || this.armingState == ARMINGSTATE.TO_ARMED;
+    }
+
+    protected boolean isPretending() {
         return this.armingState == ARMINGSTATE.PRETENDING;
-        }
+    }
 
 
     @Override
-    public void arm() throws RobotCoreException, InterruptedException
-        {
-        synchronized (armingLock)
-            {
-            try
-                {
-                switch (this.armingState)
-                    {
+    public void arm() throws RobotCoreException, InterruptedException {
+        synchronized (armingLock) {
+            try {
+                switch (this.armingState) {
                     case ARMED:
                         return;
                     case DISARMED:
@@ -329,50 +306,39 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
                         try {
                             this.doArm();
                             setArmingState(ARMINGSTATE.ARMED);
-                            }
-                        catch (Exception e)
-                            {
+                        } catch (Exception e) {
                             setArmingState(prev);
                             throw e;
-                            }
+                        }
                         break;
                     default:
                         throw new RobotCoreException("illegal state: can't arm() from state %s", this.armingState.toString());
-                    }
                 }
-            catch (RobotCoreException e)
-                {
+            } catch (RobotCoreException e) {
                 disarm();
                 throw e;
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 disarm();
                 throw e;
-                }
-            catch (NullPointerException e)
-                {
+            } catch (NullPointerException e) {
                 disarm();
                 throw e;
-                }
             }
         }
+    }
 
-    /** intended as subclass hook */
-    protected void doArm() throws RobotCoreException, InterruptedException
-        {
+    /**
+     * intended as subclass hook
+     */
+    protected void doArm() throws RobotCoreException, InterruptedException {
         this.armDevice();
-        }
+    }
 
     @Override
-    public void pretend() throws RobotCoreException, InterruptedException
-        {
-        synchronized (armingLock)
-            {
-            try
-                {
-                switch (this.armingState)
-                    {
+    public void pretend() throws RobotCoreException, InterruptedException {
+        synchronized (armingLock) {
+            try {
+                switch (this.armingState) {
                     case PRETENDING:
                         return;
                     case DISARMED:
@@ -380,60 +346,47 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
                         try {
                             this.doPretend();
                             setArmingState(ARMINGSTATE.PRETENDING);
-                            }
-                        catch (Exception e)
-                            {
+                        } catch (Exception e) {
                             RobotLog.logExceptionHeader(getTag(), e, "exception while pretending; reverting to %s", prev);
                             setArmingState(prev);
                             throw e;
-                            }
+                        }
                         break;
                     default:
                         throw new RobotCoreException("illegal state: can't pretend() from state %s", this.armingState.toString());
-                    }
                 }
-            catch (RobotCoreException|RuntimeException|InterruptedException e)
-                {
+            } catch (RobotCoreException | RuntimeException | InterruptedException e) {
                 disarm();
                 throw e;
-                }
             }
         }
+    }
 
     @Override
-    public void armOrPretend() throws RobotCoreException, InterruptedException
-        {
-        synchronized (armingLock)
-            {
-            try
-                {
+    public void armOrPretend() throws RobotCoreException, InterruptedException {
+        synchronized (armingLock) {
+            try {
                 arm();
-                }
-            catch (RobotCoreException|RuntimeException e)
-                {
+            } catch (RobotCoreException | RuntimeException e) {
                 pretend();
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 pretend();
                 Thread.currentThread().interrupt();
-                }
             }
         }
+    }
 
-    /** intended for subclasses to override */
-    protected void doPretend() throws RobotCoreException, InterruptedException
-        {
+    /**
+     * intended for subclasses to override
+     */
+    protected void doPretend() throws RobotCoreException, InterruptedException {
         this.pretendDevice();
-        }
+    }
 
     @Override
-    public void disarm() throws RobotCoreException, InterruptedException
-        {
-        synchronized (this.armingLock)
-            {
-            switch (this.armingState)
-                {
+    public void disarm() throws RobotCoreException, InterruptedException {
+        synchronized (this.armingLock) {
+            switch (this.armingState) {
                 case DISARMED:
                     return;
                 case TO_ARMED:
@@ -444,102 +397,93 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
                     try {
                         this.doDisarm();
                         setArmingState(ARMINGSTATE.DISARMED);
-                        }
-                    catch (InterruptedException e)
-                        {
+                    } catch (InterruptedException e) {
                         setArmingState(prev);
                         Thread.currentThread().interrupt();
-                        }
-                    catch (Exception e)
-                        {
+                    } catch (Exception e) {
                         RobotLog.ee(getTag(), e, "exception thrown during disarm()");
                         setArmingState(prev);
                         throw e;
-                        }
+                    }
                     break;
                 default:
                     throw new RobotCoreException("illegal state: can't disarm() from state %s", this.armingState.toString());
-                }
             }
         }
+    }
 
-    /** intended as subclass hook */
-    protected void doDisarm() throws RobotCoreException, InterruptedException
-        {
+    /**
+     * intended as subclass hook
+     */
+    protected void doDisarm() throws RobotCoreException, InterruptedException {
         this.disarmDevice();
-        }
+    }
 
-    /** Add a new reference to this object so as to increase the number of releaseRef() calls
+    /**
+     * Add a new reference to this object so as to increase the number of releaseRef() calls
      * that will be required to actually close the device. Avoid locks in the reference counting
-     * so we don't complicate the lock hierarchy and cause deadlocks. */
-    public void addRef()
-        {
-        for (;;)
-            {
+     * so we don't complicate the lock hierarchy and cause deadlocks.
+     */
+    public void addRef() {
+        for (; ; ) {
             int crefCur = referenceCount.get();
             Assert.assertTrue(crefCur > 0); // can't revive dead objects
-            if (crefCur <= 0)
+            if (crefCur <= 0) {
                 break; // preserve sanity
+            }
 
             int crefNew = crefCur + 1;
-            if (referenceCount.compareAndSet(crefCur, crefNew))
-                {
+            if (referenceCount.compareAndSet(crefCur, crefNew)) {
                 RobotLog.vv(getTag(), "0x%08x: addRef [%s]=%d", hashCode(), getSerialNumber(), crefNew);
                 break;
-                }
             }
         }
+    }
 
-    public void releaseRef()
-        {
-        for (;;)
-            {
+    public void releaseRef() {
+        for (; ; ) {
             int crefCur = referenceCount.get();
             Assert.assertTrue(crefCur > 0); // because we believe we own a ref we can release!
-            if (crefCur <= 0)
+            if (crefCur <= 0) {
                 break; // preserve sanity
+            }
 
             int crefNew = crefCur - 1;
-            if (referenceCount.compareAndSet(crefCur, crefNew))
-                {
+            if (referenceCount.compareAndSet(crefCur, crefNew)) {
                 RobotLog.vv(getTag(), "0x%08x: releaseRef [%s]=%d", hashCode(), getSerialNumber(), crefNew);
-                if (crefNew == 0)
-                    {
+                if (crefNew == 0) {
                     doClose();
-                    }
-                break;
                 }
+                break;
             }
         }
+    }
 
 
-    /** close(), proper, must be idempotent. Note: we don't expect clients to use BOTH ref counting AND explicit close() */
-    @Override public void close()
-        {
-        for (;;)
-            {
+    /**
+     * close(), proper, must be idempotent. Note: we don't expect clients to use BOTH ref counting AND explicit close()
+     */
+    @Override
+    public void close() {
+        for (; ; ) {
             int crefCur = referenceCount.get();
-            if (crefCur <= 0)
+            if (crefCur <= 0) {
                 break; // be idempotent
+            }
 
             int crefNew = 0;
-            if (referenceCount.compareAndSet(crefCur, crefNew))
-                {
+            if (referenceCount.compareAndSet(crefCur, crefNew)) {
                 doClose();
                 break;
-                }
             }
         }
+    }
 
-    protected void doClose()
-        {
-        synchronized (this.armingLock)
-            {
+    protected void doClose() {
+        synchronized (this.armingLock) {
             RobotLog.vv(getTag(), "doClose([%s])...", getSerialNumber());
-            try
-                {
-                switch (this.armingState)
-                    {
+            try {
+                switch (this.armingState) {
                     case CLOSED:
                         return;
                     case ARMED:
@@ -548,25 +492,18 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
                     default:
                         this.doCloseFromOther();
                         break;
-                    }
                 }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                }
-            catch (RobotCoreException|RuntimeException e)
-                {
+            } catch (RobotCoreException | RuntimeException e) {
                 // Eat the exception: we are close()ing now, after all
-                }
-            finally
-                {
+            } finally {
                 // Critically, double-plus ensure that our FTDI device (or whatever) gets closed, or we might not be able to re-open later
-                if (this.robotUsbDevice != null)
-                    {
+                if (this.robotUsbDevice != null) {
                     RobotLog.v("safety-closing USB device for %s", this.serialNumber);
                     this.robotUsbDevice.close();
                     this.robotUsbDevice = null;
-                    }
+                }
 
                 // In all cases, note us as closed on exit. We tried to close down once; even
                 // if we got an error, there's nothing more we can reasonably do!
@@ -578,20 +515,22 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
                 RobotLog.unregisterGlobalWarningSource(this);
 
                 RobotLog.vv(getTag(), "...doClose([%s])", getSerialNumber());
-                }
             }
         }
-
-    /** intended as subclass hook */
-    protected void doCloseFromArmed() throws RobotCoreException, InterruptedException
-        {
-        this.disarm();
-        }
-
-    /** intended as subclass hook */
-    protected void doCloseFromOther() throws RobotCoreException, InterruptedException
-        {
-        this.disarm();
-        }
-
     }
+
+    /**
+     * intended as subclass hook
+     */
+    protected void doCloseFromArmed() throws RobotCoreException, InterruptedException {
+        this.disarm();
+    }
+
+    /**
+     * intended as subclass hook
+     */
+    protected void doCloseFromOther() throws RobotCoreException, InterruptedException {
+        this.disarm();
+    }
+
+}

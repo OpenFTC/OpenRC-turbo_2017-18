@@ -38,20 +38,16 @@ package org.firstinspires.ftc.robotcore.internal.stellaris;
  * it was documented. Such errors are not recoverable.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderProtocolException extends Exception
-    {
-    public FlashLoaderProtocolException()
-        {
+public class FlashLoaderProtocolException extends Exception {
+    public FlashLoaderProtocolException() {
         this("");
-        }
-
-    public FlashLoaderProtocolException(String message, FlashLoaderCommand command)
-        {
-        this(message + " : " + command.getClass().getSimpleName());
-        }
-
-    public FlashLoaderProtocolException(String message)
-        {
-        super(message);
-        }
     }
+
+    public FlashLoaderProtocolException(String message, FlashLoaderCommand command) {
+        this(message + " : " + command.getClass().getSimpleName());
+    }
+
+    public FlashLoaderProtocolException(String message) {
+        super(message);
+    }
+}

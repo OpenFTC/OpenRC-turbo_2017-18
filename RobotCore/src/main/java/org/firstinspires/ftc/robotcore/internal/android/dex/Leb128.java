@@ -65,7 +65,7 @@ public final class Leb128 {
 
         while (hasMore) {
             hasMore = (remaining != end)
-                || ((remaining & 1) != ((value >> 6) & 1));
+                    || ((remaining & 1) != ((value >> 6) & 1));
 
             value = remaining;
             remaining >>= 7;
@@ -96,7 +96,7 @@ public final class Leb128 {
         }
 
         // Sign extend if appropriate
-        if (((signBits >> 1) & result) != 0 ) {
+        if (((signBits >> 1) & result) != 0) {
             result |= signBits;
         }
 

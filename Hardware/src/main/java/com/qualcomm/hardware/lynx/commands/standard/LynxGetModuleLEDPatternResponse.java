@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-05-07.
  */
-public class LynxGetModuleLEDPatternResponse extends LynxStandardResponse
-    {
+public class LynxGetModuleLEDPatternResponse extends LynxStandardResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,53 +53,45 @@ public class LynxGetModuleLEDPatternResponse extends LynxStandardResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetModuleLEDPatternResponse(LynxModule module)
-        {
+    public LynxGetModuleLEDPatternResponse(LynxModule module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return LynxGetModuleLEDPatternCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return getStandardCommandNumber();
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         int cbPayload = this.steps.cbSerialize();
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
-        for (Blinker.Step step : this.steps)
-            {
+        for (Blinker.Step step : this.steps) {
             LynxSetModuleLEDPatternCommand.serializeStep(step, buffer);
-            }
-        if (this.steps.size() < LynxSetModuleLEDPatternCommand.maxStepCount)
-            {
+        }
+        if (this.steps.size() < LynxSetModuleLEDPatternCommand.maxStepCount) {
             LynxSetModuleLEDPatternCommand.serializeStep(Blinker.Step.nullStep(), buffer);
-            }
+        }
 
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.steps = new LynxSetModuleLEDPatternCommand.Steps();
-        while (buffer.remaining() >= LynxSetModuleLEDPatternCommand.cbSerializeStep())
-            {
+        while (buffer.remaining() >= LynxSetModuleLEDPatternCommand.cbSerializeStep()) {
             Blinker.Step step = new Blinker.Step();
-            LynxSetModuleLEDPatternCommand.deserializeStep(step,buffer);
+            LynxSetModuleLEDPatternCommand.deserializeStep(step, buffer);
             this.steps.add(step);
-            }
         }
     }
+}

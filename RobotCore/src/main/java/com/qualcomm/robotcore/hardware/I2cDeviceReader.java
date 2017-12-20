@@ -35,41 +35,43 @@ package com.qualcomm.robotcore.hardware;
  */
 public class I2cDeviceReader {
 
-  private final I2cDevice i2cDevice;
+    private final I2cDevice i2cDevice;
 
-  /**
-   * Constructor
-   * @param i2cDevice device to monitor
-   * @param i2cAddress I2C address to read from
-   * @param memAddress memory address to read from
-   * @param length length (in bytes) to read
-   */
-  public I2cDeviceReader(I2cDevice i2cDevice, I2cAddr i2cAddress, int memAddress, int length) {
-    this.i2cDevice = i2cDevice;
+    /**
+     * Constructor
+     *
+     * @param i2cDevice  device to monitor
+     * @param i2cAddress I2C address to read from
+     * @param memAddress memory address to read from
+     * @param length     length (in bytes) to read
+     */
+    public I2cDeviceReader(I2cDevice i2cDevice, I2cAddr i2cAddress, int memAddress, int length) {
+        this.i2cDevice = i2cDevice;
 
-    i2cDevice.enableI2cReadMode(i2cAddress, memAddress, length);
-    i2cDevice.setI2cPortActionFlag();
-    i2cDevice.writeI2cCacheToController();
+        i2cDevice.enableI2cReadMode(i2cAddress, memAddress, length);
+        i2cDevice.setI2cPortActionFlag();
+        i2cDevice.writeI2cCacheToController();
 
-    i2cDevice.registerForI2cPortReadyCallback(new I2cController.I2cPortReadyCallback() {
-      @Override
-      public void portIsReady(int port) {
-        handleCallback();
-      }
-    });
-  }
+        i2cDevice.registerForI2cPortReadyCallback(new I2cController.I2cPortReadyCallback() {
+            @Override
+            public void portIsReady(int port) {
+                handleCallback();
+            }
+        });
+    }
 
-  /**
-   * Get a copy of the most recent data read in from the I2C device
-   * @return byte array
-   */
-  public byte[] getReadBuffer() {
-    return i2cDevice.getCopyOfReadBuffer();
-  }
+    /**
+     * Get a copy of the most recent data read in from the I2C device
+     *
+     * @return byte array
+     */
+    public byte[] getReadBuffer() {
+        return i2cDevice.getCopyOfReadBuffer();
+    }
 
-  private void handleCallback() {
-    i2cDevice.setI2cPortActionFlag();
-    i2cDevice.readI2cCacheFromController();
-    i2cDevice.writeI2cPortFlagOnlyToController();
-  }
+    private void handleCallback() {
+        i2cDevice.setI2cPortActionFlag();
+        i2cDevice.readI2cCacheFromController();
+        i2cDevice.writeI2cPortFlagOnlyToController();
+    }
 }

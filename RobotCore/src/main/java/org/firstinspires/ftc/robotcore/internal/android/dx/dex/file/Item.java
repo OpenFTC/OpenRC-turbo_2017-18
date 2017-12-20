@@ -58,7 +58,7 @@ public abstract class Item {
      * Populates a {@link DexFile} with items from within this instance.
      * This will <i>not</i> add an item to the file for this instance itself
      * (which should have been done by whatever refers to this instance).
-     *
+     * <p>
      * <p><b>Note:</b> Subclasses must override this to do something
      * appropriate.</p>
      *
@@ -74,7 +74,7 @@ public abstract class Item {
      * instance has already been written.
      *
      * @param file {@code non-null;} the file to use for reference
-     * @param out {@code non-null;} where to write to
+     * @param out  {@code non-null;} where to write to
      */
     public abstract void writeTo(DexFile file, AnnotatedOutput out);
 }

@@ -51,64 +51,60 @@ import com.qualcomm.robotcore.hardware.I2cWaitControl;
  * not a controller should be engaged with its underlying I2cDevice, and manage the state transitions
  * associated with doing so.
  */
-public abstract class HiTechnicNxtController extends I2cControllerPortDeviceImpl implements Engagable, HardwareDevice
-    {
+public abstract class HiTechnicNxtController extends I2cControllerPortDeviceImpl implements Engagable, HardwareDevice {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected Context        context;
-    protected boolean        isEngaged;    // does the user want us to connect to the underlying device?
-    protected boolean        isHooked;     // are we presently connected to the underlying device?
-    protected I2cDevice      i2cDevice;
+    protected Context context;
+    protected boolean isEngaged;    // does the user want us to connect to the underlying device?
+    protected boolean isHooked;     // are we presently connected to the underlying device?
+    protected I2cDevice i2cDevice;
     protected I2cDeviceSynch i2cDeviceSynch;
-    protected boolean        isHardwareInitialized;
+    protected boolean isHardwareInitialized;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public HiTechnicNxtController(Context context, I2cController module, int physicalPort, I2cAddr i2cAddr)
-        {
+    public HiTechnicNxtController(Context context, I2cController module, int physicalPort, I2cAddr i2cAddr) {
         super(module, physicalPort);
-        this.context   = context;
+        this.context = context;
         this.isEngaged = true;      // for historical compatibility
-        this.isHooked  = false;
+        this.isHooked = false;
         this.isHardwareInitialized = false;
 
-        this.i2cDevice      = new I2cDeviceImpl(module, physicalPort);
+        this.i2cDevice = new I2cDeviceImpl(module, physicalPort);
         this.i2cDeviceSynch = new I2cDeviceSynchImpl(i2cDevice, i2cAddr, true); // we own the i2cDevice
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override public Manufacturer getManufacturer()
-        {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.HiTechnic;
-        }
+    }
 
-    @Override public synchronized void close()
-        {
-        if (this.isEngaged())
-            {
+    @Override
+    public synchronized void close() {
+        if (this.isEngaged()) {
             this.floatHardware();
             this.disengage();
-            }
-        this.i2cDeviceSynch.close();
         }
+        this.i2cDeviceSynch.close();
+    }
 
-    void initializeHardwareIfNecessary()
-        {
-        if (!this.isHardwareInitialized && this.isArmed())
-            {
+    void initializeHardwareIfNecessary() {
+        if (!this.isHardwareInitialized && this.isArmed()) {
             this.isHardwareInitialized = true;
             initializeHardware();
-            }
         }
+    }
 
     protected abstract void initializeHardware();
+
     protected abstract void floatHardware();
 
     //----------------------------------------------------------------------------------------------
@@ -116,101 +112,83 @@ public abstract class HiTechnicNxtController extends I2cControllerPortDeviceImpl
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized void engage()
-        {
+    public synchronized void engage() {
         this.isEngaged = true;
         adjustHookingToMatchEngagement();
-        }
+    }
 
     @Override
-    public synchronized void disengage()
-        {
+    public synchronized void disengage() {
         this.isEngaged = true;
         adjustHookingToMatchEngagement();
-        }
+    }
 
     @Override
-    public synchronized boolean isEngaged()
-        {
+    public synchronized boolean isEngaged() {
         return this.isEngaged;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Controller comings and goings
     //----------------------------------------------------------------------------------------------
 
     @Override
-    protected void controllerNowDisarmed()
-        {
-        if (this.isHooked)
-            {
+    protected void controllerNowDisarmed() {
+        if (this.isHooked) {
             this.unhook();
-            }
         }
+    }
 
     protected void adjustHookingToMatchEngagement()
     // Make our hook status match our intended hook status (aka engagement status)
-        {
-        if (!this.isHooked && this.isEngaged)
-            {
+    {
+        if (!this.isHooked && this.isEngaged) {
             this.hook();
-            }
-        else if (this.isHooked && !this.isEngaged)
-            {
+        } else if (this.isHooked && !this.isEngaged) {
             this.unhook();
-            }
         }
+    }
 
-    protected void hook()
-        {
+    protected void hook() {
         this.doHook();
         this.isHooked = true;
         this.initializeHardwareIfNecessary();
-        }
+    }
 
-    protected void unhook()
-        {
+    protected void unhook() {
         this.doUnhook();
         this.isHooked = false;
-        }
+    }
 
-    protected void doHook()
-        {
+    protected void doHook() {
         // subclass responsibility
-        }
+    }
 
-    protected void doUnhook()
-        {
+    protected void doUnhook() {
         // subclass responsibility
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // Utility
     //------------------------------------------------------------------------------------------------
 
-    protected boolean isArmed()
-        {
+    protected boolean isArmed() {
         return this.i2cDeviceSynch.isArmed();
-        }
+    }
 
-    protected void write8(int ireg, byte data)
-        {
-        if (this.isEngaged())
-            {
+    protected void write8(int ireg, byte data) {
+        if (this.isEngaged()) {
             this.i2cDeviceSynch.write8(ireg, data, I2cWaitControl.NONE);
-            }
-        }
-
-    protected void write(int ireg, byte[] data)
-        {
-        if (this.isEngaged())
-            {
-            this.i2cDeviceSynch.write(ireg, data, I2cWaitControl.NONE);
-            }
-        }
-
-    protected byte read8(int ireg)
-        {
-        return this.isEngaged() ? this.i2cDeviceSynch.read8(ireg) : 0;
         }
     }
+
+    protected void write(int ireg, byte[] data) {
+        if (this.isEngaged()) {
+            this.i2cDeviceSynch.write(ireg, data, I2cWaitControl.NONE);
+        }
+    }
+
+    protected byte read8(int ireg) {
+        return this.isEngaged() ? this.i2cDeviceSynch.read8(ireg) : 0;
+    }
+}

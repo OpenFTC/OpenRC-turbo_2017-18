@@ -38,8 +38,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxSetNewModuleAddressCommand extends LynxStandardCommand<LynxAck>
-    {
+public class LynxSetNewModuleAddressCommand extends LynxStandardCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -50,47 +49,40 @@ public class LynxSetNewModuleAddressCommand extends LynxStandardCommand<LynxAck>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetNewModuleAddressCommand(LynxModule module)
-        {
+    public LynxSetNewModuleAddressCommand(LynxModule module) {
         super(module);
-        }
+    }
 
-    public LynxSetNewModuleAddressCommand(LynxModule module, byte moduleAddress)
-        {
+    public LynxSetNewModuleAddressCommand(LynxModule module, byte moduleAddress) {
         this(module);
         this.moduleAddress = moduleAddress;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_SET_NEW_MODULE_ADDRESS;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return false;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { this.moduleAddress };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.moduleAddress = rgb[0];
-        }
     }
+
+    @Override
+    public boolean isResponseExpected() {
+        return false;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{this.moduleAddress};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.moduleAddress = rgb[0];
+    }
+}

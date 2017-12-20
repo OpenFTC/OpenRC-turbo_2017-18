@@ -47,7 +47,7 @@ public final class InsnList
     /**
      * Sets the instruction at the given index.
      *
-     * @param n {@code >= 0, < size();} which index
+     * @param n    {@code >= 0, < size();} which index
      * @param insn {@code non-null;} the instruction to set at {@code n}
      */
     public void set(int n, Insn insn) {
@@ -86,11 +86,15 @@ public final class InsnList
      * @return true in the case described above.
      */
     public boolean contentEquals(InsnList b) {
-        if (b == null) return false;
+        if (b == null) {
+            return false;
+        }
 
         int sz = size();
 
-        if (sz != b.size()) return false;
+        if (sz != b.size()) {
+            return false;
+        }
 
         for (int i = 0; i < sz; i++) {
             if (!get(i).contentEquals(b.get(i))) {

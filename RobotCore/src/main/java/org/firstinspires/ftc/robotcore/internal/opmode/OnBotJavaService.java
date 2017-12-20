@@ -43,27 +43,28 @@ import java.io.Closeable;
  * independent of the lifetime of the robot controller user interface
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaService extends StartableService
-    {
+public class OnBotJavaService extends StartableService {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "OnBotJavaService";
-    @Override public String getTag() { return TAG; }
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OnBotJavaService()
-        {
-        super(new Supplier<Closeable>()
-            {
-            @Override public Closeable get()
-                {
+    public OnBotJavaService() {
+        super(new Supplier<Closeable>() {
+            @Override
+            public Closeable get() {
                 return new OnBotJavaManager();
-                }
-            });
-        }
+            }
+        });
     }
+}

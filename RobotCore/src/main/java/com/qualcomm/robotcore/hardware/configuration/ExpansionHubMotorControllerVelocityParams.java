@@ -47,9 +47,10 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExpansionHubMotorControllerVelocityParams
-    {
+public @interface ExpansionHubMotorControllerVelocityParams {
     double P();
+
     double I();
+
     double D();
-    }
+}

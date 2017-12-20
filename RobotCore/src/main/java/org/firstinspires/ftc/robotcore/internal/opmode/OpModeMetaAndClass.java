@@ -39,19 +39,16 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
  * {@link OpModeMetaAndClass} ties together an OpMode class with metadata concerning same.
  */
 @SuppressWarnings("WeakerAccess")
-public class OpModeMetaAndClass
-    {
+public class OpModeMetaAndClass {
     public final OpModeMeta meta;
     public final Class<OpMode> clazz;
 
-    public OpModeMetaAndClass(OpModeMeta meta, Class<OpMode> clazz)
-        {
+    public OpModeMetaAndClass(OpModeMeta meta, Class<OpMode> clazz) {
         this.meta = meta;
         this.clazz = clazz;
-        }
-
-    public boolean isOnBotJava()
-        {
-        return OnBotJavaClassLoader.isOnBotJava(clazz);
-        }
     }
+
+    public boolean isOnBotJava() {
+        return OnBotJavaClassLoader.isOnBotJava(clazz);
+    }
+}

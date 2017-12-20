@@ -19,6 +19,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.file;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ToHuman;
+
 import java.io.PrintWriter;
 
 /**
@@ -26,7 +27,9 @@ import java.io.PrintWriter;
  * purposes of encoding it inside a {@link ClassDataItem}.
  */
 public abstract class EncodedMember implements ToHuman {
-    /** access flags */
+    /**
+     * access flags
+     */
     private final int accessFlags;
 
     /**
@@ -57,7 +60,7 @@ public abstract class EncodedMember implements ToHuman {
     /**
      * Does a human-friendly dump of this instance.
      *
-     * @param out {@code non-null;} where to dump
+     * @param out     {@code non-null;} where to dump
      * @param verbose whether to be verbose with the output
      */
     public abstract void debugPrint(PrintWriter out, boolean verbose);
@@ -72,14 +75,14 @@ public abstract class EncodedMember implements ToHuman {
     /**
      * Encodes this instance to the given output.
      *
-     * @param file {@code non-null;} file this instance is part of
-     * @param out {@code non-null;} where to write to
+     * @param file      {@code non-null;} file this instance is part of
+     * @param out       {@code non-null;} where to write to
      * @param lastIndex {@code >= 0;} the previous member index value encoded, or
-     * {@code 0} if this is the first element to encode
-     * @param dumpSeq {@code >= 0;} sequence number of this instance for
-     * annotation purposes
+     *                  {@code 0} if this is the first element to encode
+     * @param dumpSeq   {@code >= 0;} sequence number of this instance for
+     *                  annotation purposes
      * @return {@code >= 0;} the member index value that was encoded
      */
     public abstract int encode(DexFile file, AnnotatedOutput out,
-            int lastIndex, int dumpSeq);
+                               int lastIndex, int dumpSeq);
 }

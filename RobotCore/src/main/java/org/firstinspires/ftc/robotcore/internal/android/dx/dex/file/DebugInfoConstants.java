@@ -28,14 +28,13 @@ public interface DebugInfoConstants {
     /**
      * Terminates a debug info sequence for a method.<p>
      * Args: none
-     *
      */
     static final int DBG_END_SEQUENCE = 0x00;
 
     /**
      * Advances the program counter/address register without emitting
      * a positions entry.<p>
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Unsigned LEB128 &mdash; amount to advance pc by
@@ -46,7 +45,7 @@ public interface DebugInfoConstants {
     /**
      * Advances the line register without emitting
      * a positions entry.<p>
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Signed LEB128 &mdash; amount to change line register by.
@@ -56,7 +55,7 @@ public interface DebugInfoConstants {
 
     /**
      * Introduces a local variable at the current address.<p>
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Unsigned LEB128 &mdash; register that will contain local.
@@ -69,7 +68,7 @@ public interface DebugInfoConstants {
     /**
      * Introduces a local variable at the current address with a type
      * signature specified.<p>
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Unsigned LEB128 &mdash; register that will contain local.
@@ -84,7 +83,7 @@ public interface DebugInfoConstants {
     /**
      * Marks a currently-live local variable as out of scope at the
      * current address.<p>
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Unsigned LEB128 &mdash; register that contained local
@@ -96,7 +95,7 @@ public interface DebugInfoConstants {
      * Re-introduces a local variable at the current address. The name
      * and type are the same as the last local that was live in the specified
      * register.<p>
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Unsigned LEB128 &mdash; register to re-start.
@@ -109,7 +108,7 @@ public interface DebugInfoConstants {
      * Sets the "prologue_end" state machine register, indicating that the
      * next position entry that is added should be considered the end of
      * a method prologue (an appropriate place for a method breakpoint).<p>
-     *
+     * <p>
      * The prologue_end register is cleared by any special
      * ({@code >= OPCODE_BASE}) opcode.
      */
@@ -120,7 +119,7 @@ public interface DebugInfoConstants {
      * next position entry that is added should be considered the beginning of
      * a method epilogue (an appropriate place to suspend execution before
      * method exit).<p>
-     *
+     * <p>
      * The epilogue_begin register is cleared by any special
      * ({@code >= OPCODE_BASE}) opcode.
      */
@@ -130,7 +129,7 @@ public interface DebugInfoConstants {
      * Sets the current file that that line numbers refer to. All subsequent
      * line number entries make reference to this source file name, instead
      * of the default name specified in code_item.
-     *
+     * <p>
      * Args:
      * <ol>
      * <li>Unsigned LEB128 &mdash; string index (shifted by 1) of source
@@ -146,7 +145,9 @@ public interface DebugInfoConstants {
      * the line number program header in DWARFv3, Section 6.2.4
      */
 
-    /** the smallest value a special opcode can take */
+    /**
+     * the smallest value a special opcode can take
+     */
     static final int DBG_FIRST_SPECIAL = 0x0a;
     static final int DBG_LINE_BASE = -4;
     static final int DBG_LINE_RANGE = 15;

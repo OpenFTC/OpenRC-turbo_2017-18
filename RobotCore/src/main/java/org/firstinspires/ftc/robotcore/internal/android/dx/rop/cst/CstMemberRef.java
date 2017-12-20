@@ -20,17 +20,21 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst;
  * Constants of type {@code CONSTANT_*ref_info}.
  */
 public abstract class CstMemberRef extends TypedConstant {
-    /** {@code non-null;} the type of the defining class */
+    /**
+     * {@code non-null;} the type of the defining class
+     */
     private final CstType definingClass;
 
-    /** {@code non-null;} the name-and-type */
+    /**
+     * {@code non-null;} the name-and-type
+     */
     private final CstNat nat;
 
     /**
      * Constructs an instance.
      *
      * @param definingClass {@code non-null;} the type of the defining class
-     * @param nat {@code non-null;} the name-and-type
+     * @param nat           {@code non-null;} the name-and-type
      */
     /*package*/ CstMemberRef(CstType definingClass, CstNat nat) {
         if (definingClass == null) {
@@ -45,7 +49,9 @@ public abstract class CstMemberRef extends TypedConstant {
         this.nat = nat;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean equals(Object other) {
         if ((other == null) || (getClass() != other.getClass())) {
@@ -54,10 +60,12 @@ public abstract class CstMemberRef extends TypedConstant {
 
         CstMemberRef otherRef = (CstMemberRef) other;
         return definingClass.equals(otherRef.definingClass) &&
-            nat.equals(otherRef.nat);
+                nat.equals(otherRef.nat);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int hashCode() {
         return (definingClass.hashCode() * 31) ^ nat.hashCode();
@@ -65,7 +73,7 @@ public abstract class CstMemberRef extends TypedConstant {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p><b>Note:</b> This implementation just compares the defining
      * class and name, and it is up to subclasses to compare the rest
      * after calling {@code super.compareTo0()}.</p>
@@ -85,19 +93,25 @@ public abstract class CstMemberRef extends TypedConstant {
         return thisName.compareTo(otherName);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toString() {
         return typeName() + '{' + toHuman() + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final String toHuman() {
         return definingClass.toHuman() + '.' + nat.toHuman();
     }

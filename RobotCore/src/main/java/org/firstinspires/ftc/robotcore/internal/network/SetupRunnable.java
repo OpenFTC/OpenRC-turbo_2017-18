@@ -15,18 +15,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("WeakerAccess")
-public class SetupRunnable implements Runnable
-    {
+public class SetupRunnable implements Runnable {
     public static final String TAG = "SetupRunnable";
 
-    protected RobocolDatagramSocket             socket;
-    protected NetworkConnection                 networkConnection;
-    protected PeerDiscoveryManager              peerDiscoveryManager;
-    protected ExecutorService                   recvLoopService;
-    protected volatile RecvLoopRunnable         recvLoopRunnable;
+    protected RobocolDatagramSocket socket;
+    protected NetworkConnection networkConnection;
+    protected PeerDiscoveryManager peerDiscoveryManager;
+    protected ExecutorService recvLoopService;
+    protected volatile RecvLoopRunnable recvLoopRunnable;
     protected RecvLoopRunnable.RecvLoopCallback recvLoopCallback;
-    protected ElapsedTime                       lastRecvPacket;
-    protected CountDownLatch                    countDownLatch;
+    protected ElapsedTime lastRecvPacket;
+    protected CountDownLatch countDownLatch;
     protected SocketConnect socketConnect;
 
     public SetupRunnable(
@@ -34,12 +33,12 @@ public class SetupRunnable implements Runnable
             NetworkConnection networkConnection,
             ElapsedTime lastRecvPacket,
             SocketConnect socketConnect
-            ) {
-        this.recvLoopCallback   = recvLoopCallback;
-        this.networkConnection  = networkConnection;
-        this.lastRecvPacket     = lastRecvPacket;
-        this.countDownLatch     = new CountDownLatch(1);
-        this.socketConnect      = socketConnect;
+    ) {
+        this.recvLoopCallback = recvLoopCallback;
+        this.networkConnection = networkConnection;
+        this.lastRecvPacket = lastRecvPacket;
+        this.countDownLatch = new CountDownLatch(1);
+        this.socketConnect = socketConnect;
     }
 
     @Override
@@ -48,10 +47,12 @@ public class SetupRunnable implements Runnable
             @Override
             public void run() {
                 try {
-                    if (socket != null) socket.close();
+                    if (socket != null) {
+                        socket.close();
+                    }
                     socket = new RobocolDatagramSocket();
                     socket.listenUsingDestination(networkConnection.getConnectionOwnerAddress());
-                    if (socketConnect==SocketConnect.CONNECTION_OWNER) {
+                    if (socketConnect == SocketConnect.CONNECTION_OWNER) {
                         socket.connect(networkConnection.getConnectionOwnerAddress());
                     }
                 } catch (SocketException e) {
@@ -84,7 +85,7 @@ public class SetupRunnable implements Runnable
     public RobocolDatagramSocket getSocket() {
         return socket;
     }
-    
+
     public void injectReceivedCommand(Command cmd) {
         RecvLoopRunnable recvLoopRunnable = this.recvLoopRunnable;
         if (recvLoopRunnable != null) {

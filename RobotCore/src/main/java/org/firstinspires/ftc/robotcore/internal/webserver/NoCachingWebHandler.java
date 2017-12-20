@@ -40,23 +40,18 @@ import fi.iki.elonen.NanoHTTPD;
  * {@link NoCachingWebHandler} will prohibit the web response from being cached
  */
 @SuppressWarnings("WeakerAccess")
-public class NoCachingWebHandler extends WebHandlerDecorator
-    {
-    public NoCachingWebHandler(WebHandler delegate)
-        {
+public class NoCachingWebHandler extends WebHandlerDecorator {
+    public NoCachingWebHandler(WebHandler delegate) {
         super(delegate);
-        }
+    }
 
     @Override
-    public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-        {
+    public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
         return setNoCache(session, super.getResponse(session));
-        }
+    }
 
-    public static NanoHTTPD.Response setNoCache(NanoHTTPD.IHTTPSession session, NanoHTTPD.Response response)
-        {
-        if (true || session.getMethod()==NanoHTTPD.Method.GET || session.getMethod()==NanoHTTPD.Method.HEAD)
-            {
+    public static NanoHTTPD.Response setNoCache(NanoHTTPD.IHTTPSession session, NanoHTTPD.Response response) {
+        if (true || session.getMethod() == NanoHTTPD.Method.GET || session.getMethod() == NanoHTTPD.Method.HEAD) {
             // Only GETs and HEADs are cacheable in the first place
             response.addHeader("Cache-Control", "no-cache");
             // NanoHTTPD currently doesn't seem to support repeat headers in responses. We could
@@ -64,7 +59,7 @@ public class NoCachingWebHandler extends WebHandlerDecorator
             // no-cache header that's most particularly important. So we just omit the others for now.
             // response.addHeader("Cache-Control", "no-store");
             // response.addHeader("Cache-Control", "must-revalidate");
-            }
-        return response;
         }
+        return response;
     }
+}

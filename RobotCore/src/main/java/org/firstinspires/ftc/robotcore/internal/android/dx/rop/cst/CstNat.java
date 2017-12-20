@@ -28,19 +28,23 @@ public final class CstNat extends Constant {
      * wrapped primitives
      */
     public static final CstNat PRIMITIVE_TYPE_NAT =
-        new CstNat(new CstString("TYPE"),
-                   new CstString("Ljava/lang/Class;"));
+            new CstNat(new CstString("TYPE"),
+                    new CstString("Ljava/lang/Class;"));
 
-    /** {@code non-null;} the name */
+    /**
+     * {@code non-null;} the name
+     */
     private final CstString name;
 
-    /** {@code non-null;} the descriptor (type) */
+    /**
+     * {@code non-null;} the descriptor (type)
+     */
     private final CstString descriptor;
 
     /**
      * Constructs an instance.
      *
-     * @param name {@code non-null;} the name
+     * @param name       {@code non-null;} the name
      * @param descriptor {@code non-null;} the descriptor
      */
     public CstNat(CstString name, CstString descriptor) {
@@ -56,7 +60,9 @@ public final class CstNat extends Constant {
         this.descriptor = descriptor;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof CstNat)) {
@@ -65,16 +71,20 @@ public final class CstNat extends Constant {
 
         CstNat otherNat = (CstNat) other;
         return name.equals(otherNat.name) &&
-            descriptor.equals(otherNat.descriptor);
+                descriptor.equals(otherNat.descriptor);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return (name.hashCode() * 31) ^ descriptor.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         CstNat otherNat = (CstNat) other;
@@ -87,19 +97,25 @@ public final class CstNat extends Constant {
         return descriptor.compareTo(otherNat.descriptor);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "nat{" + toHuman() + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "nat";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;

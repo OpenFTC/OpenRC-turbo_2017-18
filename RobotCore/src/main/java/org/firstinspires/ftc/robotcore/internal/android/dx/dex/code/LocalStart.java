@@ -42,7 +42,7 @@ public final class LocalStart extends ZeroSizeInsn {
      */
     public static String localString(RegisterSpec spec) {
         return spec.regString() + ' ' + spec.getLocalItem().toString() + ": " +
-            spec.getTypeBearer().toHuman();
+                spec.getTypeBearer().toHuman();
     }
 
     /**
@@ -50,8 +50,8 @@ public final class LocalStart extends ZeroSizeInsn {
      * unknown ({@code -1}).
      *
      * @param position {@code non-null;} source position
-     * @param local {@code non-null;} register spec representing the local
-     * variable introduced by this instance
+     * @param local    {@code non-null;} register spec representing the local
+     *                 variable introduced by this instance
      */
     public LocalStart(SourcePosition position, RegisterSpec local) {
         super(position);
@@ -63,13 +63,17 @@ public final class LocalStart extends ZeroSizeInsn {
         this.local = local;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisterOffset(int delta) {
         return new LocalStart(getPosition(), local.withOffset(delta));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         return new LocalStart(getPosition(), local);
@@ -85,21 +89,27 @@ public final class LocalStart extends ZeroSizeInsn {
         return local;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         return local.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String listingString0(boolean noteIndices) {
         return "local-start " + localString(local);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withMapper(RegisterMapper mapper) {
-      return new LocalStart(getPosition(), mapper.map(local));
+        return new LocalStart(getPosition(), mapper.map(local));
     }
 }

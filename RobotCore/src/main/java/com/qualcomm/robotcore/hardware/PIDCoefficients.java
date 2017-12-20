@@ -34,23 +34,21 @@ package com.qualcomm.robotcore.hardware;
 
 /**
  * {@link PIDCoefficients} conveys a set of configuration parameters for a PID algorithm.
+ *
  * @see <a href="https://en.wikipedia.org/wiki/PID_controller">PID controller</a>
  */
-public class PIDCoefficients
-    {
+public class PIDCoefficients {
     public double p;
     public double i;
     public double d;
 
-    public PIDCoefficients()
-        {
+    public PIDCoefficients() {
         this.p = this.i = this.d = 0;
-        }
+    }
 
-    public PIDCoefficients(double p, double i, double d)
-        {
+    public PIDCoefficients(double p, double i, double d) {
         this.p = p;
         this.i = i;
         this.d = d;
-        }
     }
+}

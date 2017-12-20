@@ -17,6 +17,7 @@
 package org.firstinspires.ftc.robotcore.internal.android.dx.dex.code;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.dex.DexOptions;
+
 import java.util.ArrayList;
 
 /**
@@ -43,15 +44,15 @@ public final class OutputCollector {
     /**
      * Constructs an instance.
      *
-     * @param dexOptions {@code non-null;} options for dex output
-     * @param initialCapacity {@code >= 0;} initial capacity of the output list
+     * @param dexOptions            {@code non-null;} options for dex output
+     * @param initialCapacity       {@code >= 0;} initial capacity of the output list
      * @param suffixInitialCapacity {@code >= 0;} initial capacity of the output
-     * suffix
-     * @param regCount {@code >= 0;} register count for the method
-     * @param paramSize size, in register units, of all the parameters for this method
+     *                              suffix
+     * @param regCount              {@code >= 0;} register count for the method
+     * @param paramSize             size, in register units, of all the parameters for this method
      */
     public OutputCollector(DexOptions dexOptions, int initialCapacity, int suffixInitialCapacity,
-            int regCount, int paramSize) {
+                           int regCount, int paramSize) {
         this.finisher = new OutputFinisher(dexOptions, initialCapacity, regCount, paramSize);
         this.suffix = new ArrayList<DalvInsn>(suffixInitialCapacity);
     }
@@ -70,9 +71,9 @@ public final class OutputCollector {
      * backward in the output. It is illegal to call this unless the
      * indicated instruction really is a reversible branch.
      *
-     * @param which how many instructions back to find the branch;
-     * {@code 0} is the most recently added instruction,
-     * {@code 1} is the instruction before that, etc.
+     * @param which     how many instructions back to find the branch;
+     *                  {@code 0} is the most recently added instruction,
+     *                  {@code 1} is the instruction before that, etc.
      * @param newTarget {@code non-null;} the new target for the reversed branch
      */
     public void reverseBranch(int which, CodeAddress newTarget) {
@@ -94,7 +95,7 @@ public final class OutputCollector {
      *
      * @return {@code non-null;} the output finisher
      * @throws UnsupportedOperationException if this method has
-     * already been called
+     *                                       already been called
      */
     public OutputFinisher getFinisher() {
         if (suffix == null) {

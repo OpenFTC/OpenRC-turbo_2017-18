@@ -37,24 +37,24 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 public class NetworkConnectionFactory {
 
-  public static final String NETWORK_CONNECTION_TYPE = "NETWORK_CONNECTION_TYPE";
+    public static final String NETWORK_CONNECTION_TYPE = "NETWORK_CONNECTION_TYPE";
 
-public static NetworkConnection getNetworkConnection(NetworkType type, Context context) {
-    RobotLog.v("Getting network assistant of type: " + type);
-    switch (type) {
-      case WIFIDIRECT:
-        return WifiDirectAssistant.getWifiDirectAssistant(context);
-      case LOOPBACK:
-        return null;  // not yet implemented
-      case SOFTAP:
-        return SoftApAssistant.getSoftApAssistant(context);
-      default:
-        return null;
+    public static NetworkConnection getNetworkConnection(NetworkType type, Context context) {
+        RobotLog.v("Getting network assistant of type: " + type);
+        switch (type) {
+            case WIFIDIRECT:
+                return WifiDirectAssistant.getWifiDirectAssistant(context);
+            case LOOPBACK:
+                return null;  // not yet implemented
+            case SOFTAP:
+                return SoftApAssistant.getSoftApAssistant(context);
+            default:
+                return null;
+        }
     }
-  }
 
-  public static NetworkType getTypeFromString(String type) {
-    return NetworkType.fromString(type);
-  }
+    public static NetworkType getTypeFromString(String type) {
+        return NetworkType.fromString(type);
+    }
 
 }

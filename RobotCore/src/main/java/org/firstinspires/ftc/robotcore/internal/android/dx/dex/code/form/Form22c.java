@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstFieldRef;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.util.BitSet;
 
 /**
@@ -31,7 +32,9 @@ import java.util.BitSet;
  * for details.
  */
 public final class Form22c extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new Form22c();
 
     /**
@@ -42,15 +45,19 @@ public final class Form22c extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
         return regs.get(0).regString() + ", " + regs.get(1).regString() +
-            ", " + cstString(insn);
+                ", " + cstString(insn);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         if (noteIndices) {
@@ -60,36 +67,42 @@ public final class Form22c extends InsnFormat {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return 2;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
         if (!((insn instanceof CstInsn) &&
-              (regs.size() == 2) &&
-              unsignedFitsInNibble(regs.get(0).getReg()) &&
-              unsignedFitsInNibble(regs.get(1).getReg()))) {
+                (regs.size() == 2) &&
+                unsignedFitsInNibble(regs.get(0).getReg()) &&
+                unsignedFitsInNibble(regs.get(1).getReg()))) {
             return false;
         }
 
         CstInsn ci = (CstInsn) insn;
         int cpi = ci.getIndex();
 
-        if (! unsignedFitsInShort(cpi)) {
+        if (!unsignedFitsInShort(cpi)) {
             return false;
         }
 
         Constant cst = ci.getConstant();
         return (cst instanceof CstType) ||
-            (cst instanceof CstFieldRef);
+                (cst instanceof CstFieldRef);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BitSet compatibleRegs(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -100,15 +113,17 @@ public final class Form22c extends InsnFormat {
         return bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
         int cpi = ((CstInsn) insn).getIndex();
 
         write(out,
-              opcodeUnit(insn,
-                         makeByte(regs.get(0).getReg(), regs.get(1).getReg())),
-              (short) cpi);
+                opcodeUnit(insn,
+                        makeByte(regs.get(0).getReg(), regs.get(1).getReg())),
+                (short) cpi);
     }
 }

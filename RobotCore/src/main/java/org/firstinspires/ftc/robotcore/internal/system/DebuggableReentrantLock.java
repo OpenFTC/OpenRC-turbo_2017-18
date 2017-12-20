@@ -39,28 +39,25 @@ import java.util.concurrent.locks.ReentrantLock;
  * that help facilitate debugging
  */
 @SuppressWarnings("WeakerAccess")
-public class DebuggableReentrantLock extends ReentrantLock
-    {
+public class DebuggableReentrantLock extends ReentrantLock {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public DebuggableReentrantLock()
-        {
+    public DebuggableReentrantLock() {
         super();
-        }
+    }
 
-    public DebuggableReentrantLock(boolean fair)
-        {
+    public DebuggableReentrantLock(boolean fair) {
         super(fair);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Override public Thread getOwner()
-        {
+    @Override
+    public Thread getOwner() {
         return super.getOwner();
-        }
     }
+}

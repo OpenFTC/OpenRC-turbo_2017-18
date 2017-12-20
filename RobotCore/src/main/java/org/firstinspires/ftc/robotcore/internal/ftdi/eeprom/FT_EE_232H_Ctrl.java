@@ -43,8 +43,7 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
-    {
+public class FT_EE_232H_Ctrl extends FT_EE_Ctrl {
     private static final byte EEPROM_SIZE_LOCATION = 15;
     private static final String DEFAULT_PID = "6014";
     private static final int AL_DRIVE_CURRENT = 3;
@@ -55,67 +54,51 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
     private static final int BL_SCHMITT_INPUT = 2048;
     private static FtDevice ft_device;
 
-    public FT_EE_232H_Ctrl(FtDevice usbc) throws FtDeviceIOException, RobotUsbException
-        {
+    public FT_EE_232H_Ctrl(FtDevice usbc) throws FtDeviceIOException, RobotUsbException {
         super(usbc);
         this.getEepromSize(EEPROM_SIZE_LOCATION);
-        }
+    }
 
-    @Override public short programEeprom(FT_EEPROM ee)
-        {
+    @Override
+    public short programEeprom(FT_EEPROM ee) {
         int[] dataToWrite = new int[this.mEepromSize];
-        if (ee.getClass() != FT_EEPROM_232H.class)
-            {
+        if (ee.getClass() != FT_EEPROM_232H.class) {
             return 1;
-            }
-        else
-            {
+        } else {
             FT_EEPROM_232H eeprom = (FT_EEPROM_232H) ee;
 
-            try
-                {
-                if (eeprom.FIFO)
-                    {
+            try {
+                if (eeprom.FIFO) {
                     dataToWrite[0] |= 1;
-                    }
-                else if (eeprom.FIFOTarget)
-                    {
+                } else if (eeprom.FIFOTarget) {
                     dataToWrite[0] |= 2;
-                    }
-                else if (eeprom.FastSerial)
-                    {
+                } else if (eeprom.FastSerial) {
                     dataToWrite[0] |= 4;
-                    }
+                }
 
-                if (eeprom.FT1248)
-                    {
+                if (eeprom.FT1248) {
                     dataToWrite[0] |= 8;
-                    }
+                }
 
-                if (eeprom.LoadVCP)
-                    {
+                if (eeprom.LoadVCP) {
                     dataToWrite[0] |= 16;
-                    }
+                }
 
-                if (eeprom.FT1248ClockPolarity)
-                    {
+                if (eeprom.FT1248ClockPolarity) {
                     dataToWrite[0] |= 256;
-                    }
+                }
 
-                if (eeprom.FT1248LSB)
-                    {
+                if (eeprom.FT1248LSB) {
                     dataToWrite[0] |= 512;
-                    }
+                }
 
-                if (eeprom.FT1248FlowControl)
-                    {
+                if (eeprom.FT1248FlowControl) {
                     dataToWrite[0] |= 1024;
-                    }
+                }
 
-                if (eeprom.PowerSaveEnable)
-                    {
+                if (eeprom.PowerSaveEnable) {
                     dataToWrite[0] |= '耀';
-                    }
+                }
 
                 dataToWrite[1] = eeprom.VendorId;
                 dataToWrite[2] = eeprom.ProductId;
@@ -123,46 +106,39 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
                 dataToWrite[4] = this.setUSBConfig(ee);
                 dataToWrite[5] = this.setDeviceControl(ee);
                 byte e = eeprom.AL_DriveCurrent;
-                if (e == -1)
-                    {
+                if (e == -1) {
                     e = 0;
-                    }
+                }
 
                 dataToWrite[6] |= e;
-                if (eeprom.AL_SlowSlew)
-                    {
+                if (eeprom.AL_SlowSlew) {
                     dataToWrite[6] |= 4;
-                    }
+                }
 
-                if (eeprom.AL_SchmittInput)
-                    {
+                if (eeprom.AL_SchmittInput) {
                     dataToWrite[6] |= 8;
-                    }
+                }
 
                 byte driveC = eeprom.BL_DriveCurrent;
-                if (driveC == -1)
-                    {
+                if (driveC == -1) {
                     driveC = 0;
-                    }
+                }
 
                 dataToWrite[6] |= (short) (driveC << 8);
-                if (eeprom.BL_SlowSlew)
-                    {
+                if (eeprom.BL_SlowSlew) {
                     dataToWrite[6] |= 1024;
-                    }
+                }
 
-                if (eeprom.BL_SchmittInput)
-                    {
+                if (eeprom.BL_SchmittInput) {
                     dataToWrite[6] |= 2048;
-                    }
+                }
 
                 byte offset = 80;
                 int offset1 = this.setStringDescriptor(eeprom.Manufacturer, dataToWrite, offset, 7, false);
                 offset1 = this.setStringDescriptor(eeprom.Product, dataToWrite, offset1, 8, false);
-                if (eeprom.SerNumEnable)
-                    {
+                if (eeprom.SerNumEnable) {
                     this.setStringDescriptor(eeprom.SerialNumber, dataToWrite, offset1, 9, false);
-                    }
+                }
 
                 dataToWrite[10] = 0;
                 dataToWrite[11] = 0;
@@ -191,49 +167,36 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
                 dataToWrite[14] = c8 | c91;
                 dataToWrite[15] = this.mEepromType;
                 dataToWrite[69] = 72;
-                if (this.mEepromType == 70)
-                    {
+                if (this.mEepromType == 70) {
                     return 1;
-                    }
-                else if (dataToWrite[1] != 0 && dataToWrite[2] != 0)
-                    {
+                } else if (dataToWrite[1] != 0 && dataToWrite[2] != 0) {
                     boolean returnCode = false;
                     returnCode = this.programEeprom(dataToWrite, this.mEepromSize - 1);
                     return (short) (returnCode ? 0 : 1);
-                    }
-                else
-                    {
+                } else {
                     return 2;
-                    }
                 }
-            catch (Exception var18)
-                {
+            } catch (Exception var18) {
                 var18.printStackTrace();
                 return 0;
-                }
             }
         }
+    }
 
-    @Override public FT_EEPROM readEeprom()
-        {
+    @Override
+    public FT_EEPROM readEeprom() {
         FT_EEPROM_232H eeprom = new FT_EEPROM_232H();
         int[] data = new int[this.mEepromSize];
-        if (this.mEepromBlank)
-            {
+        if (this.mEepromBlank) {
             return eeprom;
-            }
-        else
-            {
-            try
-                {
-                for (short e = 0; e < this.mEepromSize; ++e)
-                    {
+        } else {
+            try {
+                for (short e = 0; e < this.mEepromSize; ++e) {
                     data[e] = this.readWord(e);
-                    }
+                }
 
                 eeprom.UART = false;
-                switch (data[0] & 15)
-                    {
+                switch (data[0] & 15) {
                     case 0:
                         eeprom.UART = true;
                         break;
@@ -255,58 +218,44 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
                         break;
                     case 8:
                         eeprom.FT1248 = true;
-                    }
+                }
 
-                if ((data[0] & 16) > 0)
-                    {
+                if ((data[0] & 16) > 0) {
                     eeprom.LoadVCP = true;
                     eeprom.LoadD2XX = false;
-                    }
-                else
-                    {
+                } else {
                     eeprom.LoadVCP = false;
                     eeprom.LoadD2XX = true;
-                    }
+                }
 
-                if ((data[0] & 256) > 0)
-                    {
+                if ((data[0] & 256) > 0) {
                     eeprom.FT1248ClockPolarity = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.FT1248ClockPolarity = false;
-                    }
+                }
 
-                if ((data[0] & 512) > 0)
-                    {
+                if ((data[0] & 512) > 0) {
                     eeprom.FT1248LSB = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.FT1248LSB = false;
-                    }
+                }
 
-                if ((data[0] & 1024) > 0)
-                    {
+                if ((data[0] & 1024) > 0) {
                     eeprom.FT1248FlowControl = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.FT1248FlowControl = false;
-                    }
+                }
 
-                if ((data[0] & '耀') > 0)
-                    {
+                if ((data[0] & '耀') > 0) {
                     eeprom.PowerSaveEnable = true;
-                    }
+                }
 
                 eeprom.VendorId = (short) data[1];
                 eeprom.ProductId = (short) data[2];
                 this.getUSBConfig(eeprom, data[4]);
                 this.getDeviceControl(eeprom, data[5]);
                 int var17 = data[6] & 3;
-                switch (var17)
-                    {
+                switch (var17) {
                     case 0:
                         eeprom.AL_DriveCurrent = 0;
                         break;
@@ -318,29 +267,22 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
                         break;
                     case 3:
                         eeprom.AL_DriveCurrent = 3;
-                    }
+                }
 
-                if ((data[6] & 4) > 0)
-                    {
+                if ((data[6] & 4) > 0) {
                     eeprom.AL_SlowSlew = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.AL_SlowSlew = false;
-                    }
+                }
 
-                if ((data[6] & 8) > 0)
-                    {
+                if ((data[6] & 8) > 0) {
                     eeprom.AL_SchmittInput = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.AL_SchmittInput = false;
-                    }
+                }
 
                 short data89X06 = (short) ((data[6] & 768) >> 8);
-                switch (data89X06)
-                    {
+                switch (data89X06) {
                     case 0:
                         eeprom.BL_DriveCurrent = 0;
                         break;
@@ -352,25 +294,19 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
                         break;
                     case 3:
                         eeprom.BL_DriveCurrent = 3;
-                    }
+                }
 
-                if ((data[6] & 1024) > 0)
-                    {
+                if ((data[6] & 1024) > 0) {
                     eeprom.BL_SlowSlew = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.BL_SlowSlew = false;
-                    }
+                }
 
-                if ((data[6] & 2048) > 0)
-                    {
+                if ((data[6] & 2048) > 0) {
                     eeprom.BL_SchmittInput = true;
-                    }
-                else
-                    {
+                } else {
                     eeprom.BL_SchmittInput = false;
-                    }
+                }
 
                 short cbus0 = (short) (data[12] >> 0 & 15);
                 eeprom.CBus0 = (byte) cbus0;
@@ -402,16 +338,14 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
                 addr /= 2;
                 eeprom.SerialNumber = this.getStringDescriptor(addr, data);
                 return eeprom;
-                }
-            catch (Exception var16)
-                {
+            } catch (Exception var16) {
                 return null;
-                }
             }
         }
+    }
 
-    @Override public int getUserSize() throws RobotUsbException
-        {
+    @Override
+    public int getUserSize() throws RobotUsbException {
         int data = this.readWord((short) 9);
         int ptr = data & 255;
         ptr /= 2;
@@ -420,96 +354,75 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl
         length /= 2;
         ++length;
         return (this.mEepromSize - ptr - 1 - length) * 2;
-        }
+    }
 
-    @Override public int writeUserData(byte[] data) throws RobotUsbException
-        {
+    @Override
+    public int writeUserData(byte[] data) throws RobotUsbException {
         boolean dataWrite = false;
         boolean offset = false;
-        if (data.length > this.getUserSize())
-            {
+        if (data.length > this.getUserSize()) {
             return 0;
-            }
-        else
-            {
+        } else {
             int[] eeprom = new int[this.mEepromSize];
 
-            for (short returnCode = 0; returnCode < this.mEepromSize; ++returnCode)
-                {
+            for (short returnCode = 0; returnCode < this.mEepromSize; ++returnCode) {
                 eeprom[returnCode] = this.readWord(returnCode);
-                }
+            }
 
             short var7 = (short) (this.mEepromSize - this.getUserSize() / 2 - 1 - 1);
 
-            for (int var8 = 0; var8 < data.length; var8 += 2)
-                {
+            for (int var8 = 0; var8 < data.length; var8 += 2) {
                 int var6;
-                if (var8 + 1 < data.length)
-                    {
+                if (var8 + 1 < data.length) {
                     var6 = data[var8 + 1] & 255;
-                    }
-                else
-                    {
+                } else {
                     var6 = 0;
-                    }
+                }
 
                 var6 <<= 8;
                 var6 |= data[var8] & 255;
                 eeprom[var7++] = var6;
-                }
+            }
 
-            if (eeprom[1] != 0 && eeprom[2] != 0)
-                {
+            if (eeprom[1] != 0 && eeprom[2] != 0) {
                 boolean var9 = false;
                 var9 = this.programEeprom(eeprom, this.mEepromSize - 1);
-                if (!var9)
-                    {
+                if (!var9) {
                     return 0;
-                    }
-                else
-                    {
+                } else {
                     return data.length;
-                    }
                 }
-            else
-                {
+            } else {
                 return 0;
-                }
             }
         }
+    }
 
-    @Override public byte[] readUserData(int length) throws RobotUsbException
-        {
+    @Override
+    public byte[] readUserData(int length) throws RobotUsbException {
         boolean Hi = false;
         boolean Lo = false;
         boolean dataRead = false;
         byte[] data = new byte[length];
-        if (length != 0 && length <= this.getUserSize())
-            {
+        if (length != 0 && length <= this.getUserSize()) {
             short offset = (short) (this.mEepromSize - this.getUserSize() / 2 - 1 - 1);
 
-            for (int i = 0; i < length; i += 2)
-                {
+            for (int i = 0; i < length; i += 2) {
                 int var10 = this.readWord(offset++);
-                if (i + 1 < data.length)
-                    {
+                if (i + 1 < data.length) {
                     byte var8 = (byte) (var10 & 255);
                     data[i + 1] = var8;
-                    }
-                else
-                    {
+                } else {
                     Lo = false;
-                    }
+                }
 
                 byte var9 = (byte) ((var10 & '\uff00') >> 8);
                 data[i] = var9;
-                }
+            }
 
             return data;
-            }
-        else
-            {
+        } else {
             return null;
-            }
         }
     }
+}

@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstFieldRef;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.util.BitSet;
 
 /**
@@ -33,7 +34,9 @@ import java.util.BitSet;
  * for details.
  */
 public final class Form31c extends InsnFormat {
-    /** {@code non-null;} unique instance of this class */
+    /**
+     * {@code non-null;} unique instance of this class
+     */
     public static final InsnFormat THE_ONE = new Form31c();
 
     /**
@@ -44,14 +47,18 @@ public final class Form31c extends InsnFormat {
         // This space intentionally left blank.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnArgString(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
         return regs.get(0).regString() + ", " + cstString(insn);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         if (noteIndices) {
@@ -61,13 +68,17 @@ public final class Form31c extends InsnFormat {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return 3;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCompatible(DalvInsn insn) {
         if (!(insn instanceof CstInsn)) {
@@ -106,11 +117,13 @@ public final class Form31c extends InsnFormat {
         Constant cst = ci.getConstant();
 
         return (cst instanceof CstType) ||
-            (cst instanceof CstFieldRef) ||
-            (cst instanceof CstString);
+                (cst instanceof CstFieldRef) ||
+                (cst instanceof CstString);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BitSet compatibleRegs(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
@@ -130,7 +143,9 @@ public final class Form31c extends InsnFormat {
         return bits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out, DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();

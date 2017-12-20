@@ -39,14 +39,12 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * A simple buffer for receiving bulk data from USB
  */
 @SuppressWarnings("WeakerAccess")
-public class BulkPacketBufferIn extends BulkPacketBuffer
-    {
+public class BulkPacketBufferIn extends BulkPacketBuffer {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public BulkPacketBufferIn(int size)
-        {
+    public BulkPacketBufferIn(int size) {
         super(size);
-        }
     }
+}

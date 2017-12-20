@@ -54,137 +54,142 @@ import java.util.List;
 
 public class EditDeviceInterfaceModuleActivity extends EditUSBDeviceActivity {
 
-  @Override public String getTag() { return this.getClass().getSimpleName(); }
-  public static final RequestCode requestCode = RequestCode.EDIT_DEVICE_INTERFACE_MODULE;
-
-  private DeviceInterfaceModuleConfiguration  deviceInterfaceModuleConfiguration;
-  private EditText                            device_interface_module_name;
-  private DisplayNameAndRequestCode[]         listKeys;
-
-  /**
-   * In onCreate, we gather all of the linearLayout's that are associated with each port.
-   * this is how the simple_device.xml file is reused, but we read and write to the correct
-   * Spinners, EditTexts, TextViews, and Buttons. The TextView port# is set during onCreate
-   * as a way to "name" that chunk of xml code. Each layout is then identified by the port number.
-   */
-  @Override
-  protected void onCreate(Bundle savedInstanceState){
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.device_interface_module);
-
-    String[] strings = getResources().getStringArray(R.array.device_interface_module_options_array);
-    listKeys = DisplayNameAndRequestCode.fromArray(strings);
-
-    ListView listView = (ListView) findViewById(R.id.listView_devices);
-    listView.setAdapter(new ArrayAdapter<DisplayNameAndRequestCode>(this, android.R.layout.simple_list_item_1, listKeys));
-    listView.setOnItemClickListener(editLaunchListener);
-
-    device_interface_module_name = (EditText) findViewById(R.id.device_interface_module_name);
-
-    EditParameters parameters = EditParameters.fromIntent(this, getIntent());
-    deserialize(parameters);
-
-    device_interface_module_name.addTextChangedListener(new SetNameTextWatcher(controllerConfiguration));
-    device_interface_module_name.setText(controllerConfiguration.getName());
-
-    showFixSwapButtons();
-    deviceInterfaceModuleConfiguration = (DeviceInterfaceModuleConfiguration)controllerConfiguration;
-  }
-
-  @Override protected void refreshSerialNumber() {
-    TextView serialNumberView = (TextView) findViewById(R.id.serialNumber);
-    serialNumberView.setText(formatSerialNumber(this, controllerConfiguration));
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-  }
-
-  private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      DisplayNameAndRequestCode key = listKeys[position];
-
-      if (key.requestCode==EditPWMDevicesActivity.requestCode) {
-        handleLaunchEdit(key.requestCode, EditPWMDevicesActivity.class, deviceInterfaceModuleConfiguration.getPwmOutputs());
-      } else if (key.requestCode==EditI2cDevicesActivity.requestCode) {
-        EditParameters<DeviceConfiguration> parameters = new EditParameters<DeviceConfiguration>(EditDeviceInterfaceModuleActivity.this,
-                DeviceConfiguration.class,
-                deviceInterfaceModuleConfiguration.getI2cDevices(),
-                ModernRoboticsUsbDeviceInterfaceModule.MAX_I2C_PORT_NUMBER + 1);
-        //
-        List<ConfigurationType> list = new LinkedList<ConfigurationType>();
-        list.add(BuiltInConfigurationType.NOTHING);
-        list.add(BuiltInConfigurationType.IR_SEEKER_V3);
-        list.add(BuiltInConfigurationType.COLOR_SENSOR);
-        list.add(BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR);
-        list.add(BuiltInConfigurationType.GYRO);
-        list.add(BuiltInConfigurationType.I2C_DEVICE);
-        list.add(BuiltInConfigurationType.I2C_DEVICE_SYNCH);
-        list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.I2C));
-        parameters.setConfigurationTypes(list.toArray(new ConfigurationType[list.size()]));
-        //
-        handleLaunchEdit(key.requestCode, EditI2cDevicesActivity.class, parameters);
-      } else if (key.requestCode==EditAnalogInputDevicesActivity.requestCode) {
-        handleLaunchEdit(key.requestCode, EditAnalogInputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogInputDevices());
-      } else if (key.requestCode==EditDigitalDevicesActivity.requestCode) {
-        handleLaunchEdit(key.requestCode, EditDigitalDevicesActivity.class, deviceInterfaceModuleConfiguration.getDigitalDevices());
-      } else if (key.requestCode==EditAnalogOutputDevicesActivity.requestCode) {
-        handleLaunchEdit(key.requestCode, EditAnalogOutputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogOutputDevices());
-      }
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
-  };
 
-  @Override
-  protected void onActivityResult(int requestCodeValue, int resultCode, Intent data) {
-    logActivityResult(requestCodeValue, resultCode, data);
+    public static final RequestCode requestCode = RequestCode.EDIT_DEVICE_INTERFACE_MODULE;
 
-    RequestCode requestCode = RequestCode.fromValue(requestCodeValue);
-    if (resultCode == RESULT_OK) {
-      EditParameters<DeviceConfiguration> parameters = EditParameters.fromIntent(this, data);
-      if (requestCode == EditSwapUsbDevices.requestCode) {
-          completeSwapConfiguration(requestCodeValue, resultCode, data);
-      } else if (requestCode == EditPWMDevicesActivity.requestCode) {
-          deviceInterfaceModuleConfiguration.setPwmOutputs(parameters.getCurrentItems());
-      } else if (requestCode == EditAnalogInputDevicesActivity.requestCode) {
-          deviceInterfaceModuleConfiguration.setAnalogInputDevices(parameters.getCurrentItems());
-      } else if (requestCode == EditDigitalDevicesActivity.requestCode) {
-          deviceInterfaceModuleConfiguration.setDigitalDevices(parameters.getCurrentItems());
-      } else if (requestCode == EditI2cDevicesActivity.requestCode) {
-          deviceInterfaceModuleConfiguration.setI2cDevices(parameters.getCurrentItems());
-      } else if (requestCode == EditAnalogOutputDevicesActivity.requestCode) {
-          deviceInterfaceModuleConfiguration.setAnalogOutputDevices(parameters.getCurrentItems());
-      }
-      currentCfgFile.markDirty();
-      robotConfigFileManager.setActiveConfigAndUpdateUI(currentCfgFile);
+    private DeviceInterfaceModuleConfiguration deviceInterfaceModuleConfiguration;
+    private EditText device_interface_module_name;
+    private DisplayNameAndRequestCode[] listKeys;
+
+    /**
+     * In onCreate, we gather all of the linearLayout's that are associated with each port.
+     * this is how the simple_device.xml file is reused, but we read and write to the correct
+     * Spinners, EditTexts, TextViews, and Buttons. The TextView port# is set during onCreate
+     * as a way to "name" that chunk of xml code. Each layout is then identified by the port number.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.device_interface_module);
+
+        String[] strings = getResources().getStringArray(R.array.device_interface_module_options_array);
+        listKeys = DisplayNameAndRequestCode.fromArray(strings);
+
+        ListView listView = (ListView) findViewById(R.id.listView_devices);
+        listView.setAdapter(new ArrayAdapter<DisplayNameAndRequestCode>(this, android.R.layout.simple_list_item_1, listKeys));
+        listView.setOnItemClickListener(editLaunchListener);
+
+        device_interface_module_name = (EditText) findViewById(R.id.device_interface_module_name);
+
+        EditParameters parameters = EditParameters.fromIntent(this, getIntent());
+        deserialize(parameters);
+
+        device_interface_module_name.addTextChangedListener(new SetNameTextWatcher(controllerConfiguration));
+        device_interface_module_name.setText(controllerConfiguration.getName());
+
+        showFixSwapButtons();
+        deviceInterfaceModuleConfiguration = (DeviceInterfaceModuleConfiguration) controllerConfiguration;
     }
-  }
 
-  public void onDoneButtonPressed(View v) {
-    finishOk();
-  }
+    @Override
+    protected void refreshSerialNumber() {
+        TextView serialNumberView = (TextView) findViewById(R.id.serialNumber);
+        serialNumberView.setText(formatSerialNumber(this, controllerConfiguration));
+    }
 
-  @Override
-  protected void finishOk() {
-    controllerConfiguration.setName(device_interface_module_name.getText().toString());
-    finishOk(new EditParameters(this, controllerConfiguration, getRobotConfigMap()));
-  }
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
-  public void onCancelButtonPressed(View v) {
-    finishCancel();
-  }
+    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            DisplayNameAndRequestCode key = listKeys[position];
 
-  //----------------------------------------------------------------------------------------------
-  // Fixing and swapping
-  //----------------------------------------------------------------------------------------------
+            if (key.requestCode == EditPWMDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditPWMDevicesActivity.class, deviceInterfaceModuleConfiguration.getPwmOutputs());
+            } else if (key.requestCode == EditI2cDevicesActivity.requestCode) {
+                EditParameters<DeviceConfiguration> parameters = new EditParameters<DeviceConfiguration>(EditDeviceInterfaceModuleActivity.this,
+                        DeviceConfiguration.class,
+                        deviceInterfaceModuleConfiguration.getI2cDevices(),
+                        ModernRoboticsUsbDeviceInterfaceModule.MAX_I2C_PORT_NUMBER + 1);
+                //
+                List<ConfigurationType> list = new LinkedList<ConfigurationType>();
+                list.add(BuiltInConfigurationType.NOTHING);
+                list.add(BuiltInConfigurationType.IR_SEEKER_V3);
+                list.add(BuiltInConfigurationType.COLOR_SENSOR);
+                list.add(BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR);
+                list.add(BuiltInConfigurationType.GYRO);
+                list.add(BuiltInConfigurationType.I2C_DEVICE);
+                list.add(BuiltInConfigurationType.I2C_DEVICE_SYNCH);
+                list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.I2C));
+                parameters.setConfigurationTypes(list.toArray(new ConfigurationType[list.size()]));
+                //
+                handleLaunchEdit(key.requestCode, EditI2cDevicesActivity.class, parameters);
+            } else if (key.requestCode == EditAnalogInputDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditAnalogInputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogInputDevices());
+            } else if (key.requestCode == EditDigitalDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditDigitalDevicesActivity.class, deviceInterfaceModuleConfiguration.getDigitalDevices());
+            } else if (key.requestCode == EditAnalogOutputDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditAnalogOutputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogOutputDevices());
+            }
+        }
+    };
 
-  public void onFixButtonPressed(View v) {
-    fixConfiguration();
-  }
+    @Override
+    protected void onActivityResult(int requestCodeValue, int resultCode, Intent data) {
+        logActivityResult(requestCodeValue, resultCode, data);
 
-  public void onSwapButtonPressed(View view) {
-    swapConfiguration();
-  }
+        RequestCode requestCode = RequestCode.fromValue(requestCodeValue);
+        if (resultCode == RESULT_OK) {
+            EditParameters<DeviceConfiguration> parameters = EditParameters.fromIntent(this, data);
+            if (requestCode == EditSwapUsbDevices.requestCode) {
+                completeSwapConfiguration(requestCodeValue, resultCode, data);
+            } else if (requestCode == EditPWMDevicesActivity.requestCode) {
+                deviceInterfaceModuleConfiguration.setPwmOutputs(parameters.getCurrentItems());
+            } else if (requestCode == EditAnalogInputDevicesActivity.requestCode) {
+                deviceInterfaceModuleConfiguration.setAnalogInputDevices(parameters.getCurrentItems());
+            } else if (requestCode == EditDigitalDevicesActivity.requestCode) {
+                deviceInterfaceModuleConfiguration.setDigitalDevices(parameters.getCurrentItems());
+            } else if (requestCode == EditI2cDevicesActivity.requestCode) {
+                deviceInterfaceModuleConfiguration.setI2cDevices(parameters.getCurrentItems());
+            } else if (requestCode == EditAnalogOutputDevicesActivity.requestCode) {
+                deviceInterfaceModuleConfiguration.setAnalogOutputDevices(parameters.getCurrentItems());
+            }
+            currentCfgFile.markDirty();
+            robotConfigFileManager.setActiveConfigAndUpdateUI(currentCfgFile);
+        }
+    }
+
+    public void onDoneButtonPressed(View v) {
+        finishOk();
+    }
+
+    @Override
+    protected void finishOk() {
+        controllerConfiguration.setName(device_interface_module_name.getText().toString());
+        finishOk(new EditParameters(this, controllerConfiguration, getRobotConfigMap()));
+    }
+
+    public void onCancelButtonPressed(View v) {
+        finishCancel();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Fixing and swapping
+    //----------------------------------------------------------------------------------------------
+
+    public void onFixButtonPressed(View v) {
+        fixConfiguration();
+    }
+
+    public void onSwapButtonPressed(View view) {
+        swapConfiguration();
+    }
 
 }

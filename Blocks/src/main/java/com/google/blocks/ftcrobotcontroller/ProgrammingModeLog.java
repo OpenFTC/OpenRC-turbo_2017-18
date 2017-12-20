@@ -10,13 +10,13 @@ import org.firstinspires.ftc.robotcore.internal.webserver.PingDetails;
  * @author lizlooney@google.com (Liz Looney)
  */
 public interface ProgrammingModeLog {
-  /**
-   * Called when a message should be added to the log.
-   */
-  void addToLog(String msg);
+    /**
+     * Called when a message should be added to the log.
+     */
+    void addToLog(String msg);
 
-  /**
-   * Called when the {@link ProgrammingWebHandlers} receives a ping request.
-   */
-  void ping(PingDetails pingDetails);
+    /**
+     * Called when the {@link ProgrammingWebHandlers} receives a ping request.
+     */
+    void ping(PingDetails pingDetails);
 }

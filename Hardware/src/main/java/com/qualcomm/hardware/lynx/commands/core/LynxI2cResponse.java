@@ -39,8 +39,7 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Created by bob on 2016-04-16.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class LynxI2cResponse extends LynxDekaInterfaceResponse
-    {
+public abstract class LynxI2cResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -51,66 +50,61 @@ public abstract class LynxI2cResponse extends LynxDekaInterfaceResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cResponse(LynxModuleIntf module)
-        {
+    public LynxI2cResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Status
     //----------------------------------------------------------------------------------------------
 
-    public byte getI2cStatus()
-        {
+    public byte getI2cStatus() {
         return this.i2cStatus;
-        }
-    public boolean isAddressAcknowledged()
-        {
+    }
+
+    public boolean isAddressAcknowledged() {
         return LynxI2cResponse.isAddressAcknowledged(this.getI2cStatus());
-        }
-    public boolean isDataAcknowledged()
-        {
+    }
+
+    public boolean isDataAcknowledged() {
         return LynxI2cResponse.isDataAcknowledged(this.getI2cStatus());
-        }
-    public boolean isArbitrationLost()
-        {
+    }
+
+    public boolean isArbitrationLost() {
         return LynxI2cResponse.isArbitrationLost(this.getI2cStatus());
-        }
-    public boolean isClockTimeout()
-        {
+    }
+
+    public boolean isClockTimeout() {
         return LynxI2cResponse.isClockTimeout(this.getI2cStatus());
-        }
-    public boolean isStatusOk()
-        {
+    }
+
+    public boolean isStatusOk() {
         return LynxI2cResponse.isStatusOk(this.getI2cStatus());
-        }
-    public void logResponse()
-        {
-        if (getI2cStatus() != 0)
-            {
+    }
+
+    public void logResponse() {
+        if (getI2cStatus() != 0) {
             RobotLog.v("addr=%s data=%s arb=%s clock=%s", isAddressAcknowledged(), isDataAcknowledged(), isArbitrationLost(), isClockTimeout());
-            }
-        }
-
-    public static boolean isAddressAcknowledged(byte status)
-        {
-        return (status & (1<<0)) == 0;
-        }
-    public static boolean isDataAcknowledged(byte status)
-        {
-        return (status & (1<<1)) == 0;
-        }
-    public static boolean isArbitrationLost(byte status)
-        {
-        return (status & (1<<2)) != 0;
-        }
-    public static boolean isClockTimeout(byte status)
-        {
-        return (status & (1<<3)) != 0;
-        }
-
-    public static boolean isStatusOk(byte status)
-        {
-        return (status & 0x0F) == 0;
         }
     }
+
+    public static boolean isAddressAcknowledged(byte status) {
+        return (status & (1 << 0)) == 0;
+    }
+
+    public static boolean isDataAcknowledged(byte status) {
+        return (status & (1 << 1)) == 0;
+    }
+
+    public static boolean isArbitrationLost(byte status) {
+        return (status & (1 << 2)) != 0;
+    }
+
+    public static boolean isClockTimeout(byte status) {
+        return (status & (1 << 3)) != 0;
+    }
+
+    public static boolean isStatusOk(byte status) {
+        return (status & 0x0F) == 0;
+    }
+}

@@ -22,24 +22,32 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.io.IndexType;
  * A decoded Dalvik instruction which has five register arguments.
  */
 public final class FourRegisterDecodedInstruction extends DecodedInstruction {
-    /** register argument "A" */
+    /**
+     * register argument "A"
+     */
     private final int a;
 
-    /** register argument "B" */
+    /**
+     * register argument "B"
+     */
     private final int b;
 
-    /** register argument "C" */
+    /**
+     * register argument "C"
+     */
     private final int c;
 
-    /** register argument "D" */
+    /**
+     * register argument "D"
+     */
     private final int d;
 
     /**
      * Constructs an instance.
      */
     public FourRegisterDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal,
-            int a, int b, int c, int d) {
+                                          int index, IndexType indexType, int target, long literal,
+                                          int a, int b, int c, int d) {
         super(format, opcode, index, indexType, target, literal);
 
         this.a = a;
@@ -48,32 +56,44 @@ public final class FourRegisterDecodedInstruction extends DecodedInstruction {
         this.d = d;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getRegisterCount() {
         return 4;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getA() {
         return a;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getB() {
         return b;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getC() {
         return c;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getD() {
         return d;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public DecodedInstruction withIndex(int newIndex) {
         return new FourRegisterDecodedInstruction(
                 getFormat(), getOpcode(), newIndex, getIndexType(),

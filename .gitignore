@@ -23,3 +23,5 @@ Thumbs.db
 .idea
 .gradle
 build/
+
+!.idea/codeStyleSettings.xml

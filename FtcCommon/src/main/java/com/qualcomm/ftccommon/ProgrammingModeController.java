@@ -8,18 +8,18 @@ package com.qualcomm.ftccommon;
  */
 public interface ProgrammingModeController {
 
-  /**
-   * Returns true if programming mode is active; false otherwise.
-   */
-  boolean isActive();
+    /**
+     * Returns true if programming mode is active; false otherwise.
+     */
+    boolean isActive();
 
-  /**
-   * Starts programming mode.
-   */
-  void startProgrammingMode(FtcEventLoopHandler ftcEventLoopHandler);
+    /**
+     * Starts programming mode.
+     */
+    void startProgrammingMode(FtcEventLoopHandler ftcEventLoopHandler);
 
-  /**
-   * Stops programming mode.
-   */
-  void stopProgrammingMode();
+    /**
+     * Stops programming mode.
+     */
+    void stopProgrammingMode();
 }

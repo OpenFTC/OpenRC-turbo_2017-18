@@ -43,8 +43,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetADCCommand extends LynxDekaInterfaceCommand<LynxGetADCResponse>
-    {
+public class LynxGetADCCommand extends LynxDekaInterfaceCommand<LynxGetADCResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -62,72 +61,83 @@ public class LynxGetADCCommand extends LynxDekaInterfaceCommand<LynxGetADCRespon
         USER0(0), USER1(1), USER2(2), USER3(3), GPIO_CURRENT(4), I2C_BUS_CURRENT(5),
         SERVO_CURRENT(6), BATTERY_CURRENT(7), MOTOR0_CURRENT(8), MOTOR1_CURRENT(9), MOTOR2_CURRENT(10),
         MOTOR3_CURRENT(11), FIVE_VOLT_MONITOR(12), BATTERY_MONITOR(13), CONTROLLER_TEMPERATURE(14);
-        public final byte bVal; Channel(int bVal) {this.bVal = (byte)bVal; }
-        public static Channel user(int port)
-            {
-            switch (port)
-                {
-                case 0: return USER0;
-                case 1: return USER1;
-                case 2: return USER2;
-                case 3: return USER3;
-                default: throw new IllegalArgumentException(String.format("illegal user port %d", port));
-                }
+        public final byte bVal;
+
+        Channel(int bVal) {
+            this.bVal = (byte) bVal;
+        }
+
+        public static Channel user(int port) {
+            switch (port) {
+                case 0:
+                    return USER0;
+                case 1:
+                    return USER1;
+                case 2:
+                    return USER2;
+                case 3:
+                    return USER3;
+                default:
+                    throw new IllegalArgumentException(String.format("illegal user port %d", port));
             }
         }
+    }
 
-    public enum Mode
-        {
-        /** units are in millivolts, milliamps, or degC as appropriate */
+    public enum Mode {
+        /**
+         * units are in millivolts, milliamps, or degC as appropriate
+         */
         ENGINEERING(0),
-        /** units are raw counts */
+        /**
+         * units are raw counts
+         */
         RAW(1);
-        public final byte bVal; Mode(int bVal) {this.bVal = (byte)bVal; }
-        };
+        public final byte bVal;
 
-    public LynxGetADCCommand(LynxModuleIntf module)
-        {
+        Mode(int bVal) {
+            this.bVal = (byte) bVal;
+        }
+    }
+
+    ;
+
+    public LynxGetADCCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxGetADCResponse(module);
-        }
+    }
 
-    public LynxGetADCCommand(LynxModuleIntf module, Channel channel, Mode mode)
-        {
+    public LynxGetADCCommand(LynxModuleIntf module, Channel channel, Mode mode) {
         this(module);
         this.channel = channel.bVal;
-        this.mode    = mode.bVal;
-        }
+        this.mode = mode.bVal;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxGetADCResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.channel);
         buffer.put(this.mode);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.channel = buffer.get();
         this.mode = buffer.get();
-        }
-
     }
+
+}

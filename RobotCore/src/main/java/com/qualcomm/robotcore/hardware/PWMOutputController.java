@@ -39,39 +39,43 @@ import com.qualcomm.robotcore.util.SerialNumber;
  */
 public interface PWMOutputController extends HardwareDevice {
 
-  /**
-   * Serial Number
-   *
-   * @return return the USB serial number of this device
-   */
-  SerialNumber getSerialNumber();
+    /**
+     * Serial Number
+     *
+     * @return return the USB serial number of this device
+     */
+    SerialNumber getSerialNumber();
 
-  /**
-   * Set the pulse width output time for this channel. Typically set to a value between
-   * 750 and 2,250 to control a servo.
-   * @param port port this device is attached to
-   * @param usDuration pulse width for the port in microseconds.
-   */
-  void setPulseWidthOutputTime(int port, int usDuration);
+    /**
+     * Set the pulse width output time for this channel. Typically set to a value between
+     * 750 and 2,250 to control a servo.
+     *
+     * @param port       port this device is attached to
+     * @param usDuration pulse width for the port in microseconds.
+     */
+    void setPulseWidthOutputTime(int port, int usDuration);
 
-  /**
-   * Set the pulse width output period. Typically set to 20,000 to control servo.
-   * @param port port this device is attached to
-   * @param usPeriod pulse repetition period in microseconds.
-   */
-  void setPulseWidthPeriod(int port, int usPeriod);
+    /**
+     * Set the pulse width output period. Typically set to 20,000 to control servo.
+     *
+     * @param port     port this device is attached to
+     * @param usPeriod pulse repetition period in microseconds.
+     */
+    void setPulseWidthPeriod(int port, int usPeriod);
 
-  /**
-   * Gets the pulse width for the channel output in units of 1 microsecond.
-   * @param port port this device is attached to
-   * @return time pulse width for the channel in microseconds.
-   */
-  int getPulseWidthOutputTime(int port);
+    /**
+     * Gets the pulse width for the channel output in units of 1 microsecond.
+     *
+     * @param port port this device is attached to
+     * @return time pulse width for the channel in microseconds.
+     */
+    int getPulseWidthOutputTime(int port);
 
-  /**
-   * Gets the pulse repetition period for the channel output in units of 1 microsecond.
-   * @param port port this device is attached to
-   * @return period pulse repetition period in microseconds.
-   */
-  int getPulseWidthPeriod(int port);
+    /**
+     * Gets the pulse repetition period for the channel output in units of 1 microsecond.
+     *
+     * @param port port this device is attached to
+     * @return period pulse repetition period in microseconds.
+     */
+    int getPulseWidthPeriod(int port);
 }

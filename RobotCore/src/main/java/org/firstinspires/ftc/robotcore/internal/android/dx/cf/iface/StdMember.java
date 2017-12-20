@@ -25,25 +25,33 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
  * all the associated data.
  */
 public abstract class StdMember implements Member {
-    /** {@code non-null;} the defining class */
+    /**
+     * {@code non-null;} the defining class
+     */
     private final CstType definingClass;
 
-    /** access flags */
+    /**
+     * access flags
+     */
     private final int accessFlags;
 
-    /** {@code non-null;} member name and type */
+    /**
+     * {@code non-null;} member name and type
+     */
     private final CstNat nat;
 
-    /** {@code non-null;} list of associated attributes */
+    /**
+     * {@code non-null;} list of associated attributes
+     */
     private final AttributeList attributes;
 
     /**
      * Constructs an instance.
      *
      * @param definingClass {@code non-null;} the defining class
-     * @param accessFlags access flags
-     * @param nat {@code non-null;} member name and type (descriptor)
-     * @param attributes {@code non-null;} list of associated attributes
+     * @param accessFlags   access flags
+     * @param nat           {@code non-null;} member name and type (descriptor)
+     * @param attributes    {@code non-null;} list of associated attributes
      */
     public StdMember(CstType definingClass, int accessFlags, CstNat nat,
                      AttributeList attributes) {
@@ -65,7 +73,9 @@ public abstract class StdMember implements Member {
         this.attributes = attributes;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(100);
@@ -78,32 +88,44 @@ public abstract class StdMember implements Member {
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final CstType getDefiningClass() {
         return definingClass;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final int getAccessFlags() {
         return accessFlags;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final CstNat getNat() {
         return nat;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final CstString getName() {
         return nat.getName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final CstString getDescriptor() {
         return nat.getDescriptor();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final AttributeList getAttributes() {
         return attributes;
     }

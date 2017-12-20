@@ -66,19 +66,21 @@ package com.qualcomm.ftccommon.configuration;
 import com.qualcomm.ftccommon.R;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 
-public class EditPWMDevicesActivity extends EditPortListCheckboxActivity<DeviceConfiguration>
-    {
-	@Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditPWMDevicesActivity extends EditPortListCheckboxActivity<DeviceConfiguration> {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_PWM_PORT;
 
-    public EditPWMDevicesActivity()
-        {
-        this.layoutMain             = R.layout.pwms;
-        this.idListParentLayout     = R.id.item_list_parent;
-        this.layoutItem             = R.layout.pwm_device;
-        this.idItemRowPort          = R.id.row_port;
-        this.idItemCheckbox         = R.id.checkbox_port;
-        this.idItemEditTextResult   = R.id.editTextResult;
-        this.idItemPortNumber       = R.id.port_number;
-        }
+    public EditPWMDevicesActivity() {
+        this.layoutMain = R.layout.pwms;
+        this.idListParentLayout = R.id.item_list_parent;
+        this.layoutItem = R.layout.pwm_device;
+        this.idItemRowPort = R.id.row_port;
+        this.idItemCheckbox = R.id.checkbox_port;
+        this.idItemEditTextResult = R.id.editTextResult;
+        this.idItemPortNumber = R.id.port_number;
     }
+}

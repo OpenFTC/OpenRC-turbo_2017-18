@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.code;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
+
 import java.util.HashSet;
 
 /**
@@ -70,15 +71,15 @@ public final class DalvCode {
     /**
      * Constructs an instance.
      *
-     * @param positionInfo how much position info to preserve; one of the
-     * static constants in {@link PositionList}
-     * @param unprocessedInsns {@code non-null;} the instruction list, ready
-     * for final processing
+     * @param positionInfo       how much position info to preserve; one of the
+     *                           static constants in {@link PositionList}
+     * @param unprocessedInsns   {@code non-null;} the instruction list, ready
+     *                           for final processing
      * @param unprocessedCatches {@code non-null;} unprocessed catch
-     * (exception handler) table
+     *                           (exception handler) table
      */
     public DalvCode(int positionInfo, OutputFinisher unprocessedInsns,
-            CatchBuilder unprocessedCatches) {
+                    CatchBuilder unprocessedCatches) {
         if (unprocessedInsns == null) {
             throw new NullPointerException("unprocessedInsns == null");
         }
@@ -133,7 +134,7 @@ public final class DalvCode {
      */
     public boolean hasPositions() {
         return (positionInfo != PositionList.NONE)
-            && unprocessedInsns.hasAnyPositionInfo();
+                && unprocessedInsns.hasAnyPositionInfo();
     }
 
     /**

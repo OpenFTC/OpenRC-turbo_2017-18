@@ -92,7 +92,7 @@ public final class CodeReader {
 
     public void visitAll(short[] encodedInstructions) throws DexException {
         DecodedInstruction[] decodedInstructions =
-            DecodedInstruction.decodeAll(encodedInstructions);
+                DecodedInstruction.decodeAll(encodedInstructions);
         visitAll(decodedInstructions);
     }
 
@@ -100,10 +100,18 @@ public final class CodeReader {
         Visitor visitor = null;
 
         switch (OpcodeInfo.getIndexType(one.getOpcode())) {
-            case STRING_REF: visitor = stringVisitor; break;
-            case TYPE_REF:   visitor = typeVisitor;   break;
-            case FIELD_REF:  visitor = fieldVisitor;  break;
-            case METHOD_REF: visitor = methodVisitor; break;
+            case STRING_REF:
+                visitor = stringVisitor;
+                break;
+            case TYPE_REF:
+                visitor = typeVisitor;
+                break;
+            case FIELD_REF:
+                visitor = fieldVisitor;
+                break;
+            case METHOD_REF:
+                visitor = methodVisitor;
+                break;
         }
 
         if (visitor == null) {

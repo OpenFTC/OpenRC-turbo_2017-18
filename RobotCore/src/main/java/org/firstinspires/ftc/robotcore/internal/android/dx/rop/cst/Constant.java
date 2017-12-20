@@ -42,7 +42,7 @@ public abstract class Constant
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * This compares in class-major and value-minor order.
      */
     public final int compareTo(Constant other) {

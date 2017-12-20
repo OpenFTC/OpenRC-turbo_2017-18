@@ -23,13 +23,16 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Bits;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
+
 import java.util.ArrayList;
 
 /**
  * Utility that identifies basic blocks in bytecode.
  */
 public final class BasicBlocker implements BytecodeArray.Visitor {
-    /** {@code non-null;} method being converted */
+    /**
+     * {@code non-null;} method being converted
+     */
     private final ConcreteMethod method;
 
     /**
@@ -64,7 +67,9 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
      */
     private final ByteCatchList[] catchLists;
 
-    /** offset of the previously parsed bytecode */
+    /**
+     * offset of the previously parsed bytecode
+     */
     private int previousOffset;
 
     /**
@@ -118,12 +123,16 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
      * call these methods.
      */
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitInvalid(int opcode, int offset, int length) {
         visitCommon(offset, length, true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitNoArgs(int opcode, int offset, int length, Type type) {
         switch (opcode) {
             case ByteOps.IRETURN:
@@ -183,9 +192,11 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitLocal(int opcode, int offset, int length,
-            int idx, Type type, int value) {
+                           int idx, Type type, int value) {
         if (opcode == ByteOps.RET) {
             visitCommon(offset, length, false);
             targetLists[offset] = IntList.EMPTY;
@@ -194,13 +205,15 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitConstant(int opcode, int offset, int length,
-            Constant cst, int value) {
+                              Constant cst, int value) {
         visitCommon(offset, length, true);
 
         if ((cst instanceof CstMemberRef) || (cst instanceof CstType) ||
-            (cst instanceof CstString)) {
+                (cst instanceof CstString)) {
             /*
              * Instructions with these sorts of constants have the
              * possibility of throwing, so this instruction needs to
@@ -211,9 +224,11 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitBranch(int opcode, int offset, int length,
-            int target) {
+                            int target) {
         switch (opcode) {
             case ByteOps.GOTO: {
                 visitCommon(offset, length, false);
@@ -242,9 +257,11 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
         addWorkIfNecessary(target, true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitSwitch(int opcode, int offset, int length,
-            SwitchList cases, int padding) {
+                            SwitchList cases, int padding) {
         visitCommon(offset, length, false);
         addWorkIfNecessary(cases.getDefaultTarget(), true);
 
@@ -256,9 +273,11 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
         targetLists[offset] = cases.getTargets();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitNewarray(int offset, int length, CstType type,
-            ArrayList<Constant> intVals) {
+                              ArrayList<Constant> intVals) {
         visitCommon(offset, length, true);
         visitThrowing(offset, length, true);
     }
@@ -273,7 +292,7 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
         ByteBlock[] bbs = new ByteBlock[bytes.size()];
         int count = 0;
 
-        for (int at = 0, next; /*at*/; at = next) {
+        for (int at = 0, next; /*at*/ ; at = next) {
             next = Bits.findFirst(blockSet, at + 1);
             if (next < 0) {
                 break;
@@ -308,7 +327,7 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
                 }
 
                 bbs[count] =
-                    new ByteBlock(at, at, next, targets, blockCatches);
+                        new ByteBlock(at, at, next, targets, blockCatches);
                 count++;
             }
         }
@@ -347,8 +366,8 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
             } catch (IllegalArgumentException ex) {
                 // Translate the exception.
                 throw new SimException("flow of control falls off " +
-                                       "end of method",
-                                       ex);
+                        "end of method",
+                        ex);
             }
 
             for (int i = 0; i < catchSz; i++) {
@@ -368,9 +387,9 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
      * Sets a bit in the work set, but only if the instruction in question
      * isn't yet known to be possibly-live.
      *
-     * @param offset offset to the instruction in question
+     * @param offset     offset to the instruction in question
      * @param blockStart {@code true} iff this instruction starts a
-     * basic block
+     *                   basic block
      */
     private void addWorkIfNecessary(int offset, boolean blockStart) {
         if (!Bits.get(liveSet, offset)) {
@@ -385,11 +404,11 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
     /**
      * Helper method used by all the visitor methods.
      *
-     * @param offset offset to the instruction
-     * @param length length of the instruction, in bytes
+     * @param offset     offset to the instruction
+     * @param length     length of the instruction, in bytes
      * @param nextIsLive {@code true} iff the instruction after
-     * the indicated one is possibly-live (because this one isn't an
-     * unconditional branch, a return, or a switch)
+     *                   the indicated one is possibly-live (because this one isn't an
+     *                   unconditional branch, a return, or a switch)
      */
     private void visitCommon(int offset, int length, boolean nextIsLive) {
         Bits.set(liveSet, offset);
@@ -418,11 +437,11 @@ public final class BasicBlocker implements BytecodeArray.Visitor {
      * opcodes that possibly throw. This method should be called after calling
      * {@link #visitCommon}.
      *
-     * @param offset offset to the instruction
-     * @param length length of the instruction, in bytes
+     * @param offset     offset to the instruction
+     * @param length     length of the instruction, in bytes
      * @param nextIsLive {@code true} iff the instruction after
-     * the indicated one is possibly-live (because this one isn't an
-     * unconditional throw)
+     *                   the indicated one is possibly-live (because this one isn't an
+     *                   unconditional throw)
      */
     private void visitThrowing(int offset, int length, boolean nextIsLive) {
         int next = offset + length;

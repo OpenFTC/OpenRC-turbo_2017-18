@@ -170,7 +170,7 @@ class JavaModeWebHandlers {
     private final static String VALID_SRC_FILE_OR_FOLDER_REGEX =
             "(?:/(?:src|jars)[\\w.\\d/_$]+[\\w.\\d_$]+(?:\\.(?:java|jar|zip|txt|md)|/)|/|)$";
 
-    private static final List<Class<? extends HardwareDevice>> HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP = Arrays.asList(DcMotorController.class,ServoController.class,VoltageSensor.class,LegacyModule.class);
+    private static final List<Class<? extends HardwareDevice>> HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP = Arrays.asList(DcMotorController.class, ServoController.class, VoltageSensor.class, LegacyModule.class);
 
     private final BuildMonitor buildMonitor;
     private final Gson gson;
@@ -223,7 +223,9 @@ class JavaModeWebHandlers {
     }
 
     private NanoHTTPD.Response getFile(Map<String, List<String>> data, boolean folderAsZip, String lineEndings) {
-        if (!data.containsKey(REQUEST_KEY_FILE)) return badRequest();
+        if (!data.containsKey(REQUEST_KEY_FILE)) {
+            return badRequest();
+        }
         String trimmedUri = data.get(REQUEST_KEY_FILE).get(0);
         final String filePath = OnBotJavaManager.javaRoot.getAbsolutePath() + trimmedUri;
         if (isValidFileLocation(trimmedUri, VALID_SRC_FILE_REGEX)) { // is a file
@@ -248,7 +250,7 @@ class JavaModeWebHandlers {
                 }
                 tempFolder.delete();
                 tempFolder.mkdirs();
-                final File outputZipFile = new File(tempFolder, filePath.substring(filePath.lastIndexOf(PATH_SEPARATOR) + 1) +  EXT_ZIP_FILE);
+                final File outputZipFile = new File(tempFolder, filePath.substring(filePath.lastIndexOf(PATH_SEPARATOR) + 1) + EXT_ZIP_FILE);
                 try (FileOutputStream destOutput = new FileOutputStream(outputZipFile)) {
                     try (final ZipOutputStream zipOutputStream = new ZipOutputStream(destOutput)) {
                         zipOutputStream.setMethod(ZipOutputStream.DEFLATED);
@@ -257,16 +259,22 @@ class JavaModeWebHandlers {
                             public boolean test(File file) {
                                 try {
                                     String entryName = file.getAbsolutePath();
-                                    if (entryName.endsWith(EXT_TEMP_FILE)) return true;
+                                    if (entryName.endsWith(EXT_TEMP_FILE)) {
+                                        return true;
+                                    }
 
                                     entryName = entryName.substring(sourceFolder.getAbsolutePath().length());
-                                    if (entryName.startsWith(PATH_SEPARATOR)) entryName = entryName.substring(1);
-                                    if (file.isDirectory() && !entryName.endsWith(PATH_SEPARATOR)) entryName += PATH_SEPARATOR;
+                                    if (entryName.startsWith(PATH_SEPARATOR)) {
+                                        entryName = entryName.substring(1);
+                                    }
+                                    if (file.isDirectory() && !entryName.endsWith(PATH_SEPARATOR)) {
+                                        entryName += PATH_SEPARATOR;
+                                    }
 
                                     ZipEntry entry = new ZipEntry(entryName);
                                     zipOutputStream.putNextEntry(entry);
                                     if (!file.isDirectory()) {
-                                        try (FileInputStream inputStream =  new FileInputStream(file)) {
+                                        try (FileInputStream inputStream = new FileInputStream(file)) {
                                             AppUtil.getInstance().copyStream(inputStream, zipOutputStream);
                                         }
                                     }
@@ -289,7 +297,7 @@ class JavaModeWebHandlers {
                 outputZipFile.deleteOnExit();
                 tempFolder.deleteOnExit();
                 try {
-                    return newChunkedResponse(NanoHTTPD.Response.Status.OK, MimeTypesUtil.getMimeType( EXT_ZIP_FILE), new FileInputStream(outputZipFile));
+                    return newChunkedResponse(NanoHTTPD.Response.Status.OK, MimeTypesUtil.getMimeType(EXT_ZIP_FILE), new FileInputStream(outputZipFile));
                 } catch (FileNotFoundException e) {
                     return serverError();
                 }
@@ -306,9 +314,13 @@ class JavaModeWebHandlers {
     }
 
     private void forEachInFolder(File folder, boolean recursive, Predicate<File> action) throws FileNotFoundException {
-        if (!folder.isDirectory()) throw new FileNotFoundException("not a directory");
+        if (!folder.isDirectory()) {
+            throw new FileNotFoundException("not a directory");
+        }
         for (File file : folder.listFiles()) {
-            if (recursive && file.isDirectory()) forEachInFolder(file, true, action);
+            if (recursive && file.isDirectory()) {
+                forEachInFolder(file, true, action);
+            }
             action.test(file);
         }
     }
@@ -353,7 +365,9 @@ class JavaModeWebHandlers {
     }
 
     private boolean copyAsset(String assetPath, File dest, boolean mirror) throws IOException {
-        if (assetPath.isEmpty()) throw new IllegalArgumentException("assetPath cannot be empty");
+        if (assetPath.isEmpty()) {
+            throw new IllegalArgumentException("assetPath cannot be empty");
+        }
         boolean templatesEnsured = true;
         final AssetManager assetManager = AppUtil.getInstance().getRootActivity().getAssets();
         assetPath = assetPath.endsWith(PATH_SEPARATOR) ? assetPath.substring(0, assetPath.length() - 1) : assetPath;
@@ -362,8 +376,9 @@ class JavaModeWebHandlers {
         final File newDest = new File(dest, name);
         if (mirror && newDest.exists()) {
             AppUtil.getInstance().delete(newDest);
-            if (newDest.exists())
+            if (newDest.exists()) {
                 throw new IOException(String.format(Locale.ENGLISH, "Failed to remove %s to in order to create a clean copy", newDest.getAbsolutePath()));
+            }
         }
 
         try {
@@ -397,7 +412,9 @@ class JavaModeWebHandlers {
     }
 
     private boolean ensureTemplates() {
-        if (templatesDir.exists() && !templatesDir.isDirectory()) templatesDir.delete();
+        if (templatesDir.exists() && !templatesDir.isDirectory()) {
+            templatesDir.delete();
+        }
         final String javaTemplatesDirPath = "java/templates";
 
         try {
@@ -410,17 +427,26 @@ class JavaModeWebHandlers {
 
     private void searchForFiles(String startPath, File startFile, List<String> results, boolean includeFolders) {
         // fail fast
-        if (!startFile.isDirectory())
+        if (!startFile.isDirectory()) {
             throw new IllegalArgumentException("startFile is not a directory");
-        if (results == null) throw new NullPointerException("results is null");
+        }
+        if (results == null) {
+            throw new NullPointerException("results is null");
+        }
         for (File srcFile : startFile.listFiles()) {
             String absolutePath = srcFile.getAbsolutePath();
             absolutePath = absolutePath.startsWith(startPath) ?
                     absolutePath.substring(startPath.length()) : absolutePath;
             // The trailing slash is how clients can tell the result is a folder
-            if (srcFile.isDirectory()) absolutePath += PATH_SEPARATOR;
-            if (!srcFile.isDirectory() || includeFolders) results.add(absolutePath);
-            if (srcFile.isDirectory()) searchForFiles(startPath, srcFile, results, includeFolders);
+            if (srcFile.isDirectory()) {
+                absolutePath += PATH_SEPARATOR;
+            }
+            if (!srcFile.isDirectory() || includeFolders) {
+                results.add(absolutePath);
+            }
+            if (srcFile.isDirectory()) {
+                searchForFiles(startPath, srcFile, results, includeFolders);
+            }
         }
     }
 
@@ -431,8 +457,9 @@ class JavaModeWebHandlers {
     private NanoHTTPD.Response serveFile(String uri, String lineEnding) throws FileNotFoundException {
         File test = new File(uri);
         uri = test.getAbsolutePath();
-        if (!uri.startsWith(AppUtil.FIRST_FOLDER.getAbsolutePath()) && !uri.contains(".."))
+        if (!uri.startsWith(AppUtil.FIRST_FOLDER.getAbsolutePath()) && !uri.contains("..")) {
             return unauthorizedAccess();
+        }
         File file = new File(uri);
         String mime = MimeTypesUtil.determineMimeType(uri);
         if (file.exists() && file.canRead()) {
@@ -533,7 +560,9 @@ class JavaModeWebHandlers {
             // long start = System.currentTimeMillis();
             final Class<?>[] declaredClasses = JavaModeWebHandlers.class.getDeclaredClasses();
             for (Class<?> klazz : declaredClasses) {
-                if (!klazz.isAnnotationPresent(RegisterWebHandler.class)) continue;
+                if (!klazz.isAnnotationPresent(RegisterWebHandler.class)) {
+                    continue;
+                }
 
                 WebHandler handler = null;
                 try {
@@ -553,7 +582,9 @@ class JavaModeWebHandlers {
                     RobotLog.ee(TAG, ex.getTargetException(), "Handler threw during construction");
                 }
 
-                if (handler == null) continue;
+                if (handler == null) {
+                    continue;
+                }
                 final RegisterWebHandler registerHandler = klazz.getAnnotation(RegisterWebHandler.class);
                 String uri = registerHandler.uri();
                 boolean paramGenerator = registerHandler.usesParamGenerator();
@@ -623,42 +654,46 @@ class JavaModeWebHandlers {
         BuildMonitor() {
             //final String statusDirPath = OnBotJavaManager.statusDir;
             File statusDir = OnBotJavaManager.statusDir;
-            if (!statusDir.isDirectory()) statusDir.mkdirs();
+            if (!statusDir.isDirectory()) {
+                statusDir.mkdirs();
+            }
             buildStartedFile = OnBotJavaManager.buildStartedFile;
             buildCompleteFile = OnBotJavaManager.buildCompleteFile;
             runningObserver = new FileModifyObserver(buildStartedFile,
-                new FileModifyObserver.Listener() {
-                    @Override
-                    public void onFileChanged(int event, File file) {
-                        synchronized (buildInformationUpdateLock) {
-                            isRunning = true;
-                            lastBuildCompleted = false;
-                            lastBuildSuccessful = false;
-                        }
-                    }
-                }
-            );
-            completedObserver = new FileModifyObserver(buildCompleteFile, new
-                FileModifyObserver.Listener() {
-                    @Override
-                    public void onFileChanged(int event, File file) {
-                        synchronized (buildInformationUpdateLock) {
-                            isRunning = false;
-                            lastBuildCompleted = true;
-                            lastBuildSuccessful = OnBotJavaManager.getBuildStatus() == OnBotJavaManager.BuildStatus.SUCCESSFUL;
-                            synchronized (buildCompletionNotifier) {
-                                buildCompletionNotifier.notifyAll();
+                    new FileModifyObserver.Listener() {
+                        @Override
+                        public void onFileChanged(int event, File file) {
+                            synchronized (buildInformationUpdateLock) {
+                                isRunning = true;
+                                lastBuildCompleted = false;
+                                lastBuildSuccessful = false;
                             }
                         }
                     }
-                }
+            );
+            completedObserver = new FileModifyObserver(buildCompleteFile, new
+                    FileModifyObserver.Listener() {
+                        @Override
+                        public void onFileChanged(int event, File file) {
+                            synchronized (buildInformationUpdateLock) {
+                                isRunning = false;
+                                lastBuildCompleted = true;
+                                lastBuildSuccessful = OnBotJavaManager.getBuildStatus() == OnBotJavaManager.BuildStatus.SUCCESSFUL;
+                                synchronized (buildCompletionNotifier) {
+                                    buildCompletionNotifier.notifyAll();
+                                }
+                            }
+                        }
+                    }
             );
 
             buildCompletionNotifier = new Object();
         }
 
         BuildStatus currentBuildStatus() {
-            if (closed) throw new IllegalStateException("BuildStatus has been closed!");
+            if (closed) {
+                throw new IllegalStateException("BuildStatus has been closed!");
+            }
             synchronized (buildInformationUpdateLock) {
                 return new BuildStatus(lastBuildCompleted, isRunning, lastBuildSuccessful);
             }
@@ -673,7 +708,9 @@ class JavaModeWebHandlers {
         @Override
         public void finalize() throws Throwable {
             super.finalize();
-            if (closed) return;
+            if (closed) {
+                return;
+            }
             RobotLog.ww("OnBotJavaBuildStatus", "Did not call close(), running finalizer");
             close();
         }
@@ -790,7 +827,9 @@ class JavaModeWebHandlers {
             final Map<String, ?> prefMap = preferences.getAll();
             final SharedPreferences.Editor edit = preferences.edit();
             for (String key : prefMap.keySet()) {
-                if (!settings.containsKey(key)) edit.remove(key);
+                if (!settings.containsKey(key)) {
+                    edit.remove(key);
+                }
             }
             edit.apply();
         }
@@ -881,7 +920,9 @@ class JavaModeWebHandlers {
 
             for (Field field : JavaModeWebHandlers.class.getDeclaredFields()) {
                 int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class)) continue;
+                if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class)) {
+                    continue;
+                }
                 field.setAccessible(true);
                 try {
                     onBotJavaUrls.put(field.getName(), (String) field.get(JavaModeWebHandlers.this));
@@ -892,29 +933,29 @@ class JavaModeWebHandlers {
 
             final String result = String.format(Locale.ENGLISH,
                     "(function(window, $, settings) {\n" +
-                    "	window.env = typeof window.env !== 'undefined' ? window.env : {},\n" +
-                    "	env.settings = settings;\n" +
-                    "	env.settings['_dict'] = env.settings.hasOwnProperty('_dict') ? env.settings._dict : {};\n" +
-                    "	var dict = env.settings._dict;\n" +
-                    "\n" +
-                    "	settings.get = function(name) {\n" +
-                    "		return typeof dict[name] === 'undefined' ? null : dict[name];\n" +
-                    "	}\n" +
-                    "\n" +
-                    "	settings.put = function(name, val) {\n" +
-                    "		if (typeof name === 'undefined' || typeof val === 'undefined') throw new Error('put doesn\\' work with name or val undefined');\n" +
-                    "		if (settings.get(name) === null) { console.warn(name + \" is not a valid setting\"); return; }\n" +
-                    "		dict[name] = typeof val === 'function' ? val() : val;\n" +
-                    "		return $.post(settings._settingsUrl, 'settings=' + window.JSON.stringify(dict));\n" +
-                    "   }\n" +
-                    "\n" +
-                    "   env.urls = JSON.parse(settings._urls)" +
-                    "})(window, jQuery, \n" +
-                    "{\n" +
-                    "	_dict: window.JSON.parse('%s'),\n" +
-                    "	_settingsUrl: '%s',\n" +
-                    "   _urls: '%s'\n" +
-                    "});",
+                            "	window.env = typeof window.env !== 'undefined' ? window.env : {},\n" +
+                            "	env.settings = settings;\n" +
+                            "	env.settings['_dict'] = env.settings.hasOwnProperty('_dict') ? env.settings._dict : {};\n" +
+                            "	var dict = env.settings._dict;\n" +
+                            "\n" +
+                            "	settings.get = function(name) {\n" +
+                            "		return typeof dict[name] === 'undefined' ? null : dict[name];\n" +
+                            "	}\n" +
+                            "\n" +
+                            "	settings.put = function(name, val) {\n" +
+                            "		if (typeof name === 'undefined' || typeof val === 'undefined') throw new Error('put doesn\\' work with name or val undefined');\n" +
+                            "		if (settings.get(name) === null) { console.warn(name + \" is not a valid setting\"); return; }\n" +
+                            "		dict[name] = typeof val === 'function' ? val() : val;\n" +
+                            "		return $.post(settings._settingsUrl, 'settings=' + window.JSON.stringify(dict));\n" +
+                            "   }\n" +
+                            "\n" +
+                            "   env.urls = JSON.parse(settings._urls)" +
+                            "})(window, jQuery, \n" +
+                            "{\n" +
+                            "	_dict: window.JSON.parse('%s'),\n" +
+                            "	_settingsUrl: '%s',\n" +
+                            "   _urls: '%s'\n" +
+                            "});",
                     editorSettings, URI_ADMIN_SETTINGS, SimpleGson.getInstance().toJson(onBotJavaUrls).replace("\\", "\\\\"));
             return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, MIME_JSON, result);
         }
@@ -1008,7 +1049,7 @@ class JavaModeWebHandlers {
     private static class OnBotJavaJavaScriptAutocomplete implements WebHandler {
         static volatile String response = null;
         private static final Object lock = new Object();
-        private static final String[] packagesToAutocomplete = new String[] {
+        private static final String[] packagesToAutocomplete = new String[]{
                 "org/firstinspires/ftc/ftccommon/external",
                 "org/firstinspires/ftc/robotcore/external",
                 "com/qualcomm/robotcore/eventloop/opmode",
@@ -1052,7 +1093,9 @@ class JavaModeWebHandlers {
                 }
             }
             // Make sure the result is valid...
-            if (response.equals("")) return serverError();
+            if (response.equals("")) {
+                return serverError();
+            }
 
             return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, MIME_JSON, response);
         }
@@ -1066,12 +1109,18 @@ class JavaModeWebHandlers {
                 while ((entry = jarInputStream.getNextJarEntry()) != null) {
                     final String entryName = entry.getName();
                     // Skip the unimportant classes
-                    if (!entryName.endsWith(".class")) continue;
-                    if (!packagesToAutoComplete(entryName)) continue;
+                    if (!entryName.endsWith(".class")) {
+                        continue;
+                    }
+                    if (!packagesToAutoComplete(entryName)) {
+                        continue;
+                    }
                     String className = entryName.replaceAll("/", "\\.");
                     String myClass = className.substring(0, className.lastIndexOf('.'));
                     // A "$" denotes an inner class which we will parse as referenced by the classes we scan
-                    if (myClass.contains("$")) continue;
+                    if (myClass.contains("$")) {
+                        continue;
+                    }
                     final Class currentClass;
                     try {
                         currentClass = Class.forName(myClass, false,
@@ -1095,8 +1144,9 @@ class JavaModeWebHandlers {
             final String currentClassName;
 
             SecurityModifier classModifier = SecurityModifier.fromModifierInt(currentClass.getModifiers());
-            if (classModifier != SecurityModifier.PUBLIC && classModifier != SecurityModifier.PROTECTED)
+            if (classModifier != SecurityModifier.PUBLIC && classModifier != SecurityModifier.PROTECTED) {
                 return;
+            }
 
             currentClassName = classNameFor(currentClass);
             String packageName = currentClass.getPackage().getName();
@@ -1104,14 +1154,18 @@ class JavaModeWebHandlers {
             // Check if we have already added this class (to prevent recursion loops), if so do nothing more
             if (autoClassList.containsKey(currentClassName)) {
                 for (AutoClass klazz : autoClassList.get(currentClassName)) {
-                    if (klazz.packageName.equals(packageName)) return;
+                    if (klazz.packageName.equals(packageName)) {
+                        return;
+                    }
                 }
             }
 
             HashMap<String, AutoField> fields = new HashMap<>();
             for (Field field : currentClass.getDeclaredFields()) {
                 SecurityModifier fieldSecurityModifier = SecurityModifier.fromModifierInt(field.getModifiers());
-                if (fieldSecurityModifier == SecurityModifier.PRIVATE) continue;
+                if (fieldSecurityModifier == SecurityModifier.PRIVATE) {
+                    continue;
+                }
                 final String name1 = field.getName();
                 final String fieldType = field.getType().getName();
                 fields.put(name1, new AutoField(fieldSecurityModifier, fieldType));
@@ -1120,7 +1174,9 @@ class JavaModeWebHandlers {
             HashMap<String, ArrayList<AutoMethod>> methods = new HashMap<>();
             for (Method method : currentClass.getDeclaredMethods()) {
                 SecurityModifier fieldSecurityModifier = SecurityModifier.fromModifierInt(method.getModifiers());
-                if (fieldSecurityModifier == SecurityModifier.PRIVATE) continue;
+                if (fieldSecurityModifier == SecurityModifier.PRIVATE) {
+                    continue;
+                }
                 final String methodName = method.getName();
                 final String fieldType = method.getReturnType().getName();
                 final Class<?>[] parameterTypes = method.getParameterTypes();
@@ -1129,9 +1185,11 @@ class JavaModeWebHandlers {
                     paramTypes.add(paramType.getName());
                 }
 
-                if (!methods.containsKey(methodName)) methods.put(methodName, new ArrayList<AutoMethod>());
+                if (!methods.containsKey(methodName)) {
+                    methods.put(methodName, new ArrayList<AutoMethod>());
+                }
                 methods.get(methodName)
-                        .add(new AutoMethod(fieldSecurityModifier, fieldType,paramTypes));
+                        .add(new AutoMethod(fieldSecurityModifier, fieldType, paramTypes));
             }
 
             final Class superclass = currentClass.getSuperclass();
@@ -1146,8 +1204,9 @@ class JavaModeWebHandlers {
             List<String> interfaces = getInterfacesFor(currentClass, autoClassList, new ArrayList<String>());
 
             autoClass = new AutoClass(classModifier, methods, fields, currentClassName, packageName, interfaces, superclassName);
-            if (!autoClassList.containsKey(currentClassName))
+            if (!autoClassList.containsKey(currentClassName)) {
                 autoClassList.put(currentClassName, new ArrayList<AutoClass>());
+            }
             autoClassList.get(currentClassName).add(autoClass);
 
             for (Class<?> innerClass : currentClass.getDeclaredClasses()) {
@@ -1156,7 +1215,9 @@ class JavaModeWebHandlers {
         }
 
         private static List<String> getInterfacesFor(Class<?> currentClass, HashMap<String, List<AutoClass>> autoClassMap, List<String> list) {
-            if (currentClass == null || currentClass.equals(Object.class)) return list;
+            if (currentClass == null || currentClass.equals(Object.class)) {
+                return list;
+            }
 
             for (Class<?> klazz : currentClass.getInterfaces()) {
                 list.add(klazz.getName());
@@ -1168,7 +1229,9 @@ class JavaModeWebHandlers {
 
         private static boolean packagesToAutoComplete(String entryName) {
             for (String testPackage : packagesToAutocomplete) {
-                if (entryName.startsWith(testPackage)) return true;
+                if (entryName.startsWith(testPackage)) {
+                    return true;
+                }
             }
 
             return false;
@@ -1231,9 +1294,15 @@ class JavaModeWebHandlers {
             PUBLIC, PRIVATE, PROTECTED, PACKAGE_PRIVATE, UNKNOWN;
 
             static SecurityModifier fromModifierInt(int modifier) {
-                if (Modifier.isPublic(modifier)) return PUBLIC;
-                if (Modifier.isPrivate(modifier)) return PRIVATE;
-                if (Modifier.isProtected(modifier)) return PROTECTED;
+                if (Modifier.isPublic(modifier)) {
+                    return PUBLIC;
+                }
+                if (Modifier.isPrivate(modifier)) {
+                    return PRIVATE;
+                }
+                if (Modifier.isProtected(modifier)) {
+                    return PROTECTED;
+                }
                 return PACKAGE_PRIVATE;
             }
         }
@@ -1342,8 +1411,9 @@ class JavaModeWebHandlers {
             final String fromFileName = data.get(REQUEST_KEY_COPY_FROM).get(0);
             final String destFileName = data.get(REQUEST_KEY_COPY_TO).get(0);
             if (!isValidFileLocation(fromFileName, VALID_SRC_FILE_OR_FOLDER_REGEX) ||
-                    !isValidFileLocation(destFileName, VALID_SRC_FILE_OR_FOLDER_REGEX))
+                    !isValidFileLocation(destFileName, VALID_SRC_FILE_OR_FOLDER_REGEX)) {
                 return badRequest();
+            }
 
             File origin = new File(OnBotJavaManager.javaRoot, fromFileName);
             File dest = new File(OnBotJavaManager.javaRoot, destFileName);
@@ -1358,7 +1428,9 @@ class JavaModeWebHandlers {
 
         private void recursiveCopy(File origin, File dest) throws IOException {
             if (origin.isDirectory()) {
-                if (dest.exists() && !dest.isDirectory()) throw new IOException("Cannot merge origin and destination");
+                if (dest.exists() && !dest.isDirectory()) {
+                    throw new IOException("Cannot merge origin and destination");
+                }
                 dest.mkdirs();
                 final String[] files = origin.list();
                 for (String file : files) {
@@ -1366,7 +1438,9 @@ class JavaModeWebHandlers {
                     File destFile = new File(dest, file);
 
                     // Prevent a file from being copied endlessly, if we are copying the parent folder to the inside of itself
-                    if (src.getAbsolutePath().equals(dest.getAbsolutePath())) continue;
+                    if (src.getAbsolutePath().equals(dest.getAbsolutePath())) {
+                        continue;
+                    }
 
                     if (src.isDirectory()) {
                         destFile.mkdirs();
@@ -1462,11 +1536,13 @@ class JavaModeWebHandlers {
                 } else {
                     // Check to see if this is a folder, if so add a ".zip" extension
                     fileName = fileName.substring(fileName.lastIndexOf(PATH_SEPARATOR) + 1);
-                    if (fileName.endsWith(PATH_SEPARATOR)) fileName = fileName.substring(0, fileName.length() - 1) +  EXT_ZIP_FILE;
+                    if (fileName.endsWith(PATH_SEPARATOR)) {
+                        fileName = fileName.substring(0, fileName.length() - 1) + EXT_ZIP_FILE;
+                    }
                 }
 
                 file.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-                file.addHeader("Pragma",  "no-cache");
+                file.addHeader("Pragma", "no-cache");
             }
 
             return file;
@@ -1513,7 +1589,9 @@ class JavaModeWebHandlers {
                     return successfulResponse("true");
                 } else {
                     Map<String, String> templateKeyMap = buildTemplateKeyMap(fileNameUri, data, file);
-                    if (!isValidFileLocation(fileNameUri, VALID_SRC_FILE_REGEX)) return badRequest();
+                    if (!isValidFileLocation(fileNameUri, VALID_SRC_FILE_REGEX)) {
+                        return badRequest();
+                    }
                     if (data.containsKey(REQUEST_KEY_TEMPLATE)) {
                         String template = data.get(REQUEST_KEY_TEMPLATE).get(0);
                         if (isValidFileLocation(template, VALID_TEMPLATE_FILE_REGEX)) {
@@ -1581,14 +1659,18 @@ class JavaModeWebHandlers {
                     final String sanitizedDeviceName = new String(sanitizedDeviceNameChars);
 
                     // Prevent fields with the same name from being created
-                    if (knownDeviceNames.contains(sanitizedDeviceName)) continue;
+                    if (knownDeviceNames.contains(sanitizedDeviceName)) {
+                        continue;
+                    }
                     knownDeviceNames.add(sanitizedDeviceName);
 
                     Class typeClass = getHardwareTypeName(device.hardwareType.deviceType);
-                    if (typeClass == null)
+                    if (typeClass == null) {
                         typeClass = device.hardwareType.deviceType;
-                    if (HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP.indexOf(typeClass) >= 0)
+                    }
+                    if (HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP.indexOf(typeClass) >= 0) {
                         continue;
+                    }
 
                     String typeName = typeClass.getSimpleName();
 
@@ -1615,7 +1697,9 @@ class JavaModeWebHandlers {
         }
 
         Class getHardwareTypeName(Class typeClass) {
-            if (typeClass.equals(Object.class)) return null;
+            if (typeClass.equals(Object.class)) {
+                return null;
+            }
 
             final String packageName = "com.qualcomm.robotcore.hardware";
             if (typeClass.getPackage().getName().equals(packageName)) {
@@ -1628,7 +1712,7 @@ class JavaModeWebHandlers {
                 }
             }
 
-            if (typeClass.getSuperclass().getPackage().getName().equals(packageName))  {
+            if (typeClass.getSuperclass().getPackage().getName().equals(packageName)) {
                 return typeClass.getSuperclass();
             }
 
@@ -1645,7 +1729,9 @@ class JavaModeWebHandlers {
             }
             packageName = packageName.substring(0, packageName.lastIndexOf(name));
             if (!packageName.isEmpty()) {
-                if (packageName.equals(PATH_SEPARATOR)) return "";
+                if (packageName.equals(PATH_SEPARATOR)) {
+                    return "";
+                }
                 packageName = packageName.indexOf(PATH_SEPARATOR) == 0 ? packageName.substring(1) : packageName;
                 final int packageNameLength = packageName.length();
                 packageName = packageName.lastIndexOf(PATH_SEPARATOR) == packageNameLength - 1 ?
@@ -1746,7 +1832,9 @@ class JavaModeWebHandlers {
          */
         private NanoHTTPD.Response saveFile(
                 NanoHTTPD.Method method, Map<String, List<String>> data) {
-            if (!data.containsKey(REQUEST_KEY_FILE)) return badRequest();
+            if (!data.containsKey(REQUEST_KEY_FILE)) {
+                return badRequest();
+            }
             String uri = data.get(REQUEST_KEY_FILE).get(0);
             // language=RegExp
             if (isValidFileLocation(uri, VALID_SRC_FILE_OR_FOLDER_REGEX) &&
@@ -1756,7 +1844,9 @@ class JavaModeWebHandlers {
                 if (data.containsKey(KEY_SAVE)) {
                     String code;
                     code = data.get(KEY_SAVE).get(0);
-                    if (code == null) return badRequest();
+                    if (code == null) {
+                        return badRequest();
+                    }
                     File codeFile = new File(OnBotJavaManager.javaRoot, uri);
                     ReadWriteFile.writeFile(codeFile, code);
                     String responseData = gson.toJson(data);
@@ -1838,7 +1928,9 @@ class JavaModeWebHandlers {
          */
             final String srcPath = OnBotJavaManager.srcDir.getAbsolutePath();
             File srcDir = OnBotJavaManager.srcDir;
-            if (!srcDir.isDirectory()) srcDir.mkdirs();
+            if (!srcDir.isDirectory()) {
+                srcDir.mkdirs();
+            }
             ArrayList<String> srcList = new ArrayList<>();
         /*
         *      <li>jars: (optional) Any externally-compiled jar src can be placed in this
@@ -1847,7 +1939,9 @@ class JavaModeWebHandlers {
          */
             final String jarPath = OnBotJavaManager.jarDir.getAbsolutePath();
             File jarDir = OnBotJavaManager.jarDir.getAbsoluteFile();
-            if (!jarDir.isDirectory()) jarDir.mkdirs();
+            if (!jarDir.isDirectory()) {
+                jarDir.mkdirs();
+            }
             ArrayList<String> jarList = new ArrayList<>();
             searchForFiles(srcPath, srcDir, srcList, true);
             searchForFiles(jarPath, jarDir, jarList, true);
@@ -1872,13 +1966,16 @@ class JavaModeWebHandlers {
         }
 
         private NanoHTTPD.Response uploadFile(Map<String, List<String>> data, Map<String, String> files) {
-            if (!data.containsKey("file")) return badRequest();
+            if (!data.containsKey("file")) {
+                return badRequest();
+            }
             final String newFileName = data.get("file").get(0).replaceAll("(?:\\.\\.|\\\\|/)", "");
             String newFolderName = null;
             if (data.containsKey("folder")) {
                 newFolderName = data.get("folder").get(0);
-                if (newFolderName.contains(".."))
+                if (newFolderName.contains("..")) {
                     newFolderName = null; // keep things secure
+                }
             }
             File src = new File(files.get("file"));
             File dest;
@@ -1895,7 +1992,7 @@ class JavaModeWebHandlers {
                         dest = OnBotJavaManager.srcDir;
                     }
                 }
-            } else if (newFileName.endsWith( EXT_ZIP_FILE) || newFileName.endsWith(".jar")) {
+            } else if (newFileName.endsWith(EXT_ZIP_FILE) || newFileName.endsWith(".jar")) {
                 dest = OnBotJavaManager.jarDir;
             } else {
                 dest = OnBotJavaManager.srcDir;

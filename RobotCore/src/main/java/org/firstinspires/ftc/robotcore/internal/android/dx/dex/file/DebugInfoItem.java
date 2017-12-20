@@ -23,15 +23,20 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.dex.code.LocalList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.dex.code.PositionList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstMethodRef;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
+
 import java.io.PrintWriter;
 
 public class DebugInfoItem extends OffsettedItem {
-    /** the required alignment for instances of this class */
+    /**
+     * the required alignment for instances of this class
+     */
     private static final int ALIGNMENT = 1;
 
     private static final boolean ENABLE_ENCODER_SELF_CHECK = false;
 
-    /** {@code non-null;} the code this item represents */
+    /**
+     * {@code non-null;} the code this item represents
+     */
     private final DalvCode code;
 
     private byte[] encoded;
@@ -41,7 +46,7 @@ public class DebugInfoItem extends OffsettedItem {
 
     public DebugInfoItem(DalvCode code, boolean isStatic, CstMethodRef ref) {
         // We don't know the write size yet.
-        super (ALIGNMENT, -1);
+        super(ALIGNMENT, -1);
 
         if (code == null) {
             throw new NullPointerException("code == null");
@@ -52,19 +57,25 @@ public class DebugInfoItem extends OffsettedItem {
         this.ref = ref;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_DEBUG_INFO_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         // No contents to add.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void place0(Section addedTo, int offset) {
         // Encode the data and note the size.
@@ -78,7 +89,9 @@ public class DebugInfoItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         throw new RuntimeException("unsupported");
@@ -90,8 +103,8 @@ public class DebugInfoItem extends OffsettedItem {
      * directly after a code dump (with the real local list actually
      * existing elsewhere in the output).
      *
-     * @param file {@code non-null;} the file to use for referencing other sections
-     * @param out {@code non-null;} where to annotate to
+     * @param file   {@code non-null;} the file to use for referencing other sections
+     * @param out    {@code non-null;} where to annotate to
      * @param prefix {@code null-ok;} prefix to attach to each line of output
      */
     public void annotateTo(DexFile file, AnnotatedOutput out, String prefix) {
@@ -101,14 +114,16 @@ public class DebugInfoItem extends OffsettedItem {
     /**
      * Does a human-friendly dump of this instance.
      *
-     * @param out {@code non-null;} where to dump
+     * @param out    {@code non-null;} where to dump
      * @param prefix {@code non-null;} prefix to attach to each line of output
      */
     public void debugPrint(PrintWriter out, String prefix) {
         encode(null, prefix, out, null, false);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void writeTo0(DexFile file, AnnotatedOutput out) {
         if (out.annotates()) {
@@ -127,17 +142,17 @@ public class DebugInfoItem extends OffsettedItem {
     /**
      * Performs debug info encoding.
      *
-     * @param file {@code null-ok;} file to refer to during encoding
-     * @param prefix {@code null-ok;} prefix to attach to each line of output
+     * @param file       {@code null-ok;} file to refer to during encoding
+     * @param prefix     {@code null-ok;} prefix to attach to each line of output
      * @param debugPrint {@code null-ok;} if specified, an alternate output for
-     * annotations
-     * @param out {@code null-ok;} if specified, where annotations should go
-     * @param consume whether to claim to have consumed output for
-     * {@code out}
+     *                   annotations
+     * @param out        {@code null-ok;} if specified, where annotations should go
+     * @param consume    whether to claim to have consumed output for
+     *                   {@code out}
      * @return {@code non-null;} the encoded array
      */
     private byte[] encode(DexFile file, String prefix, PrintWriter debugPrint,
-            AnnotatedOutput out, boolean consume) {
+                          AnnotatedOutput out, boolean consume) {
         byte[] result = encode0(file, prefix, debugPrint, out, consume);
 
         if (ENABLE_ENCODER_SELF_CHECK && (file != null)) {
@@ -158,17 +173,17 @@ public class DebugInfoItem extends OffsettedItem {
     /**
      * Helper for {@link #encode} to do most of the work.
      *
-     * @param file {@code null-ok;} file to refer to during encoding
-     * @param prefix {@code null-ok;} prefix to attach to each line of output
+     * @param file       {@code null-ok;} file to refer to during encoding
+     * @param prefix     {@code null-ok;} prefix to attach to each line of output
      * @param debugPrint {@code null-ok;} if specified, an alternate output for
-     * annotations
-     * @param out {@code null-ok;} if specified, where annotations should go
-     * @param consume whether to claim to have consumed output for
-     * {@code out}
+     *                   annotations
+     * @param out        {@code null-ok;} if specified, where annotations should go
+     * @param consume    whether to claim to have consumed output for
+     *                   {@code out}
      * @return {@code non-null;} the encoded array
      */
     private byte[] encode0(DexFile file, String prefix, PrintWriter debugPrint,
-            AnnotatedOutput out, boolean consume) {
+                           AnnotatedOutput out, boolean consume) {
         PositionList positions = code.getPositions();
         LocalList locals = code.getLocals();
         DalvInsnList insns = code.getInsns();
@@ -176,8 +191,8 @@ public class DebugInfoItem extends OffsettedItem {
         int regSize = insns.getRegistersSize();
 
         DebugInfoEncoder encoder =
-            new DebugInfoEncoder(positions, locals,
-                    file, codeSize, regSize, isStatic, ref);
+                new DebugInfoEncoder(positions, locals,
+                        file, codeSize, regSize, isStatic, ref);
 
         byte[] result;
 

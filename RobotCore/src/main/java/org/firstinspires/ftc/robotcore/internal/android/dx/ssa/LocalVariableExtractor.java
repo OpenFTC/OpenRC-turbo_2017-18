@@ -19,6 +19,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegisterSpec;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegisterSpecSet;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -27,21 +28,29 @@ import java.util.List;
  * Code to figure out which local variables are active at which points in
  * a method. Stolen and retrofitted from
  * com.android.dx.rop.code.LocalVariableExtractor
- *
+ * <p>
  * TODO remove this. Allow Rop-form LocalVariableInfo to be passed in,
  * converted, and adapted through edge-splitting.
  */
 public class LocalVariableExtractor {
-    /** {@code non-null;} method being extracted from */
+    /**
+     * {@code non-null;} method being extracted from
+     */
     private final SsaMethod method;
 
-    /** {@code non-null;} block list for the method */
+    /**
+     * {@code non-null;} block list for the method
+     */
     private final ArrayList<SsaBasicBlock> blocks;
 
-    /** {@code non-null;} result in-progress */
+    /**
+     * {@code non-null;} result in-progress
+     */
     private final LocalVariableInfo resultInfo;
 
-    /** {@code non-null;} work set indicating blocks needing to be processed */
+    /**
+     * {@code non-null;} work set indicating blocks needing to be processed
+     */
     private final BitSet workSet;
 
     /**
@@ -81,7 +90,7 @@ public class LocalVariableExtractor {
     private LocalVariableInfo doit() {
 
         //FIXME why is this needed here?
-        if (method.getRegCount() > 0 ) {
+        if (method.getRegCount() > 0) {
             for (int bi = method.getEntryBlockIndex();
                  bi >= 0;
                  bi = workSet.nextSetBit(0)) {
@@ -120,7 +129,7 @@ public class LocalVariableExtractor {
          */
         SsaInsn lastInsn = insns.get(insnSz - 1);
         boolean hasExceptionHandlers
-                = lastInsn.getOriginalRopInsn().getCatches().size() !=0 ;
+                = lastInsn.getOriginalRopInsn().getCatches().size() != 0;
         boolean canThrowDuringLastInsn = hasExceptionHandlers
                 && (lastInsn.getResult() != null);
         int freezeSecondaryStateAt = insnSz - 1;
@@ -197,7 +206,7 @@ public class LocalVariableExtractor {
         for (int i = 0; i < succSz; i++) {
             int succ = successors.get(i);
             RegisterSpecSet state = (succ == primarySuccessor) ?
-                primaryState : secondaryState;
+                    primaryState : secondaryState;
 
             if (resultInfo.mergeStarts(succ, state)) {
                 workSet.set(succ);

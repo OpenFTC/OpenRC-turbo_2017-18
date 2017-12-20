@@ -46,8 +46,7 @@ import java.util.Arrays;
  * @see com.vuforia.InstanceId
  */
 @SuppressWarnings("WeakerAccess")
-public class VuMarkInstanceId
-    {
+public class VuMarkInstanceId {
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
@@ -58,13 +57,12 @@ public class VuMarkInstanceId
      *
      * @see #getType()
      */
-    public enum Type
-        {
-            UNKNOWN,
-            NUMERIC,
-            STRING,
-            DATA;
-        }
+    public enum Type {
+        UNKNOWN,
+        NUMERIC,
+        STRING,
+        DATA;
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -76,112 +74,114 @@ public class VuMarkInstanceId
     protected byte[] dataValue;
 
     @Override
-    public String toString()
-        {
+    public String toString() {
         return "VuMarkInstanceId(" + this.getType() + ", " + this.getValue() + ")";
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public VuMarkInstanceId(InstanceId instanceId)
-        {
+    public VuMarkInstanceId(InstanceId instanceId) {
         this.type = typeFrom(instanceId);
-        switch (this.type)
-            {
-            case NUMERIC: this.numericValue = instanceId.getNumericValue().intValue(); break;
-            case STRING: this.stringValue = new String(dataFrom(instanceId), Charset.forName("US-ASCII")); break;
-            case DATA: this.dataValue = dataFrom(instanceId); break;
-            }
+        switch (this.type) {
+            case NUMERIC:
+                this.numericValue = instanceId.getNumericValue().intValue();
+                break;
+            case STRING:
+                this.stringValue = new String(dataFrom(instanceId), Charset.forName("US-ASCII"));
+                break;
+            case DATA:
+                this.dataValue = dataFrom(instanceId);
+                break;
         }
+    }
 
-    protected static byte[] dataFrom(InstanceId instanceId)
-        {
+    protected static byte[] dataFrom(InstanceId instanceId) {
         ByteBuffer buffer = instanceId.getBuffer();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
         return bytes;
-        }
+    }
 
-    protected static Type typeFrom(InstanceId instanceId)
-        {
-        switch (instanceId.getDataType())
-            {
-            case InstanceId.ID_DATA_TYPE.STRING:    return Type.STRING;
-            case InstanceId.ID_DATA_TYPE.NUMERIC:   return Type.NUMERIC;
-            case InstanceId.ID_DATA_TYPE.BYTES:     return Type.DATA;
-            default:                                return Type.UNKNOWN;
-            }
+    protected static Type typeFrom(InstanceId instanceId) {
+        switch (instanceId.getDataType()) {
+            case InstanceId.ID_DATA_TYPE.STRING:
+                return Type.STRING;
+            case InstanceId.ID_DATA_TYPE.NUMERIC:
+                return Type.NUMERIC;
+            case InstanceId.ID_DATA_TYPE.BYTES:
+                return Type.DATA;
+            default:
+                return Type.UNKNOWN;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Comparison
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean equals(Object o)
-        {
-        if (o instanceof VuMarkInstanceId)
-            {
-            VuMarkInstanceId them = (VuMarkInstanceId)o;
-            if (this.getType() == them.getType())
-                {
-                switch (this.getType())
-                    {
-                    case STRING: return getStringValue().equals(them.getStringValue());
-                    case NUMERIC: return getNumericValue() == them.getNumericValue();
-                    case DATA: return Arrays.equals(getDataValue(), them.getDataValue());
-                    }
+    public boolean equals(Object o) {
+        if (o instanceof VuMarkInstanceId) {
+            VuMarkInstanceId them = (VuMarkInstanceId) o;
+            if (this.getType() == them.getType()) {
+                switch (this.getType()) {
+                    case STRING:
+                        return getStringValue().equals(them.getStringValue());
+                    case NUMERIC:
+                        return getNumericValue() == them.getNumericValue();
+                    case DATA:
+                        return Arrays.equals(getDataValue(), them.getDataValue());
                 }
             }
-        return false;
         }
+        return false;
+    }
 
     @Override
-    public int hashCode()
-        {
-        switch (this.getType())
-            {
-            case STRING: return getStringValue().hashCode() ^ 0x55adef;
-            case NUMERIC: return getNumericValue() ^ 0x55adef;
-            case DATA: return Arrays.hashCode(getDataValue()) ^ 0x55adef;
-            }
-        return super.hashCode();
+    public int hashCode() {
+        switch (this.getType()) {
+            case STRING:
+                return getStringValue().hashCode() ^ 0x55adef;
+            case NUMERIC:
+                return getNumericValue() ^ 0x55adef;
+            case DATA:
+                return Arrays.hashCode(getDataValue()) ^ 0x55adef;
         }
+        return super.hashCode();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public Type getType()
-        {
+    public Type getType() {
         return type;
-        }
+    }
 
-    int getNumericValue()
-        {
+    int getNumericValue() {
         return numericValue;
-        }
+    }
 
-    String getStringValue()
-        {
+    String getStringValue() {
         return stringValue;
-        }
+    }
 
-    byte[] getDataValue()
-        {
+    byte[] getDataValue() {
         return dataValue;
-        }
+    }
 
-    Object getValue()
-        {
-        switch (this.getType())
-            {
-            case STRING: return getStringValue();
-            case NUMERIC: return getNumericValue();
-            case DATA: return getDataValue();
-            default: return null;
-            }
+    Object getValue() {
+        switch (this.getType()) {
+            case STRING:
+                return getStringValue();
+            case NUMERIC:
+                return getNumericValue();
+            case DATA:
+                return getDataValue();
+            default:
+                return null;
         }
     }
+}

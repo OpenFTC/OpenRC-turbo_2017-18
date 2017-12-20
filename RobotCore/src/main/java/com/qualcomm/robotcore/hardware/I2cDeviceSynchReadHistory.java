@@ -38,23 +38,22 @@ import java.util.concurrent.BlockingQueue;
  * {@link I2cDeviceSynchReadHistory} provides a means by which one can be guaranteed
  * to be informed of all data read by through an {@link I2cDeviceSynch}. This is
  * provided by means of a queue into which all data retrieved is (optionally) be stored.
- * 
+ * <p>
  * <p>This functionality can be useful in I2c devices in which the mere act of reading data causes
  * state transitions in the actual device itself. For such devices, the history queue can (e.g.)
  * assist the software driver layer for the device in reliably tracking the device state.</p>
- *
+ * <p>
  * <p>Implementations of {@link I2cDeviceSynchReadHistory} are commonly retrieved by casting from
  * an implementation of {@link I2cDeviceSynch} or {@link I2cDeviceSynchSimple} (but don't forget
  * to first test using {@code instanceOf}).</p>
  */
 @SuppressWarnings("WeakerAccess")
-public interface I2cDeviceSynchReadHistory
-    {
+public interface I2cDeviceSynchReadHistory {
     /**
      * Sets the maximum number of {@link TimestampedI2cData}s that will simultaneously be stored in the
      * history queue. If the queue is full and new {@link TimestampedI2cData}s become available, older
      * data will be discarded. The history queue initially has a capacity of zero.
-     *
+     * <p>
      * <p>Note that calling this method invalidates any history queue retrieved previously
      * through {@link #getHistoryQueue()}.</p>
      *
@@ -66,6 +65,7 @@ public interface I2cDeviceSynchReadHistory
 
     /**
      * Returns the current capacity of the history queue.
+     *
      * @return the current capacity of the history queue.
      * @see #setHistoryQueueCapacity(int)
      * @see #getHistoryQueue()
@@ -75,17 +75,16 @@ public interface I2cDeviceSynchReadHistory
     /**
      * (Advanced) Returns a queue into which, if requested, {@link TimestampedI2cData}s are (optionally)
      * placed as they become available.
-     *
+     * <p>
      * <p>To access these {@link TimestampedI2cData}s, call {@link #setHistoryQueueCapacity(int)} to enable
      * the history queue. Once enabled, the history queue can be accessed using {@link #getHistoryQueue()}
      * and the methods thereon used to access {@link TimestampedI2cData}s as they become available.</p>
-     *
+     * <p>
      * <p>When {@link #setHistoryQueueCapacity(int)} is called, any history queue returned previously by
      * {@link #getHistoryQueue()} becomes invalid and must be re-fetched.</p>
      *
      * @return a queue through which I2c {@link TimestampedI2cData}s may be retrieved.
-     *
      * @see #setHistoryQueueCapacity(int)
      */
     BlockingQueue<TimestampedI2cData> getHistoryQueue();
-    }
+}

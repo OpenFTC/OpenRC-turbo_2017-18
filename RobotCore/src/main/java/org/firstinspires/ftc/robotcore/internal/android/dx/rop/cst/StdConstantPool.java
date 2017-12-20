@@ -26,16 +26,18 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityContro
  */
 public final class StdConstantPool
         extends MutabilityControl implements ConstantPool {
-    /** {@code non-null;} array of entries */
+    /**
+     * {@code non-null;} array of entries
+     */
     private final Constant[] entries;
 
     /**
      * Constructs an instance. All indices initially contain {@code null}.
      *
      * @param size the size of the pool; this corresponds to the
-     * class file field {@code constant_pool_count}, and is in fact
-     * always at least one more than the actual size of the constant pool,
-     * as element {@code 0} is always invalid.
+     *             class file field {@code constant_pool_count}, and is in fact
+     *             always at least one more than the actual size of the constant pool,
+     *             as element {@code 0} is always invalid.
      */
     public StdConstantPool(int size) {
         super(size > 1);
@@ -47,12 +49,16 @@ public final class StdConstantPool
         entries = new Constant[size];
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int size() {
         return entries.length;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Constant getOrNull(int n) {
         try {
             return entries[n];
@@ -62,7 +68,9 @@ public final class StdConstantPool
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Constant get0Ok(int n) {
         if (n == 0) {
             return null;
@@ -71,7 +79,9 @@ public final class StdConstantPool
         return get(n);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Constant get(int n) {
         try {
             Constant result = entries[n];
@@ -99,7 +109,7 @@ public final class StdConstantPool
     /**
      * Sets the entry at the given index.
      *
-     * @param n {@code >= 1, < size();} which entry
+     * @param n   {@code >= 1, < size();} which entry
      * @param cst {@code null-ok;} the constant to store
      */
     public void set(int n, Constant cst) {
@@ -115,7 +125,7 @@ public final class StdConstantPool
             // Storing a category-2 entry nulls out the next index.
             if (n == (entries.length - 1)) {
                 throw new IllegalArgumentException("(n == size - 1) && " +
-                                                   "cst.isCategory2()");
+                        "cst.isCategory2()");
             }
             entries[n + 1] = null;
         }
@@ -143,6 +153,6 @@ public final class StdConstantPool
      */
     private static Constant throwInvalid(int idx) {
         throw new ExceptionWithContext("invalid constant pool index " +
-                                       Hex.u2(idx));
+                Hex.u2(idx));
     }
 }

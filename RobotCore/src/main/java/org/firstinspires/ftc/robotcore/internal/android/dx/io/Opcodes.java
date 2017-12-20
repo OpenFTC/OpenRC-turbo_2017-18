@@ -34,10 +34,14 @@ public final class Opcodes {
      */
     public static final int NO_NEXT = -1;
 
-    /** minimum valid opcode value */
+    /**
+     * minimum valid opcode value
+     */
     public static final int MIN_VALUE = -1;
 
-    /** maximum valid opcode value */
+    /**
+     * maximum valid opcode value
+     */
     public static final int MAX_VALUE = 0xffff;
 
     // BEGIN(opcodes); GENERATED AUTOMATICALLY BY opcode-gen
@@ -269,12 +273,14 @@ public final class Opcodes {
      */
     public static final int PACKED_SWITCH_PAYLOAD = 0x100;
 
-    /** special pseudo-opcode value for packed-switch data payload
+    /**
+     * special pseudo-opcode value for packed-switch data payload
      * instructions
      */
     public static final int SPARSE_SWITCH_PAYLOAD = 0x200;
 
-    /** special pseudo-opcode value for fill-array-data data payload
+    /**
+     * special pseudo-opcode value for fill-array-data data payload
      * instructions
      */
     public static final int FILL_ARRAY_DATA_PAYLOAD = 0x300;

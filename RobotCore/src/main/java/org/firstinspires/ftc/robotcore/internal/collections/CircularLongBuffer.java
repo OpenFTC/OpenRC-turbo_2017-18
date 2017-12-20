@@ -40,106 +40,99 @@ import java.nio.LongBuffer;
  * Not thread safe.
  */
 @SuppressWarnings("WeakerAccess")
-public class CircularLongBuffer
-    {
+public class CircularLongBuffer {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected       long[]  buffer;
-    protected       int     readIndex;
-    protected       int     size;
-    protected final int     capacity;
+    protected long[] buffer;
+    protected int readIndex;
+    protected int size;
+    protected final int capacity;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public CircularLongBuffer(int initialAllocation)
-        {
+    public CircularLongBuffer(int initialAllocation) {
         this(initialAllocation, Integer.MAX_VALUE);
-        }
+    }
 
-    public CircularLongBuffer(int initialAllocation, int capacity)
-        {
-        this.buffer   = new long[initialAllocation];
+    public CircularLongBuffer(int initialAllocation, int capacity) {
+        this.buffer = new long[initialAllocation];
         this.capacity = capacity;
         clear();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public int size()
-        {
+    public int size() {
         return size;
-        }
+    }
 
-    public boolean isEmpty()
-        {
-        return size==0;
-        }
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-    public int capacity()
-        {
+    public int capacity() {
         return capacity;
-        }
+    }
 
-    public int remainingCapacity()
-        {
+    public int remainingCapacity() {
         return capacity - size;
-        }
+    }
 
-    protected int allocated()
-        {
+    protected int allocated() {
         return buffer.length;
-        }
+    }
 
-    public long get(int index)
-        {
-        if (index >= size || index < 0) throw new IndexOutOfBoundsException("get(" + index + ")");
+    public long get(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("get(" + index + ")");
+        }
         return buffer[mod(readIndex + index)];
-        }
+    }
 
-    public long getFirst()
-        {
+    public long getFirst() {
         return get(0);
-        }
+    }
 
-    public long getLast()
-        {
-        return get(size-1);
-        }
+    public long getLast() {
+        return get(size - 1);
+    }
 
-    public void put(int index, long value)
-        {
-        if (index >= size || index < 0) throw new IndexOutOfBoundsException("put(" + index + ")");
+    public void put(int index, long value) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("put(" + index + ")");
+        }
         buffer[mod(readIndex + index)] = value;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Reading
     //----------------------------------------------------------------------------------------------
 
-    public long removeFirst()
-        {
-        if (isEmpty()) throw new IndexOutOfBoundsException("removeFirst");
+    public long removeFirst() {
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException("removeFirst");
+        }
 
         long result = buffer[readIndex];
         readIndex = mod(readIndex + 1);
         size -= 1;
         return result;
-        }
+    }
 
-    public int read(long[] output)
-        {
+    public int read(long[] output) {
         return read(output, 0, output.length);
-        }
+    }
 
-    public int read(long[] output, int index, int countToRead)
-        {
-        if (countToRead < 0) throw new IllegalArgumentException("count must be non-negative: " + countToRead);
+    public int read(long[] output, int index, int countToRead) {
+        if (countToRead < 0) {
+            throw new IllegalArgumentException("count must be non-negative: " + countToRead);
+        }
 
         // Read the first stretch from what's remaining in the trailing part of the buffer
         int countFirst = min(countToRead, size, allocated() - readIndex);
@@ -150,21 +143,20 @@ public class CircularLongBuffer
         readTo(output, index + countFirst, countSecond);
 
         return countFirst + countSecond;
-        }
+    }
 
-    protected void readTo(long[] output, int index, int count)
-        {
-        if (count > 0)
-            {
+    protected void readTo(long[] output, int index, int count) {
+        if (count > 0) {
             System.arraycopy(buffer, readIndex, output, index, count);
             readIndex = mod(readIndex + count);
             size -= count;
-            }
         }
+    }
 
-    public int skip(int countToSkip)
-        {
-        if (countToSkip < 0) throw new IllegalArgumentException("count must be non-negative: " + countToSkip);
+    public int skip(int countToSkip) {
+        if (countToSkip < 0) {
+            throw new IllegalArgumentException("count must be non-negative: " + countToSkip);
+        }
 
         // Read the first stretch from what's remaining in the trailing part of the buffer
         int countFirst = min(countToSkip, size, allocated() - readIndex);
@@ -175,100 +167,88 @@ public class CircularLongBuffer
         skipBy(countSecond);
 
         return countFirst + countSecond;
-        }
+    }
 
-    protected void skipBy(int count)
-        {
-        if (count > 0)
-            {
+    protected void skipBy(int count) {
+        if (count > 0) {
             readIndex = mod(readIndex + count);
             size -= count;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Writing
     //----------------------------------------------------------------------------------------------
 
-    public void addLast(long value)
-        {
+    public void addLast(long value) {
         int sizeNeeded = size + 1;
-        if (sizeNeeded > capacity)
-            {
+        if (sizeNeeded > capacity) {
             throw new IllegalStateException("full");
-            }
-        if (sizeNeeded > allocated())
-            {
+        }
+        if (sizeNeeded > allocated()) {
             grow(sizeNeeded);
-            }
+        }
         int indexWrite = mod(readIndex + size);
         buffer[indexWrite] = value;
         size += 1;
-        }
+    }
 
-    public int write(LongBuffer fromBuffer)
-        {
+    public int write(LongBuffer fromBuffer) {
         long[] array = fromBuffer.array();
-        int    index = fromBuffer.arrayOffset() + fromBuffer.position();
-        int    count = fromBuffer.remaining();
+        int index = fromBuffer.arrayOffset() + fromBuffer.position();
+        int count = fromBuffer.remaining();
         return write(array, index, count);
-        }
+    }
 
-    public int write(long[] buf)
-        {
+    public int write(long[] buf) {
         return write(buf, 0, buf.length);
-        }
+    }
 
-    public int write(long[] input, int indexFrom, int countToWrite)
-        {
-        if (countToWrite < 0) throw new IllegalArgumentException("count must be non-negative: " + countToWrite);
+    public int write(long[] input, int indexFrom, int countToWrite) {
+        if (countToWrite < 0) {
+            throw new IllegalArgumentException("count must be non-negative: " + countToWrite);
+        }
 
         int sizeNeeded = size + countToWrite;
-        if (sizeNeeded > capacity)
-            {
+        if (sizeNeeded > capacity) {
             sizeNeeded = capacity;
             countToWrite = Math.max(0, sizeNeeded - size);
-            }
-        if (sizeNeeded > allocated())
-            {
+        }
+        if (sizeNeeded > allocated()) {
             grow(sizeNeeded);
-            }
+        }
 
         // Small perf optimization; useful in the case where we commonly drain the buffer fully
-        if (size == 0) readIndex = 0;
+        if (size == 0) {
+            readIndex = 0;
+        }
 
         // Find first free byte
         int indexWrite = readIndex + size;
-        if (indexWrite < allocated())
-            {
+        if (indexWrite < allocated()) {
             // Unused space is in two fragments
             int countFirst = min(countToWrite, allocated() - indexWrite);
             writeFrom(input, indexFrom, countFirst);
             int countSecond = min(countToWrite - countFirst, readIndex);
             writeFrom(input, indexFrom + countFirst, countSecond);
             return countFirst + countSecond;
-            }
-        else
-            {
+        } else {
             // Unused space is in one fragment
             int count = min(countToWrite, allocated() - size);
             writeFrom(input, indexFrom, count);
             return count;
-            }
         }
+    }
 
-    protected void writeFrom(long[] input, int indexFrom, int count)
-        {
-        if (count > 0)
-            {
+    protected void writeFrom(long[] input, int indexFrom, int count) {
+        if (count > 0) {
             int indexTo = mod(readIndex + size);
             System.arraycopy(input, indexFrom, buffer, indexTo, count);
             size += count;
-            }
         }
+    }
 
-    protected void grow(int newSize)
-        {
+    protected void grow(int newSize) {
         // Read all the data to a new buffer.
         long[] bufferNew = new long[newSize];
         int countRead = read(bufferNew, 0, size);
@@ -276,7 +256,7 @@ public class CircularLongBuffer
         buffer = bufferNew;
         readIndex = 0;
         size = countRead;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Miscellaneous
@@ -285,28 +265,24 @@ public class CircularLongBuffer
     /**
      * Discards all the bytes currently readable in the buffer
      */
-    public void clear()
-        {
+    public void clear() {
         readIndex = 0;
         size = 0;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected int mod(int p)
-        {
+    protected int mod(int p) {
         return (p < allocated()) ? p : (p - allocated());
-        }
-
-    protected int min(int a, int b)
-        {
-        return Math.min(a, b);
-        }
-
-    protected int min(int a, int b, int c)
-        {
-        return Math.min(a, Math.min(b,c));
-        }
     }
+
+    protected int min(int a, int b) {
+        return Math.min(a, b);
+    }
+
+    protected int min(int a, int b, int c) {
+        return Math.min(a, Math.min(b, c));
+    }
+}

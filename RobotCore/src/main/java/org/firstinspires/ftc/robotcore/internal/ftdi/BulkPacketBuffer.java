@@ -41,63 +41,54 @@ import java.util.concurrent.TimeUnit;
  * A simple buffer for sending bulk data to or receiving bulk data from USB
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class BulkPacketBuffer
-    {
+public abstract class BulkPacketBuffer {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected final ByteBuffer byteBuffer;
-    protected       int        currentLength;
-    protected       long       timestamp;
+    protected int currentLength;
+    protected long timestamp;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public BulkPacketBuffer(int size)
-        {
+    public BulkPacketBuffer(int size) {
         this.byteBuffer = ByteBuffer.allocate(size);
         this.setCurrentLength(0);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public byte[] array()
-        {
+    public byte[] array() {
         return byteBuffer.array();
-        }
+    }
 
-    public int arrayOffset()
-        {
+    public int arrayOffset() {
         return byteBuffer.arrayOffset();
-        }
+    }
 
-    public int capacity()
-        {
+    public int capacity() {
         return byteBuffer.capacity();
-        }
+    }
 
-    public ByteBuffer getByteBuffer()
-        {
+    public ByteBuffer getByteBuffer() {
         return byteBuffer;
-        }
+    }
 
-    public int getCurrentLength()
-        {
+    public int getCurrentLength() {
         return currentLength;
-        }
+    }
 
-    public synchronized void setCurrentLength(int length)
-        {
+    public synchronized void setCurrentLength(int length) {
         currentLength = length;
         timestamp = System.nanoTime();
-        }
-
-    public long getTimestamp(@NonNull TimeUnit unit)
-        {
-        return unit.convert(timestamp, TimeUnit.NANOSECONDS);
-        }
     }
+
+    public long getTimestamp(@NonNull TimeUnit unit) {
+        return unit.convert(timestamp, TimeUnit.NANOSECONDS);
+    }
+}

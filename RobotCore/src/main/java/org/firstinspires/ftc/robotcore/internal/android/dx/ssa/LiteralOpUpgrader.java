@@ -29,6 +29,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstLiteralBits;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeBearer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,9 @@ import java.util.List;
  */
 public class LiteralOpUpgrader {
 
-    /** method we're processing */
+    /**
+     * method we're processing
+     */
     private final SsaMethod ssaMeth;
 
     /**
@@ -97,9 +100,11 @@ public class LiteralOpUpgrader {
                 RegisterSpecList sources = insn.getSources();
 
                 // Replace insns with constant results with const insns
-                if (tryReplacingWithConstant(insn)) return;
+                if (tryReplacingWithConstant(insn)) {
+                    return;
+                }
 
-                if (sources.size() != 2 ) {
+                if (sources.size() != 2) {
                     // We're only dealing with two-source insns here.
                     return;
                 }
@@ -110,15 +115,15 @@ public class LiteralOpUpgrader {
                      */
                     if (isConstIntZeroOrKnownNull(sources.get(0))) {
                         replacePlainInsn(insn, sources.withoutFirst(),
-                              RegOps.flippedIfOpcode(opcode.getOpcode()), null);
+                                RegOps.flippedIfOpcode(opcode.getOpcode()), null);
                     } else if (isConstIntZeroOrKnownNull(sources.get(1))) {
                         replacePlainInsn(insn, sources.withoutLast(),
-                              opcode.getOpcode(), null);
+                                opcode.getOpcode(), null);
                     }
                 } else if (advice.hasConstantOperation(
                         opcode, sources.get(0), sources.get(1))) {
                     insn.upgradeToLiteral();
-                } else  if (opcode.isCommutative()
+                } else if (opcode.isCommutative()
                         && advice.hasConstantOperation(
                         opcode, sources.get(1), sources.get(0))) {
                     /*
@@ -161,7 +166,7 @@ public class LiteralOpUpgrader {
                     ArrayList<SsaInsn> predInsns =
                             ssaMeth.getBlocks().get(pred).getInsns();
                     NormalSsaInsn sourceInsn =
-                            (NormalSsaInsn) predInsns.get(predInsns.size()-1);
+                            (NormalSsaInsn) predInsns.get(predInsns.size() - 1);
                     replacePlainInsn(sourceInsn, RegisterSpecList.EMPTY,
                             RegOps.GOTO, null);
                 }
@@ -174,16 +179,16 @@ public class LiteralOpUpgrader {
     /**
      * Replaces an SsaInsn containing a PlainInsn with a new PlainInsn. The
      * new PlainInsn is constructed with a new RegOp and new sources.
-     *
+     * <p>
      * TODO move this somewhere else.
      *
-     * @param insn {@code non-null;} an SsaInsn containing a PlainInsn
+     * @param insn       {@code non-null;} an SsaInsn containing a PlainInsn
      * @param newSources {@code non-null;} new sources list for new insn
-     * @param newOpcode A RegOp from {@link RegOps}
-     * @param cst {@code null-ok;} constant for new instruction, if any
+     * @param newOpcode  A RegOp from {@link RegOps}
+     * @param cst        {@code null-ok;} constant for new instruction, if any
      */
     private void replacePlainInsn(NormalSsaInsn insn,
-            RegisterSpecList newSources, int newOpcode, Constant cst) {
+                                  RegisterSpecList newSources, int newOpcode, Constant cst) {
 
         Insn originalRopInsn = insn.getOriginalRopInsn();
         Rop newRop = Rops.ropFor(newOpcode, insn.getResult(), newSources, cst);

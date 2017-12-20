@@ -24,13 +24,15 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
 
 /**
  * Representation of an array of local variables, with Java semantics.
- *
+ * <p>
  * <p><b>Note:</b> For the most part, the documentation for this class
  * ignores the distinction between {@link Type} and {@link
  * TypeBearer}.</p>
  */
 public class OneLocalsArray extends LocalsArray {
-    /** {@code non-null;} actual array */
+    /**
+     * {@code non-null;} actual array
+     */
     private final TypeBearer[] locals;
 
     /**
@@ -38,14 +40,16 @@ public class OneLocalsArray extends LocalsArray {
      * all-uninitialized values (represented as {@code null}s).
      *
      * @param maxLocals {@code >= 0;} the maximum number of locals this instance
-     * can refer to
+     *                  can refer to
      */
     public OneLocalsArray(int maxLocals) {
         super(maxLocals != 0);
         locals = new TypeBearer[maxLocals];
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public OneLocalsArray copy() {
         OneLocalsArray result = new OneLocalsArray(locals.length);
 
@@ -54,7 +58,9 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void annotate(ExceptionWithContext ex) {
         for (int i = 0; i < locals.length; i++) {
             TypeBearer type = locals[i];
@@ -63,7 +69,9 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** {@inheritDoc*/
+    /**
+     * {@inheritDoc
+     */
     public String toHuman() {
         StringBuilder sb = new StringBuilder();
 
@@ -76,7 +84,9 @@ public class OneLocalsArray extends LocalsArray {
         return sb.toString();
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void makeInitialized(Type type) {
         int len = locals.length;
 
@@ -96,12 +106,16 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public int getMaxLocals() {
         return locals.length;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void set(int idx, TypeBearer type) {
         throwIfImmutable();
 
@@ -131,23 +145,31 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void set(RegisterSpec spec) {
         set(spec.getReg(), spec);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public void invalidate(int idx) {
         throwIfImmutable();
         locals[idx] = null;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public TypeBearer getOrNull(int idx) {
         return locals[idx];
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public TypeBearer get(int idx) {
         TypeBearer result = locals[idx];
 
@@ -158,7 +180,9 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public TypeBearer getCategory1(int idx) {
         TypeBearer result = get(idx);
         Type type = result.getType();
@@ -174,7 +198,9 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public TypeBearer getCategory2(int idx) {
         TypeBearer result = get(idx);
 
@@ -185,11 +211,13 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public LocalsArray merge(LocalsArray other) {
         if (other instanceof OneLocalsArray) {
-            return merge((OneLocalsArray)other);
+            return merge((OneLocalsArray) other);
         } else { //LocalsArraySet
             // LocalsArraySet knows how to merge me.
             return other.merge(this);
@@ -217,16 +245,20 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public LocalsArraySet mergeWithSubroutineCaller
-            (LocalsArray other, int predLabel) {
+    (LocalsArray other, int predLabel) {
 
         LocalsArraySet result = new LocalsArraySet(getMaxLocals());
         return result.mergeWithSubroutineCaller(other, predLabel);
     }
 
-    /**{@inheritDoc}*/
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected OneLocalsArray getPrimary() {
         return this;

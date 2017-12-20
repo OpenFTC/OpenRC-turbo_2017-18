@@ -31,13 +31,17 @@ public final class MethodIdItem extends MemberIdItem {
         super(method);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_METHOD_ID_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         super.addContents(file);
@@ -55,14 +59,18 @@ public final class MethodIdItem extends MemberIdItem {
         return (CstBaseMethodRef) getRef();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int getTypoidIdx(DexFile file) {
         ProtoIdsSection protoIds = file.getProtoIds();
         return protoIds.indexOf(getMethodRef().getPrototype());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String getTypoidName() {
         return "proto_idx";

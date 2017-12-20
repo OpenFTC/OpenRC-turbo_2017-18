@@ -56,7 +56,7 @@ public interface AnnotatedOutput
      * after all the output covered by the previous calls.
      *
      * @param amt {@code >= 0;} the amount of output for this annotation to
-     * cover
+     *            cover
      * @param msg {@code non-null;} the annotation message
      */
     public void annotate(int amt, String msg);

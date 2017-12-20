@@ -27,7 +27,9 @@ public enum AnnotationVisibility implements ToHuman {
     SYSTEM("system"),
     EMBEDDED("embedded");
 
-    /** {@code non-null;} the human-oriented string representation */
+    /**
+     * {@code non-null;} the human-oriented string representation
+     */
     private final String human;
 
     /**
@@ -39,7 +41,9 @@ public enum AnnotationVisibility implements ToHuman {
         this.human = human;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return human;
     }

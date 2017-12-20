@@ -39,13 +39,12 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
  * Robotics controllers.
  */
 @SuppressWarnings("WeakerAccess")
-public class ModernRoboticsRequest extends ModernRoboticsDatagram
-    {
+public class ModernRoboticsRequest extends ModernRoboticsDatagram {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public static final byte[] syncBytes = new byte[] { (byte)0x55, (byte)0xAA };
+    public static final byte[] syncBytes = new byte[]{(byte) 0x55, (byte) 0xAA};
 
     protected final AllocationContext<ModernRoboticsRequest> allocationContext;
 
@@ -53,42 +52,36 @@ public class ModernRoboticsRequest extends ModernRoboticsDatagram
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    private ModernRoboticsRequest(AllocationContext<ModernRoboticsRequest> allocationContext, int cbPayloadAlloc)
-        {
+    private ModernRoboticsRequest(AllocationContext<ModernRoboticsRequest> allocationContext, int cbPayloadAlloc) {
         super(cbPayloadAlloc);
         this.allocationContext = allocationContext;
-        }
+    }
 
-    public static ModernRoboticsRequest newInstance(AllocationContext<ModernRoboticsRequest> allocationContext, int cbPayloadAlloc)
-        {
+    public static ModernRoboticsRequest newInstance(AllocationContext<ModernRoboticsRequest> allocationContext, int cbPayloadAlloc) {
         ModernRoboticsRequest instance = allocationContext.tryAlloc(cbPayloadAlloc);
-        if (instance == null)
-            {
+        if (instance == null) {
             instance = new ModernRoboticsRequest(allocationContext, cbPayloadAlloc);
-            }
+        }
         instance.initialize(syncBytes[0], syncBytes[1]);
         return instance;
-        }
+    }
 
-    public static ModernRoboticsRequest from(AllocationContext<ModernRoboticsRequest> allocationContext, byte[] bytes)
-        {
+    public static ModernRoboticsRequest from(AllocationContext<ModernRoboticsRequest> allocationContext, byte[] bytes) {
         ModernRoboticsRequest result = newInstance(allocationContext, bytes.length - CB_HEADER);
         System.arraycopy(bytes, 0, result.data, 0, bytes.length);
         Assert.assertTrue(result.syncBytesValid());
         return result;
-        }
+    }
 
-    public void close()
-        {
+    public void close() {
         allocationContext.tryCache0(this);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public boolean syncBytesValid()
-        {
-        return data[IB_SYNC_0]==syncBytes[0] && data[IB_SYNC_1]==syncBytes[1];
-        }
+    public boolean syncBytesValid() {
+        return data[IB_SYNC_0] == syncBytes[0] && data[IB_SYNC_1] == syncBytes[1];
     }
+}

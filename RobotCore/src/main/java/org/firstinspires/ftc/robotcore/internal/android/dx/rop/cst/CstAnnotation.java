@@ -22,7 +22,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.annotation.Annota
  * Constant type that represents an annotation.
  */
 public final class CstAnnotation extends Constant {
-    /** {@code non-null;} the actual annotation */
+    /**
+     * {@code non-null;} the actual annotation
+     */
     private final Annotation annotation;
 
     /**
@@ -40,47 +42,61 @@ public final class CstAnnotation extends Constant {
         this.annotation = annotation;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
-        if (! (other instanceof CstAnnotation)) {
+        if (!(other instanceof CstAnnotation)) {
             return false;
         }
 
         return annotation.equals(((CstAnnotation) other).annotation);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return annotation.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int compareTo0(Constant other) {
         return annotation.compareTo(((CstAnnotation) other).annotation);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return annotation.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "annotation";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCategory2() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return annotation.toString();
     }

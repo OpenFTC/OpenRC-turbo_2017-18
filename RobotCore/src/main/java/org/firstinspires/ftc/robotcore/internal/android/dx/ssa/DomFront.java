@@ -17,6 +17,7 @@
 package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntSet;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 
@@ -26,10 +27,14 @@ import java.util.BitSet;
  * Harvey, and Kennedy; transliterated to Java.
  */
 public class DomFront {
-    /** local debug flag */
+    /**
+     * local debug flag
+     */
     private static boolean DEBUG = false;
 
-    /** {@code non-null;} method being processed */
+    /**
+     * {@code non-null;} method being processed
+     */
     private final SsaMethod meth;
 
     private final ArrayList<SsaBasicBlock> nodes;
@@ -46,7 +51,9 @@ public class DomFront {
          */
         public IntSet dominanceFrontiers;
 
-        /** {@code >= 0 after run();} the index of the immediate dominator */
+        /**
+         * {@code >= 0 after run();} the index of the immediate dominator
+         */
         public int idom = -1;
     }
 
@@ -150,7 +157,9 @@ public class DomFront {
         for (int i = 0; i < szNodes; i++) {
             DomInfo info = domInfos[i];
 
-            if (info.idom == -1) continue;
+            if (info.idom == -1) {
+                continue;
+            }
 
             SsaBasicBlock domParent = nodes.get(info.idom);
             domParent.addDomChild(nodes.get(i));
@@ -181,7 +190,9 @@ public class DomFront {
                          * added label to, since we must be at a part
                          * of the dom tree we have seen before.
                          */
-                        if (runnerIndex == -1) break;
+                        if (runnerIndex == -1) {
+                            break;
+                        }
 
                         DomInfo runnerInfo = domInfos[runnerIndex];
 

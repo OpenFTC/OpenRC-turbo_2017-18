@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstNat;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -46,13 +47,17 @@ public final class StringIdsSection
         strings = new TreeMap<CstString, StringIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return strings.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {
@@ -94,7 +99,7 @@ public final class StringIdsSection
      * Interns an element into this instance.
      *
      * @param string {@code non-null;} the string to intern, as a regular Java
-     * {@code String}
+     *               {@code String}
      * @return {@code non-null;} the interned string
      */
     public StringIdItem intern(String string) {
@@ -168,7 +173,9 @@ public final class StringIdsSection
         return s.getIndex();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;

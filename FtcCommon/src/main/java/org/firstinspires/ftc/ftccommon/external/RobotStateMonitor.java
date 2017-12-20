@@ -47,8 +47,7 @@ import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
  * of {@link UpdateUI} in order to receive notifications when certain event transitions
  * happen within the robot.
  */
-public interface RobotStateMonitor
-    {
+public interface RobotStateMonitor {
     /**
      * Informs the monitor of the current state of the robot. This may or may not be
      * different from the state previously reported.
@@ -82,7 +81,7 @@ public interface RobotStateMonitor
      * or may not be different from the status previously reported.
      *
      * @param networkStatus the current status of the network connection
-     * @param extra additional information useful in some statuses
+     * @param extra         additional information useful in some statuses
      */
     void updateNetworkStatus(@NonNull NetworkStatus networkStatus, @Nullable String extra);
 
@@ -103,4 +102,4 @@ public interface RobotStateMonitor
      * @param warningMessage the warning message being reported, or null if the warning is being cleared.
      */
     void updateWarningMessage(@Nullable String warningMessage);
-    }
+}

@@ -50,45 +50,38 @@ import java.util.concurrent.TimeoutException;
  * if not cancelled first. We use it rather than ThreadPool.getDefault().schedule() (for which
  * we are a drop in replacement in limited contexts) because the latter is horrendously poor
  * at thread management, especially in KitKat.
- *
+ * <p>
  * This is similar to {@link OpModeManagerImpl.OpModeStuckCodeMonitor}
  * and probably could be merged therewith.
  */
 @SuppressWarnings("WeakerAccess")
-public class WatchdogMonitor
-    {
+public class WatchdogMonitor {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected       ExecutorService         executorService      = ThreadPool.newSingleThreadExecutor("WatchdogMonitor");
-    protected       Runner                  runner               = new Runner();
-    protected       Thread                  monitoredThread      = null;
-    protected final Object                  startStopLock        = new Object();
+    protected ExecutorService executorService = ThreadPool.newSingleThreadExecutor("WatchdogMonitor");
+    protected Runner runner = new Runner();
+    protected Thread monitoredThread = null;
+    protected final Object startStopLock = new Object();
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public void close(boolean awaitTermination)
-        {
-        synchronized (startStopLock)
-            {
-            if (executorService != null)
-                {
-                if (awaitTermination)
-                    {
+    public void close(boolean awaitTermination) {
+        synchronized (startStopLock) {
+            if (executorService != null) {
+                if (awaitTermination) {
                     executorService.shutdownNow();
                     ThreadPool.awaitTerminationOrExitApplication(executorService, 1, TimeUnit.SECONDS, "WatchdogMonitor", "internal error");
-                    }
-                else
-                    {
+                } else {
                     executorService.shutdown();
-                    }
-                executorService = null;
                 }
+                executorService = null;
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Simple usage
@@ -99,69 +92,61 @@ public class WatchdogMonitor
      * thread, schedules a monitoring action to run after a timeout. The two actions, of course, will
      * race.
      */
-    public <V> V monitor(Callable<V> actionToMonitor, Callable<V> actionOnTimeout, long timeout, TimeUnit unit) throws ExecutionException, InterruptedException
-        {
+    public <V> V monitor(Callable<V> actionToMonitor, Callable<V> actionOnTimeout, long timeout, TimeUnit unit) throws ExecutionException, InterruptedException {
         monitoredThread = Thread.currentThread();
         Future<V> future = schedule(actionOnTimeout, timeout, unit);
         V result = null;
         try {
             result = actionToMonitor.call();
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             throw new ExecutionException("exception while monitoring", e);
-            }
-        finally
-            {
-            if (future.cancel(false))
-                {
+        } finally {
+            if (future.cancel(false)) {
                 // cancelled ok
-                }
-            else
-                {
+            } else {
                 // could not cancel
                 result = future.get();
-                }
-            monitoredThread = null;
             }
+            monitoredThread = null;
+        }
         return result;
-        }
+    }
 
-    public Thread getMonitoredThread()
-        {
+    public Thread getMonitoredThread() {
         return monitoredThread;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // More complex usage
     //----------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public <V> Future<V> schedule(Callable<V> callable, long timeout, TimeUnit unit)
-        {
+    public <V> Future<V> schedule(Callable<V> callable, long timeout, TimeUnit unit) {
         // Wait for any previous monitoring to drain
-        try { runner.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try {
+            runner.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         //
         runner.initialize(callable, unit.toMillis(timeout));
         executorService.execute(runner);
         return runner;
-        }
+    }
 
-    protected class Runner<V> implements Runnable, Future<V>
-        {
-        final ReusableCountDownLatch  runComplete          = new ReusableCountDownLatch(0);
-        final ReusableCountDownLatch  cancelInterlock      = new ReusableCountDownLatch(0);
-        final ReusableCountDownLatch  isCancelledAvailable = new ReusableCountDownLatch(0);
+    protected class Runner<V> implements Runnable, Future<V> {
+        final ReusableCountDownLatch runComplete = new ReusableCountDownLatch(0);
+        final ReusableCountDownLatch cancelInterlock = new ReusableCountDownLatch(0);
+        final ReusableCountDownLatch isCancelledAvailable = new ReusableCountDownLatch(0);
 
-        Callable<V>          callable;
-        long                 msTimeout;
-        V                    callableResult;
-        ExecutionException   executionException;
-        boolean              isCancelled;
-        boolean              done;
+        Callable<V> callable;
+        long msTimeout;
+        V callableResult;
+        ExecutionException executionException;
+        boolean isCancelled;
+        boolean done;
 
-        public void initialize(Callable<V> callable, long msTimeout)
-            {
+        public void initialize(Callable<V> callable, long msTimeout) {
             this.callable = callable;
             this.msTimeout = msTimeout;
             runComplete.reset(1);
@@ -172,98 +157,88 @@ public class WatchdogMonitor
             executionException = null;
             isCancelled = false;
             done = false;
-            }
+        }
 
-        public void await() throws InterruptedException
-            {
+        public void await() throws InterruptedException {
             runComplete.await();
-            }
+        }
 
-        public void await(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException
-            {
-            if (!runComplete.await(timeout, unit))
-                {
+        public void await(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+            if (!runComplete.await(timeout, unit)) {
                 throw new TimeoutException("timeout awaiting watchdog timer");
-                }
             }
+        }
 
-        @Override public boolean cancel(boolean mayInterruptIfRunning)
-            {
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
             // Wake up the run() to one result or the other. Note that countDown() here is
             // idempotent, since we only gave it a count of one to begin with.
             cancelInterlock.countDown();
 
             // Wait for the runner to wake up and set the result
-            try { isCancelledAvailable.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            try {
+                isCancelledAvailable.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
 
             // Return the result
             return isCancelled;
-            }
+        }
 
-        @Override public boolean isCancelled()
-            {
+        @Override
+        public boolean isCancelled() {
             // Meaningless if called before isDone()?
             return isCancelled;
-            }
+        }
 
-        @Override public void run()
-            {
+        @Override
+        public void run() {
             try {
-                if (cancelInterlock.await(msTimeout, TimeUnit.MILLISECONDS))
-                    {
+                if (cancelInterlock.await(msTimeout, TimeUnit.MILLISECONDS)) {
                     // We cancelled before we timed out
                     isCancelled = true;
                     isCancelledAvailable.countDown();
-                    }
-                else
-                    {
+                } else {
                     // Timeout hit before cancel
                     isCancelled = false;
                     isCancelledAvailable.countDown();
 
                     try {
                         callableResult = callable.call();
-                        }
-                    catch (Exception e)
-                        {
+                    } catch (Exception e) {
                         executionException = new ExecutionException("exception during watchdog timer", e);
-                        }
                     }
                 }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 // Ignore: we're cleaning up here pronto anyway
-                }
-            finally
-                {
+            } finally {
                 done = true;
                 runComplete.countDown();
-                }
-            }
-
-        @Override public boolean isDone()
-            {
-            return done;
-            }
-
-        @Override public V get() throws InterruptedException, ExecutionException
-            {
-            runner.await();
-            if (runner.executionException != null)
-                {
-                throw runner.executionException;
-                }
-            return callableResult;
-            }
-
-        @Override public V get(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
-            {
-            runner.await(timeout, unit);
-            if (runner.executionException != null)
-                {
-                throw runner.executionException;
-                }
-            return callableResult;
             }
         }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public V get() throws InterruptedException, ExecutionException {
+            runner.await();
+            if (runner.executionException != null) {
+                throw runner.executionException;
+            }
+            return callableResult;
+        }
+
+        @Override
+        public V get(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            runner.await(timeout, unit);
+            if (runner.executionException != null) {
+                throw runner.executionException;
+            }
+            return callableResult;
+        }
     }
+}

@@ -39,8 +39,7 @@ import com.qualcomm.robotcore.util.TypeConversion;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxGetModuleLEDColorResponse extends LynxStandardResponse
-    {
+public class LynxGetModuleLEDColorResponse extends LynxStandardResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -53,54 +52,48 @@ public class LynxGetModuleLEDColorResponse extends LynxStandardResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetModuleLEDColorResponse(LynxModule module)
-        {
+    public LynxGetModuleLEDColorResponse(LynxModule module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    int getRed()
-        {
+    int getRed() {
         return TypeConversion.unsignedByteToInt(this.red);
-        }
-    int getGreen()
-        {
+    }
+
+    int getGreen() {
         return TypeConversion.unsignedByteToInt(this.green);
-        }
-    int getBlue()
-        {
+    }
+
+    int getBlue() {
         return TypeConversion.unsignedByteToInt(this.blue);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return LynxGetModuleLEDColorCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { this.red, this.green, this.blue };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.red   = rgb[0];
-        this.green = rgb[1];
-        this.blue  = rgb[2];
-        }
     }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{this.red, this.green, this.blue};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.red = rgb[0];
+        this.green = rgb[1];
+        this.blue = rgb[2];
+    }
+}

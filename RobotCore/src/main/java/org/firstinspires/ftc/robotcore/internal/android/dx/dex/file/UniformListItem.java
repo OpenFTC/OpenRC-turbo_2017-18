@@ -18,13 +18,14 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.file;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.List;
 
 /**
  * Class that represents a contiguous list of uniform items. Each
  * item in the list, in particular, must have the same write size and
  * alignment.
- *
+ * <p>
  * <p>This class inherits its alignment from its items, bumped up to
  * {@code 4} if the items have a looser alignment requirement. If
  * it is more than {@code 4}, then there will be a gap after the
@@ -34,13 +35,19 @@ import java.util.List;
  */
 public final class UniformListItem<T extends OffsettedItem>
         extends OffsettedItem {
-    /** the size of the list header */
+    /**
+     * the size of the list header
+     */
     private static final int HEADER_SIZE = 4;
 
-    /** {@code non-null;} the item type */
+    /**
+     * {@code non-null;} the item type
+     */
     private final ItemType itemType;
 
-    /** {@code non-null;} the contents */
+    /**
+     * {@code non-null;} the contents
+     */
     private final List<T> items;
 
     /**
@@ -48,7 +55,7 @@ public final class UniformListItem<T extends OffsettedItem>
      * it is used to construct an instance of this class.
      *
      * @param itemType {@code non-null;} the type of the item
-     * @param items {@code non-null and non-empty;} list of items to represent
+     * @param items    {@code non-null and non-empty;} list of items to represent
      */
     public UniformListItem(ItemType itemType, List<T> items) {
         super(getAlignment(items), writeSize(items));
@@ -97,13 +104,17 @@ public final class UniformListItem<T extends OffsettedItem>
         return (items.size() * first.writeSize()) + getAlignment(items);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return itemType;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(100);
@@ -114,7 +125,9 @@ public final class UniformListItem<T extends OffsettedItem>
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         for (OffsettedItem i : items) {
@@ -122,7 +135,9 @@ public final class UniformListItem<T extends OffsettedItem>
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toHuman() {
         StringBuffer sb = new StringBuffer(100);
@@ -152,7 +167,9 @@ public final class UniformListItem<T extends OffsettedItem>
         return items;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void place0(Section addedTo, int offset) {
         offset += headerSize();
@@ -182,7 +199,9 @@ public final class UniformListItem<T extends OffsettedItem>
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void writeTo0(DexFile file, AnnotatedOutput out) {
         int size = items.size();

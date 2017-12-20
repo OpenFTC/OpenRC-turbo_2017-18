@@ -30,22 +30,27 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.ArrayList;
 
 /**
  * Bytecode visitor to use when "observing" bytecode getting parsed.
  */
 public class CodeObserver implements BytecodeArray.Visitor {
-    /** {@code non-null;} actual array of bytecode */
+    /**
+     * {@code non-null;} actual array of bytecode
+     */
     private final ByteArray bytes;
 
-    /** {@code non-null;} observer to inform of parsing */
+    /**
+     * {@code non-null;} observer to inform of parsing
+     */
     private final ParseObserver observer;
 
     /**
      * Constructs an instance.
      *
-     * @param bytes {@code non-null;} actual array of bytecode
+     * @param bytes    {@code non-null;} actual array of bytecode
      * @param observer {@code non-null;} observer to inform of parsing
      */
     public CodeObserver(ByteArray bytes, ParseObserver observer) {
@@ -61,26 +66,32 @@ public class CodeObserver implements BytecodeArray.Visitor {
         this.observer = observer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitInvalid(int opcode, int offset, int length) {
         observer.parsed(bytes, offset, length, header(offset));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitNoArgs(int opcode, int offset, int length, Type type) {
         observer.parsed(bytes, offset, length, header(offset));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitLocal(int opcode, int offset, int length,
-            int idx, Type type, int value) {
+                           int idx, Type type, int value) {
         String idxStr = (length <= 3) ? Hex.u1(idx) : Hex.u2(idx);
         boolean argComment = (length == 1);
         String valueStr = "";
 
         if (opcode == ByteOps.IINC) {
             valueStr = ", #" +
-                ((length <= 3) ? Hex.s1(value) : Hex.s2(value));
+                    ((length <= 3) ? Hex.s1(value) : Hex.s2(value));
         }
 
         String catStr = "";
@@ -89,13 +100,15 @@ public class CodeObserver implements BytecodeArray.Visitor {
         }
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + (argComment ? " // " : " ") +
+                header(offset) + (argComment ? " // " : " ") +
                         idxStr + valueStr + catStr);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitConstant(int opcode, int offset, int length,
-            Constant cst, int value) {
+                              Constant cst, int value) {
         if (cst instanceof CstKnownNull) {
             // This is aconst_null.
             visitNoArgs(opcode, offset, length, null);
@@ -109,19 +122,19 @@ public class CodeObserver implements BytecodeArray.Visitor {
 
         if (cst instanceof CstLong) {
             visitLiteralLong(opcode, offset, length,
-                             ((CstLong) cst).getValue());
+                    ((CstLong) cst).getValue());
             return;
         }
 
         if (cst instanceof CstFloat) {
             visitLiteralFloat(opcode, offset, length,
-                              ((CstFloat) cst).getIntBits());
+                    ((CstFloat) cst).getIntBits());
             return;
         }
 
         if (cst instanceof CstDouble) {
             visitLiteralDouble(opcode, offset, length,
-                             ((CstDouble) cst).getLongBits());
+                    ((CstDouble) cst).getLongBits());
             return;
         }
 
@@ -136,20 +149,24 @@ public class CodeObserver implements BytecodeArray.Visitor {
         }
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + " " + cst + valueStr);
+                header(offset) + " " + cst + valueStr);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitBranch(int opcode, int offset, int length,
                             int target) {
         String targetStr = (length <= 3) ? Hex.u2(target) : Hex.u4(target);
         observer.parsed(bytes, offset, length,
-                        header(offset) + " " + targetStr);
+                header(offset) + " " + targetStr);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitSwitch(int opcode, int offset, int length,
-            SwitchList cases, int padding) {
+                            SwitchList cases, int padding) {
         int sz = cases.size();
         StringBuffer sb = new StringBuffer(sz * 20 + 100);
 
@@ -173,22 +190,28 @@ public class CodeObserver implements BytecodeArray.Visitor {
         observer.parsed(bytes, offset, length, sb.toString());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void visitNewarray(int offset, int length, CstType cst,
-            ArrayList<Constant> intVals) {
+                              ArrayList<Constant> intVals) {
         String commentOrSpace = (length == 1) ? " // " : " ";
         String typeName = cst.getClassType().getComponentType().toHuman();
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + commentOrSpace + typeName);
+                header(offset) + commentOrSpace + typeName);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setPreviousOffset(int offset) {
         // Do nothing
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getPreviousOffset() {
         return -1;
     }
@@ -221,10 +244,10 @@ public class CodeObserver implements BytecodeArray.Visitor {
      * @param opcode the opcode
      * @param offset offset to the instruction
      * @param length instruction length
-     * @param value constant value
+     * @param value  constant value
      */
     private void visitLiteralInt(int opcode, int offset, int length,
-            int value) {
+                                 int value) {
         String commentOrSpace = (length == 1) ? " // " : " ";
         String valueStr;
 
@@ -238,7 +261,7 @@ public class CodeObserver implements BytecodeArray.Visitor {
         }
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + commentOrSpace + valueStr);
+                header(offset) + commentOrSpace + valueStr);
     }
 
     /**
@@ -248,10 +271,10 @@ public class CodeObserver implements BytecodeArray.Visitor {
      * @param opcode the opcode
      * @param offset offset to the instruction
      * @param length instruction length
-     * @param value constant value
+     * @param value  constant value
      */
     private void visitLiteralLong(int opcode, int offset, int length,
-            long value) {
+                                  long value) {
         String commentOrLit = (length == 1) ? " // " : " #";
         String valueStr;
 
@@ -262,7 +285,7 @@ public class CodeObserver implements BytecodeArray.Visitor {
         }
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + commentOrLit + valueStr);
+                header(offset) + commentOrLit + valueStr);
     }
 
     /**
@@ -272,14 +295,14 @@ public class CodeObserver implements BytecodeArray.Visitor {
      * @param opcode the opcode
      * @param offset offset to the instruction
      * @param length instruction length
-     * @param bits constant value, as float-bits
+     * @param bits   constant value, as float-bits
      */
     private void visitLiteralFloat(int opcode, int offset, int length,
-            int bits) {
+                                   int bits) {
         String optArg = (length != 1) ? " #" + Hex.u4(bits) : "";
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + optArg + " // " +
+                header(offset) + optArg + " // " +
                         Float.intBitsToFloat(bits));
     }
 
@@ -290,14 +313,14 @@ public class CodeObserver implements BytecodeArray.Visitor {
      * @param opcode the opcode
      * @param offset offset to the instruction
      * @param length instruction length
-     * @param bits constant value, as double-bits
+     * @param bits   constant value, as double-bits
      */
     private void visitLiteralDouble(int opcode, int offset, int length,
-            long bits) {
+                                    long bits) {
         String optArg = (length != 1) ? " #" + Hex.u8(bits) : "";
 
         observer.parsed(bytes, offset, length,
-                        header(offset) + optArg + " // " +
+                header(offset) + optArg + " // " +
                         Double.longBitsToDouble(bits));
     }
 }

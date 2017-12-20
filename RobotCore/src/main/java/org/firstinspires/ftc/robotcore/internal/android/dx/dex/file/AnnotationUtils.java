@@ -38,41 +38,61 @@ import java.util.ArrayList;
  */
 public final class AnnotationUtils {
 
-    /** {@code non-null;} type for {@code AnnotationDefault} annotations */
+    /**
+     * {@code non-null;} type for {@code AnnotationDefault} annotations
+     */
     private static final CstType ANNOTATION_DEFAULT_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/AnnotationDefault;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/AnnotationDefault;"));
 
-    /** {@code non-null;} type for {@code EnclosingClass} annotations */
+    /**
+     * {@code non-null;} type for {@code EnclosingClass} annotations
+     */
     private static final CstType ENCLOSING_CLASS_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/EnclosingClass;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/EnclosingClass;"));
 
-    /** {@code non-null;} type for {@code EnclosingMethod} annotations */
+    /**
+     * {@code non-null;} type for {@code EnclosingMethod} annotations
+     */
     private static final CstType ENCLOSING_METHOD_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/EnclosingMethod;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/EnclosingMethod;"));
 
-    /** {@code non-null;} type for {@code InnerClass} annotations */
+    /**
+     * {@code non-null;} type for {@code InnerClass} annotations
+     */
     private static final CstType INNER_CLASS_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/InnerClass;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/InnerClass;"));
 
-    /** {@code non-null;} type for {@code MemberClasses} annotations */
+    /**
+     * {@code non-null;} type for {@code MemberClasses} annotations
+     */
     private static final CstType MEMBER_CLASSES_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/MemberClasses;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/MemberClasses;"));
 
-    /** {@code non-null;} type for {@code Signature} annotations */
+    /**
+     * {@code non-null;} type for {@code Signature} annotations
+     */
     private static final CstType SIGNATURE_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/Signature;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/Signature;"));
 
-    /** {@code non-null;} type for {@code Throws} annotations */
+    /**
+     * {@code non-null;} type for {@code Throws} annotations
+     */
     private static final CstType THROWS_TYPE =
-        CstType.intern(Type.intern("Ldalvik/annotation/Throws;"));
+            CstType.intern(Type.intern("Ldalvik/annotation/Throws;"));
 
-    /** {@code non-null;} the UTF-8 constant {@code "accessFlags"} */
+    /**
+     * {@code non-null;} the UTF-8 constant {@code "accessFlags"}
+     */
     private static final CstString ACCESS_FLAGS_STRING = new CstString("accessFlags");
 
-    /** {@code non-null;} the UTF-8 constant {@code "name"} */
+    /**
+     * {@code non-null;} the UTF-8 constant {@code "name"}
+     */
     private static final CstString NAME_STRING = new CstString("name");
 
-    /** {@code non-null;} the UTF-8 constant {@code "value"} */
+    /**
+     * {@code non-null;} the UTF-8 constant {@code "value"}
+     */
     private static final CstString VALUE_STRING = new CstString("value");
 
     /**
@@ -127,8 +147,8 @@ public final class AnnotationUtils {
     /**
      * Constructs a standard {@code InnerClass} annotation.
      *
-     * @param name {@code null-ok;} the original name of the class, or
-     * {@code null} to represent an anonymous class
+     * @param name        {@code null-ok;} the original name of the class, or
+     *                    {@code null} to represent an anonymous class
      * @param accessFlags the original access flags
      * @return {@code non-null;} the annotation
      */
@@ -138,7 +158,7 @@ public final class AnnotationUtils {
 
         result.put(new NameValuePair(NAME_STRING, nameCst));
         result.put(new NameValuePair(ACCESS_FLAGS_STRING,
-                        CstInteger.make(accessFlags)));
+                CstInteger.make(accessFlags)));
         result.setImmutable();
         return result;
     }

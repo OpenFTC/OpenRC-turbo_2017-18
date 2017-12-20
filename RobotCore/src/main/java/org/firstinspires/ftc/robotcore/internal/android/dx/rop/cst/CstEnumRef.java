@@ -23,14 +23,16 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
  * value of an enumerated type.
  */
 public final class CstEnumRef extends CstMemberRef {
-    /** {@code null-ok;} the corresponding field ref, lazily initialized */
+    /**
+     * {@code null-ok;} the corresponding field ref, lazily initialized
+     */
     private CstFieldRef fieldRef;
 
     /**
      * Constructs an instance.
      *
      * @param nat {@code non-null;} the name-and-type; the defining class is derived
-     * from this
+     *            from this
      */
     public CstEnumRef(CstNat nat) {
         super(new CstType(nat.getFieldType()), nat);
@@ -38,7 +40,9 @@ public final class CstEnumRef extends CstMemberRef {
         fieldRef = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "enum";
@@ -46,7 +50,7 @@ public final class CstEnumRef extends CstMemberRef {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <b>Note:</b> This returns the enumerated type.
      */
     public Type getType() {

@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Prototype;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -44,13 +45,17 @@ public final class ProtoIdsSection extends UniformItemSection {
         protoIds = new TreeMap<Prototype, ProtoIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return protoIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         throw new UnsupportedOperationException("unsupported");
@@ -126,7 +131,9 @@ public final class ProtoIdsSection extends UniformItemSection {
         return item.getIndex();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;

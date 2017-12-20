@@ -36,25 +36,33 @@ public abstract class ZeroSizeInsn extends DalvInsn {
         super(Dops.SPECIAL_FORMAT, position, RegisterSpecList.EMPTY);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int codeSize() {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void writeTo(AnnotatedOutput out) {
         // Nothing to do here, for this class.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final DalvInsn withOpcode(Dop opcode) {
         throw new RuntimeException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisterOffset(int delta) {
         return withRegisters(getRegisters().withOffset(delta));

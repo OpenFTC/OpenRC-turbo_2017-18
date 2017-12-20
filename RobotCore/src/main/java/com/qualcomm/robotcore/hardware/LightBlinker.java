@@ -51,127 +51,120 @@ import java.util.concurrent.TimeUnit;
  * in a pattern of timed durations, and, optionally, colors, if the light supports same (NYI)
  */
 @SuppressWarnings("WeakerAccess")
-public class LightBlinker implements Blinker
-    {
+public class LightBlinker implements Blinker {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LightBlinker";
 
-    protected final SwitchableLight         light;
-    protected       ArrayList<Step>         currentSteps;
-    protected       Deque<ArrayList<Step>>  previousSteps;
-    protected       ScheduledFuture<?>      future;
-    protected       int                     nextStep;
+    protected final SwitchableLight light;
+    protected ArrayList<Step> currentSteps;
+    protected Deque<ArrayList<Step>> previousSteps;
+    protected ScheduledFuture<?> future;
+    protected int nextStep;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LightBlinker(SwitchableLight light)
-        {
+    public LightBlinker(SwitchableLight light) {
         this.light = light;
         this.currentSteps = new ArrayList<Step>();
         this.previousSteps = new ArrayDeque<ArrayList<Step>>();
         this.future = null;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override public void setConstant(@ColorInt int color)
-        {
+    @Override
+    public void setConstant(@ColorInt int color) {
         Step step = new Step(color, 1, TimeUnit.SECONDS);
         List<Step> steps = new ArrayList<Step>();
         steps.add(step);
         setPattern(steps);
-        }
+    }
 
-    @Override public void stopBlinking()
-        {
+    @Override
+    public void stopBlinking() {
         setConstant(Color.BLACK);
-        }
+    }
 
-    @Override public int getBlinkerPatternMaxLength()
-        {
+    @Override
+    public int getBlinkerPatternMaxLength() {
         return Integer.MAX_VALUE;
-        }
+    }
 
-    @Override public synchronized void pushPattern(Collection<Step> steps)
-        {
+    @Override
+    public synchronized void pushPattern(Collection<Step> steps) {
         this.previousSteps.push(this.currentSteps);
         setPattern(steps);
-        }
+    }
 
-    @Override public synchronized boolean patternStackNotEmpty()
-        {
+    @Override
+    public synchronized boolean patternStackNotEmpty() {
         return this.previousSteps.size() > 0;
-        }
+    }
 
-    @Override public synchronized boolean popPattern()
-        {
+    @Override
+    public synchronized boolean popPattern() {
         try {
             setPattern(previousSteps.pop());
             return true;
-            }
-        catch (NoSuchElementException e)
-            {
+        } catch (NoSuchElementException e) {
             setPattern(null);
-            }
-        return false;
         }
+        return false;
+    }
 
-    @Override public synchronized void setPattern(Collection<Step> steps)
-        {
+    @Override
+    public synchronized void setPattern(Collection<Step> steps) {
         if (isCurrentPattern(steps)) // for this implementation, there's simply no point otherwise
-            {
+        {
             stop();
-            if (steps == null || steps.size() == 0)
-                {
+            if (steps == null || steps.size() == 0) {
                 this.currentSteps = new ArrayList<Step>();
                 this.light.enableLight(false);
-                }
-            else
-                {
+            } else {
                 this.currentSteps = new ArrayList<Step>(steps);
-                if (steps.size() == 1)
-                    {
+                if (steps.size() == 1) {
                     this.light.enableLight(this.currentSteps.get(0).isLit());
-                    }
-                else
-                    {
+                } else {
                     this.nextStep = 0;
                     scheduleNext();
-                    }
                 }
             }
         }
+    }
 
-    protected boolean isCurrentPattern(Collection<Step> steps)
-        {
-        if (steps.size() != this.currentSteps.size()) return false;
-        int i = 0;
-        for (Step theirStep : steps)
-            {
-            Step ourStep = this.currentSteps.get(i++);
-            if (!theirStep.equals(ourStep)) return false;
-            }
-        return true;
+    protected boolean isCurrentPattern(Collection<Step> steps) {
+        if (steps.size() != this.currentSteps.size()) {
+            return false;
         }
+        int i = 0;
+        for (Step theirStep : steps) {
+            Step ourStep = this.currentSteps.get(i++);
+            if (!theirStep.equals(ourStep)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-    @Override public synchronized Collection<Step> getPattern()
-        {
+    @Override
+    public synchronized Collection<Step> getPattern() {
         // Return a copy so caller can't mess with us
         return new ArrayList<Step>(this.currentSteps);
-        }
+    }
 
-    protected synchronized void scheduleNext()
-        {
+    protected synchronized void scheduleNext() {
         // Dig out this step, and advance
         final Step thisStep = this.currentSteps.get(this.nextStep++);
-        if (this.nextStep >= currentSteps.size()) this.nextStep = 0;
+        if (this.nextStep >= currentSteps.size()) {
+            this.nextStep = 0;
+        }
 
         // Light this step appropriately
         boolean isLit = thisStep.isLit();
@@ -179,21 +172,18 @@ public class LightBlinker implements Blinker
         this.light.enableLight(isLit);
 
         // Wait this step's duration, and then do the next one
-        this.future = ThreadPool.getDefaultScheduler().schedule(new Runnable()
-            {
-            @Override public void run()
-                {
+        this.future = ThreadPool.getDefaultScheduler().schedule(new Runnable() {
+            @Override
+            public void run() {
                 scheduleNext();
-                }
-            }, thisStep.getDurationMs(), TimeUnit.MILLISECONDS);
-        }
+            }
+        }, thisStep.getDurationMs(), TimeUnit.MILLISECONDS);
+    }
 
-    protected synchronized void stop()
-        {
-        if (this.future != null)
-            {
+    protected synchronized void stop() {
+        if (this.future != null) {
             this.future.cancel(false);
             this.future = null;
-            }
         }
     }
+}

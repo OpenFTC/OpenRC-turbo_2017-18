@@ -40,63 +40,71 @@ import com.qualcomm.robotcore.util.SerialNumber;
  */
 public interface DigitalChannelController extends HardwareDevice {
 
-  /**
-   * Digital channel mode - input or output
-   * @deprecated use {@link DigitalChannel.Mode} instead
-   */
-  @Deprecated
-  enum Mode { INPUT, OUTPUT;
-    public DigitalChannel.Mode migrate() {
-      switch (this) {
-        case INPUT: return DigitalChannel.Mode.INPUT;
-        default:    return DigitalChannel.Mode.OUTPUT;
-      }
+    /**
+     * Digital channel mode - input or output
+     *
+     * @deprecated use {@link DigitalChannel.Mode} instead
+     */
+    @Deprecated
+    enum Mode {
+        INPUT, OUTPUT;
+
+        public DigitalChannel.Mode migrate() {
+            switch (this) {
+                case INPUT:
+                    return DigitalChannel.Mode.INPUT;
+                default:
+                    return DigitalChannel.Mode.OUTPUT;
+            }
+        }
     }
-  }
 
- /**
-   * Serial Number
-   *
-   * @return return the USB serial number of this device
-   */
-  SerialNumber getSerialNumber();
+    /**
+     * Serial Number
+     *
+     * @return return the USB serial number of this device
+     */
+    SerialNumber getSerialNumber();
 
-  /**
-   * Get the mode of a digital channel
-   *
-   * @param channel channel
-   * @return INPUT or OUTPUT
-   */
-  DigitalChannel.Mode getDigitalChannelMode(int channel);
+    /**
+     * Get the mode of a digital channel
+     *
+     * @param channel channel
+     * @return INPUT or OUTPUT
+     */
+    DigitalChannel.Mode getDigitalChannelMode(int channel);
 
-  /**
-   * Set the mode of a digital channel
-   *
-   * @param channel channel
-   * @param mode INPUT or OUTPUT
-   */
-  void setDigitalChannelMode(int channel, DigitalChannel.Mode mode);
+    /**
+     * Set the mode of a digital channel
+     *
+     * @param channel channel
+     * @param mode    INPUT or OUTPUT
+     */
+    void setDigitalChannelMode(int channel, DigitalChannel.Mode mode);
 
-  /** @deprecated use {@link #setDigitalChannelMode(int, DigitalChannel.Mode)} instead */
-  @Deprecated void setDigitalChannelMode(int channel, DigitalChannelController.Mode mode);
+    /**
+     * @deprecated use {@link #setDigitalChannelMode(int, DigitalChannel.Mode)} instead
+     */
+    @Deprecated
+    void setDigitalChannelMode(int channel, DigitalChannelController.Mode mode);
 
-  /**
-   * Get the state of a digital channel
-   * If it's in OUTPUT mode, this will return the output bit.
-   * If the channel is in INPUT mode, this will return the input bit.
-   *
-   * @param channel channel
-   * @return true if set; otherwise false
-   */
-  boolean getDigitalChannelState(int channel);
+    /**
+     * Get the state of a digital channel
+     * If it's in OUTPUT mode, this will return the output bit.
+     * If the channel is in INPUT mode, this will return the input bit.
+     *
+     * @param channel channel
+     * @return true if set; otherwise false
+     */
+    boolean getDigitalChannelState(int channel);
 
-  /**
-   * Set the state of a digital channel
-   * <p>
-   * The behavior of this method is undefined for digital channels in INPUT mode.
-   *
-   * @param channel channel
-   * @param state true to set; false to unset
-   */
-  void setDigitalChannelState(int channel, boolean state);
+    /**
+     * Set the state of a digital channel
+     * <p>
+     * The behavior of this method is undefined for digital channels in INPUT mode.
+     *
+     * @param channel channel
+     * @param state   true to set; false to unset
+     */
+    void setDigitalChannelState(int channel, boolean state);
 }

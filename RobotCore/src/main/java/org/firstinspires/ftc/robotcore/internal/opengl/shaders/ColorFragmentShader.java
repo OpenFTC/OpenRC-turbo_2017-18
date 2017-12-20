@@ -42,35 +42,32 @@ import com.qualcomm.robotcore.R;
 
 import static android.opengl.GLES20.glUniform4f;
 
-public class ColorFragmentShader
-    {
+public class ColorFragmentShader {
     protected final int u_Color;
 
-    @RawRes public static final int resourceId = R.raw.color_fragment_shader;
+    @RawRes
+    public static final int resourceId = R.raw.color_fragment_shader;
 
-    public ColorFragmentShader(int programId)
-        {
+    public ColorFragmentShader(int programId) {
         u_Color = GLES20.glGetUniformLocation(programId, "u_Color");
-        }
+    }
 
-    public void setColor(float r, float g, float b, float a)
-        {
+    public void setColor(float r, float g, float b, float a) {
         glUniform4f(u_Color, r, g, b, a);
-        }
-    public void setColor(float r, float g, float b)
-        {
+    }
+
+    public void setColor(float r, float g, float b) {
         setColor(r, g, b, 1.0f);
-        }
-    public void setColor(@ColorInt int color)
-        {
+    }
+
+    public void setColor(@ColorInt int color) {
         setColor(rescale(Color.red(color)),
                 rescale(Color.green(color)),
                 rescale(Color.blue(color)),
                 rescale(Color.alpha(color)));
-        }
-
-    private static float rescale(int colorComponent)
-        {
-        return (float)colorComponent / 255.0f;
-        }
     }
+
+    private static float rescale(int colorComponent) {
+        return (float) colorComponent / 255.0f;
+    }
+}

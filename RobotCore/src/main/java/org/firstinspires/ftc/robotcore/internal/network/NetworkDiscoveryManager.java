@@ -36,12 +36,14 @@ package org.firstinspires.ftc.robotcore.internal.network;
  * {@link NetworkDiscoveryManager} is a placeholder, and defines some constants
  */
 @SuppressWarnings("WeakerAccess")
-public class NetworkDiscoveryManager
-    {
+public class NetworkDiscoveryManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "NetDiscover";
-    public String getTag() { return TAG; }
+
+    public String getTag() {
+        return TAG;
     }
+}

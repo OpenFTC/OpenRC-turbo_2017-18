@@ -33,12 +33,16 @@ public final class StdAttributeList extends FixedSizeList
         super(size);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Attribute get(int n) {
         return (Attribute) get0(n);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int byteLength() {
         int sz = size();
         int result = 2; // u2 attributes_count
@@ -50,7 +54,9 @@ public final class StdAttributeList extends FixedSizeList
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Attribute findFirst(String name) {
         int sz = size();
 
@@ -64,12 +70,15 @@ public final class StdAttributeList extends FixedSizeList
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Attribute findNext(Attribute attrib) {
         int sz = size();
         int at;
 
-        outer: {
+        outer:
+        {
             for (at = 0; at < sz; at++) {
                 Attribute att = get(at);
                 if (att == attrib) {
@@ -95,7 +104,7 @@ public final class StdAttributeList extends FixedSizeList
     /**
      * Sets the attribute at the given index.
      *
-     * @param n {@code >= 0, < size();} which attribute
+     * @param n         {@code >= 0, < size();} which attribute
      * @param attribute {@code null-ok;} the attribute object
      */
     public void set(int n, Attribute attribute) {

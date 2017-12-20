@@ -36,40 +36,37 @@ package org.firstinspires.ftc.robotcore.external.matrices;
  * A {@link GeneralMatrixF} is a concrete matrix implementation that is supported by
  * a backing store consisting of an array of floats. The matrix is stored in row-major order.
  */
-public class GeneralMatrixF extends RowMajorMatrixF
-    {
+public class GeneralMatrixF extends RowMajorMatrixF {
     float[] data;
 
-    public GeneralMatrixF(int numRows, int numCols)
-        {
+    public GeneralMatrixF(int numRows, int numCols) {
         super(numRows, numCols);
         this.data = new float[numRows * numCols];
-        }
-
-    private GeneralMatrixF(int numRows, int numCols, int flag)
-        {
-        super(numRows, numCols);
-        }
-
-    public GeneralMatrixF(int numRows, int numCols, float[] data)
-        {
-        super(numRows, numCols);
-        if (data.length != numRows * numCols) throw dimensionsError(numRows, numCols);
-        this.data = data;
-        }
-
-    @Override public float[] getData()
-        {
-        return this.data;
-        }
-
-    @Override public MatrixF emptyMatrix(int numRows, int numCols)
-        {
-        return new GeneralMatrixF(numRows, numCols);
-        }
-
-    public GeneralMatrixF transposed()
-        {
-        return (GeneralMatrixF)super.transposed();
-        }
     }
+
+    private GeneralMatrixF(int numRows, int numCols, int flag) {
+        super(numRows, numCols);
+    }
+
+    public GeneralMatrixF(int numRows, int numCols, float[] data) {
+        super(numRows, numCols);
+        if (data.length != numRows * numCols) {
+            throw dimensionsError(numRows, numCols);
+        }
+        this.data = data;
+    }
+
+    @Override
+    public float[] getData() {
+        return this.data;
+    }
+
+    @Override
+    public MatrixF emptyMatrix(int numRows, int numCols) {
+        return new GeneralMatrixF(numRows, numCols);
+    }
+
+    public GeneralMatrixF transposed() {
+        return (GeneralMatrixF) super.transposed();
+    }
+}

@@ -45,88 +45,98 @@ import com.qualcomm.robotcore.util.RobotLog;
  */
 public class WifiAssistant {
 
-  /**
-   * Wifi Event
-   */
-  public enum WifiState { CONNECTED, NOT_CONNECTED; }
-
-  /**
-   * Interface for callback methods
-   */
-  public interface WifiAssistantCallback {
+    /**
+     * Wifi Event
+     */
+    public enum WifiState {
+        CONNECTED, NOT_CONNECTED;
+    }
 
     /**
-     * Callback - called when wifi connects / disconnects
-     * @param event WifiEvent
+     * Interface for callback methods
      */
-    public void wifiEventCallback(WifiState event);
-  }
+    public interface WifiAssistantCallback {
 
-  private static class WifiStateBroadcastReceiver extends BroadcastReceiver {
-    private WifiState state = null;
-    private final WifiAssistantCallback callback;
-
-    public WifiStateBroadcastReceiver(WifiAssistantCallback callback) {
-      this.callback = callback;
+        /**
+         * Callback - called when wifi connects / disconnects
+         *
+         * @param event WifiEvent
+         */
+        public void wifiEventCallback(WifiState event);
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      String action = intent.getAction();
-      if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-        NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-        if (info.isConnected()) {
-          notify(WifiState.CONNECTED);
-        } else {
-          notify(WifiState.NOT_CONNECTED);
+    private static class WifiStateBroadcastReceiver extends BroadcastReceiver {
+        private WifiState state = null;
+        private final WifiAssistantCallback callback;
+
+        public WifiStateBroadcastReceiver(WifiAssistantCallback callback) {
+            this.callback = callback;
         }
-      }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                if (info.isConnected()) {
+                    notify(WifiState.CONNECTED);
+                } else {
+                    notify(WifiState.NOT_CONNECTED);
+                }
+            }
+        }
+
+        private void notify(WifiState newState) {
+            if (state == newState) {
+                return; // nothing to do
+            }
+
+            state = newState;
+            if (callback != null) {
+                callback.wifiEventCallback(state);
+            }
+        }
     }
 
-    private void notify(WifiState newState) {
-      if (state == newState) return; // nothing to do
+    private final IntentFilter intentFilter;
+    private final Context context;
+    private final WifiStateBroadcastReceiver receiver;
 
-        state = newState;
-      if (callback != null) callback.wifiEventCallback(state);
+    /**
+     * Constructor
+     *
+     * @param context  needed to register BroadcastRecivers
+     * @param callback will be used for callbacks
+     */
+    public WifiAssistant(Context context, WifiAssistantCallback callback) {
+        this.context = context;
+
+        if (callback == null) {
+            RobotLog.v("WifiAssistantCallback is null");
+        }
+        receiver = new WifiStateBroadcastReceiver(callback);
+
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
     }
-  }
 
-  private final IntentFilter intentFilter;
-  private final Context context;
-  private final WifiStateBroadcastReceiver receiver;
+    /**
+     * Enable callbacks
+     * <p>
+     * It is recommended to place this in the onReceive method
+     */
+    public void enable() {
+        context.registerReceiver(receiver, intentFilter);
+    }
 
-  /**
-   * Constructor
-   * @param context needed to register BroadcastRecivers
-   * @param callback will be used for callbacks
-   */
-  public WifiAssistant(Context context, WifiAssistantCallback callback) {
-    this.context = context;
-
-    if (callback == null) RobotLog.v("WifiAssistantCallback is null");
-    receiver = new WifiStateBroadcastReceiver(callback);
-
-    intentFilter = new IntentFilter();
-    intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-  }
-
-  /**
-   * Enable callbacks
-   * <p>
-   * It is recommended to place this in the onReceive method
-   */
-  public void enable() {
-    context.registerReceiver(receiver, intentFilter);
-  }
-
-  /**
-   * Disable callbacks
-   * <p>
-   * It is recommended to place this in the onPause method
-   */
-  public void disable() {
-    context.unregisterReceiver(receiver);
-  }
+    /**
+     * Disable callbacks
+     * <p>
+     * It is recommended to place this in the onPause method
+     */
+    public void disable() {
+        context.unregisterReceiver(receiver);
+    }
 
 
 }

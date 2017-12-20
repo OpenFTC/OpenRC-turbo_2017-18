@@ -31,13 +31,17 @@ public final class FieldIdItem extends MemberIdItem {
         super(field);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_FIELD_ID_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         super.addContents(file);
@@ -55,14 +59,18 @@ public final class FieldIdItem extends MemberIdItem {
         return (CstFieldRef) getRef();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int getTypoidIdx(DexFile file) {
         TypeIdsSection typeIds = file.getTypeIds();
         return typeIds.indexOf(getFieldRef().getType());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String getTypoidName() {
         return "type_idx";

@@ -38,30 +38,25 @@ import fi.iki.elonen.NanoHTTPD;
 
 /**
  * Decorate a RequestHandler if the IHTTPSession.getParms() method is used.
- *
+ * <p>
  * This decorator ensures that POST parameters will be in the {@code Map<String, String>}
  * that is returned by IHTTPSession.getParms() function.
  */
-public class SessionParametersGenerator extends WebHandlerDecorator
-{
-    public SessionParametersGenerator(WebHandler delegate)
-    {
+public class SessionParametersGenerator extends WebHandlerDecorator {
+    public SessionParametersGenerator(WebHandler delegate) {
         super(delegate);
     }
 
     @Override
-    public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-    {
+    public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
         generateParms(session);
         return super.getResponse(session);
     }
 
-    private void generateParms(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-    {
+    private void generateParms(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
         final Map<String, String> files = new HashMap<>();
         final NanoHTTPD.Method method = session.getMethod();
-        if (NanoHTTPD.Method.PUT.equals(method) || NanoHTTPD.Method.POST.equals(method))
-        {
+        if (NanoHTTPD.Method.PUT.equals(method) || NanoHTTPD.Method.POST.equals(method)) {
             session.parseBody(files);
         }
     }

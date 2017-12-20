@@ -51,18 +51,19 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MotorType
-    {
+public @interface MotorType {
     /**
      * Returns the XML tag to use to represent configured instances of the annotated
      * class as recorded in saved robot configurations. You should choose a tag that
      * is different than any other sensor type.
+     *
      * @return the XML tag to use for instances of the annotated sensor class
      */
     @NonNull String xmlTag();
 
     /**
      * Returns the name to use when describing the class in configuration user interfaces.
+     *
      * @return the name to use for this kind of motor in user interfaces
      */
     @NonNull String name();
@@ -78,18 +79,21 @@ public @interface MotorType
 
     /**
      * Returns the number of revolutions of the actual motor for each revolution of the output shaft
+     *
      * @return the number of revolutions of the actual motor for each revolution of the output shaft
      */
     double gearing();
 
     /**
      * Returns the rated maximum no-load RPM of the motor output shaft
+     *
      * @return the rated maximum no-load RPM of the motor output shaft
      */
     double maxRPM();
 
     /**
      * Returns the fraction of maxRPM which can be achieved in closed loop control
+     *
      * @return the fraction of maxRPM which can be achieved in closed loop control
      */
     double achieveableMaxRPMFraction() default 0.85;
@@ -99,4 +103,4 @@ public @interface MotorType
      * the motor shaft towards the motor.
      */
     Rotation orientation() default Rotation.CW;
-    }
+}

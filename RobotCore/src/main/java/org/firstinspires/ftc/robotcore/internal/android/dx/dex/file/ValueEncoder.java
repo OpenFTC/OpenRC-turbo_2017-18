@@ -39,6 +39,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.Collection;
 
 /**
@@ -46,65 +47,101 @@ import java.util.Collection;
  * thereof.
  */
 public final class ValueEncoder {
-    /** annotation value type constant: {@code byte} */
+    /**
+     * annotation value type constant: {@code byte}
+     */
     private static final int VALUE_BYTE = 0x00;
 
-    /** annotation value type constant: {@code short} */
+    /**
+     * annotation value type constant: {@code short}
+     */
     private static final int VALUE_SHORT = 0x02;
 
-    /** annotation value type constant: {@code char} */
+    /**
+     * annotation value type constant: {@code char}
+     */
     private static final int VALUE_CHAR = 0x03;
 
-    /** annotation value type constant: {@code int} */
+    /**
+     * annotation value type constant: {@code int}
+     */
     private static final int VALUE_INT = 0x04;
 
-    /** annotation value type constant: {@code long} */
+    /**
+     * annotation value type constant: {@code long}
+     */
     private static final int VALUE_LONG = 0x06;
 
-    /** annotation value type constant: {@code float} */
+    /**
+     * annotation value type constant: {@code float}
+     */
     private static final int VALUE_FLOAT = 0x10;
 
-    /** annotation value type constant: {@code double} */
+    /**
+     * annotation value type constant: {@code double}
+     */
     private static final int VALUE_DOUBLE = 0x11;
 
-    /** annotation value type constant: {@code string} */
+    /**
+     * annotation value type constant: {@code string}
+     */
     private static final int VALUE_STRING = 0x17;
 
-    /** annotation value type constant: {@code type} */
+    /**
+     * annotation value type constant: {@code type}
+     */
     private static final int VALUE_TYPE = 0x18;
 
-    /** annotation value type constant: {@code field} */
+    /**
+     * annotation value type constant: {@code field}
+     */
     private static final int VALUE_FIELD = 0x19;
 
-    /** annotation value type constant: {@code method} */
+    /**
+     * annotation value type constant: {@code method}
+     */
     private static final int VALUE_METHOD = 0x1a;
 
-    /** annotation value type constant: {@code enum} */
+    /**
+     * annotation value type constant: {@code enum}
+     */
     private static final int VALUE_ENUM = 0x1b;
 
-    /** annotation value type constant: {@code array} */
+    /**
+     * annotation value type constant: {@code array}
+     */
     private static final int VALUE_ARRAY = 0x1c;
 
-    /** annotation value type constant: {@code annotation} */
+    /**
+     * annotation value type constant: {@code annotation}
+     */
     private static final int VALUE_ANNOTATION = 0x1d;
 
-    /** annotation value type constant: {@code null} */
+    /**
+     * annotation value type constant: {@code null}
+     */
     private static final int VALUE_NULL = 0x1e;
 
-    /** annotation value type constant: {@code boolean} */
+    /**
+     * annotation value type constant: {@code boolean}
+     */
     private static final int VALUE_BOOLEAN = 0x1f;
 
-    /** {@code non-null;} file being written */
+    /**
+     * {@code non-null;} file being written
+     */
     private final DexFile file;
 
-    /** {@code non-null;} output stream to write to */
+    /**
+     * {@code non-null;} output stream to write to
+     */
     private final AnnotatedOutput out;
 
     /**
      * Construct an instance.
      *
      * @param file {@code non-null;} file being written
-     * @param out {@code non-null;} output stream to write to
+     * @param out  {@code non-null;} output stream to write to
      */
     public ValueEncoder(DexFile file, AnnotatedOutput out) {
         if (file == null) {
@@ -262,10 +299,10 @@ public final class ValueEncoder {
      * {@code true}, then this method will write (debugging)
      * annotations.
      *
-     * @param array {@code non-null;} array instance to write
+     * @param array    {@code non-null;} array instance to write
      * @param topLevel {@code true} iff the given annotation is the
-     * top-level annotation or {@code false} if it is a sub-annotation
-     * of some other annotation
+     *                 top-level annotation or {@code false} if it is a sub-annotation
+     *                 of some other annotation
      */
     public void writeArray(CstArray array, boolean topLevel) {
         boolean annotates = topLevel && out.annotates();
@@ -301,9 +338,9 @@ public final class ValueEncoder {
      * annotations.
      *
      * @param annotation {@code non-null;} annotation instance to write
-     * @param topLevel {@code true} iff the given annotation is the
-     * top-level annotation or {@code false} if it is a sub-annotation
-     * of some other annotation
+     * @param topLevel   {@code true} iff the given annotation is the
+     *                   top-level annotation or {@code false} if it is a sub-annotation
+     *                   of some other annotation
      */
     public void writeAnnotation(Annotation annotation, boolean topLevel) {
         boolean annotates = topLevel && out.annotates();
@@ -384,7 +421,7 @@ public final class ValueEncoder {
      * contents for a particular {@link Annotation}, calling itself
      * recursively should it encounter a nested annotation.
      *
-     * @param file {@code non-null;} the file to add to
+     * @param file       {@code non-null;} the file to add to
      * @param annotation {@code non-null;} the annotation to add contents for
      */
     public static void addContents(DexFile file, Annotation annotation) {
@@ -403,11 +440,11 @@ public final class ValueEncoder {
      * Helper for {@code addContents()} methods, which adds
      * contents for a particular constant, calling itself recursively
      * should it encounter a {@link CstArray} and calling {@link
-     * #addContents(DexFile,Annotation)} recursively should it
+     * #addContents(DexFile, Annotation)} recursively should it
      * encounter a {@link CstAnnotation}.
      *
      * @param file {@code non-null;} the file to add to
-     * @param cst {@code non-null;} the constant to add contents for
+     * @param cst  {@code non-null;} the constant to add contents for
      */
     public static void addContents(DexFile file, Constant cst) {
         if (cst instanceof CstAnnotation) {

@@ -31,25 +31,39 @@ import java.util.Collections;
  * Per-class directory of annotations.
  */
 public final class AnnotationsDirectoryItem extends OffsettedItem {
-    /** the required alignment for instances of this class */
+    /**
+     * the required alignment for instances of this class
+     */
     private static final int ALIGNMENT = 4;
 
-    /** write size of this class's header, in bytes */
+    /**
+     * write size of this class's header, in bytes
+     */
     private static final int HEADER_SIZE = 16;
 
-    /** write size of a list element, in bytes */
+    /**
+     * write size of a list element, in bytes
+     */
     private static final int ELEMENT_SIZE = 8;
 
-    /** {@code null-ok;} the class-level annotations, if any */
+    /**
+     * {@code null-ok;} the class-level annotations, if any
+     */
     private AnnotationSetItem classAnnotations;
 
-    /** {@code null-ok;} the annotated fields, if any */
+    /**
+     * {@code null-ok;} the annotated fields, if any
+     */
     private ArrayList<FieldAnnotationStruct> fieldAnnotations;
 
-    /** {@code null-ok;} the annotated methods, if any */
+    /**
+     * {@code null-ok;} the annotated methods, if any
+     */
     private ArrayList<MethodAnnotationStruct> methodAnnotations;
 
-    /** {@code null-ok;} the annotated parameters, if any */
+    /**
+     * {@code null-ok;} the annotated parameters, if any
+     */
     private ArrayList<ParameterAnnotationStruct> parameterAnnotations;
 
     /**
@@ -64,7 +78,9 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
         parameterAnnotations = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_ANNOTATIONS_DIRECTORY_ITEM;
@@ -78,9 +94,9 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
      */
     public boolean isEmpty() {
         return (classAnnotations == null) &&
-            (fieldAnnotations == null) &&
-            (methodAnnotations == null) &&
-            (parameterAnnotations == null);
+                (fieldAnnotations == null) &&
+                (methodAnnotations == null) &&
+                (parameterAnnotations == null);
     }
 
     /**
@@ -93,12 +109,14 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
      */
     public boolean isInternable() {
         return (classAnnotations != null) &&
-            (fieldAnnotations == null) &&
-            (methodAnnotations == null) &&
-            (parameterAnnotations == null);
+                (fieldAnnotations == null) &&
+                (methodAnnotations == null) &&
+                (parameterAnnotations == null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         if (classAnnotations == null) {
@@ -110,7 +128,7 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p><b>Note:</b>: This throws an exception if this item is not
      * internable.</p>
      *
@@ -118,12 +136,12 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
      */
     @Override
     public int compareTo0(OffsettedItem other) {
-        if (! isInternable()) {
+        if (!isInternable()) {
             throw new UnsupportedOperationException("uninternable instance");
         }
 
         AnnotationsDirectoryItem otherDirectory =
-            (AnnotationsDirectoryItem) other;
+                (AnnotationsDirectoryItem) other;
         return classAnnotations.compareTo(otherDirectory.classAnnotations);
     }
 
@@ -133,7 +151,7 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
      * It is only valid to call this method at most once per instance.
      *
      * @param annotations {@code non-null;} annotations to set for this class
-     * @param dexFile {@code non-null;} dex output
+     * @param dexFile     {@code non-null;} dex output
      */
     public void setClassAnnotations(Annotations annotations, DexFile dexFile) {
         if (annotations == null) {
@@ -151,46 +169,46 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
     /**
      * Adds a field annotations item to this instance.
      *
-     * @param field {@code non-null;} field in question
+     * @param field       {@code non-null;} field in question
      * @param annotations {@code non-null;} associated annotations to add
-     * @param dexFile {@code non-null;} dex output
+     * @param dexFile     {@code non-null;} dex output
      */
     public void addFieldAnnotations(CstFieldRef field,
-            Annotations annotations, DexFile dexFile) {
+                                    Annotations annotations, DexFile dexFile) {
         if (fieldAnnotations == null) {
             fieldAnnotations = new ArrayList<FieldAnnotationStruct>();
         }
 
         fieldAnnotations.add(new FieldAnnotationStruct(field,
-                        new AnnotationSetItem(annotations, dexFile)));
+                new AnnotationSetItem(annotations, dexFile)));
     }
 
     /**
      * Adds a method annotations item to this instance.
      *
-     * @param method {@code non-null;} method in question
+     * @param method      {@code non-null;} method in question
      * @param annotations {@code non-null;} associated annotations to add
-     * @param dexFile {@code non-null;} dex output
+     * @param dexFile     {@code non-null;} dex output
      */
     public void addMethodAnnotations(CstMethodRef method,
-            Annotations annotations, DexFile dexFile) {
+                                     Annotations annotations, DexFile dexFile) {
         if (methodAnnotations == null) {
             methodAnnotations = new ArrayList<MethodAnnotationStruct>();
         }
 
         methodAnnotations.add(new MethodAnnotationStruct(method,
-                        new AnnotationSetItem(annotations, dexFile)));
+                new AnnotationSetItem(annotations, dexFile)));
     }
 
     /**
      * Adds a parameter annotations item to this instance.
      *
-     * @param method {@code non-null;} method in question
-     * @param list {@code non-null;} associated list of annotation sets to add
+     * @param method  {@code non-null;} method in question
+     * @param list    {@code non-null;} associated list of annotation sets to add
      * @param dexFile {@code non-null;} dex output
      */
     public void addParameterAnnotations(CstMethodRef method,
-            AnnotationsList list, DexFile dexFile) {
+                                        AnnotationsList list, DexFile dexFile) {
         if (parameterAnnotations == null) {
             parameterAnnotations = new ArrayList<ParameterAnnotationStruct>();
         }
@@ -240,7 +258,9 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addContents(DexFile file) {
         MixedItemSection wordData = file.getWordData();
 
@@ -267,23 +287,29 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         throw new RuntimeException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void place0(Section addedTo, int offset) {
         // We just need to set the write size here.
 
         int elementCount = listSize(fieldAnnotations)
-            + listSize(methodAnnotations) + listSize(parameterAnnotations);
+                + listSize(methodAnnotations) + listSize(parameterAnnotations);
         setWriteSize(HEADER_SIZE + (elementCount * ELEMENT_SIZE));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void writeTo0(DexFile file, AnnotatedOutput out) {
         boolean annotates = out.annotates();

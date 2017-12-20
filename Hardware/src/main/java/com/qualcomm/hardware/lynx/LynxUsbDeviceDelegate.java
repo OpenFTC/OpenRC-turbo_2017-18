@@ -50,8 +50,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
  * a local close into a delegated reference count.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxUsbDeviceDelegate implements LynxUsbDevice, HardwareDeviceCloseOnTearDown
-    {
+public class LynxUsbDeviceDelegate implements LynxUsbDevice, HardwareDeviceCloseOnTearDown {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,258 +58,274 @@ public class LynxUsbDeviceDelegate implements LynxUsbDevice, HardwareDeviceClose
     public static String TAG = LynxUsbDeviceImpl.TAG;
 
     protected LynxUsbDeviceImpl delegate;
-    protected boolean           releaseOnClose;
-    protected boolean           isOpen;
+    protected boolean releaseOnClose;
+    protected boolean isOpen;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxUsbDeviceDelegate(LynxUsbDeviceImpl lynxUsbDevice)
-        {
+    public LynxUsbDeviceDelegate(LynxUsbDeviceImpl lynxUsbDevice) {
         delegate = lynxUsbDevice;
         releaseOnClose = true;
         isOpen = true;
         RobotLog.vv(TAG, "0x%08x on 0x%08x: new delegate to [%s]", hashCode(), delegate.hashCode(), delegate.getSerialNumber());
-        }
+    }
 
-    @Override public LynxUsbDeviceImpl getDelegationTarget()
-        {
+    @Override
+    public LynxUsbDeviceImpl getDelegationTarget() {
         return delegate;
-        }
+    }
 
-    @Override public synchronized void close()
-        {
-        if (releaseOnClose)
-            {
+    @Override
+    public synchronized void close() {
+        if (releaseOnClose) {
             RobotLog.vv(TAG, "0x%08x on 0x%08x: releasing delegate to [%s]", hashCode(), delegate.hashCode(), delegate.getSerialNumber());
             releaseOnClose = false;
             delegate.releaseRef();
             isOpen = false;
-            }
-        else
-            {
+        } else {
             RobotLog.ee(TAG, "0x%08x on 0x%08x: closing closed[%s]; ignored", hashCode(), delegate.hashCode(), delegate.getSerialNumber());
-            }
         }
+    }
 
-    protected void assertOpen()
-        {
-        if (!isOpen)
-            {
+    protected void assertOpen() {
+        if (!isOpen) {
             Assert.assertTrue(false, "0x%08x on 0x%08x: closed", hashCode(), delegate.hashCode());
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // LynxUsbDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override public void disengage()
-        {
+    @Override
+    public void disengage() {
         assertOpen();
         delegate.disengage();
-        }
+    }
 
-    @Override public void engage()
-        {
+    @Override
+    public void engage() {
         assertOpen();
         delegate.engage();
-        }
+    }
 
-    @Override public boolean isEngaged()
-        {
+    @Override
+    public boolean isEngaged() {
         assertOpen();
         return delegate.isEngaged();
-        }
+    }
 
-    @Override public RobotUsbDevice getRobotUsbDevice()
-        {
+    @Override
+    public RobotUsbDevice getRobotUsbDevice() {
         assertOpen();
         return delegate.getRobotUsbDevice();
-        }
+    }
 
-    @Override public boolean isSystemSynthetic()
-        {
+    @Override
+    public boolean isSystemSynthetic() {
         assertOpen();
         return delegate.isSystemSynthetic();
-        }
-    @Override public void setSystemSynthetic(boolean systemSynthetic)
-        {
+    }
+
+    @Override
+    public void setSystemSynthetic(boolean systemSynthetic) {
         assertOpen();
         delegate.setSystemSynthetic(systemSynthetic);
-        }
-    @Override public void failSafe()
-        {
+    }
+
+    @Override
+    public void failSafe() {
         assertOpen();
         delegate.failSafe();
-        }
-    @Override public void changeModuleAddress(LynxModule module, int newAddress, Runnable runnable)
-        {
+    }
+
+    @Override
+    public void changeModuleAddress(LynxModule module, int newAddress, Runnable runnable) {
         assertOpen();
         delegate.changeModuleAddress(module, newAddress, runnable);
-        }
-    @Override public void noteMissingModule(LynxModule module, String moduleName)
-        {
+    }
+
+    @Override
+    public void noteMissingModule(LynxModule module, String moduleName) {
         assertOpen();
         delegate.noteMissingModule(module, moduleName);
-        }
-    @Override public void addConfiguredModule(LynxModule module) throws RobotCoreException, InterruptedException, LynxNackException
-        {
+    }
+
+    @Override
+    public void addConfiguredModule(LynxModule module) throws RobotCoreException, InterruptedException, LynxNackException {
         assertOpen();
         delegate.addConfiguredModule(module);
-        }
-    @Override public void removeConfiguredModule(LynxModule module)
-        {
+    }
+
+    @Override
+    public void removeConfiguredModule(LynxModule module) {
         assertOpen();
         delegate.removeConfiguredModule(module);
-        }
-    @Override public LynxModuleMetaList discoverModules() throws RobotCoreException, InterruptedException
-        {
+    }
+
+    @Override
+    public LynxModuleMetaList discoverModules() throws RobotCoreException, InterruptedException {
         assertOpen();
         return delegate.discoverModules();
-        }
-    @Override public void acquireNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException
-        {
+    }
+
+    @Override
+    public void acquireNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException {
         assertOpen();
         delegate.acquireNetworkTransmissionLock(message);
-        }
-    @Override public void releaseNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException
-        {
+    }
+
+    @Override
+    public void releaseNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException {
         assertOpen();
         delegate.releaseNetworkTransmissionLock(message);
-        }
-    @Override public void transmit(LynxMessage message) throws InterruptedException
-        {
+    }
+
+    @Override
+    public void transmit(LynxMessage message) throws InterruptedException {
         assertOpen();
         delegate.transmit(message);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override public String getDeviceName()
-        {
+    @Override
+    public String getDeviceName() {
         assertOpen();
         return delegate.getDeviceName();
-        }
-    @Override public String getConnectionInfo()
-        {
+    }
+
+    @Override
+    public String getConnectionInfo() {
         assertOpen();
         return delegate.getConnectionInfo();
-        }
-    @Override public int getVersion()
-        {
+    }
+
+    @Override
+    public int getVersion() {
         assertOpen();
         return delegate.getVersion();
-        }
-    @Override public Manufacturer getManufacturer()
-        {
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
         assertOpen();
         return delegate.getManufacturer();
-        }
-    @Override public void resetDeviceConfigurationForOpMode()
-        {
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
         assertOpen();
         delegate.resetDeviceConfigurationForOpMode();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // SyncdDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override public ShutdownReason getShutdownReason()
-        {
+    @Override
+    public ShutdownReason getShutdownReason() {
         assertOpen();
         return delegate.getShutdownReason();
-        }
-    @Override public void setOwner(RobotUsbModule owner)
-        {
+    }
+
+    @Override
+    public void setOwner(RobotUsbModule owner) {
         assertOpen();
         delegate.setOwner(owner);
-        }
-    @Override public RobotUsbModule getOwner()
-        {
+    }
+
+    @Override
+    public RobotUsbModule getOwner() {
         assertOpen();
         return delegate.getOwner();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotArmingStateNotifier
     //----------------------------------------------------------------------------------------------
 
-    @Override public SerialNumber getSerialNumber()
-        {
+    @Override
+    public SerialNumber getSerialNumber() {
         assertOpen();
         return delegate.getSerialNumber();
-        }
+    }
 
-    @Override public ARMINGSTATE getArmingState()
-        {
+    @Override
+    public ARMINGSTATE getArmingState() {
         assertOpen();
         return delegate.getArmingState();
-        }
+    }
 
-    @Override public void registerCallback(Callback callback, boolean doInitialCallback)
-        {
+    @Override
+    public void registerCallback(Callback callback, boolean doInitialCallback) {
         assertOpen();
         delegate.registerCallback(callback, doInitialCallback);
-        }
+    }
 
-    @Override public void unregisterCallback(Callback callback)
-        {
+    @Override
+    public void unregisterCallback(Callback callback) {
         assertOpen();
         delegate.unregisterCallback(callback);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbModule
     //----------------------------------------------------------------------------------------------
 
-    @Override public void arm() throws RobotCoreException, InterruptedException
-        {
+    @Override
+    public void arm() throws RobotCoreException, InterruptedException {
         assertOpen();
         delegate.arm();
-        }
-    @Override public void pretend() throws RobotCoreException, InterruptedException
-        {
+    }
+
+    @Override
+    public void pretend() throws RobotCoreException, InterruptedException {
         assertOpen();
         delegate.pretend();
-        }
-    @Override public void armOrPretend() throws RobotCoreException, InterruptedException
-        {
+    }
+
+    @Override
+    public void armOrPretend() throws RobotCoreException, InterruptedException {
         assertOpen();
         delegate.armOrPretend();
-        }
-    @Override public void disarm() throws RobotCoreException, InterruptedException
-        {
+    }
+
+    @Override
+    public void disarm() throws RobotCoreException, InterruptedException {
         assertOpen();
         delegate.disarm();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // GlobalWarmingSource
     //----------------------------------------------------------------------------------------------
 
-    @Override public String getGlobalWarning()
-        {
+    @Override
+    public String getGlobalWarning() {
         assertOpen();
         return delegate.getGlobalWarning();
-        }
-    @Override public void suppressGlobalWarning(boolean suppress)
-        {
+    }
+
+    @Override
+    public void suppressGlobalWarning(boolean suppress) {
         assertOpen();
         delegate.suppressGlobalWarning(suppress);
-        }
-    @Override public boolean setGlobalWarning(String warning)
-        {
+    }
+
+    @Override
+    public boolean setGlobalWarning(String warning) {
         assertOpen();
         return delegate.setGlobalWarning(warning);
-        }
-    @Override public void clearGlobalWarning()
-        {
+    }
+
+    @Override
+    public void clearGlobalWarning() {
         assertOpen();
         delegate.clearGlobalWarning();
-        }
     }
+}

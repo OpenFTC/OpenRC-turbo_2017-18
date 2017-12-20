@@ -39,11 +39,14 @@ import android.view.View;
  * servo controller. A key distinguishing feature of this controller is that it is not USB
  * connected, but rather operates through the Modern Robotics Core Legacy module
  */
-public class EditLegacyServoControllerActivity extends EditServoControllerActivity
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
-    @Override protected void refreshSerialNumber()
-        {
-        textViewSerialNumber.setVisibility(View.GONE);
-        }
+public class EditLegacyServoControllerActivity extends EditServoControllerActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
+
+    @Override
+    protected void refreshSerialNumber() {
+        textViewSerialNumber.setVisibility(View.GONE);
+    }
+}

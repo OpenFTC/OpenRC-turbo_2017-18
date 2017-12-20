@@ -42,80 +42,80 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  */
 public class LogitechGamepadF310 extends Gamepad {
 
-  public LogitechGamepadF310() {
-    this(null);
-  }
-
-  public LogitechGamepadF310(GamepadCallback callback) {
-    super(callback);
-
-    // calibrate the device
-    joystickDeadzone = 0.06f;
-  }
-
-  /*
-   * Need to have custom android MotionEvent processor for this gamepad
-   *
-   * @see com.qualcomm.robotcore.hardware.Gamepad#update(android.view.MotionEvent)
-   */
-  @Override
-  public void update(android.view.MotionEvent event) {
-
-    setGamepadId(event.getDeviceId());
-    setTimestamp(event.getEventTime());
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // apply Kit Kat mapping for Android kernels less than Lollipop.
-      update_4_dot_ex(event);
-    }  else {
-      // assume the mapping is the same for Lollipop, Marshmallow, etc.
-      update_5_dot_oh(event);
+    public LogitechGamepadF310() {
+        this(null);
     }
 
-  }
+    public LogitechGamepadF310(GamepadCallback callback) {
+        super(callback);
 
-  private void update_4_dot_ex(android.view.MotionEvent event) {
-    left_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_X));
-    left_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_Y));
-    right_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_RX));
-    right_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_RY));
-    left_trigger = (event.getAxisValue(MotionEvent.AXIS_Z) + 1f) / 2f;
-    right_trigger = (event.getAxisValue(MotionEvent.AXIS_RZ) + 1f) / 2f;
-    dpad_down = event.getAxisValue(MotionEvent.AXIS_HAT_Y) > dpadThreshold;
-    dpad_up = event.getAxisValue(MotionEvent.AXIS_HAT_Y) < -dpadThreshold;
-    dpad_right = event.getAxisValue(MotionEvent.AXIS_HAT_X) > dpadThreshold;
-    dpad_left = event.getAxisValue(MotionEvent.AXIS_HAT_X) < -dpadThreshold;
+        // calibrate the device
+        joystickDeadzone = 0.06f;
+    }
 
-    callCallback();
-  }
+    /*
+     * Need to have custom android MotionEvent processor for this gamepad
+     *
+     * @see com.qualcomm.robotcore.hardware.Gamepad#update(android.view.MotionEvent)
+     */
+    @Override
+    public void update(android.view.MotionEvent event) {
 
-  private void update_5_dot_oh(android.view.MotionEvent event){
+        setGamepadId(event.getDeviceId());
+        setTimestamp(event.getEventTime());
 
-    left_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_X));
-    left_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_Y));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // apply Kit Kat mapping for Android kernels less than Lollipop.
+            update_4_dot_ex(event);
+        } else {
+            // assume the mapping is the same for Lollipop, Marshmallow, etc.
+            update_5_dot_oh(event);
+        }
 
-    //** right stick x-values are mapped to AXIS_Z on 5.0 **//
-    right_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_Z));
+    }
 
-    //** right stick y-values are mapped to AXIS_RZ on 5.0 **//
-    right_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_RZ));
+    private void update_4_dot_ex(android.view.MotionEvent event) {
+        left_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_X));
+        left_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_Y));
+        right_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_RX));
+        right_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_RY));
+        left_trigger = (event.getAxisValue(MotionEvent.AXIS_Z) + 1f) / 2f;
+        right_trigger = (event.getAxisValue(MotionEvent.AXIS_RZ) + 1f) / 2f;
+        dpad_down = event.getAxisValue(MotionEvent.AXIS_HAT_Y) > dpadThreshold;
+        dpad_up = event.getAxisValue(MotionEvent.AXIS_HAT_Y) < -dpadThreshold;
+        dpad_right = event.getAxisValue(MotionEvent.AXIS_HAT_X) > dpadThreshold;
+        dpad_left = event.getAxisValue(MotionEvent.AXIS_HAT_X) < -dpadThreshold;
 
-    //** left trigger mapped to AXIS_BRAKE on 5.0 **//
-    left_trigger = event.getAxisValue(MotionEvent.AXIS_BRAKE);
+        callCallback();
+    }
 
-    //** right trigger mapped to AXIS_GAS on 5.0 **//
-    right_trigger = event.getAxisValue(MotionEvent.AXIS_GAS);
+    private void update_5_dot_oh(android.view.MotionEvent event) {
 
-    dpad_down = event.getAxisValue(MotionEvent.AXIS_HAT_Y) > dpadThreshold;
-    dpad_up = event.getAxisValue(MotionEvent.AXIS_HAT_Y) < -dpadThreshold;
-    dpad_right = event.getAxisValue(MotionEvent.AXIS_HAT_X) > dpadThreshold;
-    dpad_left = event.getAxisValue(MotionEvent.AXIS_HAT_X) < -dpadThreshold;
+        left_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_X));
+        left_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_Y));
 
-    callCallback();
-  }
+        //** right stick x-values are mapped to AXIS_Z on 5.0 **//
+        right_stick_x = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_Z));
 
-  @Override
-  public String type() {
-    return "F310";
-  }
+        //** right stick y-values are mapped to AXIS_RZ on 5.0 **//
+        right_stick_y = cleanMotionValues(event.getAxisValue(MotionEvent.AXIS_RZ));
+
+        //** left trigger mapped to AXIS_BRAKE on 5.0 **//
+        left_trigger = event.getAxisValue(MotionEvent.AXIS_BRAKE);
+
+        //** right trigger mapped to AXIS_GAS on 5.0 **//
+        right_trigger = event.getAxisValue(MotionEvent.AXIS_GAS);
+
+        dpad_down = event.getAxisValue(MotionEvent.AXIS_HAT_Y) > dpadThreshold;
+        dpad_up = event.getAxisValue(MotionEvent.AXIS_HAT_Y) < -dpadThreshold;
+        dpad_right = event.getAxisValue(MotionEvent.AXIS_HAT_X) > dpadThreshold;
+        dpad_left = event.getAxisValue(MotionEvent.AXIS_HAT_X) < -dpadThreshold;
+
+        callCallback();
+    }
+
+    @Override
+    public String type() {
+        return "F310";
+    }
 }

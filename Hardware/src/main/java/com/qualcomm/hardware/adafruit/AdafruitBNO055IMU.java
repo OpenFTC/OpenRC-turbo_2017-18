@@ -45,30 +45,29 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  * <a href="http://www.adafruit.com/products/2472">Adafruit Absolute Orientation Sensor</a>.
  */
 @I2cSensor(name = "@string/adafruit_imu_name", xmlTag = "@string/adafruit_imu_xmltag", description = "@string/adafruit_imu_description")
-public class AdafruitBNO055IMU extends BNO055IMUImpl
-    {
+public class AdafruitBNO055IMU extends BNO055IMUImpl {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     /**
      * This constructor is used by {@link UserConfigurationType#createInstance(I2cController, int)}
+     *
      * @see UserConfigurationType#createInstance(I2cController, int)
      * @see I2cSensor
      */
-    public AdafruitBNO055IMU(I2cDeviceSynch deviceClient)
-        {
+    public AdafruitBNO055IMU(I2cDeviceSynch deviceClient) {
         super(deviceClient);
-        }
-
-    @Override public String getDeviceName()
-        {
-        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.adafruit_imu_name);
-        }
-
-    @Override public Manufacturer getManufacturer()
-        {
-        return Manufacturer.Adafruit;
-        }
-
     }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.adafruit_imu_name);
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.Adafruit;
+    }
+
+}

@@ -45,8 +45,7 @@ import java.nio.ByteBuffer;
 /**
  * @see LynxGetMotorPIDControlLoopCoefficientsCommand
  */
-public class LynxSetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,64 +54,62 @@ public class LynxSetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInter
 
     private byte motor;
     private byte mode;
-    private int  p;
-    private int  i;
-    private int  d;
+    private int p;
+    private int i;
+    private int d;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module)
-        {
+    public LynxSetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module, int motorZ, DcMotor.RunMode mode, int p, int i, int d)
-        {
+    public LynxSetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module, int motorZ, DcMotor.RunMode mode, int p, int i, int d) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        this.motor = (byte)motorZ;
-        switch (mode)
-            {
-            case RUN_USING_ENCODER:    this.mode = 1; break;
-            case RUN_TO_POSITION:      this.mode = 2; break;
-            default: throw new IllegalArgumentException(String.format("illegal mode: %s", mode.toString()));
-            }
+        this.motor = (byte) motorZ;
+        switch (mode) {
+            case RUN_USING_ENCODER:
+                this.mode = 1;
+                break;
+            case RUN_TO_POSITION:
+                this.mode = 2;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("illegal mode: %s", mode.toString()));
+        }
         this.p = p;
         this.i = i;
         this.d = d;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int internalCoefficientFromExternal(double coefficient)
-        {
+    public static int internalCoefficientFromExternal(double coefficient) {
         /*
         Coefficients are communicated as 32 bit signed integers representing scaled floating point values as follows:
         Coefficient 0.0617 would be represented as parameter value 4044 = 0.0617 * 65536.
         Coefficient -99.3 would be represented as parameter value -6507725 = -99.3 * 65536.
         Coefficient 0.0 would be represented simply as parameter value 0.
         */
-        return (int)(Math.abs(coefficient) * 65536.0 + 0.5) * (int)Math.signum(coefficient);
-        }
+        return (int) (Math.abs(coefficient) * 65536.0 + 0.5) * (int) Math.signum(coefficient);
+    }
 
-    public static double externalCoefficientFromInternal(int coefficient)
-        {
-        return ((double)coefficient) / 65536.0;
-        }
+    public static double externalCoefficientFromInternal(int coefficient) {
+        return ((double) coefficient) / 65536.0;
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.put(this.mode);
@@ -120,16 +117,15 @@ public class LynxSetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInter
         buffer.putInt(this.i);
         buffer.putInt(this.d);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
-        this.mode  = buffer.get();
-        this.p     = buffer.getInt();
-        this.i     = buffer.getInt();
-        this.d     = buffer.getInt();
-        }
+        this.mode = buffer.get();
+        this.p = buffer.getInt();
+        this.i = buffer.getInt();
+        this.d = buffer.getInt();
     }
+}

@@ -42,13 +42,13 @@ import java.util.Set;
  * The {@link Gyroscope} interface exposes core, fundamental functionality that
  * is applicable to <em>all</em> gyroscopes: that of reporting angular rotation rate.
  */
-public interface Gyroscope
-    {
+public interface Gyroscope {
     /**
      * Returns the axes on which the gyroscope measures angular velocity. Some gyroscopes
      * measure angular velocity on all three axes (X, Y, & Z) while others measure on only
      * a subset, typically the Z axis. This method allows you to determine what information
      * is usefully returned through {@link #getAngularVelocity(AngleUnit)}.
+     *
      * @return the axes on which the gyroscope measures angular velocity.
      * @see #getAngularVelocity(AngleUnit)
      */
@@ -57,10 +57,11 @@ public interface Gyroscope
     /**
      * Returns the angular rotation rate across all the axes measured by the gyro. Axes
      * on which angular velocity is not measured are reported as zero.
+     *
      * @param unit the unit in which the rotation rates are to be returned (the time
      *             dimension is always inverse-seconds).
      * @return the angular rotation rate across all the supported axes
      * @see #getAngularVelocityAxes()
      */
     AngularVelocity getAngularVelocity(AngleUnit unit);
-    }
+}

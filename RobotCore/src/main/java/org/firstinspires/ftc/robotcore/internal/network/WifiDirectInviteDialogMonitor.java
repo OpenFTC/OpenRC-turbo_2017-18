@@ -66,8 +66,7 @@ import java.util.concurrent.TimeUnit;
  * we've made to Android in our FTCAndroid build.
  */
 @SuppressWarnings("WeakerAccess")
-public class WifiDirectInviteDialogMonitor extends BroadcastReceiver
-    {
+public class WifiDirectInviteDialogMonitor extends BroadcastReceiver {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -79,272 +78,227 @@ public class WifiDirectInviteDialogMonitor extends BroadcastReceiver
     public static final String WIFI_P2P_INVITE_DIALOG_DISMISSED_ACTION = "android.net.wifi.p2p.INVITE_DIALOG_DISMISSED";
     public static final String EXTRA_WIFI_P2P_INVITE_DIALOG = "dialogIdentity";
 
-    protected static volatile Blinker     uiLynxModule = null;
+    protected static volatile Blinker uiLynxModule = null;
 
-    protected       Context               context;
-    protected       LightBlinker          indicatorLEDBlinker;
-    protected       Blinker               lynxModulePushed;
-    protected       InputManager          inputManager;
-    protected       int                   acceptKey;
-    protected       int                   cancelKey;
-    protected final Set<Integer>          activeDialogs;
-    protected final SparseArray<Future>   futures;
-    protected       int                   msAcceptInterval = 10000;
-    protected       int                   msDeclineInterval = 30000;
-    protected       int                   msPollButtonInterval = 250;
+    protected Context context;
+    protected LightBlinker indicatorLEDBlinker;
+    protected Blinker lynxModulePushed;
+    protected InputManager inputManager;
+    protected int acceptKey;
+    protected int cancelKey;
+    protected final Set<Integer> activeDialogs;
+    protected final SparseArray<Future> futures;
+    protected int msAcceptInterval = 10000;
+    protected int msDeclineInterval = 30000;
+    protected int msPollButtonInterval = 250;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public WifiDirectInviteDialogMonitor(Context context)
-        {
-        this.context              = context;
-        this.indicatorLEDBlinker  = null;
-        this.inputManager         = InputManager.getInstance();
-        this.acceptKey            = keycode(SystemProperties.get("persist.ftcandroid.p2p.accept", null), KeyEvent.KEYCODE_VOLUME_MUTE);
-        this.cancelKey            = keycode(SystemProperties.get("persist.ftcandroid.p2p.cancel", null), KeyEvent.KEYCODE_ESCAPE);
-        this.activeDialogs        = new HashSet<Integer>();
-        this.futures              = new SparseArray<Future>();
-        }
+    public WifiDirectInviteDialogMonitor(Context context) {
+        this.context = context;
+        this.indicatorLEDBlinker = null;
+        this.inputManager = InputManager.getInstance();
+        this.acceptKey = keycode(SystemProperties.get("persist.ftcandroid.p2p.accept", null), KeyEvent.KEYCODE_VOLUME_MUTE);
+        this.cancelKey = keycode(SystemProperties.get("persist.ftcandroid.p2p.cancel", null), KeyEvent.KEYCODE_ESCAPE);
+        this.activeDialogs = new HashSet<Integer>();
+        this.futures = new SparseArray<Future>();
+    }
 
-    protected int keycode(String integerValue, int defKeyCode)
-        {
+    protected int keycode(String integerValue, int defKeyCode) {
         try {
             return Integer.valueOf(integerValue);
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             return defKeyCode;
-            }
         }
+    }
 
-    public void startMonitoring()
-        {
+    public void startMonitoring() {
         RobotLog.vv(TAG, "startMonitoring()");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WIFI_P2P_INVITE_DIALOG_SHOWING_ACTION);
         intentFilter.addAction(WIFI_P2P_INVITE_DIALOG_DISMISSED_ACTION);
 
         context.registerReceiver(this, intentFilter);
-        }
+    }
 
-    public void stopMonitoring()
-        {
+    public void stopMonitoring() {
         RobotLog.vv(TAG, "stopMonitoring()");
         stopBlinking();
-        try
-            {
+        try {
             context.unregisterReceiver(this);
-            }
-        catch (IllegalArgumentException e)
-            {
+        } catch (IllegalArgumentException e) {
             // stop called w/o start: ignore
-            }
-        removeAllFutures();
         }
+        removeAllFutures();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public static void clearUILynxModule()
-        {
+    public static void clearUILynxModule() {
         RobotLog.vv(TAG, "clearUILynxModule()");
         uiLynxModule = null;
-        }
+    }
 
-    public static void setUILynxModule(Blinker lynxModule)
-        {
+    public static void setUILynxModule(Blinker lynxModule) {
         RobotLog.vv(TAG, "setUILynxModule()");
         uiLynxModule = lynxModule;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Acceptance / dismissal
     //----------------------------------------------------------------------------------------------
 
-    protected static String propertyForDialog(int dialogIdentity)
-        {
+    protected static String propertyForDialog(int dialogIdentity) {
         return "ftcandroid.p2p.dialog." + dialogIdentity;
-        }
+    }
 
-    protected void acceptInvitation(int dialogId)
-        {
+    protected void acceptInvitation(int dialogId) {
         RobotLog.dd(TAG, "accepting invitation for %d", dialogId);
         SystemProperties.set(propertyForDialog(dialogId), "accept");
-        }
+    }
 
-    protected void declineInvitation(int dialogId)
-        {
+    protected void declineInvitation(int dialogId) {
         RobotLog.dd(TAG, "declining invitation for %d", dialogId);
         SystemProperties.set(propertyForDialog(dialogId), "decline");
-        }
+    }
 
-    protected void waitForUserButtonPress(final int dialogId)
-        {
-        synchronized (futures)
-            {
+    protected void waitForUserButtonPress(final int dialogId) {
+        synchronized (futures) {
             removeFuture(dialogId);
             final ElapsedTime timer = new ElapsedTime();
-            final Future future = ThreadPool.getDefaultScheduler().scheduleAtFixedRate(new Runnable()
-                {
-                @Override public void run()
-                    {
-                    if (DragonboardLynxUserButton.getInstance().getState())
-                        {
-                        synchronized (futures)
-                            {
+            final Future future = ThreadPool.getDefaultScheduler().scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    if (DragonboardLynxUserButton.getInstance().getState()) {
+                        synchronized (futures) {
                             removeFuture(dialogId);
                             acceptInvitation(dialogId);
-                            }
                         }
-                    else if (timer.milliseconds() > msDeclineInterval)
-                        {
-                        synchronized (futures)
-                            {
+                    } else if (timer.milliseconds() > msDeclineInterval) {
+                        synchronized (futures) {
                             removeFuture(dialogId);
                             declineInvitation(dialogId);
-                            }
                         }
                     }
-                }, msPollButtonInterval, msPollButtonInterval, TimeUnit.MILLISECONDS);
+                }
+            }, msPollButtonInterval, msPollButtonInterval, TimeUnit.MILLISECONDS);
             futures.put(dialogId, future);
-            }
         }
+    }
 
-    protected void scheduleAcceptance(final int dialogId)
-        {
-        synchronized (futures)
-            {
+    protected void scheduleAcceptance(final int dialogId) {
+        synchronized (futures) {
             removeFuture(dialogId);
-            Future future = ThreadPool.getDefaultScheduler().schedule(new Runnable()
-                {
-                @Override public void run()
-                    {
-                    synchronized (futures)
-                        {
+            Future future = ThreadPool.getDefaultScheduler().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (futures) {
                         removeFuture(dialogId);
                         acceptInvitation(dialogId);
-                        }
                     }
-                }, msAcceptInterval, TimeUnit.MILLISECONDS);
+                }
+            }, msAcceptInterval, TimeUnit.MILLISECONDS);
             futures.put(dialogId, future);
-            }
         }
+    }
 
-    protected void removeFuture(int dialogId)
-        {
-        synchronized (futures)
-            {
+    protected void removeFuture(int dialogId) {
+        synchronized (futures) {
             Future future = futures.get(dialogId);
-            if (future != null)
-                {
+            if (future != null) {
                 future.cancel(false);
                 futures.remove(dialogId);
-                }
             }
         }
+    }
 
-    protected void removeAllFutures()
-        {
-        synchronized (futures)
-            {
-            while (futures.size() > 0)
-                {
+    protected void removeAllFutures() {
+        synchronized (futures) {
+            while (futures.size() > 0) {
                 int dialogId = futures.keyAt(0);
                 removeFuture(dialogId);
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Monitoring
     //----------------------------------------------------------------------------------------------
 
-    @Override public void onReceive(Context context, Intent intent)
-        {
+    @Override
+    public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         int dialogId;
-        switch (action)
-            {
+        switch (action) {
             case WIFI_P2P_INVITE_DIALOG_SHOWING_ACTION:
                 dialogId = intent.getIntExtra(EXTRA_WIFI_P2P_INVITE_DIALOG, -1);
                 RobotLog.dd(TAG, "broadcast: %s dialog=%d", action, dialogId);
-                synchronized (activeDialogs)
-                    {
+                synchronized (activeDialogs) {
                     // WIFI_P2P_INVITE_DIALOG_SHOWING_ACTION will broadcast repeatedly while
                     // the dialog is up (for robustness). We want to take action only the
                     // first time that we see it.
-                    if (!this.activeDialogs.contains(dialogId))
-                        {
+                    if (!this.activeDialogs.contains(dialogId)) {
                         this.activeDialogs.add(dialogId);
                         // If we just went from no dialog to some dialog, then start giving feedback
-                        if (this.activeDialogs.size()==1)
-                            {
+                        if (this.activeDialogs.size() == 1) {
                             startBlinking();
-                            }
+                        }
                         // Wait until the button is pressed or a timeout occurs
                         waitForUserButtonPress(dialogId);
-                        }
                     }
+                }
                 break;
 
             case WIFI_P2P_INVITE_DIALOG_DISMISSED_ACTION:
                 dialogId = intent.getIntExtra(EXTRA_WIFI_P2P_INVITE_DIALOG, -1);
                 RobotLog.dd(TAG, "broadcast: %s dialog=%d", action, dialogId);
-                synchronized (activeDialogs)
-                    {
+                synchronized (activeDialogs) {
                     removeFuture(dialogId);
                     this.activeDialogs.remove(dialogId);
-                    if (this.activeDialogs.size() == 0)
-                        {
+                    if (this.activeDialogs.size() == 0) {
                         stopBlinking();
-                        }
                     }
+                }
                 break;
-            }
         }
+    }
 
-    protected synchronized void startBlinking()
-        {
+    protected synchronized void startBlinking() {
         // Make up a reasonably noticable set of colors
         List<Blinker.Step> steps = new ArrayList<Blinker.Step>();
         int msIncrement = 100;
-        for (int i = 0; i < 5; i++)
-            {
-            steps.add(new Blinker.Step(Color.RED,    msIncrement,    TimeUnit.MILLISECONDS));
-            steps.add(new Blinker.Step(Color.BLACK,  msIncrement /2, TimeUnit.MILLISECONDS));
-            steps.add(new Blinker.Step(Color.YELLOW, msIncrement,    TimeUnit.MILLISECONDS));
-            steps.add(new Blinker.Step(Color.BLACK,  msIncrement /2, TimeUnit.MILLISECONDS));
-            }
+        for (int i = 0; i < 5; i++) {
+            steps.add(new Blinker.Step(Color.RED, msIncrement, TimeUnit.MILLISECONDS));
+            steps.add(new Blinker.Step(Color.BLACK, msIncrement / 2, TimeUnit.MILLISECONDS));
+            steps.add(new Blinker.Step(Color.YELLOW, msIncrement, TimeUnit.MILLISECONDS));
+            steps.add(new Blinker.Step(Color.BLACK, msIncrement / 2, TimeUnit.MILLISECONDS));
+        }
 
         // Show on the DragonBoard LED if we're supposed to
-        if (LynxConstants.useIndicatorLEDS())
-            {
+        if (LynxConstants.useIndicatorLEDS()) {
             indicatorLEDBlinker = new LightBlinker(LightMultiplexor.forLight(DragonboardIndicatorLED.forIndex(LynxConstants.INDICATOR_LED_INVITE_DIALOG_ACTIVE)));
             indicatorLEDBlinker.pushPattern(steps);
-            }
+        }
 
         // Show on the UI Lynx module if we know who that is
         lynxModulePushed = uiLynxModule;
-        if (lynxModulePushed != null)
-            {
+        if (lynxModulePushed != null) {
             lynxModulePushed.pushPattern(steps);
-            }
-        }
-
-    protected synchronized void stopBlinking()
-        {
-        if (lynxModulePushed != null)
-            {
-            lynxModulePushed.popPattern();
-            lynxModulePushed = null;
-            }
-        if (indicatorLEDBlinker != null)
-            {
-            indicatorLEDBlinker.popPattern();
-            indicatorLEDBlinker = null;
-            }
         }
     }
+
+    protected synchronized void stopBlinking() {
+        if (lynxModulePushed != null) {
+            lynxModulePushed.popPattern();
+            lynxModulePushed = null;
+        }
+        if (indicatorLEDBlinker != null) {
+            indicatorLEDBlinker.popPattern();
+            indicatorLEDBlinker = null;
+        }
+    }
+}

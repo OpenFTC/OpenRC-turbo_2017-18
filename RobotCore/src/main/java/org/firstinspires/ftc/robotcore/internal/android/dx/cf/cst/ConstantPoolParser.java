@@ -33,19 +33,26 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.StdConstantPo
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.util.BitSet;
 
 /**
  * Parser for a constant pool embedded in a class file.
  */
 public final class ConstantPoolParser {
-    /** {@code non-null;} the bytes of the constant pool */
+    /**
+     * {@code non-null;} the bytes of the constant pool
+     */
     private final ByteArray bytes;
 
-    /** {@code non-null;} actual parsed constant pool contents */
+    /**
+     * {@code non-null;} actual parsed constant pool contents
+     */
     private final StdConstantPool pool;
 
-    /** {@code non-null;} byte offsets to each cst */
+    /**
+     * {@code non-null;} byte offsets to each cst
+     */
     private final int[] offsets;
 
     /**
@@ -55,7 +62,9 @@ public final class ConstantPoolParser {
      */
     private int endOffset;
 
-    /** {@code null-ok;} parse observer, if any */
+    /**
+     * {@code null-ok;} parse observer, if any
+     */
     private ParseObserver observer;
 
     /**
@@ -119,7 +128,7 @@ public final class ConstantPoolParser {
 
         if (observer != null) {
             observer.parsed(bytes, 8, 2,
-                            "constant_pool_count: " + Hex.u2(offsets.length));
+                    "constant_pool_count: " + Hex.u2(offsets.length));
             observer.parsed(bytes, 10, 0, "\nconstant_pool:");
             observer.changeIndent(1);
         }
@@ -327,12 +336,12 @@ public final class ConstantPoolParser {
             }
         } catch (ParseException ex) {
             ex.addContext("...while parsing cst " + Hex.u2(idx) +
-                          " at offset " + Hex.u4(at));
+                    " at offset " + Hex.u4(at));
             throw ex;
         } catch (RuntimeException ex) {
             ParseException pe = new ParseException(ex);
             pe.addContext("...while parsing cst " + Hex.u2(idx) +
-                          " at offset " + Hex.u4(at));
+                    " at offset " + Hex.u4(at));
             throw pe;
         }
 

@@ -37,18 +37,19 @@ package com.qualcomm.robotcore.exception;
  */
 public class RobotCoreException extends Exception {
 
-  public RobotCoreException(String message) {
-    super(message);
-  }
-  public RobotCoreException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public RobotCoreException(String message) {
+        super(message);
+    }
 
-  public RobotCoreException(String format, Object... args) {
-    super(String.format(format, args));
-  }
+    public RobotCoreException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public static RobotCoreException createChained(Exception e, String format, Object... args) {
-    return new RobotCoreException(String.format(format, args), e);
-  }
+    public RobotCoreException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    public static RobotCoreException createChained(Exception e, String format, Object... args) {
+        return new RobotCoreException(String.format(format, args), e);
+    }
 }

@@ -53,8 +53,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * @see android.opengl.Matrix
  * @see Matrix
  */
-public class OpenGLMatrix extends ColumnMajorMatrixF
-    {
+public class OpenGLMatrix extends ColumnMajorMatrixF {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -65,89 +64,88 @@ public class OpenGLMatrix extends ColumnMajorMatrixF
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OpenGLMatrix()
-        {
-        super(4,4);
-        this.data = new float[4*4];
+    public OpenGLMatrix() {
+        super(4, 4);
+        this.data = new float[4 * 4];
         Matrix.setIdentityM(this.data, 0);
-        }
+    }
 
-    public OpenGLMatrix(float[] data)
-        {
-        super(4,4);
+    public OpenGLMatrix(float[] data) {
+        super(4, 4);
         this.data = data;
-        if (this.data.length != 4*4) throw dimensionsError();
+        if (this.data.length != 4 * 4) {
+            throw dimensionsError();
         }
+    }
 
-    public OpenGLMatrix(Matrix44F matrix)
-        {
+    public OpenGLMatrix(Matrix44F matrix) {
         this(matrix.getData());
-        }
+    }
 
     /**
      * Constructs an OpenGL matrix whose values are initialized from the other matrix.
      * The other matrix must have dimensions at most 4x4.
+     *
      * @param him the matrix from which to initialize our own data
      */
-    public OpenGLMatrix(MatrixF him)
-        {
+    public OpenGLMatrix(MatrixF him) {
         this();
-        if (him.numRows > 4 || him.numCols > 4) throw him.dimensionsError();
-        for (int i = 0; i < Math.min(4,him.numRows); i++)
-            {
-            for (int j = 0; j < Math.min(4,him.numCols); j++)
-                {
-                this.put(i,j, him.get(i,j));
-                }
+        if (him.numRows > 4 || him.numCols > 4) {
+            throw him.dimensionsError();
+        }
+        for (int i = 0; i < Math.min(4, him.numRows); i++) {
+            for (int j = 0; j < Math.min(4, him.numCols); j++) {
+                this.put(i, j, him.get(i, j));
             }
         }
+    }
 
-    @Override public MatrixF emptyMatrix(int numRows, int numCols)
-        {
-        if (numRows==4 && numCols==4)
+    @Override
+    public MatrixF emptyMatrix(int numRows, int numCols) {
+        if (numRows == 4 && numCols == 4) {
             return new OpenGLMatrix();
-        else
+        } else {
             return new GeneralMatrixF(numRows, numCols);
         }
+    }
 
     /**
      * Creates a matrix for rotation by the indicated angle around the indicated vector.
      */
-    public static OpenGLMatrix rotation(AngleUnit angleUnit, float angle, float dx, float dy, float dz)
-        {
+    public static OpenGLMatrix rotation(AngleUnit angleUnit, float angle, float dx, float dy, float dz) {
         float[] data = new float[16];
         Matrix.setRotateM(data, 0, angleUnit.toDegrees(angle), dx, dy, dz);
         return new OpenGLMatrix(data);
-        }
+    }
 
     /**
      * Creates a matrix for a rotation specified by three successive rotation angles.
+     *
      * @see Orientation#getRotationMatrix(AxesReference, AxesOrder, AngleUnit, float, float, float)
      */
-    public static OpenGLMatrix rotation(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float first, float second, float third)
-        {
+    public static OpenGLMatrix rotation(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float first, float second, float third) {
         OpenGLMatrix rotation = Orientation.getRotationMatrix(axesReference, axesOrder, angleUnit, first, second, third);
         return identityMatrix().multiplied(rotation);
-        }
-    public static OpenGLMatrix translation(float dx, float dy, float dz)
-        {
+    }
+
+    public static OpenGLMatrix translation(float dx, float dy, float dz) {
         OpenGLMatrix result = new OpenGLMatrix();
         result.translate(dx, dy, dz);
         return result;
-        }
-    public static OpenGLMatrix identityMatrix()
-        {
+    }
+
+    public static OpenGLMatrix identityMatrix() {
         return new OpenGLMatrix();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Override public float[] getData()
-        {
+    @Override
+    public float[] getData() {
         return this.data;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transformation matrix operations (in-place). These methods all return the receiver
@@ -159,113 +157,125 @@ public class OpenGLMatrix extends ColumnMajorMatrixF
     // subsequently modifying this matrix.
     //----------------------------------------------------------------------------------------------
 
-    @NonConst public void scale(float scaleX, float scaleY, float scaleZ)
-        {
+    @NonConst
+    public void scale(float scaleX, float scaleY, float scaleZ) {
         Matrix.scaleM(this.data, 0, scaleX, scaleY, scaleZ);
-        }
-    @NonConst public void scale(float scale)
-        {
+    }
+
+    @NonConst
+    public void scale(float scale) {
         this.scale(scale, scale, scale);
-        }
-    @NonConst public void translate(float dx, float dy, float dz)
-        {
+    }
+
+    @NonConst
+    public void translate(float dx, float dy, float dz) {
         Matrix.translateM(this.data, 0, dx, dy, dz);
-        }
-    @NonConst public void rotate(AngleUnit angleUnit, float angle, float dx, float dy, float dz)
-        {
+    }
+
+    @NonConst
+    public void rotate(AngleUnit angleUnit, float angle, float dx, float dy, float dz) {
         Matrix.rotateM(this.data, 0, angleUnit.toDegrees(angle), dx, dy, dz);
-        }
-    @NonConst public void rotate(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float first, float second, float third)
-        {
+    }
+
+    @NonConst
+    public void rotate(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float first, float second, float third) {
         OpenGLMatrix rotation = Orientation.getRotationMatrix(axesReference, axesOrder, angleUnit, first, second, third);
         this.data = this.multiplied(rotation).getData();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transformation matrix operations
     //----------------------------------------------------------------------------------------------
 
-    @Const public OpenGLMatrix scaled(float scaleX, float scaleY, float scaleZ)
-        {
+    @Const
+    public OpenGLMatrix scaled(float scaleX, float scaleY, float scaleZ) {
         OpenGLMatrix result = new OpenGLMatrix();
         Matrix.scaleM(result.data, 0, this.data, 0, scaleX, scaleY, scaleZ);
         return result;
-        }
-    @Const public OpenGLMatrix scaled(float scale)
-        {
+    }
+
+    @Const
+    public OpenGLMatrix scaled(float scale) {
         return scaled(scale, scale, scale);
-        }
-    @Const public OpenGLMatrix translated(float dx, float dy, float dz)
-        {
+    }
+
+    @Const
+    public OpenGLMatrix translated(float dx, float dy, float dz) {
         OpenGLMatrix result = new OpenGLMatrix();
         Matrix.translateM(result.data, 0, this.data, 0, dx, dy, dz);
         return result;
-        }
-    @Const public OpenGLMatrix rotated(AngleUnit angleUnit, float angle, float dx, float dy, float dz)
-        {
+    }
+
+    @Const
+    public OpenGLMatrix rotated(AngleUnit angleUnit, float angle, float dx, float dy, float dz) {
         OpenGLMatrix result = new OpenGLMatrix();
         Matrix.rotateM(result.data, 0, this.data, 0, angleUnit.toDegrees(angle), dx, dy, dz);
         return result;
-        }
-    @Const public OpenGLMatrix rotated(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float first, float second, float third)
-        {
+    }
+
+    @Const
+    public OpenGLMatrix rotated(AxesReference axesReference, AxesOrder axesOrder, AngleUnit angleUnit, float first, float second, float third) {
         OpenGLMatrix rotation = Orientation.getRotationMatrix(axesReference, axesOrder, angleUnit, first, second, third);
         return this.multiplied(rotation);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Matrix operations
     //----------------------------------------------------------------------------------------------
 
-    @Override @Const public OpenGLMatrix inverted()
-        {
+    @Override
+    @Const
+    public OpenGLMatrix inverted() {
         OpenGLMatrix result = new OpenGLMatrix();
         Matrix.invertM(result.data, 0, this.data, 0);
         return result;
-        }
+    }
 
-    @Override @Const public OpenGLMatrix transposed()
-        {
-        return (OpenGLMatrix)super.transposed();
-        }
+    @Override
+    @Const
+    public OpenGLMatrix transposed() {
+        return (OpenGLMatrix) super.transposed();
+    }
 
-    @Const public OpenGLMatrix multiplied(OpenGLMatrix him)
-        {
+    @Const
+    public OpenGLMatrix multiplied(OpenGLMatrix him) {
         OpenGLMatrix result = new OpenGLMatrix();
         Matrix.multiplyMM(result.data, 0, this.data, 0, him.getData(), 0);
         return result;
-        }
+    }
 
-    @Override @Const public MatrixF multiplied(MatrixF him)
-        {
-        if (him instanceof OpenGLMatrix)
-            {
-            return this.multiplied((OpenGLMatrix)him);
-            }
-        else
+    @Override
+    @Const
+    public MatrixF multiplied(MatrixF him) {
+        if (him instanceof OpenGLMatrix) {
+            return this.multiplied((OpenGLMatrix) him);
+        } else {
             return super.multiplied(him);
         }
+    }
 
     /**
      * Updates the receiver to be the product of itself and another matrix.
+     *
      * @param him the matrix with which the receiver is to be multiplied.
      */
-    @NonConst public void multiply(OpenGLMatrix him)
-        {
+    @NonConst
+    public void multiply(OpenGLMatrix him) {
         this.data = this.multiplied(him).getData();
-        }
+    }
 
     /**
      * Updates the receiver to be the product of itself and another matrix.
+     *
      * @param him the matrix with which the receiver is to be multiplied.
      */
-    @Override @NonConst public void multiply(MatrixF him)
-        {
-        if (him instanceof OpenGLMatrix)
-            {
-            this.multiply((OpenGLMatrix)him);
-            }
-        else
+    @Override
+    @NonConst
+    public void multiply(MatrixF him) {
+        if (him instanceof OpenGLMatrix) {
+            this.multiply((OpenGLMatrix) him);
+        } else {
             super.multiply(him);
         }
     }
+}

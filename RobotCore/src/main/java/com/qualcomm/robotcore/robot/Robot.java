@@ -49,18 +49,19 @@ import java.util.concurrent.ArrayBlockingQueue;
  * Create via RobotFactory()
  */
 public class Robot {
-  public final EventLoopManager eventLoopManager;
+    public final EventLoopManager eventLoopManager;
 
-  public Robot(EventLoopManager eventLoopManager) {
-    this.eventLoopManager = eventLoopManager;
-  }
+    public Robot(EventLoopManager eventLoopManager) {
+        this.eventLoopManager = eventLoopManager;
+    }
 
-  public void start(@NonNull EventLoop eventLoop) throws RobotCoreException {
-    eventLoopManager.start(eventLoop);
-  }
+    public void start(@NonNull EventLoop eventLoop) throws RobotCoreException {
+        eventLoopManager.start(eventLoop);
+    }
 
-  public void shutdown() {
-    if (eventLoopManager != null)
-      eventLoopManager.shutdown();
-  }
+    public void shutdown() {
+        if (eventLoopManager != null) {
+            eventLoopManager.shutdown();
+        }
+    }
 }

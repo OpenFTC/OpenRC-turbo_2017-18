@@ -36,9 +36,13 @@ import java.util.zip.ZipFile;
  */
 public class ClassPathOpener {
 
-    /** {@code non-null;} pathname to start with */
+    /**
+     * {@code non-null;} pathname to start with
+     */
     private final String pathname;
-    /** {@code non-null;} callback interface */
+    /**
+     * {@code non-null;} callback interface
+     */
     private final Consumer consumer;
     /**
      * If true, sort such that classes appear before their inner
@@ -56,11 +60,10 @@ public class ClassPathOpener {
         /**
          * Provides the file name and byte array for a class path element.
          *
-         * @param name {@code non-null;} filename of element. May not be a valid
-         * filesystem path.
-         *
+         * @param name         {@code non-null;} filename of element. May not be a valid
+         *                     filesystem path.
          * @param lastModified milliseconds since 1970-Jan-1 00:00:00 GMT
-         * @param bytes {@code non-null;} file data
+         * @param bytes        {@code non-null;} file data
          * @return true on success. Result is or'd with all other results
          * from {@code processFileBytes} and returned to the caller
          * of {@code process()}.
@@ -106,9 +109,9 @@ public class ClassPathOpener {
      * Constructs an instance.
      *
      * @param pathname {@code non-null;} path element to process
-     * @param sort if true, sort such that classes appear before their inner
-     * classes and "package-info" occurs before all other classes in that
-     * package.
+     * @param sort     if true, sort such that classes appear before their inner
+     *                 classes and "package-info" occurs before all other classes in that
+     *                 package.
      * @param consumer {@code non-null;} callback interface
      */
     public ClassPathOpener(String pathname, boolean sort, Consumer consumer) {
@@ -119,13 +122,13 @@ public class ClassPathOpener {
      * Constructs an instance.
      *
      * @param pathname {@code non-null;} path element to process
-     * @param sort if true, sort such that classes appear before their inner
-     * classes and "package-info" occurs before all other classes in that
-     * package.
+     * @param sort     if true, sort such that classes appear before their inner
+     *                 classes and "package-info" occurs before all other classes in that
+     *                 package.
      * @param consumer {@code non-null;} callback interface
      */
     public ClassPathOpener(String pathname, boolean sort, FileNameFilter filter,
-            Consumer consumer) {
+                           Consumer consumer) {
         this.pathname = pathname;
         this.sort = sort;
         this.consumer = consumer;
@@ -147,9 +150,9 @@ public class ClassPathOpener {
     /**
      * Processes one file.
      *
-     * @param file {@code non-null;} the file to process
+     * @param file     {@code non-null;} the file to process
      * @param topLevel whether this is a top-level file (that is,
-     * specified directly on the commandline)
+     *                 specified directly on the commandline)
      * @return whether any processing actually happened
      */
     private boolean processOne(File file, boolean topLevel) {
@@ -187,8 +190,8 @@ public class ClassPathOpener {
      */
     private static int compareClassNames(String a, String b) {
         // Ensure inner classes sort second
-        a = a.replace('$','0');
-        b = b.replace('$','0');
+        a = a.replace('$', '0');
+        b = b.replace('$', '0');
 
         /*
          * Assuming "package-info" only occurs at the end, ensures package-info
@@ -203,9 +206,9 @@ public class ClassPathOpener {
     /**
      * Processes a directory recursively.
      *
-     * @param dir {@code non-null;} file representing the directory
+     * @param dir      {@code non-null;} file representing the directory
      * @param topLevel whether this is a top-level directory (that is,
-     * specified directly on the commandline)
+     *                 specified directly on the commandline)
      * @return whether any processing actually happened
      */
     private boolean processDirectory(File dir, boolean topLevel) {
@@ -248,9 +251,9 @@ public class ClassPathOpener {
 
         if (sort) {
             Collections.sort(entriesList, new Comparator<ZipEntry>() {
-               public int compare (ZipEntry a, ZipEntry b) {
-                   return compareClassNames(a.getName(), b.getName());
-               }
+                public int compare(ZipEntry a, ZipEntry b) {
+                    return compareClassNames(a.getName(), b.getName());
+                }
             });
         }
 

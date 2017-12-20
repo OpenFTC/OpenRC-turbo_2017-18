@@ -23,7 +23,9 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.util;
  * to the checker in all the right places.
  */
 public class MutabilityControl {
-    /** whether this instance is mutable */
+    /**
+     * whether this instance is mutable
+     */
     private boolean mutable;
 
     /**

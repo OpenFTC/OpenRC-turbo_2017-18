@@ -56,7 +56,8 @@ public final class ProtoId implements Comparable<ProtoId> {
         out.writeInt(parametersOffset);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         if (dex == null) {
             return shortyIndex + " " + returnTypeIndex + " " + parametersOffset;
         }

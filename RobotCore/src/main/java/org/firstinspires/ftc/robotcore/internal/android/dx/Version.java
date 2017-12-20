@@ -20,6 +20,8 @@ package org.firstinspires.ftc.robotcore.internal.android.dx;
  * Version number for dx.
  */
 public class Version {
-    /** {@code non-null;} version string */
+    /**
+     * {@code non-null;} version string
+     */
     public static final String VERSION = "1.12";
 }

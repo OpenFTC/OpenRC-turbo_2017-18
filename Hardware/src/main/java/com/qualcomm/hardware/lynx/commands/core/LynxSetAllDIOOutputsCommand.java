@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxSetAllDIOOutputsCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetAllDIOOutputsCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -56,39 +55,34 @@ public class LynxSetAllDIOOutputsCommand extends LynxDekaInterfaceCommand<LynxAc
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetAllDIOOutputsCommand(LynxModuleIntf module)
-        {
+    public LynxSetAllDIOOutputsCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetAllDIOOutputsCommand(LynxModuleIntf module, int values)
-        {
+    public LynxSetAllDIOOutputsCommand(LynxModuleIntf module, int values) {
         this(module);
         this.values = values;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
-        buffer.put((byte)this.values);
+        buffer.put((byte) this.values);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.values = buffer.get();
-        }
     }
+}

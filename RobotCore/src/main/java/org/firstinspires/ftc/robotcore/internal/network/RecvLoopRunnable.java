@@ -18,44 +18,67 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class RecvLoopRunnable implements Runnable {
 
     public static final String TAG = RobocolDatagram.TAG;
-    public static       boolean DEBUG = false;
+    public static boolean DEBUG = false;
 
     public interface RecvLoopCallback {
         CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException;
 
         CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException;
+
         CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException;
+
         CallbackResult commandEvent(Command command) throws RobotCoreException;
+
         CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException;
+
         CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException;
+
         CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException;
+
         CallbackResult reportGlobalError(String error, boolean recoverable);
     }
 
-    /** A degenerate implementation so that individual callbacks need not themselves implement a bunch of trivial methods */
+    /**
+     * A degenerate implementation so that individual callbacks need not themselves implement a bunch of trivial methods
+     */
     public static class DegenerateCallback implements RecvLoopCallback {
-        @Override public CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException {
+        @Override
+        public CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException {
+
+        @Override
+        public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException {
+
+        @Override
+        public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult commandEvent(Command command) throws RobotCoreException {
+
+        @Override
+        public CallbackResult commandEvent(Command command) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException {
+
+        @Override
+        public CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
+
+        @Override
+        public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException {
+
+        @Override
+        public CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException {
             return CallbackResult.NOT_HANDLED;
         }
-        @Override public CallbackResult reportGlobalError(String error, boolean recoverable) {
+
+        @Override
+        public CallbackResult reportGlobalError(String error, boolean recoverable) {
             return CallbackResult.NOT_HANDLED;
         }
     }
@@ -68,7 +91,7 @@ public class RecvLoopRunnable implements Runnable {
     protected RecvLoopCallback callback;
     protected LinkedBlockingDeque<Command> commandsToProcess = new LinkedBlockingDeque<Command>();
 
-    public RecvLoopRunnable(RecvLoopCallback callback, @NonNull RobocolDatagramSocket socket, @Nullable ElapsedTime lastRecvPacket ) {
+    public RecvLoopRunnable(RecvLoopCallback callback, @NonNull RobocolDatagramSocket socket, @Nullable ElapsedTime lastRecvPacket) {
         this.callback = callback;
         this.socket = socket;
         this.lastRecvPacket = lastRecvPacket;
@@ -83,31 +106,36 @@ public class RecvLoopRunnable implements Runnable {
     }
 
     public class CommandProcessor implements Runnable {
-      @Override public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-          try {
-            // Wait for a command to appear, then process it
-            Command command = commandsToProcess.takeFirst();
-            commandProcessingTimer.reset();
-            //
-            if (DEBUG) RobotLog.vv(TAG, "command=%s...", command.getName());
-            callback.commandEvent(command);
-            if (DEBUG) RobotLog.vv(TAG, "...command=%s", command.getName());
-            //
-            double seconds = commandProcessingTimer.seconds();
-            if (seconds > sProcessingTimerReportingThreshold) {
-                RobotLog.ee(TAG, "command processing took %.3f s: command=%s", seconds, command.getName());
+        @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // Wait for a command to appear, then process it
+                    Command command = commandsToProcess.takeFirst();
+                    commandProcessingTimer.reset();
+                    //
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "command=%s...", command.getName());
+                    }
+                    callback.commandEvent(command);
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "...command=%s", command.getName());
+                    }
+                    //
+                    double seconds = commandProcessingTimer.seconds();
+                    if (seconds > sProcessingTimerReportingThreshold) {
+                        RobotLog.ee(TAG, "command processing took %.3f s: command=%s", seconds, command.getName());
+                    }
+                } catch (InterruptedException e) {
+                    // Just get out of here
+                    return;
+                } catch (RobotCoreException | RuntimeException e) {
+                    // Report the error, but stay alive
+                    RobotLog.ee(TAG, e, "exception in %s", Thread.currentThread().getName());
+                    callback.reportGlobalError(e.getMessage(), false);
+                }
             }
-          } catch (InterruptedException e) {
-            // Just get out of here
-            return;
-          } catch (RobotCoreException|RuntimeException e) {
-            // Report the error, but stay alive
-            RobotLog.ee(TAG, e, "exception in %s", Thread.currentThread().getName());
-            callback.reportGlobalError(e.getMessage(), false);
-          }
         }
-      }
     }
 
     public void injectReceivedCommand(Command cmd) {
@@ -129,22 +157,24 @@ public class RecvLoopRunnable implements Runnable {
 
                     // We might have waited for a while in the recv(), and been interrupted in the meantime
                     if (Thread.currentThread().isInterrupted()) {
-                      return;
+                        return;
                     }
 
                     if (packet == null) {
                         if (socket.isClosed()) {
                             RobotLog.vv(TAG, "socket closed; %s returning", Thread.currentThread().getName());
                             return;
-                            }
+                        }
                         Thread.yield();
                         continue;
                     }
-                    if (lastRecvPacket != null) lastRecvPacket.reset();
+                    if (lastRecvPacket != null) {
+                        lastRecvPacket.reset();
+                    }
 
                     try {
                         packetProcessingTimer.reset();
-                        if (callback.packetReceived(packet)!=CallbackResult.HANDLED) {
+                        if (callback.packetReceived(packet) != CallbackResult.HANDLED) {
 
                             switch (packet.getMsgType()) {
 
@@ -162,8 +192,8 @@ public class RecvLoopRunnable implements Runnable {
                                     Command command = new Command(packet.getData());
                                     CallbackResult result = NetworkConnectionHandler.getInstance().processAcknowledgments(command);
                                     if (!result.isHandled()) {
-                                      RobotLog.vv(RobocolDatagram.TAG, "received command: %s(%d) %s", command.getName(), command.getSequenceNumber(), command.getExtra());
-                                      commandsToProcess.addLast(command);
+                                        RobotLog.vv(RobocolDatagram.TAG, "received command: %s(%d) %s", command.getName(), command.getSequenceNumber(), command.getExtra());
+                                        commandsToProcess.addLast(command);
                                     }
                                     break;
                                 case TELEMETRY:
@@ -184,7 +214,7 @@ public class RecvLoopRunnable implements Runnable {
                         if (seconds > sProcessingTimerReportingThreshold) {
                             RobotLog.vv(TAG, "packet processing took %.3f s: type=%s", seconds, packet.getMsgType().toString());
                         }
-                    } catch (RobotCoreException|RuntimeException e) {
+                    } catch (RobotCoreException | RuntimeException e) {
                         RobotLog.ee(TAG, e, "exception in %s", Thread.currentThread().getName());
                         callback.reportGlobalError(e.getMessage(), false);
                     } finally {
@@ -192,7 +222,7 @@ public class RecvLoopRunnable implements Runnable {
                         packet.close();
                     }
                 }
-            RobotLog.vv(TAG, "interrupted; %s returning", Thread.currentThread().getName());
+                RobotLog.vv(TAG, "interrupted; %s returning", Thread.currentThread().getName());
             }
         });
     }

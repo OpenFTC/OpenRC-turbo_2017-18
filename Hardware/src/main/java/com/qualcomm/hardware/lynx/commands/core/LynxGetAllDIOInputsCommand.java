@@ -40,8 +40,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetAllDIOInputsCommand extends LynxDekaInterfaceCommand<LynxGetAllDIOInputsResponse>
-    {
+public class LynxGetAllDIOInputsCommand extends LynxDekaInterfaceCommand<LynxGetAllDIOInputsResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -52,36 +51,31 @@ public class LynxGetAllDIOInputsCommand extends LynxDekaInterfaceCommand<LynxGet
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetAllDIOInputsCommand(LynxModuleIntf module)
-        {
+    public LynxGetAllDIOInputsCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxGetAllDIOInputsResponse(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxGetSingleDIOInputResponse.class;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return true;
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[0];
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        }
-
     }
+
+    @Override
+    public boolean isResponseExpected() {
+        return true;
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[0];
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+    }
+
+}

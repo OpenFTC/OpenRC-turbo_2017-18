@@ -36,36 +36,30 @@ package com.qualcomm.robotcore.hardware;
  * {@link LynxModuleMeta} has simple lynx module meta information for transmission from RC to DS
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxModuleMeta
-    {
+public class LynxModuleMeta {
     protected int moduleAddress;
     protected boolean isParent;
 
-    public LynxModuleMeta(int moduleAddress, boolean isParent)
-        {
+    public LynxModuleMeta(int moduleAddress, boolean isParent) {
         this.moduleAddress = moduleAddress;
         this.isParent = isParent;
-        }
-
-    public LynxModuleMeta(RobotCoreLynxModule him)
-        {
-        this.moduleAddress = him.getModuleAddress();
-        this.isParent = him.isParent();
-        }
-
-    public LynxModuleMeta(LynxModuleMeta him)
-        {
-        this.moduleAddress = him.getModuleAddress();
-        this.isParent = him.isParent();
-        }
-
-    public int getModuleAddress()
-        {
-        return moduleAddress;
-        }
-
-    public boolean isParent()
-        {
-        return isParent;
-        }
     }
+
+    public LynxModuleMeta(RobotCoreLynxModule him) {
+        this.moduleAddress = him.getModuleAddress();
+        this.isParent = him.isParent();
+    }
+
+    public LynxModuleMeta(LynxModuleMeta him) {
+        this.moduleAddress = him.getModuleAddress();
+        this.isParent = him.isParent();
+    }
+
+    public int getModuleAddress() {
+        return moduleAddress;
+    }
+
+    public boolean isParent() {
+        return isParent;
+    }
+}

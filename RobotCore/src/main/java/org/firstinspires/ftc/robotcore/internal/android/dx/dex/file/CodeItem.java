@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.io.PrintWriter;
 
 /**
@@ -33,22 +34,34 @@ import java.io.PrintWriter;
  * {@code dex} file.
  */
 public final class CodeItem extends OffsettedItem {
-    /** file alignment of this class, in bytes */
+    /**
+     * file alignment of this class, in bytes
+     */
     private static final int ALIGNMENT = 4;
 
-    /** write size of the header of this class, in bytes */
+    /**
+     * write size of the header of this class, in bytes
+     */
     private static final int HEADER_SIZE = 16;
 
-    /** {@code non-null;} method that this code implements */
+    /**
+     * {@code non-null;} method that this code implements
+     */
     private final CstMethodRef ref;
 
-    /** {@code non-null;} the bytecode instructions and associated data */
+    /**
+     * {@code non-null;} the bytecode instructions and associated data
+     */
     private final DalvCode code;
 
-    /** {@code null-ok;} the catches, if needed; set in {@link #addContents} */
+    /**
+     * {@code null-ok;} the catches, if needed; set in {@link #addContents}
+     */
     private CatchStructs catches;
 
-    /** whether this instance is for a {@code static} method */
+    /**
+     * whether this instance is for a {@code static} method
+     */
     private final boolean isStatic;
 
     /**
@@ -66,15 +79,15 @@ public final class CodeItem extends OffsettedItem {
     /**
      * Constructs an instance.
      *
-     * @param ref {@code non-null;} method that this code implements
-     * @param code {@code non-null;} the underlying code
-     * @param isStatic whether this instance is for a {@code static}
-     * method
+     * @param ref        {@code non-null;} method that this code implements
+     * @param code       {@code non-null;} the underlying code
+     * @param isStatic   whether this instance is for a {@code static}
+     *                   method
      * @param throwsList {@code non-null;} list of possibly-thrown exceptions,
-     * just used in generating debugging output (listings)
+     *                   just used in generating debugging output (listings)
      */
     public CodeItem(CstMethodRef ref, DalvCode code, boolean isStatic,
-            TypeList throwsList) {
+                    TypeList throwsList) {
         super(ALIGNMENT, -1);
 
         if (ref == null) {
@@ -97,13 +110,17 @@ public final class CodeItem extends OffsettedItem {
         this.debugInfo = null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemType itemType() {
         return ItemType.TYPE_CODE_ITEM;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addContents(DexFile file) {
         MixedItemSection byteData = file.getByteData();
         TypeIdsSection typeIds = file.getTypeIds();
@@ -125,13 +142,17 @@ public final class CodeItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "CodeItem{" + toHuman() + "}";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toHuman() {
         return ref.toHuman();
@@ -149,8 +170,8 @@ public final class CodeItem extends OffsettedItem {
     /**
      * Does a human-friendly dump of this instance.
      *
-     * @param out {@code non-null;} where to dump
-     * @param prefix {@code non-null;} per-line prefix to use
+     * @param out     {@code non-null;} where to dump
+     * @param prefix  {@code non-null;} per-line prefix to use
      * @param verbose whether to be verbose with the output
      */
     public void debugPrint(PrintWriter out, String prefix, boolean verbose) {
@@ -178,7 +199,9 @@ public final class CodeItem extends OffsettedItem {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void place0(Section addedTo, int offset) {
         final DexFile file = addedTo.getFile();
@@ -189,14 +212,14 @@ public final class CodeItem extends OffsettedItem {
          * constants need to be assigned indices.
          */
         code.assignIndices(new DalvCode.AssignIndicesCallback() {
-                public int getIndex(Constant cst) {
-                    IndexedItem item = file.findItemOrNull(cst);
-                    if (item == null) {
-                        return -1;
-                    }
-                    return item.getIndex();
+            public int getIndex(Constant cst) {
+                IndexedItem item = file.findItemOrNull(cst);
+                if (item == null) {
+                    return -1;
                 }
-            });
+                return item.getIndex();
+            }
+        });
 
         if (catches != null) {
             catches.encode(file);
@@ -219,7 +242,9 @@ public final class CodeItem extends OffsettedItem {
         setWriteSize(HEADER_SIZE + (insnsSize * 2) + catchesSize);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void writeTo0(DexFile file, AnnotatedOutput out) {
         boolean annotates = out.annotates();
@@ -283,7 +308,7 @@ public final class CodeItem extends OffsettedItem {
      * Helper for {@link #writeTo0} which writes out the actual bytecode.
      *
      * @param file {@code non-null;} file we are part of
-     * @param out {@code non-null;} where to write to
+     * @param out  {@code non-null;} where to write to
      */
     private void writeCodes(DexFile file, AnnotatedOutput out) {
         DalvInsnList insns = code.getInsns();

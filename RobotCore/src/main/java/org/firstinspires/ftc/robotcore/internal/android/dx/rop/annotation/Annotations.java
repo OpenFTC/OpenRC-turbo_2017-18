@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.rop.annotation;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityControl;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,14 +29,18 @@ import java.util.TreeMap;
  */
 public final class Annotations extends MutabilityControl
         implements Comparable<Annotations> {
-    /** {@code non-null;} immutable empty instance */
+    /**
+     * {@code non-null;} immutable empty instance
+     */
     public static final Annotations EMPTY = new Annotations();
 
     static {
         EMPTY.setImmutable();
     }
 
-    /** {@code non-null;} map from types to annotations */
+    /**
+     * {@code non-null;} map from types to annotations
+     */
     private final TreeMap<CstType, Annotation> annotations;
 
     /**
@@ -64,12 +69,12 @@ public final class Annotations extends MutabilityControl
      * type must not already appear in the former.
      *
      * @param annotations {@code non-null;} the instance to augment
-     * @param annotation {@code non-null;} the additional annotation
+     * @param annotation  {@code non-null;} the additional annotation
      * @return {@code non-null;} the combination
      * @throws IllegalArgumentException thrown if there is a duplicate type
      */
     public static Annotations combine(Annotations annotations,
-            Annotation annotation) {
+                                      Annotation annotation) {
         Annotations result = new Annotations();
 
         result.addAll(annotations);
@@ -86,16 +91,20 @@ public final class Annotations extends MutabilityControl
         annotations = new TreeMap<CstType, Annotation>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return annotations.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
-        if (! (other instanceof Annotations)) {
+        if (!(other instanceof Annotations)) {
             return false;
         }
 
@@ -104,7 +113,9 @@ public final class Annotations extends MutabilityControl
         return annotations.equals(otherAnnotations.annotations);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int compareTo(Annotations other) {
         Iterator<Annotation> thisIter = annotations.values().iterator();
         Iterator<Annotation> otherIter = other.annotations.values().iterator();
@@ -128,7 +139,9 @@ public final class Annotations extends MutabilityControl
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         boolean first = true;

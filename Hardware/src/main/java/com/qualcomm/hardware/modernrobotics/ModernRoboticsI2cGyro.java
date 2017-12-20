@@ -87,7 +87,7 @@ import java.util.Set;
 
 /**
  * {@link ModernRoboticsI2cGyro} supports the Modern Robotics integrating gyro.
- *
+ * <p>
  * <p>This sensor contains an L3GD20 MEMS three-axis digital output gyroscope. Internally,
  * the chip is labelled (e.g.) "AGD2 2437 JR4IJ".</p>
  *
@@ -97,16 +97,14 @@ import java.util.Set;
  */
 // @I2cSensor(name = "MR Gyroscope", description = "a MR gyroscope", xmlTag = "ModernRoboticsI2cGyro")  // ModernRoboticsI2cGyro is built-in
 public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
-        implements GyroSensor, Gyroscope, IntegratingGyroscope, I2cAddrConfig
-    {
+        implements GyroSensor, Gyroscope, IntegratingGyroscope, I2cAddrConfig {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x20);
 
-    public enum Register
-        {
+    public enum Register {
         READ_WINDOW_FIRST(0x00),
         FIRMWARE_REV(0x00),
         MANUFACTURE_CODE(0x01),
@@ -123,17 +121,22 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
         UNKNOWN(-1);
 
         public byte bVal;
-        Register(int value) { this.bVal = (byte)value; }
+
+        Register(int value) {
+            this.bVal = (byte) value;
+        }
+
         public static Register fromByte(byte bVal) {
             for (Register register : values()) {
-                if (register.bVal == bVal) return register;
+                if (register.bVal == bVal) {
+                    return register;
                 }
-            return UNKNOWN;
             }
+            return UNKNOWN;
         }
-    
-    public enum Command
-        {
+    }
+
+    public enum Command {
         NORMAL(0x00),
         CALIBRATE(0x4E),
         RESET_Z_AXIS(0x52),
@@ -141,14 +144,20 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
         UNKNOWN(-1);
 
         public byte bVal;
-        Command(int value) { this.bVal = (byte)value; }
+
+        Command(int value) {
+            this.bVal = (byte) value;
+        }
+
         public static Command fromByte(byte bVal) {
             for (Command command : values()) {
-                if (command.bVal == bVal) return command;
+                if (command.bVal == bVal) {
+                    return command;
                 }
-            return UNKNOWN;
             }
+            return UNKNOWN;
         }
+    }
 
     /**
      * {@link HeadingMode} can be used to configure the software to return either cartesian or
@@ -158,11 +167,10 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
      * @see #getHeadingMode()
      * @see #setHeadingMode(HeadingMode)
      */
-    public enum HeadingMode
-        {
+    public enum HeadingMode {
         HEADING_CARTESIAN,
         HEADING_CARDINAL,
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -180,8 +188,7 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cGyro(I2cDeviceSynch deviceClient)
-        {
+    public ModernRoboticsI2cGyro(I2cDeviceSynch deviceClient) {
         super(deviceClient, true);
 
         setOptimalReadWindow();
@@ -189,97 +196,90 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
 
         super.registerArmingStateCallback(false);
         this.deviceClient.engage();
-        }
+    }
 
-    protected void setOptimalReadWindow()
-        {
+    protected void setOptimalReadWindow() {
         I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
                 Register.READ_WINDOW_FIRST.bVal,
                 Register.READ_WINDOW_LAST.bVal - Register.READ_WINDOW_FIRST.bVal + 1,
                 I2cDeviceSynch.ReadMode.REPEAT);
         this.deviceClient.setReadWindow(readWindow);
-        }
+    }
 
     @Override
-    protected synchronized boolean doInitialize()
-        {
+    protected synchronized boolean doInitialize() {
         this.writeCommand(Command.NORMAL);
         this.resetZAxisIntegrator();
-        this.setZAxisScalingCoefficient(1<<8);
+        this.setZAxisScalingCoefficient(1 << 8);
         this.headingMode = HeadingMode.HEADING_CARTESIAN;
         return true;
-        }
+    }
 
     @Override
-    public Manufacturer getManufacturer()
-        {
+    public Manufacturer getManufacturer() {
         return Manufacturer.ModernRobotics;
-        }
+    }
 
-    @Override public String getDeviceName()
-        {
+    @Override
+    public String getDeviceName() {
         RobotUsbDevice.FirmwareVersion firmwareVersion = new RobotUsbDevice.FirmwareVersion(this.read8(Register.FIRMWARE_REV));
         return String.format(Locale.getDefault(), "Modern Robotics Gyroscope %s", firmwareVersion);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    public byte read8(Register reg)
-        {
+    public byte read8(Register reg) {
         return this.deviceClient.read8(reg.bVal);
-        }
-    public void write8(Register reg, byte value)
-        {
+    }
+
+    public void write8(Register reg, byte value) {
         this.deviceClient.write8(reg.bVal, value);
-        }
+    }
 
-    public short readShort(Register reg)
-        {
+    public short readShort(Register reg) {
         return TypeConversion.byteArrayToShort(this.deviceClient.read(reg.bVal, 2), ByteOrder.LITTLE_ENDIAN);
-        }
-    public void writeShort(Register reg, short value)
-        {
-        this.deviceClient.write(reg.bVal, TypeConversion.shortToByteArray(value, ByteOrder.LITTLE_ENDIAN));
-        }
+    }
 
-    public void writeCommand(Command command)
-        {
+    public void writeShort(Register reg, short value) {
+        this.deviceClient.write(reg.bVal, TypeConversion.shortToByteArray(value, ByteOrder.LITTLE_ENDIAN));
+    }
+
+    public void writeCommand(Command command) {
         // Wait for any previous command write to finish so we don't clobber it
         // before the USB controller gets a chance to see it and pass it on to the sensor
         this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);
 
         this.write8(Register.COMMAND, command.bVal);
-        }
+    }
 
-    public Command readCommand()
-        {
+    public Command readCommand() {
         return Command.fromByte(this.read8(Register.COMMAND));
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Gyroscope interface
     //----------------------------------------------------------------------------------------------
 
-    @Override public Set<Axis> getAngularVelocityAxes()
-        {
+    @Override
+    public Set<Axis> getAngularVelocityAxes() {
         Set<Axis> result = new HashSet<Axis>();
         result.add(Axis.X);
         result.add(Axis.Y);
         result.add(Axis.Z);
         return result;
-        }
+    }
 
-    @Override public Set<Axis> getAngularOrientationAxes()
-        {
+    @Override
+    public Set<Axis> getAngularOrientationAxes() {
         Set<Axis> result = new HashSet<Axis>();
         result.add(Axis.Z);
         return result;
-        }
+    }
 
-    @Override public AngularVelocity getAngularVelocity(AngleUnit unit)
-        {
+    @Override
+    public AngularVelocity getAngularVelocity(AngleUnit unit) {
         TimestampedData data = this.deviceClient.readTimeStamped(Register.RAW_X_VAL.bVal, 3 * 2/*sizeof short*/);
 
         int rawX = TypeConversion.byteArrayToShort(data.data, 0, ByteOrder.LITTLE_ENDIAN);
@@ -291,12 +291,12 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
         float degPerSecondZ = rawZ * degreesPerSecondPerDigit;
 
         return new AngularVelocity(AngleUnit.DEGREES,
-                    degPerSecondX, degPerSecondY, degPerSecondZ, data.nanoTime)
+                degPerSecondX, degPerSecondY, degPerSecondZ, data.nanoTime)
                 .toAngleUnit(unit);
-        }
+    }
 
-    @Override public Orientation getAngularOrientation(AxesReference reference, AxesOrder order, org.firstinspires.ftc.robotcore.external.navigation.AngleUnit angleUnit)
-        {
+    @Override
+    public Orientation getAngularOrientation(AxesReference reference, AxesOrder order, org.firstinspires.ftc.robotcore.external.navigation.AngleUnit angleUnit) {
         TimestampedData data = this.deviceClient.readTimeStamped(Register.INTEGRATED_Z_VALUE.bVal, 2);
         int integratedZ = TypeConversion.byteArrayToShort(data.data, ByteOrder.LITTLE_ENDIAN);
         float cartesian = AngleUnit.normalizeDegrees(degreesZFromIntegratedZ(integratedZ));
@@ -304,74 +304,82 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
                 .toAxesReference(reference)
                 .toAxesOrder(order)
                 .toAngleUnit(angleUnit);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // MR Gyro / Gyro interface
     //----------------------------------------------------------------------------------------------
 
-    public synchronized void setHeadingMode(HeadingMode headingMode)
-        {
+    public synchronized void setHeadingMode(HeadingMode headingMode) {
         this.headingMode = headingMode;
-        }
+    }
 
-    public HeadingMode getHeadingMode()
-        {
+    public HeadingMode getHeadingMode() {
         return this.headingMode;
-        }
+    }
 
     /**
      * "Gyro Raw Values: The three fields X, Y and Z are the unprocessed values being
      * obtained from the sensor element. These values are updated at approximately 760Hz."
+     *
      * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
      */
-    @Override public int rawX()
-        {
+    @Override
+    public int rawX() {
         return readShort(Register.RAW_X_VAL);
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
-     * @see #rawX() */
-    @Override public int rawY()
-        {
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     * @see #rawX()
+     */
+    @Override
+    public int rawY() {
         return readShort(Register.RAW_Y_VAL);
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
-     * @see #rawX() */
-    @Override public int rawZ()
-        {
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     * @see #rawX()
+     */
+    @Override
+    public int rawZ() {
         return readShort(Register.RAW_Z_VAL);
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>*/
-    public int getZAxisOffset()
-        {
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     */
+    public int getZAxisOffset() {
         return readShort(Register.Z_AXIS_OFFSET);
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>*/
-    public void setZAxisOffset(short offset)
-        {
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     */
+    public void setZAxisOffset(short offset) {
         writeShort(Register.Z_AXIS_OFFSET, offset);
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>*/
-    public int getZAxisScalingCoefficient()
-        {
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     */
+    public int getZAxisScalingCoefficient() {
         return TypeConversion.unsignedShortToInt(readShort(Register.Z_AXIS_SCALE_COEF));
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>*/
-    public void setZAxisScalingCoefficient(int zAxisScalingCoefficient)
-        {
-        writeShort(Register.Z_AXIS_SCALE_COEF, (short)zAxisScalingCoefficient);
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     */
+    public void setZAxisScalingCoefficient(int zAxisScalingCoefficient) {
+        writeShort(Register.Z_AXIS_SCALE_COEF, (short) zAxisScalingCoefficient);
         this.degreesPerZAxisTick = 256.f / zAxisScalingCoefficient;
-        }
+    }
 
-    /** @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>*/
-    public int getIntegratedZValue()
-        {
+    /**
+     * @see <a href="http://www.modernroboticsinc.com/sensors">Modern Robotics sensor documentation</a>
+     */
+    public int getIntegratedZValue() {
         /**
          *  "The integrated gyro Z value returns the current value obtained by integrating the Z axis
          *  rate value, adjusted by the Z axis offset continuously. This integrated value can be reset
@@ -391,73 +399,67 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
          *      angleRotated / headingValue * 256 = scaleValue"
          */
         return readShort(Register.INTEGRATED_Z_VALUE);
-        }
+    }
 
-    @Override public synchronized int getHeading()
-        {
+    @Override
+    public synchronized int getHeading() {
         float cartesian = normalize0359(degreesZFromIntegratedZ(getIntegratedZValue()));
-        if (headingMode == HeadingMode.HEADING_CARDINAL)
-            {
-            return truncate(cartesian==0 ? cartesian : Math.abs(cartesian - 360));
-            }
-        else
-            {
+        if (headingMode == HeadingMode.HEADING_CARDINAL) {
+            return truncate(cartesian == 0 ? cartesian : Math.abs(cartesian - 360));
+        } else {
             return truncate(cartesian);
-            }
         }
+    }
 
-    protected int truncate(float angle)
-        {
-        return (int)angle;
-        }
+    protected int truncate(float angle) {
+        return (int) angle;
+    }
 
-    protected float normalize0359(float degrees)
-        {
+    protected float normalize0359(float degrees) {
         degrees = AngleUnit.normalizeDegrees(degrees);
         return degrees < 0 ? degrees + 360 : degrees;
-        }
+    }
 
-    protected float degreesZFromIntegratedZ(int integratedZ)
-        {
+    protected float degreesZFromIntegratedZ(int integratedZ) {
         return integratedZ * degreesPerZAxisTick;
-        }
+    }
 
-    @Override public void resetZAxisIntegrator()
-        {
+    @Override
+    public void resetZAxisIntegrator() {
         // The gyro will automatically revert to COMMAND_NORMAL once the reset is complete
         this.writeCommand(Command.RESET_Z_AXIS);
-        }
+    }
 
-    @Override public String status()
-        {
+    @Override
+    public String status() {
         return String.format(Locale.getDefault(), "%s on %s", getDeviceName(), this.getConnectionInfo());
-        }
+    }
 
-    @Override public void calibrate()
-        {
+    @Override
+    public void calibrate() {
         // The gyro will automatically revert to COMMAND_NORMAL once the calibration is complete
         this.writeCommand(Command.CALIBRATE);
-        }
+    }
 
-    @Override public boolean isCalibrating()
-        {
-        return this.readCommand()==Command.CALIBRATE;
-        }
+    @Override
+    public boolean isCalibrating() {
+        return this.readCommand() == Command.CALIBRATE;
+    }
 
     //----------------------------------------------------------------------------------------------
     // I2cAddrConfig interface
     //----------------------------------------------------------------------------------------------
 
-    @Override public void setI2cAddress(I2cAddr newAddress)
-        {
+    @Override
+    public void setI2cAddress(I2cAddr newAddress) {
         // In light of the existence of I2C multiplexers, we don't *require* a valid Modern Robotics I2cAddr
         this.deviceClient.setI2cAddress(newAddress);
-        }
+    }
 
-    @Override public I2cAddr getI2cAddress()
-        {
+    @Override
+    public I2cAddr getI2cAddress() {
         return this.deviceClient.getI2cAddress();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Deprecated
@@ -467,36 +469,33 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
      * @deprecated This method has no utility for this gyro.
      */
     @Deprecated
-    @Override public double getRotationFraction()
-        {
+    @Override
+    public double getRotationFraction() {
         notSupported();
         return 0;
-        }
+    }
 
     /**
      * @deprecated This provides little useful utility beyond {@link #isCalibrating()}
      */
     @Deprecated
-    public enum MeasurementMode
-        {
+    public enum MeasurementMode {
         GYRO_CALIBRATION_PENDING,
         GYRO_CALIBRATING,
         GYRO_NORMAL,
-        }
+    }
 
     /**
      * This provides little useful utility beyond {@link #isCalibrating()}
      */
     @Deprecated
-    public MeasurementMode getMeasurementMode()
-        {
+    public MeasurementMode getMeasurementMode() {
         return this.isCalibrating()
                 ? MeasurementMode.GYRO_CALIBRATING
                 : MeasurementMode.GYRO_NORMAL;
-        }
-
-    protected void notSupported()
-        {
-        throw new UnsupportedOperationException("This method is not supported for " + getDeviceName());
-        }
     }
+
+    protected void notSupported() {
+        throw new UnsupportedOperationException("This method is not supported for " + getDeviceName());
+    }
+}

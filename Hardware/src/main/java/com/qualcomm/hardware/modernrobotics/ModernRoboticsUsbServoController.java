@@ -86,14 +86,17 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * <p>
  * Use {@link HardwareDeviceManager} to create an instance of this class
  */
-public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbController implements ServoController
-    {
+public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbController implements ServoController {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public final static String TAG = "MRServoController";
-    @Override protected String getTag() { return TAG; }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
     /**
      * Enable DEBUG_LOGGING logging
@@ -105,7 +108,7 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
      */
     public static final int MONITOR_LENGTH = 0x09;
     protected static final int SERVO_FIRST = ModernRoboticsConstants.INITIAL_SERVO_PORT;
-    protected static final int SERVO_LAST = ModernRoboticsConstants.INITIAL_SERVO_PORT + ModernRoboticsConstants.NUMBER_OF_SERVOS -1;
+    protected static final int SERVO_LAST = ModernRoboticsConstants.INITIAL_SERVO_PORT + ModernRoboticsConstants.NUMBER_OF_SERVOS - 1;
 
     /*
      * const values used by controller
@@ -125,7 +128,7 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
     public static final int ADDRESS_CHANNEL4 = 0x45;
     public static final int ADDRESS_CHANNEL5 = 0x46;
     public static final int ADDRESS_CHANNEL6 = 0x47;
-    public static final int ADDRESS_PWM      = 0x48;
+    public static final int ADDRESS_PWM = 0x48;
 
     public static final int ADDRESS_UNUSED = -1;
 
@@ -142,9 +145,9 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
             ADDRESS_CHANNEL6
     };
 
-    protected static final double apiPositionMin   = Servo.MIN_POSITION;
-    protected static final double apiPositionMax   = Servo.MAX_POSITION;
-    protected static final double servoPositionMin =   0.0;
+    protected static final double apiPositionMin = Servo.MIN_POSITION;
+    protected static final double apiPositionMax = Servo.MAX_POSITION;
+    protected static final double servoPositionMin = 0.0;
     protected static final double servoPositionMax = 255.0;
 
     //----------------------------------------------------------------------------------------------
@@ -152,7 +155,7 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
     //----------------------------------------------------------------------------------------------
 
     protected LastKnown<Double>[] commandedServoPositions;
-    protected LastKnown<Boolean>  lastKnownPwmEnabled;
+    protected LastKnown<Boolean> lastKnownPwmEnabled;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -167,201 +170,175 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
      * @throws InterruptedException
      */
     public ModernRoboticsUsbServoController(final Context context, final SerialNumber serialNumber, OpenRobotUsbDevice openRobotUsbDevice, EventLoopManager manager)
-            throws RobotCoreException, InterruptedException
-        {
-        super(context, serialNumber, manager, openRobotUsbDevice, new CreateReadWriteRunnable() 
-            {
-            @Override public ReadWriteRunnable create(RobotUsbDevice device)
-                {
+            throws RobotCoreException, InterruptedException {
+        super(context, serialNumber, manager, openRobotUsbDevice, new CreateReadWriteRunnable() {
+            @Override
+            public ReadWriteRunnable create(RobotUsbDevice device) {
                 return new ReadWriteRunnableStandard(context, serialNumber, device, MONITOR_LENGTH, START_ADDRESS, DEBUG_LOGGING);
-                }
-            });
+            }
+        });
 
         this.commandedServoPositions = LastKnown.createArray(ADDRESS_CHANNEL_MAP.length);
         this.lastKnownPwmEnabled = new LastKnown<Boolean>();
-        }
+    }
 
     @Override
-    public void initializeHardware()
-        {
+    public void initializeHardware() {
         // start off with PWM off for safety reasons
         floatHardware();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Arming and disarming
     //----------------------------------------------------------------------------------------------
-    
-    @Override protected void doArm() throws RobotCoreException, InterruptedException
-        {
-        doArmOrPretend(true);
-        }
-    @Override protected void doPretend() throws RobotCoreException, InterruptedException
-        {
-        doArmOrPretend(false);
-        }
 
-    private void doArmOrPretend(boolean isArm) throws RobotCoreException, InterruptedException
-        {
+    @Override
+    protected void doArm() throws RobotCoreException, InterruptedException {
+        doArmOrPretend(true);
+    }
+
+    @Override
+    protected void doPretend() throws RobotCoreException, InterruptedException {
+        doArmOrPretend(false);
+    }
+
+    private void doArmOrPretend(boolean isArm) throws RobotCoreException, InterruptedException {
         RobotLog.d("arming modern servo controller %s%s...", HardwareFactory.getDeviceDisplayName(context, this.serialNumber), (isArm ? "" : " (pretend)"));
 
-        if (isArm)
+        if (isArm) {
             this.armDevice();
-        else
+        } else {
             this.pretendDevice();
-
-        RobotLog.d("...arming modern servo controller %s complete", HardwareFactory.getDeviceDisplayName(context, this.serialNumber));
         }
 
-    @Override protected void doDisarm() throws RobotCoreException, InterruptedException
-        {
+        RobotLog.d("...arming modern servo controller %s complete", HardwareFactory.getDeviceDisplayName(context, this.serialNumber));
+    }
+
+    @Override
+    protected void doDisarm() throws RobotCoreException, InterruptedException {
         RobotLog.d("disarming modern servo controller \"%s\"...", HardwareFactory.getDeviceDisplayName(context, this.serialNumber));
 
         this.disarmDevice();
 
         RobotLog.d("...disarming modern servo controller %s complete", HardwareFactory.getDeviceDisplayName(context, this.serialNumber));
-        }
+    }
 
-    @Override protected void doCloseFromArmed()
-        {
+    @Override
+    protected void doCloseFromArmed() {
         floatHardware();
         doCloseFromOther();
-        }
+    }
 
-    @Override protected void doCloseFromOther()
-        {
-        try
-            {
+    @Override
+    protected void doCloseFromOther() {
+        try {
             this.doDisarm();
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
-        catch (RobotCoreException ignore)
-            {
+        } catch (RobotCoreException ignore) {
             // ignore, won't actually happen
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDeviceInterface
     //----------------------------------------------------------------------------------------------
 
-    @Override public Manufacturer getManufacturer()
-        {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.ModernRobotics;
-        }
+    }
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return String.format("%s %s", context.getString(R.string.moduleDisplayNameServoController), this.robotUsbDevice.getFirmwareVersion());
-        }
+    }
 
     @Override
-    public String getConnectionInfo()
-        {
+    public String getConnectionInfo() {
         return "USB " + getSerialNumber();
-        }
+    }
 
     @Override
-    public void resetDeviceConfigurationForOpMode()
-        {
+    public void resetDeviceConfigurationForOpMode() {
         floatHardware();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // ServoController interface
     //----------------------------------------------------------------------------------------------
 
     @Override
-    synchronized public void pwmEnable()
-        {
-        if (lastKnownPwmEnabled.updateValue(true))
-            {
+    synchronized public void pwmEnable() {
+        if (lastKnownPwmEnabled.updateValue(true)) {
             write8(ADDRESS_PWM, PWM_ENABLE);
-            }
         }
+    }
 
     @Override
-    synchronized public void pwmDisable()
-        {
-        if (lastKnownPwmEnabled.updateValue(false))
-            {
+    synchronized public void pwmDisable() {
+        if (lastKnownPwmEnabled.updateValue(false)) {
             write8(ADDRESS_PWM, PWM_DISABLE);
 
             // Make any subsequent positioning actually actuate
-            for (LastKnown<Double> commandedPosition : commandedServoPositions)
-                {
+            for (LastKnown<Double> commandedPosition : commandedServoPositions) {
                 commandedPosition.invalidate();
-                }
             }
         }
+    }
 
     @Override
-    synchronized public PwmStatus getPwmStatus()
-        {
+    synchronized public PwmStatus getPwmStatus() {
         byte[] resp = read(ADDRESS_PWM, 1);
-        if (resp[0] == PWM_DISABLE)
-            {
+        if (resp[0] == PWM_DISABLE) {
             return PwmStatus.DISABLED;
-            }
-        else
-            {
+        } else {
             return PwmStatus.ENABLED;
-            }
         }
+    }
 
     @Override
-    synchronized public void setServoPosition(int servo, double position)
-        {
+    synchronized public void setServoPosition(int servo, double position) {
         validateServo(servo);
         position = Range.clip(position, apiPositionMin, apiPositionMax);
         validateApiPosition(position);  // will catch NaNs, for example
 
         // Don't update if we know we're already there
-        if (commandedServoPositions[servo].updateValue(position))
-            {
-            byte bPosition = (byte)Range.scale(position, apiPositionMin, apiPositionMax, servoPositionMin, servoPositionMax);
+        if (commandedServoPositions[servo].updateValue(position)) {
+            byte bPosition = (byte) Range.scale(position, apiPositionMin, apiPositionMax, servoPositionMin, servoPositionMax);
             this.write8(ADDRESS_CHANNEL_MAP[servo], bPosition);
             this.pwmEnable();
-            }
         }
+    }
 
     @Override
     synchronized public double getServoPosition(int servo)
     // One would think we could just read the servo position registers. But they always report as zero
-        {
+    {
         validateServo(servo);
         Double commanded = this.commandedServoPositions[servo].getRawValue();
-        return commanded==null ? Double.NaN : commanded;
-        }
+        return commanded == null ? Double.NaN : commanded;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected void floatHardware()
-        {
+    protected void floatHardware() {
         this.pwmDisable();
-        }
+    }
 
-    private void validateServo(int servo)
-        {
-        if (servo < SERVO_FIRST || servo > SERVO_LAST)
-            {
+    private void validateServo(int servo) {
+        if (servo < SERVO_FIRST || servo > SERVO_LAST) {
             throw new IllegalArgumentException(String.format("Servo %d is invalid; valid servos are %d..%d", servo, SERVO_FIRST, SERVO_LAST));
-            }
         }
+    }
 
-    private void validateApiPosition(double position)
-        {
-        if (apiPositionMin <= position && position <= apiPositionMax)
-            {
+    private void validateApiPosition(double position) {
+        if (apiPositionMin <= position && position <= apiPositionMax) {
             // all is well
-            }
-        else
+        } else {
             throw new IllegalArgumentException(String.format("illegal servo position %f; must be in interval [%f,%f]", position, apiPositionMin, apiPositionMax));
         }
     }
+}

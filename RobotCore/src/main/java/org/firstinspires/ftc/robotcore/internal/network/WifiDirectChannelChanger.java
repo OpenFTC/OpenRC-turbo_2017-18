@@ -48,61 +48,55 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
  * It issues toasts on success or failure.
  */
 @SuppressWarnings("WeakerAccess")
-public class WifiDirectChannelChanger
-    {
+public class WifiDirectChannelChanger {
     public static final String TAG = "WifiDirectChannelChanger";
 
-    private Context             context = AppUtil.getDefContext();
-    private PreferencesHelper   preferencesHelper = new PreferencesHelper(TAG, context);
-    private WifiDirectAgent     wifiDirectAgent = WifiDirectAgent.getInstance();
-    private int                 channel = 0;
-    private volatile boolean    isChangingChannels = false;
+    private Context context = AppUtil.getDefContext();
+    private PreferencesHelper preferencesHelper = new PreferencesHelper(TAG, context);
+    private WifiDirectAgent wifiDirectAgent = WifiDirectAgent.getInstance();
+    private int channel = 0;
+    private volatile boolean isChangingChannels = false;
 
-    private void issueSuccessToast()
-        {
+    private void issueSuccessToast() {
         AppUtil.getInstance().showToast(UILocation.BOTH, context.getString(R.string.setWifiChannelSuccess, WifiDirectChannelAndDescription.getDescription(channel)), Toast.LENGTH_LONG);
-        }
+    }
 
-    private void issueFailureToast()
-        {
+    private void issueFailureToast() {
         AppUtil.getInstance().showToast(UILocation.BOTH, context.getString(R.string.setWifiChannelFailure, WifiDirectChannelAndDescription.getDescription(channel)), Toast.LENGTH_LONG);
-        }
+    }
 
-    private void startChannelChange(int channel)
-        {
+    private void startChannelChange(int channel) {
         RobotLog.vv(TAG, "startChannelChange() channel=%d", channel);
         isChangingChannels = true;
         this.channel = channel;
-        }
+    }
 
-    private void finishChannelChange(boolean success)
-        {
+    private void finishChannelChange(boolean success) {
         RobotLog.vv(TAG, "finishChannelChange() channel=%d success=%s", channel, success);
-        if (success)
+        if (success) {
             issueSuccessToast();
-        else
+        } else {
             issueFailureToast();
+        }
         isChangingChannels = false;
-        }
+    }
 
-    public boolean isBusy()
-        {
+    public boolean isBusy() {
         return isChangingChannels;
-        }
+    }
 
-    /** Asynchronously changes the channel; issues a toast when finished */
-    public void changeToChannel(int newChannel)
-        {
+    /**
+     * Asynchronously changes the channel; issues a toast when finished
+     */
+    public void changeToChannel(int newChannel) {
         RobotLog.vv(TAG, "changeToChannel() channel=%d", newChannel);
         startChannelChange(newChannel);
-        AppUtil.getInstance().runOnUiThread(new Runnable()
-            {
-            @Override public void run()
-                {
-                wifiDirectAgent.setWifiP2pChannels(channel, channel, new WifiP2pManager.ActionListener()
-                    {
-                    @Override public void onSuccess()
-                        {
+        AppUtil.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                wifiDirectAgent.setWifiP2pChannels(channel, channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
                         RobotLog.vv(TAG, "callSetWifiP2pChannels() success");
 
                         // Save the preference so we have a hope in heck of knowing what we last set to (though
@@ -110,16 +104,16 @@ public class WifiDirectChannelChanger
                         preferencesHelper.writePrefIfDifferent(context.getString(R.string.pref_wifip2p_channel), channel);
 
                         finishChannelChange(true);
-                        }
+                    }
 
-                    @Override public void onFailure(int reason)
-                        {
+                    @Override
+                    public void onFailure(int reason) {
                         RobotLog.vv(TAG, "callSetWifiP2pChannels() failure");
                         finishChannelChange(false);
-                        }
-                    });
-                }
-            });
-        }
-
+                    }
+                });
+            }
+        });
     }
+
+}

@@ -37,8 +37,7 @@ import com.qualcomm.hardware.lynx.LynxModuleIntf;
 /**
  * Created by bob on 2016-03-06.
  */
-public abstract class LynxInterfaceCommand<RESPONSE extends LynxMessage> extends LynxCommand<RESPONSE>
-    {
+public abstract class LynxInterfaceCommand<RESPONSE extends LynxMessage> extends LynxCommand<RESPONSE> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -47,10 +46,9 @@ public abstract class LynxInterfaceCommand<RESPONSE extends LynxMessage> extends
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxInterfaceCommand(LynxModuleIntf module)
-        {
+    public LynxInterfaceCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
@@ -58,25 +56,24 @@ public abstract class LynxInterfaceCommand<RESPONSE extends LynxMessage> extends
 
     public abstract LynxInterface getInterface();
 
-    public int getInterfaceCommandIndex()
-        {
-        if (null == this.getInterface())
+    public int getInterfaceCommandIndex() {
+        if (null == this.getInterface()) {
             return LynxInterface.ERRONEOUS_INDEX;   // should never happen in working system, but might if pretending
+        }
 
         return getInterface().getCommandIndex(this.getClass());
-        }
+    }
 
-    public int getBaseCommandNumber()
-        {
-        if (null == this.getInterface())
+    public int getBaseCommandNumber() {
+        if (null == this.getInterface()) {
             return LynxInterface.ERRONEOUS_COMMAND_NUMBER;   // should never happen in working system, but might if pretending
+        }
 
         return this.module.getInterfaceBaseCommandNumber(this.getInterface().getInterfaceName());
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return getBaseCommandNumber() + getInterfaceCommandIndex();
-        }
     }
+}

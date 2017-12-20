@@ -48,13 +48,17 @@ public final class TypeIdsSection extends UniformItemSection {
         typeIds = new TreeMap<Type, TypeIdItem>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends Item> items() {
         return typeIds.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IndexedItem get(Constant cst) {
         if (cst == null) {
@@ -184,7 +188,9 @@ public final class TypeIdsSection extends UniformItemSection {
         return indexOf(type.getClassType());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;

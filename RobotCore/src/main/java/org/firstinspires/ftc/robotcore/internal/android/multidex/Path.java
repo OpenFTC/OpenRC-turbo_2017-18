@@ -65,7 +65,7 @@ class Path {
     private static byte[] readStream(InputStream in, ByteArrayOutputStream baos, byte[] readBuffer)
             throws IOException {
         try {
-            for (;;) {
+            for (; ; ) {
                 int amt = in.read(readBuffer);
                 if (amt < 0) {
                     break;
@@ -85,7 +85,7 @@ class Path {
     }
 
     Iterable<ClassPathElement> getElements() {
-      return elements;
+        return elements;
     }
 
     private void addElement(ClassPathElement element) {

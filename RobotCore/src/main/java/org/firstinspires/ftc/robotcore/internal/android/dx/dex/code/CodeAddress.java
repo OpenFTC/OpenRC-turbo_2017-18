@@ -27,7 +27,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.SourcePositi
  * human-oriented or binary file).
  */
 public final class CodeAddress extends ZeroSizeInsn {
-    /** If this address should bind closely to the following real instruction */
+    /**
+     * If this address should bind closely to the following real instruction
+     */
     private final boolean bindsClosely;
 
     /**
@@ -44,7 +46,7 @@ public final class CodeAddress extends ZeroSizeInsn {
      * Constructs an instance. The output address of this instance is initially
      * unknown ({@code -1}).
      *
-     * @param position {@code non-null;} source position
+     * @param position     {@code non-null;} source position
      * @param bindsClosely if the address should bind closely to the following
      *                     real instruction.
      */
@@ -53,19 +55,25 @@ public final class CodeAddress extends ZeroSizeInsn {
         this.bindsClosely = bindsClosely;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final DalvInsn withRegisters(RegisterSpecList registers) {
         return new CodeAddress(getPosition());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String listingString0(boolean noteIndices) {
         return "code-address";
@@ -74,12 +82,12 @@ public final class CodeAddress extends ZeroSizeInsn {
     /**
      * Gets whether this address binds closely to the following "real"
      * (non-zero-length) instruction.
-     *
+     * <p>
      * When a prefix is added to an instruction (for example, to move a value
      * from a high register to a low register), this determines whether this
      * {@code CodeAddress} will point to the prefix, or to the instruction
      * itself.
-     *
+     * <p>
      * If bindsClosely is true, the address will point to the instruction
      * itself, otherwise it will point to the prefix (if any)
      *

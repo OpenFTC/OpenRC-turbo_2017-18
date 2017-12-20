@@ -25,7 +25,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.ToHuman;
 
 /**
  * Representation of an array of local variables, with Java semantics.
- *
+ * <p>
  * <p><b>Note:</b> For the most part, the documentation for this class
  * ignores the distinction between {@link Type} and {@link
  * TypeBearer}.</p>
@@ -79,7 +79,7 @@ public abstract class LocalsArray extends MutabilityControl implements ToHuman {
      * local contains a category-2 value, then it too is invalidated by
      * this operation.
      *
-     * @param idx {@code >= 0, < getMaxLocals();} which local
+     * @param idx  {@code >= 0, < getMaxLocals();} which local
      * @param type {@code non-null;} new type for the local at {@code idx}
      */
     public abstract void set(int idx, TypeBearer type);
@@ -118,7 +118,7 @@ public abstract class LocalsArray extends MutabilityControl implements ToHuman {
      * @param idx {@code >= 0, < getMaxLocals();} which local
      * @return {@code non-null;} the type of value stored in that local
      * @throws SimException thrown if {@code idx} is valid, but
-     * the contents are invalid
+     *                      the contents are invalid
      */
     public abstract TypeBearer get(int idx);
 
@@ -129,9 +129,9 @@ public abstract class LocalsArray extends MutabilityControl implements ToHuman {
      * @param idx {@code >= 0, < getMaxLocals();} which local
      * @return {@code non-null;} the type of value stored in that local
      * @throws SimException thrown if {@code idx} is valid, but
-     * one of the following holds: (a) the local is invalid; (b) the local
-     * contains an uninitialized instance; (c) the local contains a
-     * category-2 value
+     *                      one of the following holds: (a) the local is invalid; (b) the local
+     *                      contains an uninitialized instance; (c) the local contains a
+     *                      category-2 value
      */
     public abstract TypeBearer getCategory1(int idx);
 
@@ -142,8 +142,8 @@ public abstract class LocalsArray extends MutabilityControl implements ToHuman {
      * @param idx {@code >= 0, < getMaxLocals();} which local
      * @return {@code non-null;} the type of value stored in that local
      * @throws SimException thrown if {@code idx} is valid, but
-     * one of the following holds: (a) the local is invalid; (b) the local
-     * contains a category-1 value
+     *                      one of the following holds: (a) the local is invalid; (b) the local
+     *                      contains a category-1 value
      */
     public abstract TypeBearer getCategory2(int idx);
 
@@ -160,13 +160,13 @@ public abstract class LocalsArray extends MutabilityControl implements ToHuman {
      * Merges this instance with a {@code LocalsSet} from a subroutine
      * caller. To be used when merging in the first block of a subroutine.
      *
-     * @param other {@code other non-null;} another LocalsArray. The final locals
-     * state of a subroutine caller.
+     * @param other     {@code other non-null;} another LocalsArray. The final locals
+     *                  state of a subroutine caller.
      * @param predLabel the label of the subroutine caller block.
      * @return {@code non-null;} the merge result, a new instance or this
      */
     public abstract LocalsArraySet mergeWithSubroutineCaller
-            (LocalsArray other, int predLabel);
+    (LocalsArray other, int predLabel);
 
     /**
      * Gets the locals set appropriate for the current execution context.

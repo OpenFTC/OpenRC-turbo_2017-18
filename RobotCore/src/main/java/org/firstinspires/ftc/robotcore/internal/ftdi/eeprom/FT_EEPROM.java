@@ -39,8 +39,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi.eeprom;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EEPROM
-    {
+public class FT_EEPROM {
     public short DeviceType = 0;
     public String Manufacturer = "FTDI";
     public String Product = "USB <-> Serial Converter";
@@ -53,7 +52,6 @@ public class FT_EEPROM
     public boolean RemoteWakeup = false;
     public boolean PullDownEnable = false;
 
-    public FT_EEPROM()
-        {
-        }
+    public FT_EEPROM() {
     }
+}

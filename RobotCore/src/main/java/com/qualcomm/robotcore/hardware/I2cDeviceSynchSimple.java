@@ -35,11 +35,11 @@ package com.qualcomm.robotcore.hardware;
 /**
  * I2cDeviceSyncSimple is an interface that provides simple synchronous read and write
  * functionality to an I2c device.
+ *
  * @see I2cDeviceSynch
  * @see I2cDeviceSynchImplOnSimple
  */
-public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHealth, I2cAddrConfig, RobotConfigNameable
-    {
+public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHealth, I2cAddrConfig, RobotConfigNameable {
     //----------------------------------------------------------------------------------------------
     // Reading
     //----------------------------------------------------------------------------------------------
@@ -48,9 +48,8 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * Read the byte at the indicated register. See {@link #readTimeStamped(int, int)} for a
      * complete description.
      *
-     * @param ireg  the register number to read
-     * @return      the byte that was read
-     *
+     * @param ireg the register number to read
+     * @return the byte that was read
      * @see #read(int, int)
      * @see #readTimeStamped(int, int)
      * @see I2cDeviceSynch#ensureReadWindow(I2cDeviceSynch.ReadWindow, I2cDeviceSynch.ReadWindow)
@@ -61,10 +60,9 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * Read a contiguous set of device I2C registers. See {@link #readTimeStamped(int, int)} for a
      * complete description.
      *
-     * @param ireg  the register number of the first byte register to read
-     * @param creg  the number of bytes / registers to read
-     * @return      the data which was read
-     *
+     * @param ireg the register number of the first byte register to read
+     * @param creg the number of bytes / registers to read
+     * @return the data which was read
      * @see #read8(int)
      * @see #readTimeStamped(int, int)
      * @see I2cDeviceSynch#ensureReadWindow(I2cDeviceSynch.ReadWindow, I2cDeviceSynch.ReadWindow)
@@ -75,13 +73,13 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * Reads and returns a contiguous set of device I2C registers, together with a best-available
      * timestamp of when the actual I2C read occurred. Note that this can take many tens of
      * milliseconds to execute, and thus should not be called from the loop() thread.
-     *
+     * <p>
      * <p>You can always just call this method without worrying at all about
      * {@link I2cDeviceSynch.ReadWindow read windows},
      * that will work, but usually it is more efficient to take some thought and care as to what set
      * of registers the I2C device controller is being set up to read, as adjusting that window
      * of registers incurs significant extra time.</p>
-     *
+     * <p>
      * <p>If the current read window can't be used to read the requested registers, then
      * a new read window will automatically be created as follows. If the current read window is non
      * null and wholly contains the registers to read but can't be read because it is a used-up
@@ -89,10 +87,9 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * a new read fresh window will be created with the same set of registers. Otherwise, a
      * window that exactly covers the requested set of registers will be created.</p>
      *
-     * @param ireg  the register number of the first byte register to read
-     * @param creg  the number of bytes / registers to read
-     * @return      the data which was read, together with the timestamp
-     *
+     * @param ireg the register number of the first byte register to read
+     * @param creg the number of bytes / registers to read
+     * @return the data which was read, together with the timestamp
      * @see #read(int, int)
      * @see #read8(int)
      * @see I2cDeviceSynch#ensureReadWindow(I2cDeviceSynch.ReadWindow, I2cDeviceSynch.ReadWindow)
@@ -106,9 +103,8 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
     /**
      * Writes a byte to the indicated register using {@link I2cWaitControl#ATOMIC} semantics.
      *
-     * @param ireg      the register number that is to be written
-     * @param bVal      the byte which is to be written to that register
-     *
+     * @param ireg the register number that is to be written
+     * @param bVal the byte which is to be written to that register
      * @see #write(int, byte[], I2cWaitControl)
      */
     void write8(int ireg, int bVal);
@@ -117,9 +113,8 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * Writes data to a set of registers, beginning with the one indicated, using
      * {@link I2cWaitControl#ATOMIC} semantics.
      *
-     * @param ireg      the first of the registers which is to be written
-     * @param data      the data which is to be written to the registers
-     *
+     * @param ireg the first of the registers which is to be written
+     * @param data the data which is to be written to the registers
      * @see #write(int, byte[], I2cWaitControl)
      */
     void write(int ireg, byte[] data);
@@ -128,10 +123,9 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * Writes a byte to the indicated register. See also
      * {@link #write(int, byte[], I2cWaitControl)}.
      *
-     * @param ireg                  the register number that is to be written
-     * @param bVal                  the byte which is to be written to that register
-     * @param waitControl           controls the behavior of waiting for the completion of the write
-     *
+     * @param ireg        the register number that is to be written
+     * @param bVal        the byte which is to be written to that register
+     * @param waitControl controls the behavior of waiting for the completion of the write
      * @see #write(int, byte[], I2cWaitControl)
      */
     void write8(int ireg, int bVal, I2cWaitControl waitControl);
@@ -144,17 +138,17 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * until the data has been transmitted to the USB controller module according to a caller-provided
      * parameter.
      *
-     * @param ireg                  the first of the registers which is to be written
-     * @param data                  the data which is to be written to the registers
-     * @param waitControl           controls the behavior of waiting for the completion of the write
+     * @param ireg        the first of the registers which is to be written
+     * @param data        the data which is to be written to the registers
+     * @param waitControl controls the behavior of waiting for the completion of the write
      */
     void write(int ireg, byte[] data, I2cWaitControl waitControl);
 
     /**
      * Waits for the most recent write to complete according to the behavior specified in writeControl.
      *
-     * @param waitControl           controls the behavior of waiting for the completion of the write
-     *                              Note that a value of {@link I2cWaitControl#NONE} is essentially a no-op.
+     * @param waitControl controls the behavior of waiting for the completion of the write
+     *                    Note that a value of {@link I2cWaitControl#NONE} is essentially a no-op.
      */
     void waitForWriteCompletions(I2cWaitControl waitControl);
 
@@ -162,16 +156,16 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * Enables or disables an optimization wherein writes to two sets of adjacent register
      * ranges may be coalesced into a single I2c transaction if the second write comes along
      * while the first is still queued for writing. By default, write coalescing is disabled.
-     * @param enable whether to enable write coalescing or not
      *
+     * @param enable whether to enable write coalescing or not
      * @see #isWriteCoalescingEnabled()
      */
     void enableWriteCoalescing(boolean enable);
 
     /**
      * Answers as to whether write coalescing is currently enabled on this device.
-     * @return whether write coalescing is currently enabled or not.
      *
+     * @return whether write coalescing is currently enabled or not.
      * @see #enableWriteCoalescing(boolean)
      */
     boolean isWriteCoalescingEnabled();
@@ -194,6 +188,7 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
     /**
      * Sets the I2C address of the underlying client. If necessary, the client may be briefly
      * disengaged (and then automatically reengaged) in the process.
+     *
      * @param i2cAddr the new I2C address
      * @deprecated Use {@link #setI2cAddress(I2cAddr)} instead.
      */
@@ -202,6 +197,7 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
 
     /**
      * Returns the I2C address currently being used by this device client
+     *
      * @return the current I2C address
      * @deprecated Use {@link #getI2cAddress()} instead.
      */
@@ -214,19 +210,25 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
 
     /**
      * Turn logging on or off. Logging output can be viewed using the Android Logcat tools.
-     * @param enabled     whether to enable logging or not
+     *
+     * @param enabled whether to enable logging or not
      */
     void setLogging(boolean enabled);
 
-    /** @see #setLogging(boolean)  */
+    /**
+     * @see #setLogging(boolean)
+     */
     boolean getLogging();
 
     /**
      * Set the tag to use when logging is on.
-     * @param loggingTag    the logging tag to sue
+     *
+     * @param loggingTag the logging tag to sue
      */
     void setLoggingTag(String loggingTag);
 
-    /** @see #setLoggingTag(String) */
+    /**
+     * @see #setLoggingTag(String)
+     */
     String getLoggingTag();
-    }
+}

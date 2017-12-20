@@ -30,6 +30,7 @@ public abstract class RegisterMapper {
     /**
      * Gets the count of registers (really, the total register width, since
      * category width is counted) in the new namespace.
+     *
      * @return >= 0 width of new namespace.
      */
     public abstract int getNewRegisterCount();
@@ -41,7 +42,6 @@ public abstract class RegisterMapper {
     public abstract RegisterSpec map(RegisterSpec registerSpec);
 
     /**
-     *
      * @param sources old register list
      * @return new mapped register list, or old if nothing has changed.
      */
@@ -60,7 +60,6 @@ public abstract class RegisterMapper {
     }
 
     /**
-     *
      * @param sources old register set
      * @return new mapped register set, or old if nothing has changed.
      */

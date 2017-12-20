@@ -38,13 +38,17 @@ public final class OddSpacer extends VariableSizeInsn {
         super(position, RegisterSpecList.EMPTY);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int codeSize() {
         return (getAddress() & 1);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(AnnotatedOutput out) {
         if (codeSize() != 0) {
@@ -52,19 +56,25 @@ public final class OddSpacer extends VariableSizeInsn {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         return new OddSpacer(getPosition());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String listingString0(boolean noteIndices) {
         if (codeSize() == 0) {

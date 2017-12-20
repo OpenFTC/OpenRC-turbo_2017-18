@@ -23,7 +23,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.cf.iface.Attribute;
  * the attribute name but leaves the rest up to subclasses.
  */
 public abstract class BaseAttribute implements Attribute {
-    /** {@code non-null;} attribute name */
+    /**
+     * {@code non-null;} attribute name
+     */
     private final String name;
 
     /**
@@ -39,7 +41,9 @@ public abstract class BaseAttribute implements Attribute {
         this.name = name;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String getName() {
         return name;
     }

@@ -47,84 +47,90 @@ import java.util.concurrent.TimeUnit;
  */
 public class PeerDiscoveryManager {
 
-   public static final String TAG = PeerDiscovery.TAG;
-   private static final boolean DEBUG = false;
+    public static final String TAG = PeerDiscovery.TAG;
+    private static final boolean DEBUG = false;
 
-   private class PeerDiscoveryRunnable implements Runnable {
+    private class PeerDiscoveryRunnable implements Runnable {
 
-      @Override
-      public void run() {
-         try {
-            if (DEBUG) RobotLog.vv(TAG, "sending peer discovery packet(%d)", message.getSequenceNumber());
-            RobocolDatagram packet = new RobocolDatagram(message);
-            if (socket.getInetAddress() == null) packet.setAddress(peerDiscoveryDevice);
-            socket.send(packet);
-         } catch (RobotCoreException e) {
-            RobotLog.ee(TAG, "Unable to send peer discovery packet: " + e.toString());
-         }
-      }
-   }
+        @Override
+        public void run() {
+            try {
+                if (DEBUG) {
+                    RobotLog.vv(TAG, "sending peer discovery packet(%d)", message.getSequenceNumber());
+                }
+                RobocolDatagram packet = new RobocolDatagram(message);
+                if (socket.getInetAddress() == null) {
+                    packet.setAddress(peerDiscoveryDevice);
+                }
+                socket.send(packet);
+            } catch (RobotCoreException e) {
+                RobotLog.ee(TAG, "Unable to send peer discovery packet: " + e.toString());
+            }
+        }
+    }
 
-   private InetAddress peerDiscoveryDevice;
-   private final RobocolDatagramSocket socket;
-   private ScheduledExecutorService discoveryLoopService;
-   private ScheduledFuture<?> discoveryLoopFuture;
-   private final PeerDiscovery message;
-   private CountDownLatch interlock = new CountDownLatch(0);
+    private InetAddress peerDiscoveryDevice;
+    private final RobocolDatagramSocket socket;
+    private ScheduledExecutorService discoveryLoopService;
+    private ScheduledFuture<?> discoveryLoopFuture;
+    private final PeerDiscovery message;
+    private CountDownLatch interlock = new CountDownLatch(0);
 
-   /**
-    * Constructor
-    * @param socket socket to send packets from
-    */
-   public PeerDiscoveryManager(RobocolDatagramSocket socket, InetAddress peerDiscoveryDevice) {
-      this.socket = socket;
-      this.message = new PeerDiscovery(PeerDiscovery.PeerType.PEER);
-      this.peerDiscoveryDevice = peerDiscoveryDevice;
-      start();
-   }
+    /**
+     * Constructor
+     *
+     * @param socket socket to send packets from
+     */
+    public PeerDiscoveryManager(RobocolDatagramSocket socket, InetAddress peerDiscoveryDevice) {
+        this.socket = socket;
+        this.message = new PeerDiscovery(PeerDiscovery.PeerType.PEER);
+        this.peerDiscoveryDevice = peerDiscoveryDevice;
+        start();
+    }
 
-   /**
-    * Get the IP address of the peer discovery device
-    * @return InetAddress of peer discovery device
-    */
-   public InetAddress getPeerDiscoveryDevice() {
-      return peerDiscoveryDevice;
-   }
+    /**
+     * Get the IP address of the peer discovery device
+     *
+     * @return InetAddress of peer discovery device
+     */
+    public InetAddress getPeerDiscoveryDevice() {
+        return peerDiscoveryDevice;
+    }
 
-   /**
-    * Start peer discovery
-    */
-   private void start() {
-      RobotLog.vv(TAG, "Starting peer discovery");
+    /**
+     * Start peer discovery
+     */
+    private void start() {
+        RobotLog.vv(TAG, "Starting peer discovery");
 
-      if (peerDiscoveryDevice.equals(socket.getLocalAddress())) {
-         // we already know about our self
-         RobotLog.vv(TAG, "No need for peer discovery, we are the peer discovery device");
-      } else {
-         // start the peer discovery service
-         discoveryLoopService = ThreadPool.newScheduledExecutor(1, "discovery service");
-         discoveryLoopFuture = discoveryLoopService.scheduleAtFixedRate(new PeerDiscoveryRunnable(), 1, 1, TimeUnit.SECONDS);
-     }
+        if (peerDiscoveryDevice.equals(socket.getLocalAddress())) {
+            // we already know about our self
+            RobotLog.vv(TAG, "No need for peer discovery, we are the peer discovery device");
+        } else {
+            // start the peer discovery service
+            discoveryLoopService = ThreadPool.newScheduledExecutor(1, "discovery service");
+            discoveryLoopFuture = discoveryLoopService.scheduleAtFixedRate(new PeerDiscoveryRunnable(), 1, 1, TimeUnit.SECONDS);
+        }
 
-     interlock.countDown();
-   }
+        interlock.countDown();
+    }
 
-   /**
-    * Stop peer discovery
-    */
-   public void stop() {
-      RobotLog.vv(TAG, "Stopping peer discovery");
+    /**
+     * Stop peer discovery
+     */
+    public void stop() {
+        RobotLog.vv(TAG, "Stopping peer discovery");
 
-      try {
-         interlock.await();
-      } catch (InterruptedException e) {
-         Thread.currentThread().interrupt();
-      }
+        try {
+            interlock.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-      if (discoveryLoopFuture != null) {
-         discoveryLoopFuture.cancel(true);
-         discoveryLoopFuture = null;
-      }
-   }
+        if (discoveryLoopFuture != null) {
+            discoveryLoopFuture.cancel(true);
+            discoveryLoopFuture = null;
+        }
+    }
 
 }

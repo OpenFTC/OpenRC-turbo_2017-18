@@ -37,18 +37,17 @@ package org.firstinspires.ftc.robotcore.internal.stellaris;
  * the flash loader.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderDatagram
-    {
+public class FlashLoaderDatagram {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public static final byte ACK = (byte)0xCC;
-    public static final byte NAK = (byte)0x33;
+    public static final byte ACK = (byte) 0xCC;
+    public static final byte NAK = (byte) 0x33;
 
-    public static final int CB_HEADER  = 2;
-    public static final int IB_LENGTH  = 0;
-    public static final int IB_XSUM    = 1;
+    public static final int CB_HEADER = 2;
+    public static final int IB_LENGTH = 0;
+    public static final int IB_XSUM = 1;
     public static final int IB_PAYLOAD = 2;
 
     public byte[] data;
@@ -57,41 +56,35 @@ public class FlashLoaderDatagram
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public FlashLoaderDatagram(int cbPayload)
-        {
+    public FlashLoaderDatagram(int cbPayload) {
         data = new byte[CB_HEADER + cbPayload];
-        data[IB_LENGTH] = (byte)(CB_HEADER + cbPayload);
-        }
+        data[IB_LENGTH] = (byte) (CB_HEADER + cbPayload);
+    }
 
-    public FlashLoaderDatagram(byte[] payload)
-        {
+    public FlashLoaderDatagram(byte[] payload) {
         this(payload.length);
         System.arraycopy(payload, 0, data, IB_PAYLOAD, payload.length);
         computeChecksum();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    protected byte computeChecksum()
-        {
+    protected byte computeChecksum() {
         int xsum = 0;
-        for (int ib = IB_PAYLOAD; ib < data.length; ib++)
-            {
+        for (int ib = IB_PAYLOAD; ib < data.length; ib++) {
             xsum += data[ib];
-            }
-        return (byte)xsum;
         }
-
-    protected void updateChecksum()
-        {
-        data[IB_XSUM] = computeChecksum();
-        }
-
-    protected boolean isChecksumValid()
-        {
-        return data[IB_XSUM] == computeChecksum();
-        }
-
+        return (byte) xsum;
     }
+
+    protected void updateChecksum() {
+        data[IB_XSUM] = computeChecksum();
+    }
+
+    protected boolean isChecksumValid() {
+        return data[IB_XSUM] == computeChecksum();
+    }
+
+}

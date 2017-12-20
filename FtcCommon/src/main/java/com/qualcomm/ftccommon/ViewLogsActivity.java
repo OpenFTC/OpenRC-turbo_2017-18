@@ -57,126 +57,129 @@ import java.util.Calendar;
 
 public class ViewLogsActivity extends ThemedActivity {
 
-  @Override public String getTag() { return this.getClass().getSimpleName(); }
-
-  TextView textAdbLogs;
-  int DEFAULT_NUMBER_OF_LINES = 300;
-  public static final String FILENAME = LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME;
-  private File sdcard;
-  private File logFile;
-
-  String filepath = " ";
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_view_logs);
-
-    textAdbLogs = (TextView) findViewById(R.id.textAdbLogs);
-
-    final ScrollView scrollView = ((ScrollView) findViewById(R.id.scrollView));
-    scrollView.post(new Runnable() {
-      @Override
-      public void run() {
-        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-      }
-    });
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-
-    Intent intent = getIntent();
-    Serializable extra = intent.getSerializableExtra(FILENAME);
-    if(extra != null) {
-      filepath = (String) extra;
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 
-    sdcard = Environment.getExternalStorageDirectory();
-    logFile = new File(filepath);
+    TextView textAdbLogs;
+    int DEFAULT_NUMBER_OF_LINES = 300;
+    public static final String FILENAME = LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME;
+    private File sdcard;
+    private File logFile;
 
-    textAdbLogs.setOnLongClickListener(new View.OnLongClickListener() {
-         @Override
-         public boolean onLongClick(View v) {
-           Intent sendIntent = new Intent();
-           sendIntent.setAction(Intent.ACTION_SEND);
-           sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(logFile));
-           sendIntent.putExtra(Intent.EXTRA_SUBJECT, "FTC Robot Log - " +
-                java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-           sendIntent.setType("text/plain");
-           startActivity(sendIntent);
-           return true;
-         }
-       });
+    String filepath = " ";
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          String output = readNLines(DEFAULT_NUMBER_OF_LINES);
-          Spannable colorized = colorize(output);
-          textAdbLogs.setText(colorized);
-        } catch (IOException e) {
-          RobotLog.e(e.toString());
-          textAdbLogs.setText("File not found: " + filepath);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_logs);
+
+        textAdbLogs = (TextView) findViewById(R.id.textAdbLogs);
+
+        final ScrollView scrollView = ((ScrollView) findViewById(R.id.scrollView));
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent intent = getIntent();
+        Serializable extra = intent.getSerializableExtra(FILENAME);
+        if (extra != null) {
+            filepath = (String) extra;
         }
-      }
-    });
-  }
 
-  public String readNLines(int n) throws IOException {
-    BufferedReader bufferedReader = new BufferedReader(new FileReader(logFile));
-    String[] ringBuffer = new String[n];
-    int totalLines = 0;
-    String line = null;
-    // read into the circular buffer, storing only 'n' lines at a time.
-    while ((line = bufferedReader.readLine()) != null) {
-      ringBuffer[totalLines % ringBuffer.length] = line;
-      totalLines++;
+        sdcard = Environment.getExternalStorageDirectory();
+        logFile = new File(filepath);
+
+        textAdbLogs.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(logFile));
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "FTC Robot Log - " +
+                        java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                return true;
+            }
+        });
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String output = readNLines(DEFAULT_NUMBER_OF_LINES);
+                    Spannable colorized = colorize(output);
+                    textAdbLogs.setText(colorized);
+                } catch (IOException e) {
+                    RobotLog.e(e.toString());
+                    textAdbLogs.setText("File not found: " + filepath);
+                }
+            }
+        });
     }
 
-    // this may be in the middle of the ringbuffer,
-    // so if we mod by the length of the ringBuffer, we'll get the
-    // "start" of the lines. i.e., the "oldest" line.
-    int start = totalLines - n;
-    if (start < 0) {
-      start = 0;
+    public String readNLines(int n) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(logFile));
+        String[] ringBuffer = new String[n];
+        int totalLines = 0;
+        String line = null;
+        // read into the circular buffer, storing only 'n' lines at a time.
+        while ((line = bufferedReader.readLine()) != null) {
+            ringBuffer[totalLines % ringBuffer.length] = line;
+            totalLines++;
+        }
+
+        // this may be in the middle of the ringbuffer,
+        // so if we mod by the length of the ringBuffer, we'll get the
+        // "start" of the lines. i.e., the "oldest" line.
+        int start = totalLines - n;
+        if (start < 0) {
+            start = 0;
+        }
+
+        String output = "";
+        for (int i = start; i < totalLines; i++) {
+            // this will get you to the "oldest" line in the ringBuffer
+            int index = i % ringBuffer.length;
+            String currentLine = ringBuffer[index];
+            output += currentLine + "\n";
+        }
+
+        // Logcat sometimes duplicates logs, so we can also just read from
+        // the last "--------- beginning" print out.
+        int mostRecentIndex = output.lastIndexOf("--------- beginning");
+        if (mostRecentIndex < 0) {
+            // that string wasn't found, so just return everything
+            return output;
+        }
+        return output.substring(mostRecentIndex);
+
     }
 
-    String output = "";
-    for (int i = start; i < totalLines; i++) {
-      // this will get you to the "oldest" line in the ringBuffer
-      int index = i % ringBuffer.length;
-      String currentLine = ringBuffer[index];
-      output += currentLine + "\n";
+    private Spannable colorize(String output) {
+        Spannable span = new SpannableString(output);
+        String[] lines = output.split("\\n");
+        int currentStringIndex = 0;
+        for (String line : lines) {
+            if (line.contains("E/RobotCore") || line.contains(RobotLog.ERROR_PREPEND)) {
+                span.setSpan(new ForegroundColorSpan(Color.RED),
+                        currentStringIndex, currentStringIndex + line.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            currentStringIndex += line.length();
+            currentStringIndex++; // add for each new line character that we "split" by.
+        }
+
+        return span;
     }
-
-    // Logcat sometimes duplicates logs, so we can also just read from
-    // the last "--------- beginning" print out.
-    int mostRecentIndex = output.lastIndexOf("--------- beginning");
-    if (mostRecentIndex < 0) {
-      // that string wasn't found, so just return everything
-      return output;
-    }
-    return output.substring(mostRecentIndex);
-
-  }
-
-  private Spannable colorize(String output) {
-    Spannable span = new SpannableString(output);
-    String[] lines = output.split("\\n");
-    int currentStringIndex = 0;
-    for (String line : lines) {
-      if (line.contains("E/RobotCore") || line.contains(RobotLog.ERROR_PREPEND)) {
-        span.setSpan(new ForegroundColorSpan(Color.RED),
-            currentStringIndex, currentStringIndex + line.length(),
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      }
-      currentStringIndex += line.length();
-      currentStringIndex++; // add for each new line character that we "split" by.
-    }
-
-    return span;
-  }
 }

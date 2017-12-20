@@ -40,14 +40,12 @@ import com.google.gson.Gson;
  * instantiating a Gson. This here avoids that, saving time.
  */
 @SuppressWarnings("WeakerAccess")
-public class SimpleGson
-    {
-    protected static class InstanceHolder
-        {
+public class SimpleGson {
+    protected static class InstanceHolder {
         public static final Gson theInstance = new Gson();
-        }
-    public static Gson getInstance()
-        {
-        return InstanceHolder.theInstance;
-        }
     }
+
+    public static Gson getInstance() {
+        return InstanceHolder.theInstance;
+    }
+}

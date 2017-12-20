@@ -28,17 +28,23 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.SourcePositi
  * start address, end address, and last instruction address.
  */
 public final class BlockAddresses {
-    /** {@code non-null;} array containing addresses for the start of each basic
-     * block (indexed by basic block label) */
+    /**
+     * {@code non-null;} array containing addresses for the start of each basic
+     * block (indexed by basic block label)
+     */
     private final CodeAddress[] starts;
 
-    /** {@code non-null;} array containing addresses for the final instruction
-     * of each basic block (indexed by basic block label) */
+    /**
+     * {@code non-null;} array containing addresses for the final instruction
+     * of each basic block (indexed by basic block label)
+     */
     private final CodeAddress[] lasts;
 
-    /** {@code non-null;} array containing addresses for the end (just past the
+    /**
+     * {@code non-null;} array containing addresses for the end (just past the
      * final instruction) of each basic block (indexed by basic block
-     * label) */
+     * label)
+     */
     private final CodeAddress[] ends;
 
     /**

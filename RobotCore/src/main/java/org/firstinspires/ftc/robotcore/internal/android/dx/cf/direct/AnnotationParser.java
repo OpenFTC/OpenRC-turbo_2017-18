@@ -42,25 +42,36 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.io.IOException;
 
 /**
  * Parser for annotations.
  */
 public final class AnnotationParser {
-    /** {@code non-null;} class file being parsed */
+    /**
+     * {@code non-null;} class file being parsed
+     */
     private final DirectClassFile cf;
 
-    /** {@code non-null;} constant pool to use */
+    /**
+     * {@code non-null;} constant pool to use
+     */
     private final ConstantPool pool;
 
-    /** {@code non-null;} bytes of the attribute data */
+    /**
+     * {@code non-null;} bytes of the attribute data
+     */
     private final ByteArray bytes;
 
-    /** {@code null-ok;} parse observer, if any */
+    /**
+     * {@code null-ok;} parse observer, if any
+     */
     private final ParseObserver observer;
 
-    /** {@code non-null;} input stream to parse from */
+    /**
+     * {@code non-null;} input stream to parse from
+     */
     private final ByteArray.MyDataInputStream input;
 
     /**
@@ -72,13 +83,13 @@ public final class AnnotationParser {
     /**
      * Constructs an instance.
      *
-     * @param cf {@code non-null;} class file to parse from
-     * @param offset {@code >= 0;} offset into the class file data to parse at
-     * @param length {@code >= 0;} number of bytes left in the attribute data
+     * @param cf       {@code non-null;} class file to parse from
+     * @param offset   {@code >= 0;} offset into the class file data to parse at
+     * @param length   {@code >= 0;} number of bytes left in the attribute data
      * @param observer {@code null-ok;} parse observer to notify, if any
      */
     public AnnotationParser(DirectClassFile cf, int offset, int length,
-            ParseObserver observer) {
+                            ParseObserver observer) {
         if (cf == null) {
             throw new NullPointerException("cf == null");
         }
@@ -376,7 +387,7 @@ public final class AnnotationParser {
             }
             case '@': {
                 Annotation annotation =
-                    parseAnnotation(AnnotationVisibility.EMBEDDED);
+                        parseAnnotation(AnnotationVisibility.EMBEDDED);
                 return new CstAnnotation(annotation);
             }
             case '[': {
@@ -425,8 +436,8 @@ public final class AnnotationParser {
 
         if (observer != null) {
             String human = (value instanceof CstString)
-                ? ((CstString) value).toQuoted()
-                : value.toHuman();
+                    ? ((CstString) value).toQuoted()
+                    : value.toHuman();
             parsed(2, "constant_value: " + human);
         }
 
@@ -450,7 +461,7 @@ public final class AnnotationParser {
      * only be used (for efficiency sake) if the parse is known to be
      * observed.
      *
-     * @param length {@code >= 0;} number of bytes parsed
+     * @param length  {@code >= 0;} number of bytes parsed
      * @param message {@code non-null;} associated message
      */
     private void parsed(int length, String message) {

@@ -18,7 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
 
 /**
  * <h1>An introduction to SSA Form</h1>
- *
+ * <p>
  * This package contains classes associated with dx's {@code SSA}
  * intermediate form. This form is a static-single-assignment representation of
  * Rop-form a method with Rop-form-like instructions (with the addition of a
@@ -26,9 +26,9 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
  * implement basic optimization steps and register allocation so that a
  * reasonably efficient register machine representation can be produced from a
  * stack machine source bytecode.<p>
- *
+ * <p>
  * <h2>Key Classes</h2>
- *
+ * <p>
  * <h3>Classes related to conversion and lifetime</h3>
  * <ul>
  * <li> {@link Optimizer} is a singleton class containing methods for
@@ -37,7 +37,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
  * <li> {@link SsaConverter} converts a Rop-form method to SSA form.
  * <li> {@link SsaToRop} converts an SSA-form method back to Rop form.
  * </ul>
- *
+ * <p>
  * <h3>Classes related to method representation</h3>
  * <ul>
  * <li> A {@link SsaMethod} instance represents a method.
@@ -49,7 +49,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
  * <li> {@link NormalSsaInsn} instances represent instructions that directly
  * correspond to {@code Rop} form.
  * </ul>
- *
+ * <p>
  * <h3>Classes related to optimization steps</h3>
  * <ul>
  * <li> {@link MoveParamCombiner} is a simple step that ensures each method
@@ -66,18 +66,18 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
  * <li> {@link DeadCodeRemover} is a dead code remover. This phase must
  * always be run to remove unused phi instructions.
  * </ul>
- *
+ * <p>
  * <h2>SSA Lifetime</h2>
  * The representation of a method in SSA form obeys slightly different
  * constraints depending upon whether it is in the process of being converted
  * into or out of SSA form.
- *
+ * <p>
  * <h3>Conversion into SSA Form</h3>
- *
+ * <p>
  * {@link SsaConverter#convertToSsaMethod} takes a {@code RopMethod} and
  * returns a fully-converted {@code SsaMethod}. The conversion process
  * is roughly as follows:
- *
+ * <p>
  * <ol>
  * <li> The Rop-form method, its blocks and their instructions are directly
  * wrapped in {@code SsaMethod}, {@code SsaBasicBlock} and
@@ -99,5 +99,4 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.ssa;
  * exist in SSA). Move instructions are eliminated except where necessary
  * to preserve local variable assignments.
  * </ol>
- *
  */

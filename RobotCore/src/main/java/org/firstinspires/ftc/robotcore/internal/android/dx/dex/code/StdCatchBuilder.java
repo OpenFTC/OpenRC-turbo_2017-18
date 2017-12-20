@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstType;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -31,28 +32,36 @@ import java.util.HashSet;
  * and associated data.
  */
 public final class StdCatchBuilder implements CatchBuilder {
-    /** the maximum range of a single catch handler, in code units */
+    /**
+     * the maximum range of a single catch handler, in code units
+     */
     private static final int MAX_CATCH_RANGE = 65535;
 
-    /** {@code non-null;} method to build the list for */
+    /**
+     * {@code non-null;} method to build the list for
+     */
     private final RopMethod method;
 
-    /** {@code non-null;} block output order */
+    /**
+     * {@code non-null;} block output order
+     */
     private final int[] order;
 
-    /** {@code non-null;} address objects for each block */
+    /**
+     * {@code non-null;} address objects for each block
+     */
     private final BlockAddresses addresses;
 
     /**
      * Constructs an instance. It merely holds onto its parameters for
      * a subsequent call to {@link #build}.
      *
-     * @param method {@code non-null;} method to build the list for
-     * @param order {@code non-null;} block output order
+     * @param method    {@code non-null;} method to build the list for
+     * @param order     {@code non-null;} block output order
      * @param addresses {@code non-null;} address objects for each block
      */
     public StdCatchBuilder(RopMethod method, int[] order,
-            BlockAddresses addresses) {
+                           BlockAddresses addresses) {
         if (method == null) {
             throw new NullPointerException("method == null");
         }
@@ -70,12 +79,16 @@ public final class StdCatchBuilder implements CatchBuilder {
         this.addresses = addresses;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public CatchTable build() {
         return build(method, order, addresses);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasAnyCatches() {
         BasicBlockList blocks = method.getBlocks();
         int size = blocks.size();
@@ -91,7 +104,9 @@ public final class StdCatchBuilder implements CatchBuilder {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public HashSet<Type> getCatchTypes() {
         HashSet<Type> result = new HashSet<Type>(20);
         BasicBlockList blocks = method.getBlocks();
@@ -113,17 +128,17 @@ public final class StdCatchBuilder implements CatchBuilder {
     /**
      * Builds and returns the catch table for a given method.
      *
-     * @param method {@code non-null;} method to build the list for
-     * @param order {@code non-null;} block output order
+     * @param method    {@code non-null;} method to build the list for
+     * @param order     {@code non-null;} block output order
      * @param addresses {@code non-null;} address objects for each block
      * @return {@code non-null;} the constructed table
      */
     public static CatchTable build(RopMethod method, int[] order,
-            BlockAddresses addresses) {
+                                   BlockAddresses addresses) {
         int len = order.length;
         BasicBlockList blocks = method.getBlocks();
         ArrayList<CatchTable.Entry> resultList =
-            new ArrayList<CatchTable.Entry>(len);
+                new ArrayList<CatchTable.Entry>(len);
         CatchHandlerList currentHandlers = CatchHandlerList.EMPTY;
         BasicBlock currentStartBlock = null;
         BasicBlock currentEndBlock = null;
@@ -169,8 +184,8 @@ public final class StdCatchBuilder implements CatchBuilder {
              */
             if (currentHandlers.size() != 0) {
                 CatchTable.Entry entry =
-                    makeEntry(currentStartBlock, currentEndBlock,
-                            currentHandlers, addresses);
+                        makeEntry(currentStartBlock, currentEndBlock,
+                                currentHandlers, addresses);
                 resultList.add(entry);
             }
 
@@ -182,8 +197,8 @@ public final class StdCatchBuilder implements CatchBuilder {
         if (currentHandlers.size() != 0) {
             // Emit an entry for the range that was left hanging.
             CatchTable.Entry entry =
-                makeEntry(currentStartBlock, currentEndBlock,
-                        currentHandlers, addresses);
+                    makeEntry(currentStartBlock, currentEndBlock,
+                            currentHandlers, addresses);
             resultList.add(entry);
         }
 
@@ -208,12 +223,12 @@ public final class StdCatchBuilder implements CatchBuilder {
     /**
      * Makes the {@link CatchHandlerList} for the given basic block.
      *
-     * @param block {@code non-null;} block to get entries for
+     * @param block     {@code non-null;} block to get entries for
      * @param addresses {@code non-null;} address objects for each block
      * @return {@code non-null;} array of entries
      */
     private static CatchHandlerList handlersFor(BasicBlock block,
-            BlockAddresses addresses) {
+                                                BlockAddresses addresses) {
         IntList successors = block.getSuccessors();
         int succSize = successors.size();
         int primary = block.getPrimarySuccessor();
@@ -226,8 +241,8 @@ public final class StdCatchBuilder implements CatchBuilder {
 
         if (((primary == -1) && (succSize != catchSize))
                 || ((primary != -1) &&
-                        ((succSize != (catchSize + 1))
-                                || (primary != successors.get(catchSize))))) {
+                ((succSize != (catchSize + 1))
+                        || (primary != successors.get(catchSize))))) {
             /*
              * Blocks that throw are supposed to list their primary
              * successor -- if any -- last in the successors list, but
@@ -265,14 +280,14 @@ public final class StdCatchBuilder implements CatchBuilder {
      * Makes a {@link CatchTable#Entry} for the given block range and
      * handlers.
      *
-     * @param start {@code non-null;} the start block for the range (inclusive)
-     * @param end {@code non-null;} the start block for the range (also inclusive)
-     * @param handlers {@code non-null;} the handlers for the range
+     * @param start     {@code non-null;} the start block for the range (inclusive)
+     * @param end       {@code non-null;} the start block for the range (also inclusive)
+     * @param handlers  {@code non-null;} the handlers for the range
      * @param addresses {@code non-null;} address objects for each block
      */
     private static CatchTable.Entry makeEntry(BasicBlock start,
-            BasicBlock end, CatchHandlerList handlers,
-            BlockAddresses addresses) {
+                                              BasicBlock end, CatchHandlerList handlers,
+                                              BlockAddresses addresses) {
         /*
          * We start at the *last* instruction of the start block, since
          * that's the instruction that can throw...
@@ -291,13 +306,13 @@ public final class StdCatchBuilder implements CatchBuilder {
      * for a catch handler. This is true as long as the covered range is
      * under 65536 code units.
      *
-     * @param start {@code non-null;} the start block for the range (inclusive)
-     * @param end {@code non-null;} the start block for the range (also inclusive)
+     * @param start     {@code non-null;} the start block for the range (inclusive)
+     * @param end       {@code non-null;} the start block for the range (also inclusive)
      * @param addresses {@code non-null;} address objects for each block
      * @return {@code true} if the range is valid as a catch range
      */
     private static boolean rangeIsValid(BasicBlock start, BasicBlock end,
-            BlockAddresses addresses) {
+                                        BlockAddresses addresses) {
         if (start == null) {
             throw new NullPointerException("start == null");
         }

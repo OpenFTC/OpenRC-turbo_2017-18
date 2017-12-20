@@ -37,7 +37,7 @@ public interface Output extends ByteOutput {
      *
      * @param expectedCursor the expected cursor value
      * @throws RuntimeException thrown if {@code getCursor() !=
-     * expectedCursor}
+     *                          expectedCursor}
      */
     public void assertCursor(int expectedCursor);
 
@@ -99,9 +99,9 @@ public interface Output extends ByteOutput {
     /**
      * Writes a portion of a {@code byte[]} to this instance.
      *
-     * @param bytes {@code non-null;} the array to write
+     * @param bytes  {@code non-null;} the array to write
      * @param offset {@code >= 0;} offset into {@code bytes} for the first
-     * byte to write
+     *               byte to write
      * @param length {@code >= 0;} number of bytes to write
      */
     public void write(byte[] bytes, int offset, int length);

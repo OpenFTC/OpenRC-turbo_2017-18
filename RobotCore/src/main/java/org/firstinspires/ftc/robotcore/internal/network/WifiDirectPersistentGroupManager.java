@@ -50,24 +50,26 @@ import java.util.Collection;
  * manipulating WifiDirect persistent groups
  */
 @SuppressWarnings("WeakerAccess")
-public class WifiDirectPersistentGroupManager extends WifiStartStoppable
-    {
+public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "WifiDirectPersistentGroupManager";
-    public String getTag() { return TAG; }
+
+    public String getTag() {
+        return TAG;
+    }
 
     // This is @hide in WifiP2pManager, but functional. There is no extra; one can simply poll for extant groups.
     public static final String WIFI_P2P_PERSISTENT_GROUPS_CHANGED_ACTION = "android.net.wifi.p2p.PERSISTENT_GROUPS_CHANGED";
 
-    protected static Class      classWifiP2pGroupList;
-    protected static Class      classPersistentGroupInfoListener;
-    protected static Method     methodGetGroupList;
-    protected static Method     methodRequestPersistentGroupInfo;
-    protected static Method     methodDeletePersistentGroup;
-    protected static Method     methodGetNetworkId;
+    protected static Class classWifiP2pGroupList;
+    protected static Class classPersistentGroupInfoListener;
+    protected static Method methodGetGroupList;
+    protected static Method methodRequestPersistentGroupInfo;
+    protected static Method methodDeletePersistentGroup;
+    protected static Method methodGetNetworkId;
 
     /* From WifiP2pManager:
 
@@ -85,8 +87,7 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable
      though it's a bit of mouthful to look at.
     */
 
-    static
-        {
+    static {
         try {
             classWifiP2pGroupList = Class.forName("android.net.wifi.p2p.WifiP2pGroupList");
             classPersistentGroupInfoListener = Class.forName("android.net.wifi.p2p.WifiP2pManager$PersistentGroupInfoListener");
@@ -106,169 +107,162 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable
 
             // WifiP2pGroup: public int getNetworkId()
             methodGetNetworkId = ClassUtil.getHiddenMethod(WifiP2pGroup.class, "getNetworkId");
-            }
-        catch (ClassNotFoundException e)
-            {
+        } catch (ClassNotFoundException e) {
             RobotLog.ee(TAG, e, "exception thrown in static initialization");
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public WifiDirectPersistentGroupManager(WifiDirectAgent wifiDirectAgent)
-        {
+    public WifiDirectPersistentGroupManager(WifiDirectAgent wifiDirectAgent) {
         super(wifiDirectAgent);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Start / stop: nothing to actually do
     //----------------------------------------------------------------------------------------------
 
-    @Override protected boolean doStart() throws InterruptedException
-        {
+    @Override
+    protected boolean doStart() throws InterruptedException {
         return true;
-        }
+    }
 
-    @Override protected void doStop() throws InterruptedException
-        {
-        }
+    @Override
+    protected void doStop() throws InterruptedException {
+    }
 
     //----------------------------------------------------------------------------------------------
     // Group management
     //----------------------------------------------------------------------------------------------
 
-    public interface PersistentGroupInfoListener
-        {
+    public interface PersistentGroupInfoListener {
         void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups);
-        }
+    }
 
-    /** Asynchronously deletes the indicated persistent group */
-    public void deletePersistentGroup(int netId, WifiP2pManager.ActionListener listener)
-        {
+    /**
+     * Asynchronously deletes the indicated persistent group
+     */
+    public void deletePersistentGroup(int netId, WifiP2pManager.ActionListener listener) {
         RobotLog.vv(TAG, "deletePersistentGroup() netId=%d", netId);
         ClassUtil.invoke(wifiDirectAgent.getWifiP2pManager(), methodDeletePersistentGroup, wifiDirectAgent.getWifiP2pChannel(), netId, listener);
-        }
+    }
 
-    /** Synchronously deletes the indicated persistent group */
-    public boolean deletePersistentGroup(final int netId)
-        {
-        return lockCompletion(false, new Func<Boolean>()
-            {
-            @Override public Boolean value()
-                {
+    /**
+     * Synchronously deletes the indicated persistent group
+     */
+    public boolean deletePersistentGroup(final int netId) {
+        return lockCompletion(false, new Func<Boolean>() {
+            @Override
+            public Boolean value() {
                 boolean success = resetCompletion();
                 try {
-                    deletePersistentGroup(netId, new WifiP2pManager.ActionListener()
-                        {
-                        @Override public void onSuccess()
-                            {
+                    deletePersistentGroup(netId, new WifiP2pManager.ActionListener() {
+                        @Override
+                        public void onSuccess() {
                             releaseCompletion(true);
-                            }
-                        @Override public void onFailure(int reason)
-                            {
-                            RobotLog.vv(TAG, "failed to delete persistent group: netId=%d", netId);
-                            releaseCompletion(false);
-                            }
-                        });
-                    success = waitForCompletion();
-                    }
-                catch (InterruptedException e)
-                    {
-                    success = receivedCompletionInterrupt(e);
-                    }
-                return success;
-                }
-            });
-        }
-
-    /** Synchronously deletes the indicated persistent group */
-    public boolean deletePersistentGroup(WifiP2pGroup group)
-        {
-        return deletePersistentGroup(getNetworkId(group));
-        }
-
-    /** Synchronously deletes all persistent groups */
-    public void deleteAllPersistentGroups()
-        {
-        for (WifiP2pGroup group : getPersistentGroups())
-            {
-            deletePersistentGroup(group);
-            }
-        }
-
-    /** Returns the network id of the indicted WifiP2pGroup */
-    public int getNetworkId(WifiP2pGroup group)
-        {
-        return (int)ClassUtil.invoke(group, methodGetNetworkId);
-        }
-
-    protected Object createProxy(final PersistentGroupInfoListener target)
-        {
-        // Dynamically create an implementation of WifiP2pManager$PersistentGroupInfoListener
-        return java.lang.reflect.Proxy.newProxyInstance(
-            classPersistentGroupInfoListener.getClassLoader(),
-            new Class[]{classPersistentGroupInfoListener},
-            new InvocationHandler()
-                {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-                    {
-                    if (method.getName().equals("onPersistentGroupInfoAvailable"))
-                        {
-                        // wifiP2pGroupList is of type android.net.wifi.p2p.WifiP2pGroupList, which is also hidden
-                        Object wifiP2pGroupList = args[0];
-
-                        // call getGroupList()
-                        Collection<WifiP2pGroup> wifiP2pGroups = (Collection<WifiP2pGroup>)ClassUtil.invoke(wifiP2pGroupList, methodGetGroupList);
-
-                        // Call our nice pretty method
-                        target.onPersistentGroupInfoAvailable(wifiP2pGroups);
                         }
 
-                    return null;
+                        @Override
+                        public void onFailure(int reason) {
+                            RobotLog.vv(TAG, "failed to delete persistent group: netId=%d", netId);
+                            releaseCompletion(false);
+                        }
+                    });
+                    success = waitForCompletion();
+                } catch (InterruptedException e) {
+                    success = receivedCompletionInterrupt(e);
+                }
+                return success;
+            }
+        });
+    }
+
+    /**
+     * Synchronously deletes the indicated persistent group
+     */
+    public boolean deletePersistentGroup(WifiP2pGroup group) {
+        return deletePersistentGroup(getNetworkId(group));
+    }
+
+    /**
+     * Synchronously deletes all persistent groups
+     */
+    public void deleteAllPersistentGroups() {
+        for (WifiP2pGroup group : getPersistentGroups()) {
+            deletePersistentGroup(group);
+        }
+    }
+
+    /**
+     * Returns the network id of the indicted WifiP2pGroup
+     */
+    public int getNetworkId(WifiP2pGroup group) {
+        return (int) ClassUtil.invoke(group, methodGetNetworkId);
+    }
+
+    protected Object createProxy(final PersistentGroupInfoListener target) {
+        // Dynamically create an implementation of WifiP2pManager$PersistentGroupInfoListener
+        return java.lang.reflect.Proxy.newProxyInstance(
+                classPersistentGroupInfoListener.getClassLoader(),
+                new Class[]{classPersistentGroupInfoListener},
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        if (method.getName().equals("onPersistentGroupInfoAvailable")) {
+                            // wifiP2pGroupList is of type android.net.wifi.p2p.WifiP2pGroupList, which is also hidden
+                            Object wifiP2pGroupList = args[0];
+
+                            // call getGroupList()
+                            Collection<WifiP2pGroup> wifiP2pGroups = (Collection<WifiP2pGroup>) ClassUtil.invoke(wifiP2pGroupList, methodGetGroupList);
+
+                            // Call our nice pretty method
+                            target.onPersistentGroupInfoAvailable(wifiP2pGroups);
+                        }
+
+                        return null;
                     }
                 });
-        }
+    }
 
-    /** Asynchronously enumerates the extant persistent Wifi Direct groups. Aka 'Remembered Groups' */
-    public void requestPersistentGroups(PersistentGroupInfoListener listener)
-        {
+    /**
+     * Asynchronously enumerates the extant persistent Wifi Direct groups. Aka 'Remembered Groups'
+     */
+    public void requestPersistentGroups(PersistentGroupInfoListener listener) {
         Object persistentGroupInfoListenerProxy = createProxy(listener);
         ClassUtil.invoke(wifiDirectAgent.getWifiP2pManager(), methodRequestPersistentGroupInfo, wifiDirectAgent.getWifiP2pChannel(), persistentGroupInfoListenerProxy);
-        }
+    }
 
-    /** Synchronously enumerates the extant persistent Wifi Direct groups. Must NOT be called
-     * on the callback looper thread. If an error or interrupt occurs, an empty list is returned. */
-    public Collection<WifiP2pGroup> getPersistentGroups()
-        {
+    /**
+     * Synchronously enumerates the extant persistent Wifi Direct groups. Must NOT be called
+     * on the callback looper thread. If an error or interrupt occurs, an empty list is returned.
+     */
+    public Collection<WifiP2pGroup> getPersistentGroups() {
         final Collection<WifiP2pGroup> defRefResult = new ArrayList<WifiP2pGroup>();
-        return lockCompletion(defRefResult, new Func<Collection<WifiP2pGroup>>()
-            {
+        return lockCompletion(defRefResult, new Func<Collection<WifiP2pGroup>>() {
             Collection<WifiP2pGroup> result;
-            @Override public Collection<WifiP2pGroup> value()
-                {
+
+            @Override
+            public Collection<WifiP2pGroup> value() {
                 result = defRefResult;
                 resetCompletion();
                 try {
-                    requestPersistentGroups(new PersistentGroupInfoListener()
-                        {
-                        @Override public void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups)
-                            {
+                    requestPersistentGroups(new PersistentGroupInfoListener() {
+                        @Override
+                        public void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups) {
                             result = groups;
-                            releaseCompletion(true);;
-                            }
-                        });
+                            releaseCompletion(true);
+                            ;
+                        }
+                    });
                     waitForCompletion();
-                    }
-                catch (InterruptedException e)
-                    {
+                } catch (InterruptedException e) {
                     receivedCompletionInterrupt(e);
-                    }
-                return result;
                 }
-            });
-        }
-
+                return result;
+            }
+        });
     }
+
+}

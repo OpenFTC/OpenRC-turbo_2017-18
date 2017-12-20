@@ -45,49 +45,47 @@ import java.util.Map;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxInterface
-    {
+public class LynxInterface {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public static final int ERRONEOUS_COMMAND_NUMBER = 0;
-    public static final int ERRONEOUS_INDEX          = 0;
+    public static final int ERRONEOUS_INDEX = 0;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    private String                                                  interfaceName;
-    private Integer                                                 baseCommandNumber;
-    private Class<? extends LynxInterfaceCommand>[]                 commands;
-    private Map<Class<? extends LynxInterfaceCommand>, Integer>     commandIndices;
-    private Map<Class<? extends LynxInterfaceResponse>, Integer>    responseIndices;
-    private boolean                                                 wasNacked;
+    private String interfaceName;
+    private Integer baseCommandNumber;
+    private Class<? extends LynxInterfaceCommand>[] commands;
+    private Map<Class<? extends LynxInterfaceCommand>, Integer> commandIndices;
+    private Map<Class<? extends LynxInterfaceResponse>, Integer> responseIndices;
+    private boolean wasNacked;
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxInterface(String interfaceName, Class<? extends LynxInterfaceCommand>... commands)
-        {
+    public LynxInterface(String interfaceName, Class<? extends LynxInterfaceCommand>... commands) {
         this.baseCommandNumber = ERRONEOUS_COMMAND_NUMBER;
-        this.interfaceName     = interfaceName;
-        this.commands          = commands;
-        this.commandIndices    = new HashMap<Class<? extends LynxInterfaceCommand>, Integer>();
-        this.responseIndices   = new HashMap<Class<? extends LynxInterfaceResponse>, Integer>();
-        this.wasNacked         = false;
-        for (int i = 0; i < this.commands.length; i++)
-            {
+        this.interfaceName = interfaceName;
+        this.commands = commands;
+        this.commandIndices = new HashMap<Class<? extends LynxInterfaceCommand>, Integer>();
+        this.responseIndices = new HashMap<Class<? extends LynxInterfaceResponse>, Integer>();
+        this.wasNacked = false;
+        for (int i = 0; i < this.commands.length; i++) {
             Class<? extends LynxInterfaceCommand> commandClass = this.commands[i];
 
-            if (commandClass == null)
+            if (commandClass == null) {
                 continue;   // filler
+            }
 
             // Remember the index of this command
             this.commandIndices.put(commandClass, i);
             try {
                 // Find the corresponding response
-                Class<? extends LynxInterfaceResponse> responseClass = (Class<? extends LynxInterfaceResponse>)LynxCommand.getResponseClass(commandClass);
+                Class<? extends LynxInterfaceResponse> responseClass = (Class<? extends LynxInterfaceResponse>) LynxCommand.getResponseClass(commandClass);
                 Assert.assertTrue(responseClass != null);
 
                 // Remember the same index for the response
@@ -95,62 +93,55 @@ public class LynxInterface
 
                 // Note which response goes with which command
                 LynxModule.correlateResponse(commandClass, responseClass);
-                }
-            catch (Exception ignore)
-                {
+            } catch (Exception ignore) {
                 // Probably doesn't have a response
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public String getInterfaceName()
-        {
+    public String getInterfaceName() {
         return this.interfaceName;
-        }
-
-    public int getCommandCount()
-        {
-        return this.commands.length;
-        }
-
-    public void setBaseCommandNumber(Integer baseCommandNumber)
-        {
-        this.baseCommandNumber = baseCommandNumber;
-        }
-
-    public void setWasNacked(boolean nacked)
-        {
-            this.wasNacked = nacked;
-        }
-
-    public boolean wasNacked()
-        {
-            return this.wasNacked;
-        }
-
-    public Integer getBaseCommandNumber()
-        {
-        return this.baseCommandNumber;
-        }
-
-    /** Returns the index of this command class within the interface */
-    public int getCommandIndex(Class<? extends LynxInterfaceCommand> clazz)
-        {
-        return this.commandIndices.get(clazz);
-        }
-
-    /** Returns the index of this response class within the interface */
-    public int getResponseIndex(Class<? extends LynxInterfaceResponse> clazz)
-        {
-        return this.responseIndices.get(clazz);
-        }
-
-    public List<Class<? extends LynxInterfaceCommand>> getCommandClasses()
-        {
-        return Arrays.asList(this.commands);
-        }
     }
+
+    public int getCommandCount() {
+        return this.commands.length;
+    }
+
+    public void setBaseCommandNumber(Integer baseCommandNumber) {
+        this.baseCommandNumber = baseCommandNumber;
+    }
+
+    public void setWasNacked(boolean nacked) {
+        this.wasNacked = nacked;
+    }
+
+    public boolean wasNacked() {
+        return this.wasNacked;
+    }
+
+    public Integer getBaseCommandNumber() {
+        return this.baseCommandNumber;
+    }
+
+    /**
+     * Returns the index of this command class within the interface
+     */
+    public int getCommandIndex(Class<? extends LynxInterfaceCommand> clazz) {
+        return this.commandIndices.get(clazz);
+    }
+
+    /**
+     * Returns the index of this response class within the interface
+     */
+    public int getResponseIndex(Class<? extends LynxInterfaceResponse> clazz) {
+        return this.responseIndices.get(clazz);
+    }
+
+    public List<Class<? extends LynxInterfaceCommand>> getCommandClasses() {
+        return Arrays.asList(this.commands);
+    }
+}

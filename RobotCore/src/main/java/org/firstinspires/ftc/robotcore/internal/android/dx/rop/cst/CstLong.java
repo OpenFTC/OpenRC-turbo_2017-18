@@ -24,10 +24,14 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
  */
 public final class CstLong
         extends CstLiteral64 {
-    /** {@code non-null;} instance representing {@code 0} */
+    /**
+     * {@code non-null;} instance representing {@code 0}
+     */
     public static final CstLong VALUE_0 = make(0);
 
-    /** {@code non-null;} instance representing {@code 1} */
+    /**
+     * {@code non-null;} instance representing {@code 1}
+     */
     public static final CstLong VALUE_1 = make(1);
 
     /**
@@ -53,25 +57,33 @@ public final class CstLong
         super(value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         long value = getLongBits();
         return "long{0x" + Hex.u8(value) + " / " + value + '}';
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Type getType() {
         return Type.LONG;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String typeName() {
         return "long";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         return Long.toString(getLongBits());
     }

@@ -47,19 +47,25 @@ public class Main {
          */
         String aclass;
 
-        /** from --eTypes */
+        /**
+         * from --eTypes
+         */
         EnumSet<ElementType> eTypes = EnumSet.noneOf(ElementType.class);
 
-        /** from --print */
+        /**
+         * from --print
+         */
         EnumSet<PrintType> printTypes = EnumSet.noneOf(PrintType.class);
 
-        /** remaining positional arguments */
+        /**
+         * remaining positional arguments
+         */
         String[] files;
 
         Arguments() {
         }
 
-        void parse (String[] argArray) throws InvalidArgumentException {
+        void parse(String[] argArray) throws InvalidArgumentException {
             for (int i = 0; i < argArray.length; i++) {
                 String arg = argArray[i];
 
@@ -69,7 +75,7 @@ public class Main {
                         throw new InvalidArgumentException(
                                 "--annotation can only be specified once.");
                     }
-                    aclass = argParam.replace('.','/');
+                    aclass = argParam.replace('.', '/');
                 } else if (arg.startsWith("--element=")) {
                     String argParam = arg.substring(arg.indexOf('=') + 1);
 

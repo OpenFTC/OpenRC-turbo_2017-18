@@ -28,32 +28,44 @@ import java.io.Writer;
  * one which goes on the right.
  */
 public final class TwoColumnOutput {
-    /** {@code non-null;} underlying writer for final output */
+    /**
+     * {@code non-null;} underlying writer for final output
+     */
     private final Writer out;
 
-    /** {@code > 0;} the left column width */
+    /**
+     * {@code > 0;} the left column width
+     */
     private final int leftWidth;
 
-    /** {@code non-null;} pending left column output */
+    /**
+     * {@code non-null;} pending left column output
+     */
     private final StringBuffer leftBuf;
 
-    /** {@code non-null;} pending right column output */
+    /**
+     * {@code non-null;} pending right column output
+     */
     private final StringBuffer rightBuf;
 
-    /** {@code non-null;} left column writer */
+    /**
+     * {@code non-null;} left column writer
+     */
     private final IndentingWriter leftColumn;
 
-    /** {@code non-null;} right column writer */
+    /**
+     * {@code non-null;} right column writer
+     */
     private final IndentingWriter rightColumn;
 
     /**
      * Turns the given two strings (with widths) and spacer into a formatted
      * two-column string.
      *
-     * @param s1 {@code non-null;} first string
+     * @param s1     {@code non-null;} first string
      * @param width1 {@code > 0;} width of the first column
      * @param spacer {@code non-null;} spacer string
-     * @param s2 {@code non-null;} second string
+     * @param s2     {@code non-null;} second string
      * @param width2 {@code > 0;} width of the second column
      * @return {@code non-null;} an appropriately-formatted string
      */
@@ -64,7 +76,7 @@ public final class TwoColumnOutput {
 
         StringWriter sw = new StringWriter((len1 + len2) * 3);
         TwoColumnOutput twoOut =
-            new TwoColumnOutput(sw, width1, width2, spacer);
+                new TwoColumnOutput(sw, width1, width2, spacer);
 
         try {
             twoOut.getLeft().write(s1);
@@ -80,10 +92,10 @@ public final class TwoColumnOutput {
     /**
      * Constructs an instance.
      *
-     * @param out {@code non-null;} writer to send final output to
-     * @param leftWidth {@code > 0;} width of the left column, in characters
+     * @param out        {@code non-null;} writer to send final output to
+     * @param leftWidth  {@code > 0;} width of the left column, in characters
      * @param rightWidth {@code > 0;} width of the right column, in characters
-     * @param spacer {@code non-null;} spacer string to sit between the two columns
+     * @param spacer     {@code non-null;} spacer string to sit between the two columns
      */
     public TwoColumnOutput(Writer out, int leftWidth, int rightWidth,
                            String spacer) {
@@ -112,16 +124,16 @@ public final class TwoColumnOutput {
         this.rightBuf = rightWriter.getBuffer();
         this.leftColumn = new IndentingWriter(leftWriter, leftWidth);
         this.rightColumn =
-            new IndentingWriter(rightWriter, rightWidth, spacer);
+                new IndentingWriter(rightWriter, rightWidth, spacer);
     }
 
     /**
      * Constructs an instance.
      *
-     * @param out {@code non-null;} stream to send final output to
-     * @param leftWidth {@code >= 1;} width of the left column, in characters
+     * @param out        {@code non-null;} stream to send final output to
+     * @param leftWidth  {@code >= 1;} width of the left column, in characters
      * @param rightWidth {@code >= 1;} width of the right column, in characters
-     * @param spacer {@code non-null;} spacer string to sit between the two columns
+     * @param spacer     {@code non-null;} spacer string to sit between the two columns
      */
     public TwoColumnOutput(OutputStream out, int leftWidth, int rightWidth,
                            String spacer) {
@@ -169,7 +181,7 @@ public final class TwoColumnOutput {
      * least one of the two column buffers is empty.
      */
     private void outputFullLines() throws IOException {
-        for (;;) {
+        for (; ; ) {
             int leftLen = leftBuf.indexOf("\n");
             if (leftLen < 0) {
                 return;

@@ -79,14 +79,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             android:text="@string/activeConfigCaption"
             android:layout_weight="1"
             android:textColor="?attr/textWhite"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         <TextView
             android:id="@+id/idActiveConfigName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?attr/textWhite"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     </LinearLayout>
 

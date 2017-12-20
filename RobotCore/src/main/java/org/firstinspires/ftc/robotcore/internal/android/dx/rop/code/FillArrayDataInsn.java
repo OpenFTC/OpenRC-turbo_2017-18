@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.StdTypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
+
 import java.util.ArrayList;
 
 /**
@@ -29,7 +30,9 @@ import java.util.ArrayList;
 public final class FillArrayDataInsn
         extends Insn {
 
-    /** non-null: initial values to fill the newly created array */
+    /**
+     * non-null: initial values to fill the newly created array
+     */
     private final ArrayList<Constant> initValues;
 
     /**
@@ -41,11 +44,11 @@ public final class FillArrayDataInsn
     /**
      * Constructs an instance.
      *
-     * @param opcode {@code non-null;} the opcode
-     * @param position {@code non-null;} source position
-     * @param sources {@code non-null;} specs for all the sources
+     * @param opcode     {@code non-null;} the opcode
+     * @param position   {@code non-null;} source position
+     * @param sources    {@code non-null;} specs for all the sources
      * @param initValues {@code non-null;} list of initial values to fill the array
-     * @param cst {@code non-null;} type of the new array
+     * @param cst        {@code non-null;} type of the new array
      */
     public FillArrayDataInsn(Rop opcode, SourcePosition position,
                              RegisterSpecList sources,
@@ -62,7 +65,9 @@ public final class FillArrayDataInsn
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeList getCatches() {
         return StdTypeList.EMPTY;
@@ -70,6 +75,7 @@ public final class FillArrayDataInsn
 
     /**
      * Return the list of init values
+     *
      * @return {@code non-null;} list of init values
      */
     public ArrayList<Constant> getInitValues() {
@@ -78,38 +84,47 @@ public final class FillArrayDataInsn
 
     /**
      * Return the type of the newly created array
+     *
      * @return {@code non-null;} array type
      */
     public Constant getConstant() {
         return arrayType;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visitFillArrayDataInsn(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withAddedCatch(Type type) {
-        throw new  UnsupportedOperationException("unsupported");
+        throw new UnsupportedOperationException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withRegisterOffset(int delta) {
         return new FillArrayDataInsn(getOpcode(), getPosition(),
-                                     getSources().withOffset(delta),
-                                     initValues, arrayType);
+                getSources().withOffset(delta),
+                initValues, arrayType);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withNewRegisters(RegisterSpec result,
-            RegisterSpecList sources) {
+                                 RegisterSpecList sources) {
 
         return new FillArrayDataInsn(getOpcode(), getPosition(),
-                                     sources, initValues, arrayType);
+                sources, initValues, arrayType);
     }
 }

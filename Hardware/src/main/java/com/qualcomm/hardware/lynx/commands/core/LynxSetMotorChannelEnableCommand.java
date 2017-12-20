@@ -43,8 +43,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxSetMotorChannelEnableCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetMotorChannelEnableCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -58,44 +57,39 @@ public class LynxSetMotorChannelEnableCommand extends LynxDekaInterfaceCommand<L
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetMotorChannelEnableCommand(LynxModuleIntf module)
-        {
+    public LynxSetMotorChannelEnableCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetMotorChannelEnableCommand(LynxModuleIntf module, int motorZ, boolean enabled)
-        {
+    public LynxSetMotorChannelEnableCommand(LynxModuleIntf module, int motorZ, boolean enabled) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        this.motor = (byte)motorZ;
-        this.enabled = enabled ? (byte)1 : (byte)0;
-        }
+        this.motor = (byte) motorZ;
+        this.enabled = enabled ? (byte) 1 : (byte) 0;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.put(this.enabled);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
         this.enabled = buffer.get();
-        }
-
     }
+
+}

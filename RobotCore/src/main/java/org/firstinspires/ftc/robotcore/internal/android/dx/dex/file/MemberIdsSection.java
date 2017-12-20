@@ -34,14 +34,16 @@ public abstract class MemberIdsSection extends UniformItemSection {
      * Constructs an instance. The file offset is initially unknown.
      *
      * @param name {@code null-ok;} the name of this instance, for annotation
-     * purposes
+     *             purposes
      * @param file {@code non-null;} file that this instance is part of
      */
     public MemberIdsSection(String name, DexFile file) {
         super(name, file, 4);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void orderItems() {
         int idx = 0;
@@ -72,8 +74,8 @@ public abstract class MemberIdsSection extends UniformItemSection {
         try {
             String memberType = this instanceof MethodIdsSection ? "method" : "field";
             formatter.format("Too many %s references: %d; max is %d.%n" +
-                    Main.getTooManyIdsErrorMessage() + "%n" +
-                    "References by package:",
+                            Main.getTooManyIdsErrorMessage() + "%n" +
+                            "References by package:",
                     memberType, items().size(), DexFormat.MAX_MEMBER_IDX + 1);
             for (Map.Entry<String, AtomicInteger> entry : membersByPackage.entrySet()) {
                 formatter.format("%n%6d %s", entry.getValue().get(), entry.getKey());

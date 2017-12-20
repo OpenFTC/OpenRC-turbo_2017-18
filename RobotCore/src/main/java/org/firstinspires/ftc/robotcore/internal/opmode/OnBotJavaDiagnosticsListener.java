@@ -61,8 +61,7 @@ import javax.tools.JavaFileObject;
  * and outputs to RobotLog.
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaDiagnosticsListener implements DiagnosticListener<JavaFileObject>
-    {
+public class OnBotJavaDiagnosticsListener implements DiagnosticListener<JavaFileObject> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -72,75 +71,70 @@ public class OnBotJavaDiagnosticsListener implements DiagnosticListener<JavaFile
     protected List<Diagnostic<? extends JavaFileObject>> diagnostics =
             Collections.synchronizedList(new ArrayList<Diagnostic<? extends JavaFileObject>>());
 
-    protected Charset           charset = Charset.forName("UTF-8");
-    protected Locale            locale = Locale.getDefault();
-    protected File              srcDir;
+    protected Charset charset = Charset.forName("UTF-8");
+    protected Locale locale = Locale.getDefault();
+    protected File srcDir;
 
-    protected LogOutputStream   logInfoStream;
-    protected LogOutputStream   logWarningStream;
-    protected LogOutputStream   logErrorStream;
+    protected LogOutputStream logInfoStream;
+    protected LogOutputStream logWarningStream;
+    protected LogOutputStream logErrorStream;
 
-    protected File              logFile;
-    protected FileOutputStream  logFileStream;
+    protected File logFile;
+    protected FileOutputStream logFileStream;
 
-    protected TeeStream         teeStream;
-    protected PrintStream       printStream;
-    protected Writer            writer;
+    protected TeeStream teeStream;
+    protected PrintStream printStream;
+    protected Writer writer;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OnBotJavaDiagnosticsListener(File srcDir) throws IOException
-        {
+    public OnBotJavaDiagnosticsListener(File srcDir) throws IOException {
         this.srcDir = srcDir;
 
-        this.logInfoStream    = new LogOutputStream(Log.INFO, TAG, charset);
+        this.logInfoStream = new LogOutputStream(Log.INFO, TAG, charset);
         this.logWarningStream = new LogOutputStream(Log.WARN, TAG, charset);
-        this.logErrorStream   = new LogOutputStream(Log.ERROR, TAG, charset);
+        this.logErrorStream = new LogOutputStream(Log.ERROR, TAG, charset);
 
         // TODO: should we buffer the output stream?
-        this.logFile          = OnBotJavaManager.buildLogFile;
-        this.logFileStream    = new FileOutputStream(logFile, false);   // truncate
+        this.logFile = OnBotJavaManager.buildLogFile;
+        this.logFileStream = new FileOutputStream(logFile, false);   // truncate
 
-        this.teeStream   = new TeeStream(logFileStream, logErrorStream);
+        this.teeStream = new TeeStream(logFileStream, logErrorStream);
         this.printStream = new PrintStream(teeStream, false, charset.name());
-        this.writer      = new OutputStreamWriter(teeStream, charset.name());
-        }
+        this.writer = new OutputStreamWriter(teeStream, charset.name());
+    }
 
-    public void flush() throws IOException
-        {
+    public void flush() throws IOException {
         writer.flush();
         printStream.flush();
         logInfoStream.flush();
         logWarningStream.flush();
         logErrorStream.flush();
         logFileStream.flush();
-        }
+    }
 
-    public void close() throws IOException
-        {
+    public void close() throws IOException {
         writer.close();
         printStream.close();
         logInfoStream.close();
         logWarningStream.close();
         logErrorStream.close();
         logFileStream.close();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public Writer getWriter()
-        {
+    public Writer getWriter() {
         return writer;
-        }
+    }
 
-    public PrintStream getPrintStream()
-        {
+    public PrintStream getPrintStream() {
         return printStream;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Output
@@ -149,44 +143,40 @@ public class OnBotJavaDiagnosticsListener implements DiagnosticListener<JavaFile
     /**
      * Writes to both a file and to the system log, the latter in line-sized chunks.
      */
-    protected class TeeStream extends OutputStream
-        {
-        protected OutputStream  firstStream;
-        protected OutputStream  secondStream;
+    protected class TeeStream extends OutputStream {
+        protected OutputStream firstStream;
+        protected OutputStream secondStream;
 
-        public TeeStream(OutputStream firstStream, OutputStream secondStream)
-            {
+        public TeeStream(OutputStream firstStream, OutputStream secondStream) {
             this.firstStream = firstStream;
             this.secondStream = secondStream;
-            }
+        }
 
-        @Override public synchronized void close() throws IOException
-            {
+        @Override
+        public synchronized void close() throws IOException {
             flush();
             // We don't own, so we don't close
-            }
+        }
 
-        @Override public synchronized void flush() throws IOException
-            {
+        @Override
+        public synchronized void flush() throws IOException {
             firstStream.flush();
             secondStream.flush();
-            }
+        }
 
-        @Override public synchronized void write(int oneByte) throws IOException
-            {
+        @Override
+        public synchronized void write(int oneByte) throws IOException {
             firstStream.write(oneByte);
             secondStream.write(oneByte);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    protected LogOutputStream getLogInfoStream(Diagnostic.Kind kind)
-        {
-        switch (kind)
-            {
+    protected LogOutputStream getLogInfoStream(Diagnostic.Kind kind) {
+        switch (kind) {
             case ERROR:
                 return logErrorStream;
             case WARNING:
@@ -194,11 +184,10 @@ public class OnBotJavaDiagnosticsListener implements DiagnosticListener<JavaFile
                 return logWarningStream;
             default:
                 return logInfoStream;
-            }
         }
+    }
 
-    public void report(Diagnostic<? extends JavaFileObject> diagnostic)
-        {
+    public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
         File absoluteFile = new File(diagnostic.getSource().getName());
         File relativeFile = AppUtil.getInstance().getRelativePath(srcDir, absoluteFile);
 
@@ -208,21 +197,18 @@ public class OnBotJavaDiagnosticsListener implements DiagnosticListener<JavaFile
                 diagnostic.getColumnNumber(),
                 diagnostic.getKind(),
                 diagnostic.getMessage(locale)
-                );
+        );
 
         println(getLogInfoStream(diagnostic.getKind()), message);
         println(logFileStream, message);
-        }
+    }
 
-    protected void println(OutputStream outputStream, String message)
-        {
+    protected void println(OutputStream outputStream, String message) {
         try {
             PrintStream printStream = new PrintStream(outputStream, false, charset.name());
             printStream.println(message);
-            }
-        catch (UnsupportedEncodingException e)
-            {
+        } catch (UnsupportedEncodingException e) {
             throw AppUtil.getInstance().unreachable(TAG, e);
-            }
         }
     }
+}

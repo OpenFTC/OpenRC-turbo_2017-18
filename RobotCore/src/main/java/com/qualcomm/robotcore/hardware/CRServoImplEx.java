@@ -36,8 +36,7 @@ package com.qualcomm.robotcore.hardware;
  * CRServoEx provides access to extended functionality on continuous rotation
  * servos. Implementations support both the {@link CRServo} and {@link PwmControl} interfaces.
  */
-public class CRServoImplEx extends CRServoImpl implements PwmControl
-    {
+public class CRServoImplEx extends CRServoImpl implements PwmControl {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -48,48 +47,41 @@ public class CRServoImplEx extends CRServoImpl implements PwmControl
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public CRServoImplEx(ServoController controller, int portNumber)
-        {
+    public CRServoImplEx(ServoController controller, int portNumber) {
         this(controller, portNumber, DcMotor.Direction.FORWARD);
-        }
+    }
 
-    public CRServoImplEx(ServoController controller, int portNumber, DcMotor.Direction direction)
-        {
+    public CRServoImplEx(ServoController controller, int portNumber, DcMotor.Direction direction) {
         super(controller, portNumber, direction);
-        this.controllerEx = (ServoControllerEx)controller;
-        }
+        this.controllerEx = (ServoControllerEx) controller;
+    }
 
     //----------------------------------------------------------------------------------------------
     // PwmControl
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setPwmRange(PwmRange range)
-        {
+    public void setPwmRange(PwmRange range) {
         controllerEx.setServoPwmRange(this.getPortNumber(), range);
-        }
-
-    @Override
-    public PwmRange getPwmRange()
-        {
-        return controllerEx.getServoPwmRange(this.getPortNumber());
-        }
-
-    @Override
-    public void setPwmEnable()
-        {
-        controllerEx.setServoPwmEnable(this.getPortNumber());
-        }
-
-    @Override
-    public void setPwmDisable()
-        {
-        controllerEx.setServoPwmDisable(this.getPortNumber());
-        }
-
-    @Override
-    public boolean isPwmEnabled()
-        {
-        return controllerEx.isServoPwmEnabled(this.getPortNumber());
-        }
     }
+
+    @Override
+    public PwmRange getPwmRange() {
+        return controllerEx.getServoPwmRange(this.getPortNumber());
+    }
+
+    @Override
+    public void setPwmEnable() {
+        controllerEx.setServoPwmEnable(this.getPortNumber());
+    }
+
+    @Override
+    public void setPwmDisable() {
+        controllerEx.setServoPwmDisable(this.getPortNumber());
+    }
+
+    @Override
+    public boolean isPwmEnabled() {
+        return controllerEx.isServoPwmEnabled(this.getPortNumber());
+    }
+}

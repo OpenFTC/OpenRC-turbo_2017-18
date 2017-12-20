@@ -41,6 +41,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.Optimizer;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.ByteArray;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
+
 import java.io.PrintStream;
 
 /**
@@ -48,7 +49,9 @@ import java.io.PrintStream;
  */
 public class BlockDumper
         extends BaseDumper {
-    /** whether or not to registerize (make rop blocks) */
+    /**
+     * whether or not to registerize (make rop blocks)
+     */
     private boolean rop;
 
     /**
@@ -57,28 +60,34 @@ public class BlockDumper
      */
     protected DirectClassFile classFile;
 
-    /** whether or not to suppress dumping */
+    /**
+     * whether or not to suppress dumping
+     */
     protected boolean suppressDump;
 
-    /** whether this is the first method being dumped */
+    /**
+     * whether this is the first method being dumped
+     */
     private boolean first;
 
-    /** whether or not to run the ssa optimziations */
+    /**
+     * whether or not to run the ssa optimziations
+     */
     private boolean optimize;
 
     /**
      * Dumps the given array, interpreting it as a class file and dumping
      * methods with indications of block-level stuff.
      *
-     * @param bytes {@code non-null;} bytes of the (alleged) class file
-     * @param out {@code non-null;} where to dump to
+     * @param bytes    {@code non-null;} bytes of the (alleged) class file
+     * @param out      {@code non-null;} where to dump to
      * @param filePath the file path for the class, excluding any base
-     * directory specification
-     * @param rop whether or not to registerize (make rop blocks)
-     * @param args commandline parsedArgs
+     *                 directory specification
+     * @param rop      whether or not to registerize (make rop blocks)
+     * @param args     commandline parsedArgs
      */
     public static void dump(byte[] bytes, PrintStream out,
-            String filePath, boolean rop, Args args) {
+                            String filePath, boolean rop, Args args) {
         BlockDumper bd = new BlockDumper(bytes, out, filePath,
                 rop, args);
         bd.dump();
@@ -89,7 +98,7 @@ public class BlockDumper
      * Use {@link #dump}.
      */
     BlockDumper(byte[] bytes, PrintStream out, String filePath,
-            boolean rop, Args args) {
+                boolean rop, Args args) {
         super(bytes, out, filePath, args);
 
         this.rop = rop;
@@ -116,13 +125,15 @@ public class BlockDumper
 
         // Next, reparse it and observe the process.
         DirectClassFile liveCf =
-            new DirectClassFile(ba, getFilePath(), getStrictParse());
+                new DirectClassFile(ba, getFilePath(), getStrictParse());
         liveCf.setAttributeFactory(StdAttributeFactory.THE_ONE);
         liveCf.setObserver(this);
         liveCf.getMagic(); // Force parsing to happen.
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void changeIndent(int indentDelta) {
         if (!suppressDump) {
@@ -130,7 +141,9 @@ public class BlockDumper
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void parsed(ByteArray bytes, int offset, int len, String human) {
         if (!suppressDump) {
@@ -146,10 +159,12 @@ public class BlockDumper
         return args.method == null || args.method.equals(name);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void startParsingMember(ByteArray bytes, int offset, String name,
-            String descriptor) {
+                                   String descriptor) {
         if (descriptor.indexOf('(') < 0) {
             // It's a field, not a method
             return;
@@ -174,10 +189,12 @@ public class BlockDumper
         suppressDump = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void endParsingMember(ByteArray bytes, int offset, String name,
-            String descriptor, Member member) {
+                                 String descriptor, Member member) {
         if (!(member instanceof Method)) {
             return;
         }
@@ -192,7 +209,7 @@ public class BlockDumper
         }
 
         ConcreteMethod meth =
-            new ConcreteMethod((Method) member, classFile, true, true);
+                new ConcreteMethod((Method) member, classFile, true, true);
 
         if (rop) {
             ropDump(meth);
@@ -226,12 +243,12 @@ public class BlockDumper
 
             if (byteAt < start) {
                 parsed(bytes, byteAt, start - byteAt,
-                       "dead code " + Hex.u2(byteAt) + ".." + Hex.u2(start));
+                        "dead code " + Hex.u2(byteAt) + ".." + Hex.u2(start));
             }
 
             parsed(bytes, start, 0,
                     "block " + Hex.u2(bb.getLabel()) + ": " +
-                    Hex.u2(start) + ".." + Hex.u2(end));
+                            Hex.u2(start) + ".." + Hex.u2(end));
             changeIndent(1);
 
             int len;
@@ -257,10 +274,10 @@ public class BlockDumper
                 ByteCatchList.Item one = catches.get(j);
                 CstType exceptionClass = one.getExceptionClass();
                 parsed(bytes, end, 0,
-                       "catch " +
-                       ((exceptionClass == CstType.OBJECT) ? "<any>" :
-                        exceptionClass.toHuman()) + " -> " +
-                       Hex.u2(one.getHandlerPc()));
+                        "catch " +
+                                ((exceptionClass == CstType.OBJECT) ? "<any>" :
+                                        exceptionClass.toHuman()) + " -> " +
+                                Hex.u2(one.getHandlerPc()));
             }
 
             changeIndent(-1);
@@ -292,7 +309,7 @@ public class BlockDumper
             boolean isStatic = AccessFlags.isStatic(meth.getAccessFlags());
             int paramWidth = computeParamWidth(meth, isStatic);
             rmeth =
-                Optimizer.optimize(rmeth, paramWidth, isStatic, true, advice);
+                    Optimizer.optimize(rmeth, paramWidth, isStatic, true, advice);
         }
 
         BasicBlockList blocks = rmeth.getBlocks();

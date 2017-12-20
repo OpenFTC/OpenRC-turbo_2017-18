@@ -23,7 +23,9 @@ import java.util.Arrays;
  */
 public class FixedSizeList
         extends MutabilityControl implements ToHuman {
-    /** {@code non-null;} array of elements */
+    /**
+     * {@code non-null;} array of elements
+     */
     private Object[] arr;
 
     /**
@@ -42,7 +44,9 @@ public class FixedSizeList
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -59,26 +63,30 @@ public class FixedSizeList
         return Arrays.equals(arr, list.arr);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(arr);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         String name = getClass().getName();
 
         return toString0(name.substring(name.lastIndexOf('.') + 1) + '{',
-                         ", ",
-                         "}",
-                         false);
+                ", ",
+                "}",
+                false);
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * This method will only work if every element of the list
      * implements {@link ToHuman}.
      */
@@ -86,17 +94,17 @@ public class FixedSizeList
         String name = getClass().getName();
 
         return toString0(name.substring(name.lastIndexOf('.') + 1) + '{',
-                         ", ",
-                         "}",
-                         true);
+                ", ",
+                "}",
+                true);
     }
 
     /**
      * Gets a customized string form for this instance.
      *
-     * @param prefix {@code null-ok;} prefix for the start of the result
+     * @param prefix    {@code null-ok;} prefix for the start of the result
      * @param separator {@code null-ok;} separator to insert between each item
-     * @param suffix {@code null-ok;} suffix for the end of the result
+     * @param suffix    {@code null-ok;} suffix for the end of the result
      * @return {@code non-null;} the custom string
      */
     public String toString(String prefix, String separator, String suffix) {
@@ -108,9 +116,9 @@ public class FixedSizeList
      * only work if every element of the list implements {@link
      * ToHuman}.
      *
-     * @param prefix {@code null-ok;} prefix for the start of the result
+     * @param prefix    {@code null-ok;} prefix for the start of the result
      * @param separator {@code null-ok;} separator to insert between each item
-     * @param suffix {@code null-ok;} suffix for the end of the result
+     * @param suffix    {@code null-ok;} suffix for the end of the result
      * @return {@code non-null;} the custom string
      */
     public String toHuman(String prefix, String separator, String suffix) {
@@ -206,7 +214,7 @@ public class FixedSizeList
      * subclasses may offer a safe type-checked public interface to
      * their clients.
      *
-     * @param n {@code >= 0, < size();} which element
+     * @param n   {@code >= 0, < size();} which element
      * @param obj {@code null-ok;} the value to store
      */
     protected final void set0(int n, Object obj) {
@@ -239,10 +247,10 @@ public class FixedSizeList
      * Helper for {@link #toString} and {@link #toHuman}, which both of
      * those call to pretty much do everything.
      *
-     * @param prefix {@code null-ok;} prefix for the start of the result
+     * @param prefix    {@code null-ok;} prefix for the start of the result
      * @param separator {@code null-ok;} separator to insert between each item
-     * @param suffix {@code null-ok;} suffix for the end of the result
-     * @param human whether the output is to be human
+     * @param suffix    {@code null-ok;} suffix for the end of the result
+     * @param human     whether the output is to be human
      * @return {@code non-null;} the custom string
      */
     private String toString0(String prefix, String separator, String suffix,

@@ -39,8 +39,8 @@ import com.qualcomm.robotcore.robot.Robot;
 
 public class RobotFactory {
 
-  public static Robot createRobot(EventLoopManager eventLoopManager) throws RobotCoreException {
+    public static Robot createRobot(EventLoopManager eventLoopManager) throws RobotCoreException {
 
-    return new Robot(eventLoopManager);
-  }
+        return new Robot(eventLoopManager);
+    }
 }

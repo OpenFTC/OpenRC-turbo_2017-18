@@ -33,8 +33,8 @@ public final class ClassDef {
     private final int staticValuesOffset;
 
     public ClassDef(Dex buffer, int offset, int typeIndex, int accessFlags,
-            int supertypeIndex, int interfacesOffset, int sourceFileIndex,
-            int annotationsOffset, int classDataOffset, int staticValuesOffset) {
+                    int supertypeIndex, int interfacesOffset, int sourceFileIndex,
+                    int annotationsOffset, int classDataOffset, int staticValuesOffset) {
         this.buffer = buffer;
         this.offset = offset;
         this.typeIndex = typeIndex;
@@ -87,7 +87,8 @@ public final class ClassDef {
         return staticValuesOffset;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         if (buffer == null) {
             return typeIndex + " " + supertypeIndex;
         }

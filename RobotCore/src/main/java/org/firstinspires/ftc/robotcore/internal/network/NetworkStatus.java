@@ -39,8 +39,7 @@ import com.qualcomm.robotcore.R;
 /**
  * {@link NetworkStatus} enumerates the various states we notice about our network
  */
-public enum NetworkStatus
-    {
+public enum NetworkStatus {
     UNKNOWN,
     INACTIVE,
     ACTIVE,
@@ -48,17 +47,22 @@ public enum NetworkStatus
     ERROR,
     CREATED_AP_CONNECTION;
 
-    public String toString(Context context, Object... args)
-        {
-        switch (this)
-            {
-            case UNKNOWN:               return context.getString(R.string.networkStatusUnknown);
-            case ACTIVE:                return context.getString(R.string.networkStatusActive);
-            case INACTIVE:              return context.getString(R.string.networkStatusInactive);
-            case ENABLED:               return context.getString(R.string.networkStatusEnabled);
-            case ERROR:                 return context.getString(R.string.networkStatusError);
-            case CREATED_AP_CONNECTION: return String.format(context.getString(R.string.networkStatusCreatedAPConnection), args);
-            default:                    return context.getString(R.string.networkStatusInternalError);
-            }
+    public String toString(Context context, Object... args) {
+        switch (this) {
+            case UNKNOWN:
+                return context.getString(R.string.networkStatusUnknown);
+            case ACTIVE:
+                return context.getString(R.string.networkStatusActive);
+            case INACTIVE:
+                return context.getString(R.string.networkStatusInactive);
+            case ENABLED:
+                return context.getString(R.string.networkStatusEnabled);
+            case ERROR:
+                return context.getString(R.string.networkStatusError);
+            case CREATED_AP_CONNECTION:
+                return String.format(context.getString(R.string.networkStatusCreatedAPConnection), args);
+            default:
+                return context.getString(R.string.networkStatusInternalError);
         }
     }
+}

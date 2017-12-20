@@ -48,10 +48,12 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ModernRoboticsMotorControllerParams
-    {
+public @interface ModernRoboticsMotorControllerParams {
     int P();
+
     int I();
+
     int D();
+
     int ratio();
-    }
+}

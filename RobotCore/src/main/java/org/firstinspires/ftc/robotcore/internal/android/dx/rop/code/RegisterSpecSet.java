@@ -24,7 +24,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.MutabilityContro
  */
 public final class RegisterSpecSet
         extends MutabilityControl {
-    /** {@code non-null;} no-element instance */
+    /**
+     * {@code non-null;} no-element instance
+     */
     public static final RegisterSpecSet EMPTY = new RegisterSpecSet(0);
 
     /**
@@ -34,14 +36,16 @@ public final class RegisterSpecSet
      */
     private final RegisterSpec[] specs;
 
-    /** {@code >= -1;} size of the set or {@code -1} if not yet calculated */
+    /**
+     * {@code >= -1;} size of the set or {@code -1} if not yet calculated
+     */
     private int size;
 
     /**
      * Constructs an instance. The instance is initially empty.
      *
      * @param maxSize {@code >= 0;} the maximum register number (exclusive) that
-     * may be represented in this instance
+     *                may be represented in this instance
      */
     public RegisterSpecSet(int maxSize) {
         super(maxSize != 0);
@@ -50,7 +54,9 @@ public final class RegisterSpecSet
         this.size = 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof RegisterSpecSet)) {
@@ -81,7 +87,9 @@ public final class RegisterSpecSet
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int len = specs.length;
@@ -96,7 +104,9 @@ public final class RegisterSpecSet
         return hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         int len = specs.length;
@@ -311,11 +321,11 @@ public final class RegisterSpecSet
      * {@link RegisterSpec#intersect} of corresponding elements from
      * this instance and the given one where both are non-null.
      *
-     * @param other {@code non-null;} set to intersect with
+     * @param other        {@code non-null;} set to intersect with
      * @param localPrimary whether local variables are primary to
-     * the intersection; if {@code true}, then the only non-null
-     * result elements occur when registers being intersected have
-     * equal names (or both have {@code null} names)
+     *                     the intersection; if {@code true}, then the only non-null
+     *                     result elements occur when registers being intersected have
+     *                     equal names (or both have {@code null} names)
      */
     public void intersect(RegisterSpecSet other, boolean localPrimary) {
         throwIfImmutable();
@@ -334,7 +344,7 @@ public final class RegisterSpecSet
             }
 
             RegisterSpec intersection =
-                spec.intersect(otherSpecs[i], localPrimary);
+                    spec.intersect(otherSpecs[i], localPrimary);
             if (intersection != spec) {
                 specs[i] = intersection;
             }

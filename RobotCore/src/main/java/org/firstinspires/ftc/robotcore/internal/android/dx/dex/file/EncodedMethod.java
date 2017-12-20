@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.CstString;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.TypeList;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.AnnotatedOutput;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.Hex;
+
 import java.io.PrintWriter;
 
 /**
@@ -31,7 +32,9 @@ import java.io.PrintWriter;
  */
 public final class EncodedMethod extends EncodedMember
         implements Comparable<EncodedMethod> {
-    /** {@code non-null;} constant for the method */
+    /**
+     * {@code non-null;} constant for the method
+     */
     private final CstMethodRef method;
 
     /**
@@ -43,15 +46,15 @@ public final class EncodedMethod extends EncodedMember
     /**
      * Constructs an instance.
      *
-     * @param method {@code non-null;} constant for the method
+     * @param method      {@code non-null;} constant for the method
      * @param accessFlags access flags
-     * @param code {@code null-ok;} code for the method, if it is neither
-     * {@code abstract} nor {@code native}
-     * @param throwsList {@code non-null;} list of possibly-thrown exceptions,
-     * just used in generating debugging output (listings)
+     * @param code        {@code null-ok;} code for the method, if it is neither
+     *                    {@code abstract} nor {@code native}
+     * @param throwsList  {@code non-null;} list of possibly-thrown exceptions,
+     *                    just used in generating debugging output (listings)
      */
     public EncodedMethod(CstMethodRef method, int accessFlags,
-            DalvCode code, TypeList throwsList) {
+                         DalvCode code, TypeList throwsList) {
         super(accessFlags);
 
         if (method == null) {
@@ -68,9 +71,11 @@ public final class EncodedMethod extends EncodedMember
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean equals(Object other) {
-        if (! (other instanceof EncodedMethod)) {
+        if (!(other instanceof EncodedMethod)) {
             return false;
         }
 
@@ -79,7 +84,7 @@ public final class EncodedMethod extends EncodedMember
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p><b>Note:</b> This compares the method constants only,
      * ignoring any associated code, because it should never be the
      * case that two different items with the same method constant
@@ -89,7 +94,9 @@ public final class EncodedMethod extends EncodedMember
         return method.compareTo(other.method);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(100);
@@ -110,7 +117,9 @@ public final class EncodedMethod extends EncodedMember
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addContents(DexFile file) {
         MethodIdsSection methodIds = file.getMethodIds();
@@ -123,18 +132,24 @@ public final class EncodedMethod extends EncodedMember
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public final String toHuman() {
         return method.toHuman();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final CstString getName() {
         return method.getNat().getName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void debugPrint(PrintWriter out, boolean verbose) {
         if (code == null) {
@@ -153,10 +168,12 @@ public final class EncodedMethod extends EncodedMember
         return method;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int encode(DexFile file, AnnotatedOutput out,
-            int lastIndex, int dumpSeq) {
+                      int lastIndex, int dumpSeq) {
         int methodIdx = file.getMethodIds().indexOf(method);
         int diff = methodIdx - lastIndex;
         int accessFlags = getAccessFlags();
@@ -176,12 +193,12 @@ public final class EncodedMethod extends EncodedMember
 
         if (out.annotates()) {
             out.annotate(0, String.format("  [%x] %s", dumpSeq,
-                            method.toHuman()));
+                    method.toHuman()));
             out.annotate(Leb128.unsignedLeb128Size(diff),
                     "    method_idx:   " + Hex.u4(methodIdx));
             out.annotate(Leb128.unsignedLeb128Size(accessFlags),
                     "    access_flags: " +
-                    AccessFlags.methodString(accessFlags));
+                            AccessFlags.methodString(accessFlags));
             out.annotate(Leb128.unsignedLeb128Size(codeOff),
                     "    code_off:     " + Hex.u4(codeOff));
         }

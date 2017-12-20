@@ -30,24 +30,30 @@ import java.util.ArrayList;
  */
 public final class ParameterAnnotationStruct
         implements ToHuman, Comparable<ParameterAnnotationStruct> {
-    /** {@code non-null;} the method in question */
+    /**
+     * {@code non-null;} the method in question
+     */
     private final CstMethodRef method;
 
-    /** {@code non-null;} the associated annotations list */
+    /**
+     * {@code non-null;} the associated annotations list
+     */
     private final AnnotationsList annotationsList;
 
-    /** {@code non-null;} the associated annotations list, as an item */
+    /**
+     * {@code non-null;} the associated annotations list, as an item
+     */
     private final UniformListItem<AnnotationSetRefItem> annotationsItem;
 
     /**
      * Constructs an instance.
      *
-     * @param method {@code non-null;} the method in question
+     * @param method          {@code non-null;} the method in question
      * @param annotationsList {@code non-null;} the associated annotations list
-     * @param dexFile {@code non-null;} dex output
+     * @param dexFile         {@code non-null;} dex output
      */
     public ParameterAnnotationStruct(CstMethodRef method,
-            AnnotationsList annotationsList, DexFile dexFile) {
+                                     AnnotationsList annotationsList, DexFile dexFile) {
         if (method == null) {
             throw new NullPointerException("method == null");
         }
@@ -66,7 +72,7 @@ public final class ParameterAnnotationStruct
 
         int size = annotationsList.size();
         ArrayList<AnnotationSetRefItem> arrayList = new
-            ArrayList<AnnotationSetRefItem>(size);
+                ArrayList<AnnotationSetRefItem>(size);
 
         for (int i = 0; i < size; i++) {
             Annotations annotations = annotationsList.get(i);
@@ -78,26 +84,34 @@ public final class ParameterAnnotationStruct
                 ItemType.TYPE_ANNOTATION_SET_REF_LIST, arrayList);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int hashCode() {
         return method.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean equals(Object other) {
-        if (! (other instanceof ParameterAnnotationStruct)) {
+        if (!(other instanceof ParameterAnnotationStruct)) {
             return false;
         }
 
         return method.equals(((ParameterAnnotationStruct) other).method);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int compareTo(ParameterAnnotationStruct other) {
         return method.compareTo(other.method);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addContents(DexFile file) {
         MethodIdsSection methodIds = file.getMethodIds();
         MixedItemSection wordData = file.getWordData();
@@ -106,7 +120,9 @@ public final class ParameterAnnotationStruct
         wordData.add(annotationsItem);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void writeTo(DexFile file, AnnotatedOutput out) {
         int methodIdx = file.getMethodIds().indexOf(method);
         int annotationsOff = annotationsItem.getAbsoluteOffset();
@@ -122,7 +138,9 @@ public final class ParameterAnnotationStruct
         out.writeInt(annotationsOff);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String toHuman() {
         StringBuilder sb = new StringBuilder();
 

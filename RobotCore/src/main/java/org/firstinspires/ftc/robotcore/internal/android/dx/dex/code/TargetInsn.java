@@ -23,7 +23,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.SourcePositi
  * Instruction which has a single branch target.
  */
 public final class TargetInsn extends FixedSizeInsn {
-    /** {@code non-null;} the branch target */
+    /**
+     * {@code non-null;} the branch target
+     */
     private CodeAddress target;
 
     /**
@@ -31,12 +33,12 @@ public final class TargetInsn extends FixedSizeInsn {
      * unknown ({@code -1}), and the target is initially
      * {@code null}.
      *
-     * @param opcode the opcode; one of the constants from {@link Dops}
-     * @param position {@code non-null;} source position
+     * @param opcode    the opcode; one of the constants from {@link Dops}
+     * @param position  {@code non-null;} source position
      * @param registers {@code non-null;} register list, including a
-     * result register if appropriate (that is, registers may be either
-     * ins or outs)
-     * @param target {@code non-null;} the branch target
+     *                  result register if appropriate (that is, registers may be either
+     *                  ins or outs)
+     * @param target    {@code non-null;} the branch target
      */
     public TargetInsn(Dop opcode, SourcePosition position,
                       RegisterSpecList registers, CodeAddress target) {
@@ -49,13 +51,17 @@ public final class TargetInsn extends FixedSizeInsn {
         this.target = target;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withOpcode(Dop opcode) {
         return new TargetInsn(opcode, getPosition(), getRegisters(), target);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DalvInsn withRegisters(RegisterSpecList registers) {
         return new TargetInsn(getOpcode(), getPosition(), registers, target);
@@ -120,7 +126,9 @@ public final class TargetInsn extends FixedSizeInsn {
         return hasAddress() && target.hasAddress();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String argString() {
         if (target == null) {

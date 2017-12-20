@@ -34,15 +34,13 @@ package org.firstinspires.ftc.robotcore.internal.opengl.shaders;
 
 import android.content.Context;
 
-public class SimpleColorProgram extends ShaderProgram
-    {
+public class SimpleColorProgram extends ShaderProgram {
     public final SimpleVertexShader vertex;
     public final ColorFragmentShader fragment;
 
-    public SimpleColorProgram(Context context)
-        {
+    public SimpleColorProgram(Context context) {
         super(context, SimpleVertexShader.resourceId, ColorFragmentShader.resourceId);
         this.vertex = new SimpleVertexShader(this.program);
         this.fragment = new ColorFragmentShader(this.program);
-        }
     }
+}

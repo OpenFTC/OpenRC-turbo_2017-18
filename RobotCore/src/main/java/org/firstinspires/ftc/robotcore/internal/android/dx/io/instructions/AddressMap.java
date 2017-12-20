@@ -23,14 +23,16 @@ import java.util.HashMap;
  * {@code int}s.
  */
 public final class AddressMap {
-    /** underlying map. TODO: This might be too inefficient. */
-    private final HashMap<Integer,Integer> map;
+    /**
+     * underlying map. TODO: This might be too inefficient.
+     */
+    private final HashMap<Integer, Integer> map;
 
     /**
      * Constructs an instance.
      */
     public AddressMap() {
-        map = new HashMap<Integer,Integer>();
+        map = new HashMap<Integer, Integer>();
     }
 
     /**

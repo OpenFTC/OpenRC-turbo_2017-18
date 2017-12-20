@@ -19,6 +19,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.cf;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RopMethod;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.TranslationAdvice;
 import org.firstinspires.ftc.robotcore.internal.android.dx.ssa.Optimizer;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -43,7 +44,9 @@ public class OptimizerOptions {
      */
     private static HashSet<String> dontOptimizeList;
 
-    /** true if the above lists have been loaded */
+    /**
+     * true if the above lists have been loaded
+     */
     private static boolean optimizeListsLoaded;
 
     /**
@@ -56,11 +59,11 @@ public class OptimizerOptions {
     /**
      * Loads the optimize/don't optimize lists from files.
      *
-     * @param optimizeListFile Pathname
+     * @param optimizeListFile     Pathname
      * @param dontOptimizeListFile Pathname
      */
     public static void loadOptimizeLists(String optimizeListFile,
-            String dontOptimizeListFile) {
+                                         String dontOptimizeListFile) {
         if (optimizeListsLoaded) {
             return;
         }
@@ -120,15 +123,15 @@ public class OptimizerOptions {
      * some optional steps. Results are printed to stderr.
      *
      * @param nonOptRmeth {@code non-null;} origional rop method
-     * @param paramSize {@code >= 0;} parameter size of method
-     * @param isStatic true if this method has no 'this' pointer argument.
-     * @param args {@code non-null;} translator arguments
-     * @param advice {@code non-null;} translation advice
-     * @param rmeth {@code non-null;} method with all optimization steps run.
+     * @param paramSize   {@code >= 0;} parameter size of method
+     * @param isStatic    true if this method has no 'this' pointer argument.
+     * @param args        {@code non-null;} translator arguments
+     * @param advice      {@code non-null;} translation advice
+     * @param rmeth       {@code non-null;} method with all optimization steps run.
      */
     public static void compareOptimizerStep(RopMethod nonOptRmeth,
-            int paramSize, boolean isStatic, CfOptions args,
-            TranslationAdvice advice, RopMethod rmeth) {
+                                            int paramSize, boolean isStatic, CfOptions args,
+                                            TranslationAdvice advice, RopMethod rmeth) {
         EnumSet<Optimizer.OptionalStep> steps;
 
         steps = EnumSet.allOf(Optimizer.OptionalStep.class);
@@ -138,7 +141,7 @@ public class OptimizerOptions {
 
         RopMethod skipRopMethod
                 = Optimizer.optimize(nonOptRmeth,
-                        paramSize, isStatic, args.localInfo, advice, steps);
+                paramSize, isStatic, args.localInfo, advice, steps);
 
         int normalInsns
                 = rmeth.getBlocks().getEffectiveInstructionCount();
@@ -147,7 +150,7 @@ public class OptimizerOptions {
 
         System.err.printf(
                 "optimize step regs:(%d/%d/%.2f%%)"
-                + " insns:(%d/%d/%.2f%%)\n",
+                        + " insns:(%d/%d/%.2f%%)\n",
                 rmeth.getBlocks().getRegCount(),
                 skipRopMethod.getBlocks().getRegCount(),
                 100.0 * ((skipRopMethod.getBlocks().getRegCount()

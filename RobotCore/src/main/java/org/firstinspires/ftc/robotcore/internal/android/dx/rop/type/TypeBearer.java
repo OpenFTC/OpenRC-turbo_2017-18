@@ -56,11 +56,10 @@ public interface TypeBearer
      * instance is an int-like type, in which case this method returns
      * {@code BT_INT}.
      *
-     * @see #getBasicType
-     * @see #getFrameType
-     *
      * @return the basic frame type; one of the {@code BT_*} constants
      * defined by {@link Type}
+     * @see #getBasicType
+     * @see #getFrameType
      */
     public int getBasicFrameType();
 

@@ -37,8 +37,7 @@ import com.qualcomm.robotcore.hardware.configuration.MotorType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 
-@MotorType(xmlTag="@string/rev_hd_hex_xmltag", name="@string/rev_hd_hex_name", ticksPerRev=2240, gearing=40, maxRPM=150, orientation= Rotation.CCW)
-@DistributorInfo(distributor="@string/rev_distributor", model="REV-41-1301", url="http://www.revrobotics.com/rev-41-1301")
-public interface RevRoboticsHdHexMotor
-    {
-    }
+@MotorType(xmlTag = "@string/rev_hd_hex_xmltag", name = "@string/rev_hd_hex_name", ticksPerRev = 2240, gearing = 40, maxRPM = 150, orientation = Rotation.CCW)
+@DistributorInfo(distributor = "@string/rev_distributor", model = "REV-41-1301", url = "http://www.revrobotics.com/rev-41-1301")
+public interface RevRoboticsHdHexMotor {
+}

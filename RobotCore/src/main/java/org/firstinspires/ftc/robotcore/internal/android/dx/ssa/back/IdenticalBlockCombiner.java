@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.BasicBlockLi
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RegOps;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.RopMethod;
 import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
+
 import java.util.BitSet;
 
 /**
@@ -78,7 +79,7 @@ public class IdenticalBlockCombiner {
                 if (toDelete.get(iLabel)
                         || iBlock.getSuccessors().size() > 1
                         || iBlock.getFirstInsn().getOpcode().getOpcode() ==
-                            RegOps.MOVE_RESULT) {
+                        RegOps.MOVE_RESULT) {
                     continue;
                 }
 
@@ -152,7 +153,7 @@ public class IdenticalBlockCombiner {
      * Replaces one of a block's successors with a different label. Constructs
      * an updated BasicBlock instance and places it in {@code newBlocks}.
      *
-     * @param block block to replace
+     * @param block    block to replace
      * @param oldLabel label of successor to replace
      * @param newLabel label of new successor
      */

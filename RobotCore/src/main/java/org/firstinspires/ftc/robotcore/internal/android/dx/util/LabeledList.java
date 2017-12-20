@@ -28,7 +28,9 @@ public class LabeledList extends FixedSizeList {
      */
     private final IntList labelToIndex;
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public LabeledList(int size) {
         super(size);
 
@@ -65,7 +67,9 @@ public class LabeledList extends FixedSizeList {
         // Gobble any deleted labels that may be at the end.
         int i;
         for (i = sz - 1; (i >= 0) && (labelToIndex.get(i) < 0); i--)
-            /*empty*/ ;
+            /*empty*/ {
+            ;
+        }
 
         int newSize = i + 1;
 
@@ -122,7 +126,7 @@ public class LabeledList extends FixedSizeList {
      *
      * @return {@code non-null;} ordered array of labels
      * @throws NullPointerException thrown if there are any {@code null}
-     * items in this instance
+     *                              items in this instance
      */
     public final int[] getLabelsInOrder() {
         int sz = size();
@@ -140,7 +144,9 @@ public class LabeledList extends FixedSizeList {
         return result;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public void shrinkToFit() {
         super.shrinkToFit();
@@ -168,7 +174,7 @@ public class LabeledList extends FixedSizeList {
     /**
      * Sets the element at the given index.
      *
-     * @param n {@code >= 0, < size();} which element
+     * @param n    {@code >= 0, < size();} which element
      * @param item {@code null-ok;} the value to store
      */
     protected void set(int n, LabeledItem item) {

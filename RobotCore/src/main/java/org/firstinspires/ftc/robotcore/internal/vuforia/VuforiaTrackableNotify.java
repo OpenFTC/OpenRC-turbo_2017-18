@@ -39,9 +39,8 @@ import com.vuforia.TrackableResult;
  * as to whether they are currently visible or not.
  */
 @SuppressWarnings("WeakerAccess")
-public interface VuforiaTrackableNotify
-    {
+public interface VuforiaTrackableNotify {
     void noteTracked(TrackableResult trackableResult);
 
     void noteNotTracked();
-    }
+}

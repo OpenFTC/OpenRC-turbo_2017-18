@@ -68,8 +68,7 @@ import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
  * A collection of web handlers having to do with core robot controller management, etc
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotControllerWebHandlers
-{
+public class RobotControllerWebHandlers {
     public static final String TAG = RobotControllerWebHandlers.class.getSimpleName();
 
     public static boolean DEBUG = false;
@@ -91,8 +90,10 @@ public class RobotControllerWebHandlers
 
     public static final String INDEX_FILE = "frame.html";
 
-    /** These are intercepted in ProgramAndManageActivity; they make sense only
-     * the Android WebView client */
+    /**
+     * These are intercepted in ProgramAndManageActivity; they make sense only
+     * the Android WebView client
+     */
     public static final String URI_EXIT_PROGRAM_AND_MANAGE = "/exitProgramAndManage";
     public static final String URI_TOAST = "/toast";
 
@@ -100,20 +101,19 @@ public class RobotControllerWebHandlers
     public static final String PARAM_NEW_NAME = "new_name";
     public static final String PARAM_MESSAGE = "message";
 
-    public static void initialize(WebHandlerManager manager)
-    {
-        manager.register("/",                       new ServerRootIndex(INDEX_FILE));
-        manager.register(URI_ANON_PING,             new AnonymousPing());
-        manager.register(URI_PING,                  decorateWithParms(new ClientPing())); // overridden in ProgrammingWebHandlers
-        manager.register(URI_LIST_LOG_FILES,        new ListLogFiles());
-        manager.register(URI_DOWNLOAD_FILE,         new FileDownload());
-        manager.register(URI_RENAME_RC,             decorateWithParms(new RenameRobotController()));
+    public static void initialize(WebHandlerManager manager) {
+        manager.register("/", new ServerRootIndex(INDEX_FILE));
+        manager.register(URI_ANON_PING, new AnonymousPing());
+        manager.register(URI_PING, decorateWithParms(new ClientPing())); // overridden in ProgrammingWebHandlers
+        manager.register(URI_LIST_LOG_FILES, new ListLogFiles());
+        manager.register(URI_DOWNLOAD_FILE, new FileDownload());
+        manager.register(URI_RENAME_RC, decorateWithParms(new RenameRobotController()));
         manager.register(URI_UPDATE_CONTROL_HUB_APK, new FileUpload(AppUtil.RC_APP_UPDATE_DIR.getAbsolutePath()));
         manager.register(URI_UPLOAD_EXPANSION_HUB_FIRMWARE, new FileUpload(AppUtil.LYNX_FIRMWARE_UPDATE_DIR.getAbsolutePath()));
-        manager.register(URI_RC_CONFIG,             new RobotControllerConfiguration());
-        manager.register(URI_RC_INFO,               new RobotControllerInfoHandler(manager.getWebServer()));
-        manager.register(URI_REBOOT,                new Reboot());
-        manager.register(URI_TOAST,                 new SimpleSuccess());
+        manager.register(URI_RC_CONFIG, new RobotControllerConfiguration());
+        manager.register(URI_RC_INFO, new RobotControllerInfoHandler(manager.getWebServer()));
+        manager.register(URI_REBOOT, new Reboot());
+        manager.register(URI_TOAST, new SimpleSuccess());
         manager.register(URI_EXIT_PROGRAM_AND_MANAGE, new SimpleSuccess()); // actually *fully* handled in ProgramAndManageActivity, but registering make things neat and tidy
 
         AppThemeColorsHandler colorsHandler = new AppThemeColorsHandler();
@@ -121,25 +121,23 @@ public class RobotControllerWebHandlers
         manager.registerObserver(URI_COLORS, colorsHandler);
     }
 
-    public static WebHandler decorateWithParms(WebHandler delegate)
-    {
+    public static WebHandler decorateWithParms(WebHandler delegate) {
         return new SessionParametersGenerator(delegate);
     }
 
-    /** Handles error handling for those using PARAM_NAME */
-    public static abstract class RequireNameHandler implements WebHandler
-    {
+    /**
+     * Handles error handling for those using PARAM_NAME
+     */
+    public static abstract class RequireNameHandler implements WebHandler {
         @Override
-        public final Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-        {
+        public final Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
             final Map<String, List<String>> parms = session.getParameters();
             String name = parms.get(PARAM_NAME).get(0);
             if (name == null) {
                 return newFixedLengthResponse(
                         Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT,
                         "Bad Request: " + PARAM_NAME + " parameter is required");
-            }
-            else if (name.length() == 0) {
+            } else if (name.length() == 0) {
                 return newFixedLengthResponse(
                         Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT,
                         "Bad Request: " + PARAM_NAME + " must be non-empty");
@@ -173,25 +171,24 @@ public class RobotControllerWebHandlers
         }
     }
 
-    public static class Redirection implements WebHandler
-    {
-        public enum QueryParameters { PRESERVE, DISCARD };
+    public static class Redirection implements WebHandler {
+        public enum QueryParameters {PRESERVE, DISCARD}
+
+        ;
         private final String targetURI;
         private final QueryParameters queryParameters;
 
-        public Redirection(String targetURI)
-        {
+        public Redirection(String targetURI) {
             this(targetURI, QueryParameters.PRESERVE);
         }
-        public Redirection(String targetURI, QueryParameters queryParameters)
-        {
+
+        public Redirection(String targetURI, QueryParameters queryParameters) {
             this.targetURI = targetURI;
             this.queryParameters = queryParameters;
         }
 
         @Override
-        public Response getResponse(IHTTPSession session)
-        {
+        public Response getResponse(IHTTPSession session) {
             String location = targetURI;
 
             String query = session.getQueryParameterString() != null && session.getQueryParameterString().length() > 0 ? session.getQueryParameterString() : null;
@@ -201,20 +198,20 @@ public class RobotControllerWebHandlers
                 }
             }
 
-			if (DEBUG) {
+            if (DEBUG) {
                 String uri = session.getUri();
                 if (query != null) {
                     uri += "?" + query;
                 }
-				RobotLog.dd(TAG, "In Redirect from='%s' to='%s'", uri, location);
-			}
+                RobotLog.dd(TAG, "In Redirect from='%s' to='%s'", uri, location);
+            }
 
             // Temporary provides less browser lockup, and so better RC App versioning behavior,
             // but permanent might work better in brower UIs (doesn't track the redirect in address bar?).
-			//
-			// Or... maybe not...unclear. We don't see a compelling reason to perm-redirect, so we don't.
-			//
-            Response.IStatus status =  Response.Status.TEMPORARY_REDIRECT;
+            //
+            // Or... maybe not...unclear. We don't see a compelling reason to perm-redirect, so we don't.
+            //
+            Response.IStatus status = Response.Status.TEMPORARY_REDIRECT;
 
             final Response response = newFixedLengthResponse(status, NanoHTTPD.MIME_PLAINTEXT, "");
             response.addHeader("Location", location);
@@ -225,21 +222,18 @@ public class RobotControllerWebHandlers
     /**
      * {@link RobotControllerInfoHandler}
      */
-    public static class RobotControllerInfoHandler implements WebHandler
-    {
+    public static class RobotControllerInfoHandler implements WebHandler {
         private final WebServer webServer;
 
-        public RobotControllerInfoHandler(@NonNull WebServer webServer)
-        {
+        public RobotControllerInfoHandler(@NonNull WebServer webServer) {
             this.webServer = webServer;
         }
 
         @Override
-        public Response getResponse(IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-        {
-			if (DEBUG) {
-				RobotLog.dd(TAG, "RCInfoHandler");
-			}
+        public Response getResponse(IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
+            if (DEBUG) {
+                RobotLog.dd(TAG, "RCInfoHandler");
+            }
 
             final RobotControllerWebInfo info = webServer.getConnectionInformation();
             info.setFtcUserAgentCategory(session);
@@ -252,11 +246,9 @@ public class RobotControllerWebHandlers
      * Returns json containing the full paths to all the extant log files.
      * Paths are relative to root, not absolute
      */
-    public static class ListLogFiles implements WebHandler
-    {
+    public static class ListLogFiles implements WebHandler {
         @Override
-        public Response getResponse(IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-        {
+        public Response getResponse(IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
             synchronized (this) {
                 List<String> result = new ArrayList<>();
                 List<File> logFiles = RobotLog.getExtantLogFiles(AppUtil.getDefContext());
@@ -277,30 +269,26 @@ public class RobotControllerWebHandlers
     /**
      * Returns the content of an indicated file. We can return anything under the file root.
      */
-    public static class FileDownload extends RequireNameHandler
-    {
+    public static class FileDownload extends RequireNameHandler {
         public static File fileRoot = AppUtil.ROOT_FOLDER;
 
         @Override
-        public Response getResponse(NanoHTTPD.IHTTPSession session, @NonNull String name) throws IOException
-        {
-			if (DEBUG) {
-				RobotLog.dd(TAG, "FileDownload name=%s", name);
-			}
+        public Response getResponse(NanoHTTPD.IHTTPSession session, @NonNull String name) throws IOException {
+            if (DEBUG) {
+                RobotLog.dd(TAG, "FileDownload name=%s", name);
+            }
 
             File absoluteFile = new File(fileRoot, name);
             return fetchFileContent(absoluteFile);
         }
 
-        private Response fetchFileContent(File file) throws IOException
-        {
+        private Response fetchFileContent(File file) throws IOException {
             InputStream inputStream;
             try {
                 // One might be tempted to truncate files here based on length. But that would
                 // only be a reasonable thing to do for a limited number of file formats.
                 inputStream = new BufferedInputStream(new FileInputStream(file));
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "");
             }
             Response response = newChunkedResponse(Response.Status.OK, MimeTypesUtil.determineMimeType(file.getName()), inputStream);
@@ -313,8 +301,7 @@ public class RobotControllerWebHandlers
     /**
      * Upload a file to the Android
      */
-    public static final class FileUpload implements WebHandler
-    {
+    public static final class FileUpload implements WebHandler {
         private final String dirPath;
 
         /**
@@ -323,8 +310,7 @@ public class RobotControllerWebHandlers
          *
          * @param dirPath absolute path for the directory.
          */
-        FileUpload(String dirPath)
-        {
+        FileUpload(String dirPath) {
             this.dirPath = dirPath;
         }
 
@@ -335,16 +321,14 @@ public class RobotControllerWebHandlers
          * @return an "OK" Response if the transfer was a success and an "ERROR" Response otherwise.
          */
         @Override
-        public Response getResponse(IHTTPSession session)
-        {
+        public Response getResponse(IHTTPSession session) {
             synchronized (this) { // paranoia
                 if (DEBUG) {
                     RobotLog.dd(TAG, "In FileUpload " + dirPath);
                 }
                 try {
                     final byte[] raw = buildByteArray(session);
-                    if (raw.length == 0)
-                    {
+                    if (raw.length == 0) {
                         return WebHandlerManager.OK_RESPONSE;
                     }
                     readRawContent(session, raw);
@@ -363,8 +347,7 @@ public class RobotControllerWebHandlers
          * @param session Current IHTTPSession
          * @return String filename that has been uploaded
          */
-        private String getFileName(IHTTPSession session)
-        {
+        private String getFileName(IHTTPSession session) {
             String filename = session.getHeaders().get("content-disposition").split("=")[1];
             return filename.substring(1, filename.length() - 1);
         }
@@ -373,26 +356,22 @@ public class RobotControllerWebHandlers
          * readRawContent.
          *
          * @param session Current IHTTPSession
-         * @param raw byte array to read the data into
-         *
+         * @param raw     byte array to read the data into
          * @throws IOException If the first byte cannot be read for any reason other than end
-         * of file, or if the input stream has been closed, or if some other I/O error occurs.
+         *                     of file, or if the input stream has been closed, or if some other I/O error occurs.
          */
-        private void readRawContent(IHTTPSession session, byte[] raw) throws IOException
-        {
+        private void readRawContent(IHTTPSession session, byte[] raw) throws IOException {
             final InputStream stream = session.getInputStream();
             int nBytes;
             int offset = 0;
             int len = raw.length;
 
-            while (offset < raw.length)
-            {
+            while (offset < raw.length) {
                 nBytes = stream.read(raw, offset, len);
                 len -= nBytes;
                 offset += nBytes;
             }
-            if (offset == -1)
-            {
+            if (offset == -1) {
                 final String errorString = "File not read";
                 RobotLog.ee(TAG, errorString);
                 throw new IOException(errorString);
@@ -405,8 +384,7 @@ public class RobotControllerWebHandlers
          * @param session Current IHTTPSession
          * @return new byte array of length contentLength from the session
          */
-        private byte[] buildByteArray(IHTTPSession session)
-        {
+        private byte[] buildByteArray(IHTTPSession session) {
             final String contentLengthString = session.getHeaders().get("content-length");
             final int contentLength = Integer.parseInt(contentLengthString);
             return new byte[contentLength];
@@ -418,13 +396,10 @@ public class RobotControllerWebHandlers
          * @param updatesDirString String name of the Updates directory
          * @return true if the directory exists, false if it could not be made.
          */
-        private boolean checkDir(String updatesDirString)
-        {
+        private boolean checkDir(String updatesDirString) {
             final File toCheck = new File(updatesDirString);
-            if (!toCheck.exists())
-            {
-                if (!toCheck.mkdir())
-                {
+            if (!toCheck.exists()) {
+                if (!toCheck.mkdir()) {
                     return false;
                 }
             }
@@ -435,11 +410,10 @@ public class RobotControllerWebHandlers
          * writeFile.
          *
          * @param filename String name of the file to write.
-         * @param rawFile byte array of raw data to write
+         * @param rawFile  byte array of raw data to write
          * @return An "OK" response if the write succeeded and "ERROR" otherwise.
          */
-        private Response writeFile(final String filename, final byte[] rawFile)
-        {
+        private Response writeFile(final String filename, final byte[] rawFile) {
             if (!checkDir(dirPath)) {
                 return WebHandlerManager.internalErrorResponse(TAG, "Could Not Build Updates Directory");
             }
@@ -454,14 +428,14 @@ public class RobotControllerWebHandlers
         }
     }
 
-    /** Renames the robot controller */
-    public static class RenameRobotController extends RequireNameHandler
-    {
+    /**
+     * Renames the robot controller
+     */
+    public static class RenameRobotController extends RequireNameHandler {
         public static final String TAG = RenameRobotController.class.getSimpleName();
 
         @Override
-        public Response getResponse(IHTTPSession session, final @NonNull String desiredDeviceName) throws IOException, NanoHTTPD.ResponseException
-        {
+        public Response getResponse(IHTTPSession session, final @NonNull String desiredDeviceName) throws IOException, NanoHTTPD.ResponseException {
             synchronized (this) {
                 if (DEBUG) {
                     RobotLog.dd(TAG, "name=%s", desiredDeviceName);
@@ -474,7 +448,8 @@ public class RobotControllerWebHandlers
                     final Semaphore semaphore = new Semaphore(0);
 
                     final DeviceNameManager.Callback callback = new DeviceNameManager.Callback() {
-                        @Override public void onDeviceNameChanged(String newDeviceName) {
+                        @Override
+                        public void onDeviceNameChanged(String newDeviceName) {
                             if (newDeviceName.equals(desiredDeviceName)) {
                                 RobotLog.vv(TAG, "name change to %s observed", desiredDeviceName);
                                 semaphore.release(1);
@@ -501,11 +476,9 @@ public class RobotControllerWebHandlers
     /**
      * AnonymousPing, just send back an OK_RESPONSE.
      */
-    public static class AnonymousPing implements WebHandler
-    {
+    public static class AnonymousPing implements WebHandler {
         @Override
-        public Response getResponse(IHTTPSession session)
-        {
+        public Response getResponse(IHTTPSession session) {
             if (DEBUG) {
                 RobotLog.dd(TAG, "In AnonymousPing");
             }
@@ -516,13 +489,11 @@ public class RobotControllerWebHandlers
     /**
      * Respond to a ping. See also LoggingPing. Responds with the list of current ping details
      */
-    public static class ClientPing extends RequireNameHandler
-    {
+    public static class ClientPing extends RequireNameHandler {
         final PingDetailsHolder pingDetailsHolder = new PingDetailsHolder();
 
         @Override
-        public Response getResponse(NanoHTTPD.IHTTPSession session, @NonNull String name) throws IOException, NanoHTTPD.ResponseException
-        {
+        public Response getResponse(NanoHTTPD.IHTTPSession session, @NonNull String name) throws IOException, NanoHTTPD.ResponseException {
             synchronized (pingDetailsHolder) {
                 pingDetailsHolder.addPing(getPingDetails(session));
                 pingDetailsHolder.removeOldPings();
@@ -531,13 +502,11 @@ public class RobotControllerWebHandlers
             }
         }
 
-        protected PingDetails getPingDetails(IHTTPSession session)
-        {
+        protected PingDetails getPingDetails(IHTTPSession session) {
             return PingDetails.from(session);
         }
 
-        protected void logPing(NanoHTTPD.IHTTPSession session)
-        {
+        protected void logPing(NanoHTTPD.IHTTPSession session) {
             // hook for subclass
         }
     }
@@ -545,8 +514,7 @@ public class RobotControllerWebHandlers
     /**
      * Reboot.
      */
-    public static class Reboot implements WebHandler
-    {
+    public static class Reboot implements WebHandler {
         public final static String TAG = Reboot.class.getSimpleName();
 
         /**
@@ -558,14 +526,12 @@ public class RobotControllerWebHandlers
          * will be logged to the RobotLog.
          */
         @Override
-        public Response getResponse(IHTTPSession session)
-        {
+        public Response getResponse(IHTTPSession session) {
             if (LynxConstants.isRevControlHub()) {
                 ThreadPool.getDefault().submit(new Runnable()   // REVIEW: make a singleton?
                 {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         try {
                             AppUtil.getInstance().showToast(UILocation.BOTH, AppUtil.getDefContext().getString(R.string.toastRebootRC));
                             Thread.sleep(1000);
@@ -584,18 +550,15 @@ public class RobotControllerWebHandlers
         }
     }
 
-    public static class RobotControllerConfiguration implements WebHandler
-    {
+    public static class RobotControllerConfiguration implements WebHandler {
         @Override
-        public Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-        {
+        public Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
             StringBuilder js = new StringBuilder();
             appendVariables(js);
             return newFixedLengthResponse(Response.Status.OK, "application/javascript", js.toString());
         }
 
-        protected void appendVariables(StringBuilder js)
-        {
+        protected void appendVariables(StringBuilder js) {
             appendVariable(js, "URI_ANON_PING", URI_ANON_PING);
             appendVariable(js, "URI_PING", URI_PING);
             appendVariable(js, "URI_LIST_LOG_FILES", URI_LIST_LOG_FILES);
@@ -618,8 +581,7 @@ public class RobotControllerWebHandlers
             appendVariable(js, "URI_TOAST", URI_TOAST);
         }
 
-        public static void appendVariable(StringBuilder js, String name, String value)
-        {
+        public static void appendVariable(StringBuilder js, String name, String value) {
             js.append("var ").append(name).append(" = '").append(value).append("';\n");
         }
     }
@@ -628,20 +590,18 @@ public class RobotControllerWebHandlers
      * Dynamically synthesizes and returns a file containing 'less' variable
      * definitions corresponding to the current application theme colors.
      */
-    public static class AppThemeColorsHandler implements WebHandler, WebObserver
-    {
+    public static class AppThemeColorsHandler implements WebHandler, WebObserver {
         public static final String TAG = AppThemeColorsHandler.class.getSimpleName();
         protected final Map<String, String> sessionColors = new ConcurrentHashMap<>();
 
         // Using the instance holder defers generation until *first*access*, by which time
         // the theme will have had a chance to be applied.
-        protected static class InstanceHolder
-        {
+        protected static class InstanceHolder {
             public final static String ourColors = AppThemeColors.fromTheme().toLess();
         }
 
-        @Override public void observe(IHTTPSession session)
-        {
+        @Override
+        public void observe(IHTTPSession session) {
             // If there's an app theme header, then remember that as being associated with the session
             String appThemeHeader = session.getHeaders().get(AppThemeColors.htppHeaderNameLower);
             if (appThemeHeader != null) {
@@ -654,8 +614,7 @@ public class RobotControllerWebHandlers
         }
 
         @Override
-        public Response getResponse(IHTTPSession session) throws IOException, NanoHTTPD.ResponseException
-        {
+        public Response getResponse(IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
             // Use session-specific colors if we have 'em; otherwise, our colors
             String sessionCookie = SessionCookie.fromSession(session);
             String colors = sessionCookie == null ? null : sessionColors.get(sessionCookie);
@@ -672,18 +631,18 @@ public class RobotControllerWebHandlers
         }
     }
 
-    public static class SimpleSuccess implements WebHandler
-    {
+    public static class SimpleSuccess implements WebHandler {
         public final static String TAG = SimpleSuccess.class.getSimpleName();
 
-        @Override public Response getResponse(IHTTPSession session)
-        {
+        @Override
+        public Response getResponse(IHTTPSession session) {
             return WebHandlerManager.OK_RESPONSE;
         }
     }
 
     // do not instantiate
-    private RobotControllerWebHandlers(){}
+    private RobotControllerWebHandlers() {
+    }
 
 
 }

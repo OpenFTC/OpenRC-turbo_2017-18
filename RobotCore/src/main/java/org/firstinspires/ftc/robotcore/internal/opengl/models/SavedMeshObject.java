@@ -53,18 +53,15 @@ import android.content.res.AssetManager;
 import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
 
 
-public class SavedMeshObject extends MeshObject
-    {
+public class SavedMeshObject extends MeshObject {
     private ByteBuffer verts;
     private ByteBuffer textCoords;
     private ByteBuffer norms;
     int numVerts = 0;
 
-    public void loadModel(AssetManager assetManager, String filename) throws IOException
-        {
+    public void loadModel(AssetManager assetManager, String filename) throws IOException {
         InputStream is = null;
-        try
-            {
+        try {
             is = assetManager.open(filename);
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
@@ -75,10 +72,9 @@ public class SavedMeshObject extends MeshObject
 
             verts = ByteBuffer.allocateDirect(floatsToRead * 4);
             verts.order(ByteOrder.nativeOrder());
-            for (int i = 0; i < floatsToRead; i++)
-                {
+            for (int i = 0; i < floatsToRead; i++) {
                 verts.putFloat(Float.parseFloat(reader.readLine()));
-                }
+            }
             verts.rewind();
 
             line = reader.readLine();
@@ -86,10 +82,9 @@ public class SavedMeshObject extends MeshObject
 
             norms = ByteBuffer.allocateDirect(floatsToRead * 4);
             norms.order(ByteOrder.nativeOrder());
-            for (int i = 0; i < floatsToRead; i++)
-                {
+            for (int i = 0; i < floatsToRead; i++) {
                 norms.putFloat(Float.parseFloat(reader.readLine()));
-                }
+            }
             norms.rewind();
 
             line = reader.readLine();
@@ -97,26 +92,22 @@ public class SavedMeshObject extends MeshObject
 
             textCoords = ByteBuffer.allocateDirect(floatsToRead * 4);
             textCoords.order(ByteOrder.nativeOrder());
-            for (int i = 0; i < floatsToRead; i++)
-                {
+            for (int i = 0; i < floatsToRead; i++) {
                 textCoords.putFloat(Float.parseFloat(reader.readLine()));
-                }
+            }
             textCoords.rewind();
 
-            }
-        finally
-            {
-            if (is != null)
+        } finally {
+            if (is != null) {
                 is.close();
             }
         }
+    }
 
     @Override
-    public Buffer getBuffer(BUFFER_TYPE bufferType)
-        {
+    public Buffer getBuffer(BUFFER_TYPE bufferType) {
         Buffer result = null;
-        switch (bufferType)
-            {
+        switch (bufferType) {
             case BUFFER_TYPE_VERTEX:
                 result = verts;
                 break;
@@ -127,19 +118,17 @@ public class SavedMeshObject extends MeshObject
                 result = norms;
             default:
                 break;
-            }
+        }
         return result;
-        }
-
-    @Override
-    public int getNumObjectVertex()
-        {
-        return numVerts;
-        }
-
-    @Override
-    public int getNumObjectIndex()
-        {
-        return 0;
-        }
     }
+
+    @Override
+    public int getNumObjectVertex() {
+        return numVerts;
+    }
+
+    @Override
+    public int getNumObjectIndex() {
+        return 0;
+    }
+}

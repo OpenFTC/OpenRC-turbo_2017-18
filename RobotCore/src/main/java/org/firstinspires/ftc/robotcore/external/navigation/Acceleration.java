@@ -37,13 +37,14 @@ import java.util.Locale;
 /**
  * Instances of {@link Acceleration} represent a double integration of {@link Position} over time.
  */
-public class Acceleration
-    {
+public class Acceleration {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    /** The (nominal) acceleration due to Earth's gravity */
+    /**
+     * The (nominal) acceleration due to Earth's gravity
+     */
     public static final double earthGravity = 9.80665; // in units of m/s^2
 
     /**
@@ -65,49 +66,44 @@ public class Acceleration
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public Acceleration()
-        {
+    public Acceleration() {
         this(DistanceUnit.MM, 0, 0, 0, 0);
-        }
+    }
 
-    public Acceleration(DistanceUnit unit, double xAccel, double yAccel, double zAccel, long acquisitionTime)
-        {
+    public Acceleration(DistanceUnit unit, double xAccel, double yAccel, double zAccel, long acquisitionTime) {
         this.unit = unit;
         this.xAccel = xAccel;
         this.yAccel = yAccel;
         this.zAccel = zAccel;
         this.acquisitionTime = acquisitionTime;
-        }
+    }
 
     /**
      * Returns an acceleration constructed from measures in units of earth's gravity
      * rather than explicit distance units.
      */
-    public static Acceleration fromGravity(double gx, double gy, double gz, long acquisitionTime)
-        {
+    public static Acceleration fromGravity(double gx, double gy, double gz, long acquisitionTime) {
         return new Acceleration(DistanceUnit.METER, gx * earthGravity, gy * earthGravity, gz * earthGravity, acquisitionTime);
-        }
+    }
 
-    public Acceleration toUnit(DistanceUnit distanceUnit)
-        {
-        if (distanceUnit != this.unit)
-            {
+    public Acceleration toUnit(DistanceUnit distanceUnit) {
+        if (distanceUnit != this.unit) {
             return new Acceleration(distanceUnit,
                     distanceUnit.fromUnit(this.unit, xAccel),
                     distanceUnit.fromUnit(this.unit, yAccel),
                     distanceUnit.fromUnit(this.unit, zAccel),
                     this.acquisitionTime);
-            }
-        else
+        } else {
             return this;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    @Override public String toString()
-        {
+    @Override
+    public String toString() {
         return String.format(Locale.getDefault(), "(%.3f %.3f %.3f)%s/s^2", xAccel, yAccel, zAccel, unit.toString());
-        }
     }
+}

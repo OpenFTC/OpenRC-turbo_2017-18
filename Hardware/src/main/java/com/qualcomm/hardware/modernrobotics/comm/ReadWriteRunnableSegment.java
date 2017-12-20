@@ -41,69 +41,69 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressLint("DefaultLocale")
 public class ReadWriteRunnableSegment {
 
-  private int key;
-  private int address;
-  private boolean retryOnReadFailure;
-  private TimeWindow timeWindow;
+    private int key;
+    private int address;
+    private boolean retryOnReadFailure;
+    private TimeWindow timeWindow;
 
-  final Lock lockRead;
-  final private byte[] bufferRead;
+    final Lock lockRead;
+    final private byte[] bufferRead;
 
-  final Lock lockWrite;
-  final private byte[] bufferWrite;
+    final Lock lockWrite;
+    final private byte[] bufferWrite;
 
-  public ReadWriteRunnableSegment(int key, int address, int size) {
-    this.key = key;
-    this.address = address;
-    this.lockRead = new ReentrantLock();
-    this.bufferRead = new byte[size];
-    this.lockWrite = new ReentrantLock();
-    this.bufferWrite = new byte[size];
-    this.retryOnReadFailure = true; // true is the safer default
-    this.timeWindow = new TimeWindow();
-  }
+    public ReadWriteRunnableSegment(int key, int address, int size) {
+        this.key = key;
+        this.address = address;
+        this.lockRead = new ReentrantLock();
+        this.bufferRead = new byte[size];
+        this.lockWrite = new ReentrantLock();
+        this.bufferWrite = new byte[size];
+        this.retryOnReadFailure = true; // true is the safer default
+        this.timeWindow = new TimeWindow();
+    }
 
-  public int getKey() {
-    return key;
-  }
+    public int getKey() {
+        return key;
+    }
 
-  public int getAddress() {
-    return address;
-  }
+    public int getAddress() {
+        return address;
+    }
 
-  public void setAddress(int address) {
-    this.address = address;
-  }
+    public void setAddress(int address) {
+        this.address = address;
+    }
 
-  public Lock getReadLock() {
-    return lockRead;
-  }
+    public Lock getReadLock() {
+        return lockRead;
+    }
 
-  public byte[] getReadBuffer() {
-    return bufferRead;
-  }
+    public byte[] getReadBuffer() {
+        return bufferRead;
+    }
 
-  public Lock getWriteLock() {
-    return lockWrite;
-  }
+    public Lock getWriteLock() {
+        return lockWrite;
+    }
 
-  public byte[] getWriteBuffer() {
-    return bufferWrite;
-  }
+    public byte[] getWriteBuffer() {
+        return bufferWrite;
+    }
 
-  public void setRetryOnReadFailure(boolean retryOnReadFailure) {
-    this.retryOnReadFailure = retryOnReadFailure;
-  }
+    public void setRetryOnReadFailure(boolean retryOnReadFailure) {
+        this.retryOnReadFailure = retryOnReadFailure;
+    }
 
-  public boolean getRetryOnReadFailure() {
-    return this.retryOnReadFailure;
-  }
+    public boolean getRetryOnReadFailure() {
+        return this.retryOnReadFailure;
+    }
 
-  public TimeWindow getTimeWindow() {
-    return timeWindow;
-  }
+    public TimeWindow getTimeWindow() {
+        return timeWindow;
+    }
 
-  public String toString() {
-    return String.format("Segment - address:%d read:%d write:%d", address, bufferRead.length, bufferWrite.length);
-  }
+    public String toString() {
+        return String.format("Segment - address:%d read:%d write:%d", address, bufferRead.length, bufferWrite.length);
+    }
 }

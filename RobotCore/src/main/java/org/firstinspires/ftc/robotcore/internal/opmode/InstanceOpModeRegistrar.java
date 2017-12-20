@@ -36,7 +36,6 @@ package org.firstinspires.ftc.robotcore.internal.opmode;
  * Used for registering instance opmodes
  */
 @SuppressWarnings("WeakerAccess")
-public interface InstanceOpModeRegistrar
-    {
+public interface InstanceOpModeRegistrar {
     void register(InstanceOpModeManager manager);
-    }
+}

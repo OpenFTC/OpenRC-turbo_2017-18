@@ -20,8 +20,10 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.dex.file;
  * An item in a Dalvik file which is referenced by index.
  */
 public abstract class IndexedItem extends Item {
-    /** {@code >= -1;} assigned index of the item, or {@code -1} if not
-     * yet assigned */
+    /**
+     * {@code >= -1;} assigned index of the item, or {@code -1} if not
+     * yet assigned
+     */
     private int index;
 
     /**

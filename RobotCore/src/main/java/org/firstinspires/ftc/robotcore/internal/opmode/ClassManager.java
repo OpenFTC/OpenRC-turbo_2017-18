@@ -55,7 +55,7 @@ import dalvik.system.DexFile;
  * for iterating and selecting classes for particular needs.  Classes that want
  * to select particular classes should implement ClassFilter and register
  * themselves here.  See ClassManagerFactory.
- *
+ * <p>
  * This is predicated on the notion that the set of classes in any given APK is
  * constant.  So a class may implement ClassFilter, populate a static list of
  * classes it is interested in, and then use that static list in any instance of
@@ -69,12 +69,11 @@ public class ClassManager {
     // State
     //----------------------------------------------------------------------------------------------
 
-    private static class InstanceHolder
-    {
+    private static class InstanceHolder {
         public static ClassManager theInstance = new ClassManager();
     }
-    public static ClassManager getInstance()
-    {
+
+    public static ClassManager getInstance() {
         return InstanceHolder.theInstance;
     }
 
@@ -89,24 +88,19 @@ public class ClassManager {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    private ClassManager()
-    {
-        try
-        {
+    private ClassManager() {
+        try {
             this.context = AppUtil.getInstance().getApplication();
             this.dexFile = new DexFile(this.context.getPackageCodePath());
             this.filters = new LinkedList<ClassFilter>();
             clearIgnoredList();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw AppUtil.getInstance().unreachable(TAG, e);
         }
 
     }
 
-    protected void clearIgnoredList()
-    {
+    protected void clearIgnoredList() {
         // We ignore certain packages to make us more robust and efficient
         this.packagesAndClassesToIgnore = new ArrayList<String>();
         this.packagesAndClassesToIgnore.addAll(Arrays.asList(
@@ -121,8 +115,7 @@ public class ClassManager {
         ));
     }
 
-    protected void clearOnBotJava()
-    {
+    protected void clearOnBotJava() {
     }
 
     //----------------------------------------------------------------------------------------------
@@ -134,8 +127,7 @@ public class ClassManager {
      *
      * @param filter a class that implements ClassFilter.
      */
-    public void registerFilter(ClassFilter filter)
-    {
+    public void registerFilter(ClassFilter filter) {
         filters.add(filter);
     }
 
@@ -145,8 +137,7 @@ public class ClassManager {
      * Classes can be found in either the base apk dex file, or any number of
      * instant run dex files, or in On-Bot Java classes. Gather them all...
      */
-    private List<String> getAllClassNames()
-    {
+    private List<String> getAllClassNames() {
         // Load what's built into the APK
         List<String> classNames = new ArrayList<String>(Collections.list(dexFile.entries()));
 
@@ -159,40 +150,34 @@ public class ClassManager {
         return classNames;
     }
 
-    protected List<Class> classNamesToClasses(Collection<String> classNames)
-    {
+    protected List<Class> classNamesToClasses(Collection<String> classNames) {
         List<Class> result = new LinkedList<Class>();
         OnBotJavaClassLoader classLoader = new OnBotJavaClassLoader();
-        try
-        {
-            for (String className : classNames)
-            {
+        try {
+            for (String className : classNames) {
                 // Ignore classes that are in some packages that we know aren't worth considering
                 boolean shouldIgnore = false;
-                for (String packageName : packagesAndClassesToIgnore)
-                {
-                    if (Util.isPrefixOf(packageName, className))
-                    {
+                for (String packageName : packagesAndClassesToIgnore) {
+                    if (Util.isPrefixOf(packageName, className)) {
                         shouldIgnore = true;
                         break;
                     }
                 }
-                if (shouldIgnore)
+                if (shouldIgnore) {
                     continue;
+                }
 
                 // Get the Class from the className
                 Class clazz;
-                try
-                {
+                try {
                     clazz = Class.forName(className, false, classLoader);
                     // RobotLog.dd(TAG, "class %s: loader=%s", className, clazz.getClassLoader().getClass().getSimpleName());
-                }
-                catch (NoClassDefFoundError|ClassNotFoundException ex)
-                {
+                } catch (NoClassDefFoundError | ClassNotFoundException ex) {
                     // We can't find that class
-                    if (logClassNotFound(className)) RobotLog.ww(TAG, ex, className + " " + ex.toString());
-                    if (className.contains("$"))
-                    {
+                    if (logClassNotFound(className)) {
+                        RobotLog.ww(TAG, ex, className + " " + ex.toString());
+                    }
+                    if (className.contains("$")) {
                         // Prevent loading similar inner classes, a performance optimization
                         className = className.substring(0, className.indexOf("$") /* -1 */);
                     }
@@ -206,38 +191,28 @@ public class ClassManager {
             }
 
             return result;
-        }
-        finally
-        {
+        } finally {
             classLoader.close();
         }
     }
 
-    protected Set<String> getOnBotJavaClassNames()
-    {
+    protected Set<String> getOnBotJavaClassNames() {
         Set<String> classNames = new HashSet<String>();
         OnBotJavaClassLoader onBotJavaClassLoader = new OnBotJavaClassLoader();
-        try
-        {
-            for (DexFile dexFile : onBotJavaClassLoader.getDexFiles())
-            {
-                 classNames.addAll(Collections.list(dexFile.entries()));
+        try {
+            for (DexFile dexFile : onBotJavaClassLoader.getDexFiles()) {
+                classNames.addAll(Collections.list(dexFile.entries()));
             }
             return classNames;
-        }
-        finally
-        {
+        } finally {
             onBotJavaClassLoader.close();
         }
     }
 
-    protected boolean logClassNotFound(String className)
-    {
-        String[] prefixes = { "com.vuforia." };
-        for (String prefix : prefixes)
-        {
-            if (className.startsWith(prefix))
-            {
+    protected boolean logClassNotFound(String className) {
+        String[] prefixes = {"com.vuforia."};
+        for (String prefix : prefixes) {
+            if (className.startsWith(prefix)) {
                 return false;
             }
         }
@@ -247,32 +222,26 @@ public class ClassManager {
     /**
      * Iterate over all the classes in the APK and call registered filters.
      */
-    public void processAllClasses()
-    {
+    public void processAllClasses() {
         clearIgnoredList();
         List<Class> allClasses = classNamesToClasses(getAllClassNames());
 
-        for (ClassFilter f : filters)
-        {
+        for (ClassFilter f : filters) {
             f.filterAllClassesStart();
-            for (Class clazz : allClasses)
-            {
+            for (Class clazz : allClasses) {
                 f.filterClass(clazz);
             }
             f.filterAllClassesComplete();
         }
     }
 
-    public void processOnBotJavaClasses()
-    {
+    public void processOnBotJavaClasses() {
         clearIgnoredList();
         List<Class> onBotJavaClasses = classNamesToClasses(getOnBotJavaClassNames());
 
-        for (ClassFilter f : filters)
-        {
+        for (ClassFilter f : filters) {
             f.filterOnBotJavaClassesStart();
-            for (Class clazz : onBotJavaClasses)
-            {
+            for (Class clazz : onBotJavaClasses) {
                 Assert.assertTrue(OnBotJavaClassLoader.isOnBotJava(clazz), "class %s isn't OnBotJava: loader=%s", clazz.getSimpleName(), clazz.getClassLoader().getClass().getSimpleName());
                 f.filterOnBotJavaClass(clazz);
             }

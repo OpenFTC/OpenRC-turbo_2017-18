@@ -39,21 +39,18 @@ import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaLocalizerImpl;
  * {@link ClassFactory} provides a means by which various objects in the SDK may be logically
  * instantiated without exposing their external class identities to user's programs.
  */
-public class ClassFactory
-    {
+public class ClassFactory {
     /**
      * {@link #createVuforiaLocalizer(VuforiaLocalizer.Parameters) createVuforiaLocalizer} instantiates
      * an instance of the Vuforia robot localization engine.
      *
      * @param parameters the parameters used to configure the new instance of the engine
      * @return a new instance of the Vuforia robot localization engine.
-     *
      * @see VuforiaLocalizer
      * @see org.firstinspires.ftc.robotcore.external.navigation.Orientation
      * @see <a href="http://www.vuforia.com/">vuforia.com</a>
      */
-    public static VuforiaLocalizer createVuforiaLocalizer(VuforiaLocalizer.Parameters parameters)
-        {
+    public static VuforiaLocalizer createVuforiaLocalizer(VuforiaLocalizer.Parameters parameters) {
         return new VuforiaLocalizerImpl(parameters);
-        }
     }
+}

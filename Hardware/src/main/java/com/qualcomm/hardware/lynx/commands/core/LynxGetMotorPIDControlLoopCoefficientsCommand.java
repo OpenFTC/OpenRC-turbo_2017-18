@@ -47,8 +47,7 @@ import java.nio.ByteBuffer;
  * @see LynxSetMotorPIDControlLoopCoefficientsCommand
  * @see LynxGetMotorPIDControlLoopCoefficientsResponse
  */
-public class LynxGetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInterfaceCommand<LynxGetMotorPIDControlLoopCoefficientsResponse>
-    {
+public class LynxGetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInterfaceCommand<LynxGetMotorPIDControlLoopCoefficientsResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -62,54 +61,52 @@ public class LynxGetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInter
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module)
-        {
+    public LynxGetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxGetMotorPIDControlLoopCoefficientsResponse(module);
-        }
+    }
 
-    public LynxGetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module, int motorZ, DcMotor.RunMode mode)
-        {
+    public LynxGetMotorPIDControlLoopCoefficientsCommand(LynxModuleIntf module, int motorZ, DcMotor.RunMode mode) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        this.motor = (byte)motorZ;
-        switch (mode)
-            {
-            case RUN_USING_ENCODER:    this.mode = 1; break;
-            case RUN_TO_POSITION:      this.mode = 2; break;
-            default: throw new IllegalArgumentException(String.format("illegal mode: %s", mode.toString()));
-            }
+        this.motor = (byte) motorZ;
+        switch (mode) {
+            case RUN_USING_ENCODER:
+                this.mode = 1;
+                break;
+            case RUN_TO_POSITION:
+                this.mode = 2;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("illegal mode: %s", mode.toString()));
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxGetMotorPIDControlLoopCoefficientsResponse.class;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return true;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.put(this.mode);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
-        this.mode  = buffer.get();
-        }
+        this.mode = buffer.get();
     }
+}

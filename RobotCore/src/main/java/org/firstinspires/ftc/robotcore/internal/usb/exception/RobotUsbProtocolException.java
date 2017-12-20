@@ -37,25 +37,20 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * between RC and controller is detected.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbProtocolException extends RobotUsbException
-    {
-    public RobotUsbProtocolException(String message)
-        {
+public class RobotUsbProtocolException extends RobotUsbException {
+    public RobotUsbProtocolException(String message) {
         super(message);
-        }
-
-    public RobotUsbProtocolException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbProtocolException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbProtocolException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbProtocolException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbProtocolException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbProtocolException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbProtocolException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbProtocolException(String.format(format, args), e);
+    }
+}

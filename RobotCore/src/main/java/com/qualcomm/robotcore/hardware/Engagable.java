@@ -37,8 +37,7 @@ package com.qualcomm.robotcore.hardware;
  * from the services they manipulate, then later be able to re-engage them. Objects which implement
  * this interface include legacy motor and servo controllers.
  */
-public interface Engagable
-    {
+public interface Engagable {
     /**
      * Disengage the object from underlying services it uses to render its function. If
      * the object is presently disenaged, this method has no effect.
@@ -53,7 +52,8 @@ public interface Engagable
 
     /**
      * Returns whether the object is currently in the engaged state.
+     *
      * @return whether the object is currently in the engaged state.
      */
     boolean isEngaged();
-    }
+}

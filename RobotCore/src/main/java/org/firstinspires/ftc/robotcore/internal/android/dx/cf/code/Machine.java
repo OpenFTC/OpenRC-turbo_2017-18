@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.LocalItem;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Prototype;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.type.Type;
+
 import java.util.ArrayList;
 
 /**
@@ -61,7 +62,7 @@ public interface Machine {
      * indicating that there are now that many arguments. Also, clear
      * the auxiliary arguments.
      *
-     * @param frame {@code non-null;} frame to operate on
+     * @param frame     {@code non-null;} frame to operate on
      * @param prototype {@code non-null;} prototype indicating arguments to pop
      */
     public void popArgs(Frame frame, Prototype prototype);
@@ -72,7 +73,7 @@ public interface Machine {
      * arguments. Also, clear the auxiliary arguments.
      *
      * @param frame {@code non-null;} frame to operate on
-     * @param type {@code non-null;} type of the argument
+     * @param type  {@code non-null;} type of the argument
      */
     public void popArgs(Frame frame, Type type);
 
@@ -108,7 +109,7 @@ public interface Machine {
      * the arguments area. Also, clear the auxiliary arguments.
      *
      * @param frame {@code non-null;} frame to operate on
-     * @param idx {@code >= 0;} the local variable index
+     * @param idx   {@code >= 0;} the local variable index
      */
     public void localArg(Frame frame, int idx);
 
@@ -135,7 +136,7 @@ public interface Machine {
     /**
      * Indicates that there is an auxiliary (inline, not stack)
      * argument of type {@code int}, with the given value.
-     *
+     * <p>
      * <p><b>Note:</b> Perhaps unintuitively, the stack manipulation
      * ops (e.g., {@code dup} and {@code swap}) use this to
      * indicate the result stack pattern with a straightforward hex
@@ -144,7 +145,7 @@ public interface Machine {
      * {@code dup2_x1} sets this to {@code 0x12312}, and the
      * other form of that op sets this to
      * {@code 0x121}.</p>
-     *
+     * <p>
      * <p><b>Also Note:</b> For {@code switch*} instructions, this is
      * used to indicate the padding value (which is only useful for
      * verification).</p>
@@ -156,12 +157,12 @@ public interface Machine {
     /**
      * Indicates that there is an auxiliary (inline, not stack) object
      * argument, with the value based on the given constant.
-     *
+     * <p>
      * <p><b>Note:</b> Some opcodes use both {@code int} and
      * constant auxiliary arguments.</p>
      *
      * @param cst {@code non-null;} the constant containing / referencing
-     * the value
+     *            the value
      */
     public void auxCstArg(Constant cst);
 
@@ -176,12 +177,12 @@ public interface Machine {
     /**
      * Indicates that there is an auxiliary (inline, not stack) argument
      * consisting of a {@code switch*} table.
-     *
+     * <p>
      * <p><b>Note:</b> This is generally used in conjunction with
      * {@link #auxIntArg} (which holds the padding).</p>
      *
      * @param cases {@code non-null;} the list of key-target pairs, plus the default
-     * target
+     *              target
      */
     public void auxSwitchArg(SwitchList cases);
 
@@ -190,15 +191,15 @@ public interface Machine {
      * consisting of a list of initial values for a newly created array.
      *
      * @param initValues {@code non-null;} the list of constant values to initialize
-     * the array
+     *                   the array
      */
     public void auxInitValues(ArrayList<Constant> initValues);
 
     /**
      * Indicates that the target of this operation is the given local.
      *
-     * @param idx {@code >= 0;} the local variable index
-     * @param type {@code non-null;} the type of the local
+     * @param idx   {@code >= 0;} the local variable index
+     * @param type  {@code non-null;} the type of the local
      * @param local {@code null-ok;} the name and signature of the local, if known
      */
     public void localTarget(int idx, Type type, LocalItem local);
@@ -207,9 +208,9 @@ public interface Machine {
      * "Runs" the indicated opcode in an appropriate way, using the arguments
      * area as appropriate, and modifying the given frame in response.
      *
-     * @param frame {@code non-null;} frame to operate on
+     * @param frame  {@code non-null;} frame to operate on
      * @param offset {@code >= 0;} byte offset in the method to the opcode being
-     * run
+     *               run
      * @param opcode {@code >= 0;} the opcode to run
      */
     public void run(Frame frame, int offset, int opcode);

@@ -41,12 +41,12 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 /**
  * {@link VuforiaTrackable} provides access to an individual trackable Vuforia target.
  */
-public interface VuforiaTrackable
-    {
+public interface VuforiaTrackable {
     /**
      * Sets an object that will receive notifications as the {@link VuforiaTrackable}
      * is tracked and is not tracked. If no listener is provided, then a default listener
      * is used.
+     *
      * @param listener the object which is to receive tracking notifications regarding this trackable.
      *                 If this is null, then a default listener is used. Thus, there is <em>always</em>
      *                 a listener associated with a {@link VuforiaTrackable}.
@@ -57,6 +57,7 @@ public interface VuforiaTrackable
 
     /**
      * Returns the current listener associated with this trackable.
+     *
      * @return the current listener associated with this trackable.
      * @see #setListener(Listener)
      * @see VuforiaTrackableDefaultListener
@@ -66,6 +67,7 @@ public interface VuforiaTrackable
     /**
      * Sets the location of the trackable in the FTC field (ie: world) coordinate system.
      * By default, the location is null.
+     *
      * @param location the location of the trackable on the FTC field
      * @see #getLocation()
      * @see OpenGLMatrix#identityMatrix()
@@ -75,6 +77,7 @@ public interface VuforiaTrackable
 
     /**
      * Returns the location of the trackable in the FTC field.
+     *
      * @return the location of the trackable in the FTC field.
      * @see #setLocation(OpenGLMatrix)
      */
@@ -108,6 +111,7 @@ public interface VuforiaTrackable
 
     /**
      * Sets a user-determined name associated with this trackable. This is mostly useful for debugging.
+     *
      * @param name a user-determined name
      * @see #getName()
      * @see #setUserData(Object)
@@ -116,6 +120,7 @@ public interface VuforiaTrackable
 
     /**
      * Returns the user-determined name associated with this trackable.
+     *
      * @return the user-determined name associated with this trackable.
      * @see #setName(String)
      * @see VuforiaTrackables#setName(String)
@@ -124,6 +129,7 @@ public interface VuforiaTrackable
 
     /**
      * Returns the parent trackable with which this trackable is associated, if any.
+     *
      * @return the parent trackable with which this trackable is associated, if any.
      */
     VuforiaTrackable getParent();
@@ -132,10 +138,10 @@ public interface VuforiaTrackable
     // Listeners
     //----------------------------------------------------------------------------------------------
 
-    interface Listener
-        {
+    interface Listener {
         void onTracked(TrackableResult trackableResult, @Nullable VuforiaTrackable child);
-        void onNotTracked();
-        }
 
+        void onNotTracked();
     }
+
+}

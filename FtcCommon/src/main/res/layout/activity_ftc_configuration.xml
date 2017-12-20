@@ -5,7 +5,8 @@
               tools:context=".configuration.FtcConfigurationActivity"
               android:orientation="vertical">
 
-    <include layout="@layout/header"
+    <include
+        layout="@layout/header"
         android:id="@+id/included_header"/>
 
     <LinearLayout
@@ -103,30 +104,30 @@
 
             <!-- see comment above -->
             <Button
-              android:id="@+id/devices_info_btn"
-              android:onClick="onDevicesInfoButtonPressed"
+                android:id="@+id/devices_info_btn"
+                android:onClick="onDevicesInfoButtonPressed"
 
-              android:text="i"
-              android:textColor="?attr/textWhite"
-              android:textSize="12sp"
-              android:textStyle="bold"
+                android:text="i"
+                android:textColor="?attr/textWhite"
+                android:textSize="12sp"
+                android:textStyle="bold"
 
-              android:layout_width="20dp"
-              android:layout_height="20dp"
-              android:layout_marginTop="5dp"
-              android:layout_marginBottom="5dp"
-              android:layout_marginLeft="5dp"
-              android:layout_marginStart="5dp"
-              android:layout_marginEnd="5dp"
-              android:layout_marginRight="5dp"
-              android:layout_alignParentEnd="true"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_alignParentEnd="true"
 
-              android:background="@drawable/button_shape"
-              android:shadowColor="@color/info_shadow"
-              android:shadowDx="0"
-              android:shadowDy="0"
-              android:shadowRadius="5"
-              />
+                android:background="@drawable/button_shape"
+                android:shadowColor="@color/info_shadow"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                />
 
         </RelativeLayout>
 
@@ -137,9 +138,9 @@
 
             <!-- the ListView is intrinsically scrollable; we need not wrap it in a ScrollView -->
             <ListView
-              android:id="@+id/controllersList"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"/>
+                android:id="@+id/controllersList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <!-- also used for feedback text placement -->
             <LinearLayout

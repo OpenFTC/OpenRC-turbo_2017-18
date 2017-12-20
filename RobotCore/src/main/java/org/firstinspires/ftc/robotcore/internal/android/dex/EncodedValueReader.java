@@ -39,7 +39,9 @@ public final class EncodedValueReader {
     public static final int ENCODED_NULL = 0x1e;
     public static final int ENCODED_BOOLEAN = 0x1f;
 
-    /** placeholder type if the type is not yet known */
+    /**
+     * placeholder type if the type is not yet known
+     */
     private static final int MUST_READ = -1;
 
     protected final ByteInput in;
@@ -220,61 +222,61 @@ public final class EncodedValueReader {
      */
     public void skipValue() {
         switch (peek()) {
-        case ENCODED_BYTE:
-            readByte();
-            break;
-        case ENCODED_SHORT:
-            readShort();
-            break;
-        case ENCODED_CHAR:
-            readChar();
-            break;
-        case ENCODED_INT:
-            readInt();
-            break;
-        case ENCODED_LONG:
-            readLong();
-            break;
-        case ENCODED_FLOAT:
-            readFloat();
-            break;
-        case ENCODED_DOUBLE:
-            readDouble();
-            break;
-        case ENCODED_STRING:
-            readString();
-            break;
-        case ENCODED_TYPE:
-            readType();
-            break;
-        case ENCODED_FIELD:
-            readField();
-            break;
-        case ENCODED_ENUM:
-            readEnum();
-            break;
-        case ENCODED_METHOD:
-            readMethod();
-            break;
-        case ENCODED_ARRAY:
-            for (int i = 0, size = readArray(); i < size; i++) {
-                skipValue();
-            }
-            break;
-        case ENCODED_ANNOTATION:
-            for (int i = 0, size = readAnnotation(); i < size; i++) {
-                readAnnotationName();
-                skipValue();
-            }
-            break;
-        case ENCODED_NULL:
-            readNull();
-            break;
-        case ENCODED_BOOLEAN:
-            readBoolean();
-            break;
-        default:
-            throw new DexException("Unexpected type: " + Integer.toHexString(type));
+            case ENCODED_BYTE:
+                readByte();
+                break;
+            case ENCODED_SHORT:
+                readShort();
+                break;
+            case ENCODED_CHAR:
+                readChar();
+                break;
+            case ENCODED_INT:
+                readInt();
+                break;
+            case ENCODED_LONG:
+                readLong();
+                break;
+            case ENCODED_FLOAT:
+                readFloat();
+                break;
+            case ENCODED_DOUBLE:
+                readDouble();
+                break;
+            case ENCODED_STRING:
+                readString();
+                break;
+            case ENCODED_TYPE:
+                readType();
+                break;
+            case ENCODED_FIELD:
+                readField();
+                break;
+            case ENCODED_ENUM:
+                readEnum();
+                break;
+            case ENCODED_METHOD:
+                readMethod();
+                break;
+            case ENCODED_ARRAY:
+                for (int i = 0, size = readArray(); i < size; i++) {
+                    skipValue();
+                }
+                break;
+            case ENCODED_ANNOTATION:
+                for (int i = 0, size = readAnnotation(); i < size; i++) {
+                    readAnnotationName();
+                    skipValue();
+                }
+                break;
+            case ENCODED_NULL:
+                readNull();
+                break;
+            case ENCODED_BOOLEAN:
+                readBoolean();
+                break;
+            default:
+                throw new DexException("Unexpected type: " + Integer.toHexString(type));
         }
     }
 

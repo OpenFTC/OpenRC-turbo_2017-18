@@ -35,23 +35,21 @@ package org.firstinspires.ftc.robotcore.external.matrices;
 /**
  * A {@link RowMajorMatrixF} is a dense matrix whose entries are arranged in
  * row-major order.
+ *
  * @see <a href="https://en.wikipedia.org/wiki/Row-major_order">Row Major Order</a>
  */
-public abstract class RowMajorMatrixF extends DenseMatrixF
-    {
-    public RowMajorMatrixF(int nRows, int nCols)
-        {
+public abstract class RowMajorMatrixF extends DenseMatrixF {
+    public RowMajorMatrixF(int nRows, int nCols) {
         super(nRows, nCols);
-        }
+    }
 
     @Override
-    protected int indexFromRowCol(int row, int col)
-        {
+    protected int indexFromRowCol(int row, int col) {
         return row * numCols + col;
-        }
-
-    @Override public VectorF toVector()
-        {
-        return new VectorF(this.getData());
-        }
     }
+
+    @Override
+    public VectorF toVector() {
+        return new VectorF(this.getData());
+    }
+}

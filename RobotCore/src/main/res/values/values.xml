@@ -160,7 +160,9 @@
     <color name="very_very_dark_purple">#14012d</color>
     <color name="very_very_dark_red">#2d0104</color>
     <color name="very_very_dark_teal">#01212d</color>
-    <declare-styleable name="ColorListPreference"><attr format="reference" name="colors"/></declare-styleable>
+    <declare-styleable name="ColorListPreference">
+        <attr format="reference" name="colors"/>
+    </declare-styleable>
     <string name="VUFORIA_INIT_ERROR_DEVICE_NOT_SUPPORTED">Failed to initialize Vuforia. This device is not supported.</string>
     <string name="VUFORIA_INIT_ERROR_NO_CAMERA_ACCESS">Failed to initialize Vuforia. Camera not accessible</string>
     <string name="VUFORIA_INIT_LICENSE_ERROR_CANCELED_KEY">This app license key has been canceled and may no longer be used. Please get a new license key.</string>
@@ -381,10 +383,12 @@
     <string name="tokenThemeRed">red</string>
     <string name="tokenThemeTeal">teal</string>
     <string name="unknown_wifi_direct_channel">Unknown channel</string>
+
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!-- Theme customizations available in newer API levels can go in res/values-vXX/styles.xml,
         while customizations related to backward-compatibility can go here. -->
     </style>
+
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:windowFullscreen">true</item>
@@ -393,6 +397,7 @@
         <item name="android:buttonStyle">@style/FtcButtonStyle</item>
         <item name="textWhite">@color/text_white</item>
     </style>
+
     <style name="AppTheme.Blue">
         <item name="textBright">@color/bright_blue</item>
         <item name="textLight">@color/light_blue</item>
@@ -416,6 +421,7 @@
         <item name="feedbackBorder">@color/border_orange</item>
         <item name="feedbackShape">@drawable/feedback_shape_orange</item>
     </style>
+
     <style name="AppTheme.Green">
         <item name="textBright">@color/bright_green</item>
         <item name="textLight">@color/light_green</item>
@@ -439,6 +445,7 @@
         <item name="feedbackBorder">@color/border_orange</item>
         <item name="feedbackShape">@drawable/feedback_shape_orange</item>
     </style>
+
     <style name="AppTheme.Orange">
         <item name="textBright">@color/bright_orange</item>
         <item name="textLight">@color/light_orange</item>
@@ -462,6 +469,7 @@
         <item name="feedbackBorder">@color/border_orange</item>
         <item name="feedbackShape">@drawable/feedback_shape_orange</item>
     </style>
+
     <style name="AppTheme.Purple">
         <item name="textBright">@color/bright_purple</item>
         <item name="textLight">@color/light_purple</item>
@@ -485,6 +493,7 @@
         <item name="feedbackBorder">@color/border_orange</item>
         <item name="feedbackShape">@drawable/feedback_shape_orange</item>
     </style>
+
     <style name="AppTheme.Red">
         <item name="textBright">@color/bright_red</item>
         <item name="textLight">@color/light_red</item>
@@ -508,6 +517,7 @@
         <item name="feedbackBorder">@color/border_orange</item>
         <item name="feedbackShape">@drawable/feedback_shape_orange</item>
     </style>
+
     <style name="AppTheme.Teal">
         <item name="textBright">@color/bright_teal</item>
         <item name="textLight">@color/light_teal</item>
@@ -531,31 +541,38 @@
         <item name="feedbackBorder">@color/border_orange</item>
         <item name="feedbackShape">@drawable/feedback_shape_orange</item>
     </style>
+
     <style name="ConfigWifiDirectDialog" parent="@android:style/Theme.Dialog">
         <item name="android:background">@color/background_black</item>
         <item name="android:textColor">?attr/textWhite</item>
         <item name="android:windowBackground">?attr/backgroundVeryDark</item>
     </style>
+
     <style name="FeedbackButton" parent="android:Widget.Button">
         <item name="android:textColor">?attr/feedbackBorder</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="FeedbackText" parent="FtcTextViewStyle">
         <item name="android:textColor">?attr/textWhite</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="FtcButtonStyle" parent="android:Widget.Holo.Button">
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
+
     <style name="FtcTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
+
     <style name="FtcTextViewStyleBold" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="OpModeDialogTextAppearance" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">?android:attr/textColorAlertDialogListItem</item>
     </style>

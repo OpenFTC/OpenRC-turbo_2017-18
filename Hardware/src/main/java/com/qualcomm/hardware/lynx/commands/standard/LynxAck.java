@@ -38,12 +38,11 @@ import com.qualcomm.hardware.lynx.commands.LynxMessage;
 
 /**
  * Created by bob on 2016-02-26.
- *
+ * <p>
  * Example: 44 4B 0C 00   00  01    07 6B    01 7F  01    8F
- *          D  K  len=12  to from   #  ref#  ack    attn  chksum
+ * D  K  len=12  to from   #  ref#  ack    attn  chksum
  */
-public class LynxAck extends LynxMessage
-    {
+public class LynxAck extends LynxMessage {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,56 +53,48 @@ public class LynxAck extends LynxMessage
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxAck(LynxModuleIntf module)
-        {
+    public LynxAck(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxAck(LynxModuleIntf module, boolean isAttentionRequired)
-        {
+    public LynxAck(LynxModuleIntf module, boolean isAttentionRequired) {
         super(module);
         this.isAttentionRequired = isAttentionRequired;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean isAttentionRequired()
-        {
+    public boolean isAttentionRequired() {
         return this.isAttentionRequired;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return LynxStandardCommand.COMMAND_NUMBER_ACK;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { this.isAttentionRequired ? (byte)1 : (byte) 0 };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.isAttentionRequired = rgb[0] != 0;
-        }
-
-    @Override
-    public boolean isAck()
-        {
-        return true;
-        }
     }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{this.isAttentionRequired ? (byte) 1 : (byte) 0};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.isAttentionRequired = rgb[0] != 0;
+    }
+
+    @Override
+    public boolean isAck() {
+        return true;
+    }
+}

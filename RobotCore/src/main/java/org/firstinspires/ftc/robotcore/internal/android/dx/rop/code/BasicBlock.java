@@ -25,10 +25,14 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.LabeledItem;
  * Basic block of register-based instructions.
  */
 public final class BasicBlock implements LabeledItem {
-    /** {@code >= 0;} target label for this block */
+    /**
+     * {@code >= 0;} target label for this block
+     */
     private final int label;
 
-    /** {@code non-null;} list of instructions in this block */
+    /**
+     * {@code non-null;} list of instructions in this block
+     */
     private final InsnList insns;
 
     /**
@@ -47,14 +51,14 @@ public final class BasicBlock implements LabeledItem {
     /**
      * Constructs an instance. The predecessor set is set to {@code null}.
      *
-     * @param label {@code >= 0;} target label for this block
-     * @param insns {@code non-null;} list of instructions in this block
-     * @param successors {@code non-null;} full list of successors that this
-     * block may branch to
+     * @param label            {@code >= 0;} target label for this block
+     * @param insns            {@code non-null;} list of instructions in this block
+     * @param successors       {@code non-null;} full list of successors that this
+     *                         block may branch to
      * @param primarySuccessor {@code >= -1;} the primary / standard-flow /
-     * "default" successor, or {@code -1} if this block has no
-     * successors (that is, it exits the function/method or is an
-     * unconditional throw)
+     *                         "default" successor, or {@code -1} if this block has no
+     *                         successors (that is, it exits the function/method or is an
+     *                         unconditional throw)
      */
     public BasicBlock(int label, InsnList insns, IntList successors,
                       int primarySuccessor) {
@@ -79,15 +83,15 @@ public final class BasicBlock implements LabeledItem {
             Rop one = insns.get(i).getOpcode();
             if (one.getBranchingness() != Rop.BRANCH_NONE) {
                 throw new IllegalArgumentException("insns[" + i + "] is a " +
-                                                   "branch or can throw");
+                        "branch or can throw");
             }
         }
 
         Insn lastInsn = insns.get(sz - 1);
         if (lastInsn.getOpcode().getBranchingness() == Rop.BRANCH_NONE) {
             throw new IllegalArgumentException("insns does not end with " +
-                                               "a branch or throwing " +
-                                               "instruction");
+                    "a branch or throwing " +
+                    "instruction");
         }
 
         try {
@@ -114,7 +118,7 @@ public final class BasicBlock implements LabeledItem {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Instances of this class compare by identity. That is,
      * {@code x.equals(y)} is only true if {@code x == y}.
      */
@@ -125,7 +129,7 @@ public final class BasicBlock implements LabeledItem {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Return the identity hashcode of this instance. This is proper,
      * since instances of this class compare by identity (see {@link #equals}).
      */
@@ -261,7 +265,7 @@ public final class BasicBlock implements LabeledItem {
      */
     public BasicBlock withRegisterOffset(int delta) {
         return new BasicBlock(label, insns.withRegisterOffset(delta),
-                              successors, primarySuccessor);
+                successors, primarySuccessor);
     }
 
     public String toString() {
@@ -274,8 +278,9 @@ public final class BasicBlock implements LabeledItem {
     public interface Visitor {
         /**
          * Visits a basic block
+         *
          * @param b block visited
          */
-        public void visitBlock (BasicBlock b);
+        public void visitBlock(BasicBlock b);
     }
 }

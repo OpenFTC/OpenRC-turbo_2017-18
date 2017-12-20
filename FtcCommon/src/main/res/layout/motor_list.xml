@@ -10,6 +10,7 @@
         layout="@layout/header"/>
 
     <include layout="@layout/button_list"/>
+
     <include layout="@layout/gray_line"/>
 
     <ScrollView

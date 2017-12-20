@@ -27,18 +27,22 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.ToHuman;
  * An instruction in SSA form
  */
 public abstract class SsaInsn implements ToHuman, Cloneable {
-    /** {@code non-null;} the block that contains this instance */
+    /**
+     * {@code non-null;} the block that contains this instance
+     */
     private final SsaBasicBlock block;
 
-    /** {@code null-ok;} result register */
+    /**
+     * {@code null-ok;} result register
+     */
     private RegisterSpec result;
 
     /**
      * Constructs an instance.
      *
      * @param result {@code null-ok;} initial result register. May be changed.
-     * @param block {@code non-null;} block containing this insn. Can
-     * never change.
+     * @param block  {@code non-null;} block containing this insn. Can
+     *               never change.
      */
     protected SsaInsn(RegisterSpec result, SsaBasicBlock block) {
         if (block == null) {
@@ -52,7 +56,7 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
     /**
      * Makes a new SSA insn form a rop insn.
      *
-     * @param insn {@code non-null;} rop insn
+     * @param insn  {@code non-null;} rop insn
      * @param block {@code non-null;} owning block
      * @return {@code non-null;} an appropriately constructed instance
      */
@@ -60,13 +64,15 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
         return new NormalSsaInsn(insn, block);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SsaInsn clone() {
         try {
-            return (SsaInsn)super.clone();
+            return (SsaInsn) super.clone();
         } catch (CloneNotSupportedException ex) {
-            throw new RuntimeException ("unexpected", ex);
+            throw new RuntimeException("unexpected", ex);
         }
     }
 
@@ -170,7 +176,7 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
 
     /**
      * Returns the Rop opcode for this insn, or null if this is a phi insn.
-     *
+     * <p>
      * TODO: Move this up into NormalSsaInsn.
      *
      * @return {@code null-ok;} Rop opcode if there is one.
@@ -180,7 +186,7 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
     /**
      * Returns the original Rop insn for this insn, or null if this is
      * a phi insn.
-     *
+     * <p>
      * TODO: Move this up into NormalSsaInsn.
      *
      * @return {@code null-ok;} Rop insn if there is one.
@@ -193,9 +199,8 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
      * may be the result register, or for {@code mark-local} insns
      * it may be the source.
      *
-     * @see Insn#getLocalAssignment()
-     *
      * @return {@code null-ok;} a local-associated register spec or null
+     * @see Insn#getLocalAssignment()
      */
     public RegisterSpec getLocalAssignment() {
         if (result != null && result.getLocalItem() != null) {
@@ -218,7 +223,7 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
 
     /**
      * Transform back to ROP form.
-     *
+     * <p>
      * TODO: Move this up into NormalSsaInsn.
      *
      * @return {@code non-null;} a ROP representation of this instruction, with
@@ -274,18 +279,21 @@ public abstract class SsaInsn implements ToHuman, Cloneable {
     public static interface Visitor {
         /**
          * Any non-phi move instruction
+         *
          * @param insn {@code non-null;} the instruction to visit
          */
         public void visitMoveInsn(NormalSsaInsn insn);
 
         /**
          * Any phi insn
+         *
          * @param insn {@code non-null;} the instruction to visit
          */
         public void visitPhiInsn(PhiInsn insn);
 
         /**
          * Any insn that isn't a move or a phi (which is also a move).
+         *
          * @param insn {@code non-null;} the instruction to visit
          */
         public void visitNonMoveInsn(NormalSsaInsn insn);

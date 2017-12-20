@@ -39,8 +39,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxGetModuleStatusCommand extends LynxStandardCommand<LynxGetModuleStatusResponse>
-    {
+public class LynxGetModuleStatusCommand extends LynxStandardCommand<LynxGetModuleStatusResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -51,62 +50,53 @@ public class LynxGetModuleStatusCommand extends LynxStandardCommand<LynxGetModul
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetModuleStatusCommand(LynxModule module)
-        {
+    public LynxGetModuleStatusCommand(LynxModule module) {
         super(module);
         this.response = new LynxGetModuleStatusResponse(module);
-        }
+    }
 
-    public LynxGetModuleStatusCommand(LynxModule module, boolean clearStatusAfterResponse)
-        {
+    public LynxGetModuleStatusCommand(LynxModule module, boolean clearStatusAfterResponse) {
         this(module);
         this.clearStatusAfterResponse = clearStatusAfterResponse;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean getClearStatusAfterResponse()
-        {
+    public boolean getClearStatusAfterResponse() {
         return this.clearStatusAfterResponse;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_GET_MODULE_STATUS;
-        }
-
-    public static Class<? extends LynxResponse> getResponseClass()
-        {
-        return LynxGetModuleStatusResponse.class;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return true;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { this.clearStatusAfterResponse ? (byte)1 : (byte)0 };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.clearStatusAfterResponse = rgb[0] != 0;
-        }
     }
+
+    public static Class<? extends LynxResponse> getResponseClass() {
+        return LynxGetModuleStatusResponse.class;
+    }
+
+    @Override
+    public boolean isResponseExpected() {
+        return true;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{this.clearStatusAfterResponse ? (byte) 1 : (byte) 0};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.clearStatusAfterResponse = rgb[0] != 0;
+    }
+}

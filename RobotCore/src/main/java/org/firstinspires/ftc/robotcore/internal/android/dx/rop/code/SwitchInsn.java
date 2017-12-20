@@ -26,17 +26,19 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.util.IntList;
  */
 public final class SwitchInsn
         extends Insn {
-    /** {@code non-null;} list of switch cases */
+    /**
+     * {@code non-null;} list of switch cases
+     */
     private final IntList cases;
 
     /**
      * Constructs an instance.
      *
-     * @param opcode {@code non-null;} the opcode
+     * @param opcode   {@code non-null;} the opcode
      * @param position {@code non-null;} source position
-     * @param result {@code null-ok;} spec for the result, if any
-     * @param sources {@code non-null;} specs for all the sources
-     * @param cases {@code non-null;} list of switch cases
+     * @param result   {@code null-ok;} spec for the result, if any
+     * @param sources  {@code non-null;} specs for all the sources
+     * @param cases    {@code non-null;} list of switch cases
      */
     public SwitchInsn(Rop opcode, SourcePosition position, RegisterSpec result,
                       RegisterSpecList sources, IntList cases) {
@@ -53,42 +55,52 @@ public final class SwitchInsn
         this.cases = cases;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getInlineString() {
         return cases.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeList getCatches() {
         return StdTypeList.EMPTY;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visitSwitchInsn(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withAddedCatch(Type type) {
         throw new UnsupportedOperationException("unsupported");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withRegisterOffset(int delta) {
         return new SwitchInsn(getOpcode(), getPosition(),
-                              getResult().withOffset(delta),
-                              getSources().withOffset(delta),
-                              cases);
+                getResult().withOffset(delta),
+                getSources().withOffset(delta),
+                cases);
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p> SwitchInsn always compares false. The current use for this method
      * never encounters {@code SwitchInsn}s
      */
@@ -97,15 +109,17 @@ public final class SwitchInsn
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Insn withNewRegisters(RegisterSpec result,
-            RegisterSpecList sources) {
+                                 RegisterSpecList sources) {
 
         return new SwitchInsn(getOpcode(), getPosition(),
-                              result,
-                              sources,
-                              cases);
+                result,
+                sources,
+                cases);
     }
 
     /**

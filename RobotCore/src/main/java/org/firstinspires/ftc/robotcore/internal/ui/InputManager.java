@@ -48,8 +48,7 @@ import java.lang.reflect.Method;
  * by unhiding some of its methods.
  */
 @SuppressWarnings("WeakerAccess")
-public class InputManager
-    {
+public class InputManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,52 +58,47 @@ public class InputManager
     public static final int INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2;
 
     protected static InputManager theInstance = new InputManager();
-    public static InputManager getInstance() { return theInstance; }
 
-    protected android.hardware.input.InputManager   inputManager;
-    protected Method                                methodInjectInputEvent;
+    public static InputManager getInstance() {
+        return theInstance;
+    }
+
+    protected android.hardware.input.InputManager inputManager;
+    protected Method methodInjectInputEvent;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected InputManager()
-        {
+    protected InputManager() {
         inputManager = (android.hardware.input.InputManager) AppUtil.getInstance().getActivity().getSystemService(Context.INPUT_SERVICE);
         try {
             methodInjectInputEvent = android.hardware.input.InputManager.class.getMethod("injectInputEvent", InputEvent.class, int.class);
-            }
-        catch (NoSuchMethodException ignored)
-            {
-            }
+        } catch (NoSuchMethodException ignored) {
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Access
     //----------------------------------------------------------------------------------------------
 
-    public boolean injectInputEvent(InputEvent event, int mode)
-        {
+    public boolean injectInputEvent(InputEvent event, int mode) {
         return (boolean) ClassUtil.invoke(inputManager, methodInjectInputEvent, event, mode);
-        }
-
-    public InputDevice getInputDevice(int id)
-        {
-        return inputManager.getInputDevice(id);
-        }
-
-    public int[] getInputDeviceIds()
-        {
-        return inputManager.getInputDeviceIds();
-        }
-
-    public void registerInputDeviceListener(android.hardware.input.InputManager.InputDeviceListener listener, Handler handler)
-        {
-        inputManager.registerInputDeviceListener(listener, handler);
-        }
-
-    public void unregisterInputDeviceListener(android.hardware.input.InputManager.InputDeviceListener listener)
-        {
-        inputManager.unregisterInputDeviceListener(listener);
-        }
     }
+
+    public InputDevice getInputDevice(int id) {
+        return inputManager.getInputDevice(id);
+    }
+
+    public int[] getInputDeviceIds() {
+        return inputManager.getInputDeviceIds();
+    }
+
+    public void registerInputDeviceListener(android.hardware.input.InputManager.InputDeviceListener listener, Handler handler) {
+        inputManager.registerInputDeviceListener(listener, handler);
+    }
+
+    public void unregisterInputDeviceListener(android.hardware.input.InputManager.InputDeviceListener listener) {
+        inputManager.unregisterInputDeviceListener(listener);
+    }
+}

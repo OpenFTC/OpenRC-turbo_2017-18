@@ -18,6 +18,7 @@ package org.firstinspires.ftc.robotcore.internal.android.dx.merge;
 
 import org.firstinspires.ftc.robotcore.internal.android.dex.ClassDef;
 import org.firstinspires.ftc.robotcore.internal.android.dex.Dex;
+
 import java.util.Comparator;
 
 /**

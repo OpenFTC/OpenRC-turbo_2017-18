@@ -46,130 +46,115 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * MessageKeyedLock is a recursively-acquirable lock that is keyed by a LynxMessage
  */
-public class MessageKeyedLock
-    {
+public class MessageKeyedLock {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    private final    String        name;
-    private final    Lock          lock;
-    private final    Condition     condition;
-    private volatile LynxMessage   lockOwner;
-    private          int           lockCount;
-    private          long          lockAquisitionTime;
-    private          long          nanoLockAquisitionTimeMax;
+    private final String name;
+    private final Lock lock;
+    private final Condition condition;
+    private volatile LynxMessage lockOwner;
+    private int lockCount;
+    private long lockAquisitionTime;
+    private long nanoLockAquisitionTimeMax;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public MessageKeyedLock(String name)
-        {
+    public MessageKeyedLock(String name) {
         this(name, 500);
-        }
+    }
 
-    public MessageKeyedLock(String name, int msAquisitionTimeout)
-        {
-        this.name       = name;
-        this.lock       = new ReentrantLock();
-        this.condition  = this.lock.newCondition();
-        this.lockOwner  = null;
-        this.lockCount  = 0;
-        this.lockAquisitionTime        = 0;
+    public MessageKeyedLock(String name, int msAquisitionTimeout) {
+        this.name = name;
+        this.lock = new ReentrantLock();
+        this.condition = this.lock.newCondition();
+        this.lockOwner = null;
+        this.lockCount = 0;
+        this.lockAquisitionTime = 0;
         this.nanoLockAquisitionTimeMax = msAquisitionTimeout * ElapsedTime.MILLIS_IN_NANO;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    private void logv(String format, Object... args)
-        {
+    private void logv(String format, Object... args) {
         RobotLog.v("%s: %s", this.name, String.format(format, args));
-        }
-    private void loge(String format, Object... args)
-        {
-        RobotLog.e("%s: %s", this.name, String.format(format, args));
-        }
+    }
 
-    public void reset() throws InterruptedException
-        {
+    private void loge(String format, Object... args) {
+        RobotLog.e("%s: %s", this.name, String.format(format, args));
+    }
+
+    public void reset() throws InterruptedException {
         this.lock.lockInterruptibly();
         try {
             this.lockOwner = null;
             this.lockCount = 0;
             this.lockAquisitionTime = 0;
             this.condition.signalAll();  // probably not needed, but harmless
-            }
-        finally
-            {
+        } finally {
             this.lock.unlock();
-            }
         }
+    }
 
-    public void acquire(@NonNull LynxMessage message) throws InterruptedException
-        {
-        if (message == null) throw new IllegalArgumentException("MessageKeyedLock.acquire: null message");
+    public void acquire(@NonNull LynxMessage message) throws InterruptedException {
+        if (message == null) {
+            throw new IllegalArgumentException("MessageKeyedLock.acquire: null message");
+        }
 
         this.lock.lockInterruptibly();
         try {
-            if (this.lockOwner != message)
-                {
-                while (this.lockOwner != null)
-                    {
+            if (this.lockOwner != message) {
+                while (this.lockOwner != null) {
                     long now = System.nanoTime();
-                    if (now - this.lockAquisitionTime > nanoLockAquisitionTimeMax)
-                        {
+                    if (now - this.lockAquisitionTime > nanoLockAquisitionTimeMax) {
                         // Something really odd has happened with the locking logic: it's taking way
                         // too long. Reset and get out rather than locking up forever.
                         loge("#### abandoning lock: old=%s(%d)", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
                         loge("                      new=%s(%d)", message.getClass().getSimpleName(), message.getMessageNumber());
                         break;
-                        }
-                    this.condition.await(nanoLockAquisitionTimeMax / 4, TimeUnit.NANOSECONDS);
                     }
+                    this.condition.await(nanoLockAquisitionTimeMax / 4, TimeUnit.NANOSECONDS);
+                }
                 this.lockCount = 0;
                 this.lockAquisitionTime = System.nanoTime();
                 this.lockOwner = message;
-                if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK) logv("lock %s msg#=%d", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
+                if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK) {
+                    logv("lock %s msg#=%d", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
                 }
-            else
-                {
+            } else {
                 logv("lock recursively acquired");
-                }
+            }
 
             this.lockCount++;
-            }
-        finally
-            {
+        } finally {
             this.lock.unlock();
-            }
         }
+    }
 
-    public void release(@NonNull LynxMessage message) throws InterruptedException
-        {
-        if (message == null) throw new IllegalArgumentException("MessageKeyedLock.release: null message");
+    public void release(@NonNull LynxMessage message) throws InterruptedException {
+        if (message == null) {
+            throw new IllegalArgumentException("MessageKeyedLock.release: null message");
+        }
 
         this.lock.lockInterruptibly();
         try {
-            if (this.lockOwner == message)
-                {
-                if (--this.lockCount == 0)
-                    {
-                    if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK) logv("unlock %s msg#=%d", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
+            if (this.lockOwner == message) {
+                if (--this.lockCount == 0) {
+                    if (LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK) {
+                        logv("unlock %s msg#=%d", this.lockOwner.getClass().getSimpleName(), this.lockOwner.getMessageNumber());
+                    }
                     this.lockOwner = null;
                     this.condition.signalAll();
-                    }
-                else
-                    {
+                } else {
                     logv("lock recursively released");
-                    }
                 }
-            else
-                {
-                if (this.lockOwner != null)
-                    {
+            } else {
+                if (this.lockOwner != null) {
                     loge("#### incorrect owner releasing message keyed lock: ignored: old=%s(%d:%d)",
                             this.lockOwner.getClass().getSimpleName(),
                             this.lockOwner.getModuleAddress(),
@@ -178,16 +163,12 @@ public class MessageKeyedLock
                             message.getClass().getSimpleName(),
                             message.getModuleAddress(),
                             message.getMessageNumber());
-                    }
-                else
-                    {
+                } else {
                     loge("#### releasing ownerless message keyed lock: ignored: %s", message.getClass().getSimpleName());
-                    }
                 }
             }
-        finally
-            {
+        } finally {
             this.lock.unlock();
-            }
         }
     }
+}

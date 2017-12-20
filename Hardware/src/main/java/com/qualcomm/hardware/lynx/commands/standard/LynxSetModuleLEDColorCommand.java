@@ -38,8 +38,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxSetModuleLEDColorCommand extends LynxStandardCommand<LynxAck>
-    {
+public class LynxSetModuleLEDColorCommand extends LynxStandardCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -52,51 +51,44 @@ public class LynxSetModuleLEDColorCommand extends LynxStandardCommand<LynxAck>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetModuleLEDColorCommand(LynxModule module)
-        {
+    public LynxSetModuleLEDColorCommand(LynxModule module) {
         super(module);
-        }
+    }
 
-    public LynxSetModuleLEDColorCommand(LynxModule module, byte red, byte green, byte blue)
-        {
+    public LynxSetModuleLEDColorCommand(LynxModule module, byte red, byte green, byte blue) {
         this(module);
         this.red = red;
         this.green = green;
         this.blue = blue;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_SET_MODULE_LED_COLOR;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return false;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] {red, green, blue};
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.red   = rgb[0];
-        this.green = rgb[1];
-        this.blue  = rgb[2];
-        }
     }
+
+    @Override
+    public boolean isResponseExpected() {
+        return false;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{red, green, blue};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.red = rgb[0];
+        this.green = rgb[1];
+        this.blue = rgb[2];
+    }
+}
