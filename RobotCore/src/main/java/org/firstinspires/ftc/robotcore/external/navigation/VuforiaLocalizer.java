@@ -217,8 +217,6 @@ public interface VuforiaLocalizer {
             NONE, AXES, TEAPOT, BUILDINGS
         }
 
-        ;
-
         /**
          * Indicates the style of camera monitoring feedback to use. Null indicates that
          * a default feedback style is to be used. {@link CameraMonitorFeedback#NONE None} indicates
@@ -240,8 +238,7 @@ public interface VuforiaLocalizer {
          * @see #cameraMonitorViewParent
          * @see #fillCameraMonitorViewParent
          */
-        public
-        @IdRes
+        public @IdRes
         int cameraMonitorViewIdParent = 0;
 
         /**

@@ -10,7 +10,7 @@ pause () {
 
 pause
 
-git pull first master
+git pull first beta
 
 extract_source () {
 	rm -rf $1/src/main/java/*
