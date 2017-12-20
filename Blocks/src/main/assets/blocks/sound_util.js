@@ -10,7 +10,7 @@ function fetchSounds(callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     fetchSoundsViaBlocksIO(callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     fetchSoundsViaHttp(callback);
   }
@@ -23,7 +23,7 @@ function playSoundFile(soundName) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     playSoundFileViaBlocksIO(soundName);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     playSoundFileViaHttp(soundName);
   }
@@ -36,7 +36,7 @@ function fetchSoundFileContent(soundName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     fetchSoundFileContentViaBlocksIO(soundName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     fetchSoundFileContentViaHttp(soundName, callback);
   }
@@ -46,7 +46,7 @@ function saveSound(soundName, base64Content, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     saveSoundViaBlocksIO(soundName, base64Content, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     saveSoundViaHttp(soundName, base64Content, callback);
   }
@@ -56,7 +56,7 @@ function renameSound(oldSoundName, newSoundName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     renameSoundViaBlocksIO(oldSoundName, newSoundName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     renameSoundViaHttp(oldSoundName, newSoundName, callback);
   }
@@ -66,7 +66,7 @@ function copySound(oldSoundName, newSoundName, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     copySoundViaBlocksIO(oldSoundName, newSoundName, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     copySoundViaHttp(oldSoundName, newSoundName, callback);
   }
@@ -76,7 +76,7 @@ function deleteSounds(starDelimitedSoundNames, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     deleteSoundsViaBlocksIO(starDelimitedSoundNames, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     deleteSoundsViaHttp(starDelimitedSoundNames, callback);
   }

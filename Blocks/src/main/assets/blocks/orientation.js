@@ -237,13 +237,13 @@ Blockly.Blocks['orientation_create_withArgs'] = {
         .appendField('angleUnit')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('FIRST_ANGLE').setCheck('Number')
-        .appendField('FirstAngle')
+        .appendField('firstAngle')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('SECOND_ANGLE').setCheck('Number')
-        .appendField('SecondAngle')
+        .appendField('secondAngle')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('THIRD_ANGLE').setCheck('Number')
-        .appendField('ThirdAngle')
+        .appendField('thirdAngle')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ACQUISITION_TIME').setCheck('Number')
         .appendField('acquisitionTime')
@@ -425,13 +425,13 @@ Blockly.Blocks['orientation_getRotationMatrix_withArgs'] = {
         .appendField('angleUnit')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('FIRST_ANGLE').setCheck('Number')
-        .appendField('FirstAngle')
+        .appendField('firstAngle')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('SECOND_ANGLE').setCheck('Number')
-        .appendField('SecondAngle')
+        .appendField('secondAngle')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('THIRD_ANGLE').setCheck('Number')
-        .appendField('ThirdAngle')
+        .appendField('thirdAngle')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(functionColor);
     this.setTooltip('Returns the rotation matrix associated with a particular set of three ' +

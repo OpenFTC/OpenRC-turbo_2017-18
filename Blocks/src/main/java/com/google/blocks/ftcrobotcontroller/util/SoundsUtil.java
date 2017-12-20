@@ -85,7 +85,23 @@ public class SoundsUtil {
             SOUNDS_DIR.mkdirs();
         }
         byte[] content = Base64.decode(base64Content, Base64.DEFAULT);
-        FileUtil.writeBinaryFile(new File(SOUNDS_DIR, soundName), content);
+        File soundFile = new File(SOUNDS_DIR, soundName);
+        File soundTempBackup = null;
+        if (soundFile.exists()) {
+            // Before writing the new content to the file, make a temporary copy of the old file,
+            // just in case the control hub is unplugged (or the Android's battery dies) while we are
+            // writing a file. We don't want the user to be left with the file empty/corrupt and the
+            // old and new content both lost.
+            long timestamp = System.currentTimeMillis();
+            soundTempBackup = new File(SOUNDS_DIR, "backup_" + timestamp + "_" + soundName);
+            FileUtil.copyFile(soundFile, soundTempBackup);
+        }
+        FileUtil.writeBinaryFile(soundFile, content);
+        // Once we've written the new content to the file, we can delete the temporary copy of
+        // the old file.
+        if (soundTempBackup != null) {
+            soundTempBackup.delete();
+        }
     }
 
     /**

@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.ThrowingCallable;
 import org.firstinspires.ftc.robotcore.internal.files.FileBasedLock;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
@@ -111,15 +110,21 @@ public class ProjectsUtil {
                     for (int i = 0; i < files.length; i++) {
                         String filename = files[i].getName();
                         String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-                        boolean enabled = isProjectEnabled(projectName);
-                        jsonProjects.append(delimiter)
-                                .append("{")
-                                .append("\"name\":\"").append(projectName).append("\", ")
-                                .append("\"escapedName\":\"").append(Html.escapeHtml(projectName)).append("\", ")
-                                .append("\"dateModifiedMillis\":").append(files[i].lastModified()).append(", ")
-                                .append("\"enabled\":").append(enabled)
-                                .append("}");
-                        delimiter = ",";
+                        try {
+                            boolean enabled = isProjectEnabled(projectName);
+                            jsonProjects.append(delimiter)
+                                    .append("{")
+                                    .append("\"name\":\"").append(projectName).append("\", ")
+                                    .append("\"escapedName\":\"").append(Html.escapeHtml(projectName)).append("\", ")
+                                    .append("\"dateModifiedMillis\":").append(files[i].lastModified()).append(", ")
+                                    .append("\"enabled\":").append(enabled)
+                                    .append("}");
+                            delimiter = ",";
+                        } catch (IOException | XmlPullParserException e) {
+                            RobotLog.e("ProjectsUtil.fetchProjectsWithBlocks() - isProjectEnabled failed for project " +
+                                    projectName);
+                            RobotLog.logStackTrace(e);
+                        }
                     }
                     jsonProjects.append("]");
                     return jsonProjects.toString();
@@ -195,17 +200,21 @@ public class ProjectsUtil {
             throw new IllegalArgumentException();
         }
         try {
-            String blkFileContent = FileUtil.readFile(new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT));
+            File blkFile = new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT);
+            String blkFileContent = FileUtil.readFile(blkFile);
             // The extraXml is after the first </xml>.
             int i = blkFileContent.indexOf(XML_END_TAG);
-            Assert.assertTrue(i != -1);
+            if (i == -1) {
+                // File is empty or corrupt.
+                throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
+            }
             String extraXml = blkFileContent.substring(i + XML_END_TAG.length());
             // Return null if the project is not enabled.
             if (!isProjectEnabled(projectName, extraXml)) {
                 return null;
             }
             return createOpModeMeta(projectName, extraXml);
-        } catch (IOException e) {
+        } catch (IOException | XmlPullParserException e) {
             RobotLog.e("ProjectsUtil.fetchOpModeMeta(\"" + projectName + "\") - failed.");
             RobotLog.logStackTrace(e);
             return null;
@@ -233,12 +242,16 @@ public class ProjectsUtil {
         if (!isValidProjectName(projectName)) {
             throw new IllegalArgumentException();
         }
-        String blkFileContent = FileUtil.readFile(new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT));
+        File blkFile = new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT);
+        String blkFileContent = FileUtil.readFile(blkFile);
 
         // Separate the blocksContent from the extraXml, so we can upgrade the blocksContent.
         // The extraXml is after the first </xml>.
         int i = blkFileContent.indexOf(XML_END_TAG);
-        Assert.assertTrue(i != -1);
+        if (i == -1) {
+            // File is empty or corrupt.
+            throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
+        }
         String blocksContent = blkFileContent.substring(0, i + XML_END_TAG.length());
         String extraXml = blkFileContent.substring(i + XML_END_TAG.length());
 
@@ -326,8 +339,33 @@ public class ProjectsUtil {
                         RobotLog.ee(TAG, e, "ProjectsUtil.saveProject(\"" + projectName + "\") - failed to format extra xml.");
                     }
                 }
-                FileUtil.writeFile(new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT), blkContent + extraXml);
-                FileUtil.writeFile(new File(BLOCKS_DIR, projectName + BLOCKS_JS_EXT), jsFileContent);
+                // Before writing the new content to the files, make temporary copies of the old files,
+                // just in case the control hub is unplugged (or the Android's battery dies) while we are
+                // writing the file. We don't want the user to be left with the file empty/corrupt and the
+                // old and new content both lost.
+                File blkFile = new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT);
+                File jsFile = new File(BLOCKS_DIR, projectName + BLOCKS_JS_EXT);
+                long timestamp = System.currentTimeMillis();
+                File blkTempBackup = null;
+                File jsTempBackup = null;
+                if (blkFile.exists()) {
+                    blkTempBackup = new File(BLOCKS_DIR, "backup_" + timestamp + "_" + projectName + BLOCKS_BLK_EXT);
+                    FileUtil.copyFile(blkFile, blkTempBackup);
+                }
+                if (jsFile.exists()) {
+                    jsTempBackup = new File(BLOCKS_DIR, "backup_" + timestamp + "_" + projectName + BLOCKS_JS_EXT);
+                    FileUtil.copyFile(jsFile, jsTempBackup);
+                }
+                FileUtil.writeFile(blkFile, blkContent + extraXml);
+                FileUtil.writeFile(jsFile, jsFileContent);
+                // Once we've written the new content to the files, we can delete the temporary copies of
+                // the old files.
+                if (blkTempBackup != null) {
+                    blkTempBackup.delete();
+                }
+                if (jsTempBackup != null) {
+                    jsTempBackup.delete();
+                }
                 return null;
             }
         });
@@ -412,7 +450,10 @@ public class ProjectsUtil {
                 // Separate the blocksContent from the extraXml, so we can extract the OpModeMeta from the extraXml.
                 // The extraXml is after the first </xml>.
                 int i = blkFileContent.indexOf(XML_END_TAG);
-                Assert.assertTrue(i != -1);
+                if (i == -1) {
+                    // File is empty or corrupt.
+                    throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
+                }
                 String blocksContent = blkFileContent.substring(0, i + XML_END_TAG.length());
                 String extraXml = blkFileContent.substring(i + XML_END_TAG.length());
                 OpModeMeta opModeMeta = createOpModeMeta(projectName, extraXml);
@@ -420,7 +461,22 @@ public class ProjectsUtil {
                 // Regenerate the extra xml with the enable argument.
                 final String newBlkFileContent = blocksContent +
                         formatExtraXml(opModeMeta.flavor, opModeMeta.group, enable);
+                File blkTempBackup = null;
+                if (blkFile.exists()) {
+                    // Before writing the new content to the file, make a temporary copy of the old file,
+                    // just in case the control hub is unplugged (or the Android's battery dies) while we are
+                    // writing a file. We don't want the user to be left with the file empty/corrupt and the
+                    // old and new content both lost.
+                    long timestamp = System.currentTimeMillis();
+                    blkTempBackup = new File(BLOCKS_DIR, "backup_" + timestamp + "_" + projectName + BLOCKS_BLK_EXT);
+                    FileUtil.copyFile(blkFile, blkTempBackup);
+                }
                 FileUtil.writeFile(blkFile, newBlkFileContent);
+                // Once we've written the new content to the file, we can delete the temporary copy of
+                // the old file.
+                if (blkTempBackup != null) {
+                    blkTempBackup.delete();
+                }
                 return null;
             }
         });
@@ -466,7 +522,8 @@ public class ProjectsUtil {
     /**
      * Formats the extra XML.
      */
-    private static String formatExtraXml(OpModeMeta.Flavor flavor, String group, boolean enabled) throws IOException {
+    private static String formatExtraXml(OpModeMeta.Flavor flavor, String group, boolean enabled)
+            throws IOException {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
         serializer.setOutput(writer);
@@ -514,7 +571,7 @@ public class ProjectsUtil {
                 }
                 eventType = parser.next();
             }
-        } catch (XmlPullParserException | IOException e) {
+        } catch (IOException | XmlPullParserException e) {
             RobotLog.e("ProjectsUtil.createOpmodeMeta(\"" + projectName + "\", ...) - failed to parse xml.");
             RobotLog.logStackTrace(e);
         }
@@ -522,52 +579,47 @@ public class ProjectsUtil {
         return new OpModeMeta(projectName, flavor, group);
     }
 
-    private static boolean isProjectEnabled(String projectName) {
+    private static boolean isProjectEnabled(String projectName)
+            throws IOException, XmlPullParserException {
         if (!isValidProjectName(projectName)) {
             throw new IllegalArgumentException();
         }
-        try {
-            String blkFileContent = FileUtil.readFile(new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT));
-            // The extraXml is after the first </xml>.
-            int i = blkFileContent.indexOf(XML_END_TAG);
-            Assert.assertTrue(i != -1);
-            String extraXml = blkFileContent.substring(i + XML_END_TAG.length());
-            return isProjectEnabled(projectName, extraXml);
-        } catch (IOException e) {
-            RobotLog.e("ProjectsUtil.isProjectEnabled(\"" + projectName + "\") - failed.");
-            RobotLog.logStackTrace(e);
-            return true;
+        File blkFile = new File(BLOCKS_DIR, projectName + BLOCKS_BLK_EXT);
+        String blkFileContent = FileUtil.readFile(blkFile);
+        // The extraXml is after the first </xml>.
+        int i = blkFileContent.indexOf(XML_END_TAG);
+        if (i == -1) {
+            // File is empty or corrupt.
+            throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
         }
+        String extraXml = blkFileContent.substring(i + XML_END_TAG.length());
+        return isProjectEnabled(projectName, extraXml);
     }
 
     /**
      * Returns false if the given extraXml contains the tag/attribute for enabling a project and the
      * value of attribute is false. Otherwise it returns true.
      */
-    private static boolean isProjectEnabled(String projectName, String extraXml) {
+    private static boolean isProjectEnabled(String projectName, String extraXml)
+            throws IOException, XmlPullParserException {
         boolean enabled = true;
 
-        try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(new StringReader(extraXml));
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals(XML_TAG_ENABLED)) {
-                        for (int i = 0; i < parser.getAttributeCount(); i++) {
-                            String name = parser.getAttributeName(i);
-                            String value = parser.getAttributeValue(i);
-                            if (name.equals(XML_ATTRIBUTE_VALUE)) {
-                                enabled = Boolean.parseBoolean(value);
-                            }
+        XmlPullParser parser = Xml.newPullParser();
+        parser.setInput(new StringReader(extraXml));
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG) {
+                if (parser.getName().equals(XML_TAG_ENABLED)) {
+                    for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        String name = parser.getAttributeName(i);
+                        String value = parser.getAttributeValue(i);
+                        if (name.equals(XML_ATTRIBUTE_VALUE)) {
+                            enabled = Boolean.parseBoolean(value);
                         }
                     }
                 }
-                eventType = parser.next();
             }
-        } catch (XmlPullParserException | IOException e) {
-            RobotLog.e("ProjectsUtil.isProjectEnabled(\"" + projectName + "\", ...) - failed to parse xml.");
-            RobotLog.logStackTrace(e);
+            eventType = parser.next();
         }
 
         return enabled;

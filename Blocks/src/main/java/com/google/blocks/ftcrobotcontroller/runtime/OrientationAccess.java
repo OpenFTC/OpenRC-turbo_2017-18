@@ -4,10 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -23,126 +19,95 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 class OrientationAccess extends Access {
 
     OrientationAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "Orientation");
+    }
+
+    private Orientation checkOrientation(Object orientationArg) {
+        return checkArg(orientationArg, Orientation.class, "orientation");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String getAxesReference(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                AxesReference axesReference = ((Orientation) orientation).axesReference;
-                if (axesReference != null) {
-                    return axesReference.toString();
-                }
-            } else {
-                RobotLog.e("Orientation.getAxesReference - orientation is not an Orientation");
+    public String getAxesReference(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".AxesReference");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            AxesReference axesReference = orientation.axesReference;
+            if (axesReference != null) {
+                return axesReference.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getAxesReference - caught " + e);
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String getAxesOrder(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                AxesOrder axesOrder = ((Orientation) orientation).axesOrder;
-                if (axesOrder != null) {
-                    return axesOrder.toString();
-                }
-            } else {
-                RobotLog.e("Orientation.getAxesOrder - orientation is not an Orientation");
+    public String getAxesOrder(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".AxesOrder");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            AxesOrder axesOrder = orientation.axesOrder;
+            if (axesOrder != null) {
+                return axesOrder.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getAxesOrder - caught " + e);
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String getAngleUnit(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                AngleUnit angleUnit = ((Orientation) orientation).angleUnit;
-                if (angleUnit != null) {
-                    return angleUnit.toString();
-                }
-            } else {
-                RobotLog.e("Orientation.getAngleUnit - orientation is not an Orientation");
+    public String getAngleUnit(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".AngleUnit");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            AngleUnit angleUnit = orientation.angleUnit;
+            if (angleUnit != null) {
+                return angleUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getAngleUnit - caught " + e);
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getFirstAngle(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                return ((Orientation) orientation).firstAngle;
-            } else {
-                RobotLog.e("Orientation.getFirstAngle - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getFirstAngle - caught " + e);
+    public float getFirstAngle(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".FirstAngle");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            return orientation.firstAngle;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getSecondAngle(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                return ((Orientation) orientation).secondAngle;
-            } else {
-                RobotLog.e("Orientation.getSecondAngle - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getSecondAngle - caught " + e);
+    public float getSecondAngle(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".SecondAngle");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            return orientation.secondAngle;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public float getThirdAngle(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                return ((Orientation) orientation).thirdAngle;
-            } else {
-                RobotLog.e("Orientation.getThirdAngle - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getThirdAngle - caught " + e);
+    public float getThirdAngle(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".ThirdAngle");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            return orientation.thirdAngle;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public long getAcquisitionTime(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                return ((Orientation) orientation).acquisitionTime;
-            } else {
-                RobotLog.e("Orientation.getAcquisitionTime - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getAcquisitionTime - caught " + e);
+    public long getAcquisitionTime(Object orientationArg) {
+        startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            return orientation.acquisitionTime;
         }
         return 0;
     }
@@ -150,13 +115,8 @@ class OrientationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Orientation create() {
-        checkIfStopRequested();
-        try {
-            return new Orientation();
-        } catch (Exception e) {
-            RobotLog.e("Orientation.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return new Orientation();
     }
 
     @SuppressWarnings("unused")
@@ -164,105 +124,72 @@ class OrientationAccess extends Access {
     public Orientation create_withArgs(
             String axesReferenceString, String axesOrderString, String angleUnitString, float firstAngle,
             float secondAngle, float thirdAngle, long acquisitionTime) {
-        checkIfStopRequested();
-        try {
-            AxesReference axesReference =
-                    AxesReference.valueOf(axesReferenceString.toUpperCase(Locale.ENGLISH));
-            AxesOrder axesOrder =
-                    AxesOrder.valueOf(axesOrderString.toUpperCase(Locale.ENGLISH));
-            AngleUnit angleUnit =
-                    AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
+        startBlockExecution(BlockType.CREATE, "");
+        AxesReference axesReference = checkAxesReference(axesReferenceString);
+        AxesOrder axesOrder = checkAxesOrder(axesOrderString);
+        AngleUnit angleUnit = checkAngleUnit(angleUnitString);
+        if (axesReference != null && axesOrder != null && angleUnit != null) {
             return new Orientation(
                     axesReference, axesOrder, angleUnit, firstAngle, secondAngle, thirdAngle,
                     acquisitionTime);
-        } catch (Exception e) {
-            RobotLog.e("Orientation.create - caught " + e);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Orientation toAngleUnit(Object orientation, String angleUnitString) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                AngleUnit angleUnit =
-                        AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
-                return ((Orientation) orientation).toAngleUnit(angleUnit);
-            } else {
-                RobotLog.e("Orientation.toAngleUnit - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.toAngleUnit - caught " + e);
+    public Orientation toAngleUnit(Object orientationArg, String angleUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".toAngleUnit");
+        Orientation orientation = checkOrientation(orientationArg);
+        AngleUnit angleUnit = checkAngleUnit(angleUnitString);
+        if (orientation != null && angleUnit != null) {
+            return orientation.toAngleUnit(angleUnit);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Orientation toAxesReference(Object orientation, String axesReferenceString) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                AxesReference axesReference =
-                        AxesReference.valueOf(axesReferenceString.toUpperCase(Locale.ENGLISH));
-                return ((Orientation) orientation).toAxesReference(axesReference);
-            } else {
-                RobotLog.e("Orientation.toAxesReference - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.toAxesReference - caught " + e);
+    public Orientation toAxesReference(Object orientationArg, String axesReferenceString) {
+        startBlockExecution(BlockType.FUNCTION, ".toAxesReference");
+        Orientation orientation = checkOrientation(orientationArg);
+        AxesReference axesReference = checkAxesReference(axesReferenceString);
+        if (orientation != null && axesReference != null) {
+            return orientation.toAxesReference(axesReference);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Orientation toAxesOrder(Object orientation, String axesOrderString) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                AxesOrder axesOrder =
-                        AxesOrder.valueOf(axesOrderString.toUpperCase(Locale.ENGLISH));
-                return ((Orientation) orientation).toAxesOrder(axesOrder);
-            } else {
-                RobotLog.e("Orientation.toAxesOrder - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.toAxesOrder - caught " + e);
+    public Orientation toAxesOrder(Object orientationArg, String axesOrderString) {
+        startBlockExecution(BlockType.FUNCTION, ".toAxesOrder");
+        Orientation orientation = checkOrientation(orientationArg);
+        AxesOrder axesOrder = checkAxesOrder(axesOrderString);
+        if (orientation != null && axesOrder != null) {
+            return orientation.toAxesOrder(axesOrder);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String toText(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                return ((Orientation) orientation).toString();
-            } else {
-                RobotLog.e("Orientation.toText - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.toText - caught " + e);
+    public String toText(Object orientationArg) {
+        startBlockExecution(BlockType.FUNCTION, ".toText");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            return orientation.toString();
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public OpenGLMatrix getRotationMatrix(Object orientation) {
-        checkIfStopRequested();
-        try {
-            if (orientation instanceof Orientation) {
-                return ((Orientation) orientation).getRotationMatrix();
-            } else {
-                RobotLog.e("Orientation.getRotationMatrix - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getRotationMatrix - caught " + e);
+    public OpenGLMatrix getRotationMatrix(Object orientationArg) {
+        startBlockExecution(BlockType.FUNCTION, ".getRotationMatrix");
+        Orientation orientation = checkOrientation(orientationArg);
+        if (orientation != null) {
+            return orientation.getRotationMatrix();
         }
         return null;
     }
@@ -272,18 +199,13 @@ class OrientationAccess extends Access {
     public OpenGLMatrix getRotationMatrix_withArgs(
             String axesReferenceString, String axesOrderString, String angleUnitString, float firstAngle,
             float secondAngle, float thirdAngle) {
-        checkIfStopRequested();
-        try {
-            AxesReference axesReference =
-                    AxesReference.valueOf(axesReferenceString.toUpperCase(Locale.ENGLISH));
-            AxesOrder axesOrder =
-                    AxesOrder.valueOf(axesOrderString.toUpperCase(Locale.ENGLISH));
-            AngleUnit angleUnit =
-                    AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
+        startBlockExecution(BlockType.FUNCTION, ".getRotationMatrix");
+        AxesReference axesReference = checkAxesReference(axesReferenceString);
+        AxesOrder axesOrder = checkAxesOrder(axesOrderString);
+        AngleUnit angleUnit = checkAngleUnit(angleUnitString);
+        if (axesReference != null && axesOrder != null && angleUnit != null) {
             return Orientation.getRotationMatrix(
                     axesReference, axesOrder, angleUnit, firstAngle, secondAngle, thirdAngle);
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getRotationMatrix - caught " + e);
         }
         return null;
     }
@@ -291,22 +213,14 @@ class OrientationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Orientation getOrientation(
-            Object matrix, String axesReferenceString, String axesOrderString, String angleUnitString) {
-        checkIfStopRequested();
-        try {
-            if (matrix instanceof MatrixF) {
-                AxesReference axesReference =
-                        AxesReference.valueOf(axesReferenceString.toUpperCase(Locale.ENGLISH));
-                AxesOrder axesOrder =
-                        AxesOrder.valueOf(axesOrderString.toUpperCase(Locale.ENGLISH));
-                AngleUnit angleUnit =
-                        AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
-                return Orientation.getOrientation((MatrixF) matrix, axesReference, axesOrder, angleUnit);
-            } else {
-                RobotLog.e("Orientation.getOrientation - orientation is not an Orientation");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Orientation.getOrientation - caught " + e);
+            Object matrixArg, String axesReferenceString, String axesOrderString, String angleUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".getOrientation");
+        MatrixF matrix = checkMatrixF(matrixArg);
+        AxesReference axesReference = checkAxesReference(axesReferenceString);
+        AxesOrder axesOrder = checkAxesOrder(axesOrderString);
+        AngleUnit angleUnit = checkAngleUnit(angleUnitString);
+        if (matrix != null && axesReference != null && axesOrder != null && angleUnit != null) {
+            return Orientation.getOrientation(matrix, axesReference, axesOrder, angleUnit);
         }
         return null;
     }

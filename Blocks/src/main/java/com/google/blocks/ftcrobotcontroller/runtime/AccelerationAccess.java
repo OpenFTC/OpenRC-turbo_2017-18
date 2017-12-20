@@ -4,10 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -17,27 +13,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * @author lizlooney@google.com (Liz Looney)
  */
 class AccelerationAccess extends Access {
-
     AccelerationAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "Acceleration");
+    }
+
+    private Acceleration checkAcceleration(Object accelerationArg) {
+        return checkArg(accelerationArg, Acceleration.class, "acceleration");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, fieldName = "unit")
-    public String getDistanceUnit(Object acceleration) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                DistanceUnit distanceUnit = ((Acceleration) acceleration).unit;
-                if (distanceUnit != null) {
-                    return distanceUnit.toString();
-                }
-            } else {
-                RobotLog.e("Acceleration.getDistanceUnit - acceleration is not an Acceleration");
+    public String getDistanceUnit(Object accelerationArg) {
+        startBlockExecution(BlockType.GETTER, ".DistanceUnit");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        if (acceleration != null) {
+            DistanceUnit distanceUnit = acceleration.unit;
+            if (distanceUnit != null) {
+                return distanceUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.getDistanceUnit - caught " + e);
         }
         return "";
     }
@@ -45,16 +39,11 @@ class AccelerationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, fieldName = "xAccel")
-    public double getXAccel(Object acceleration) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                return ((Acceleration) acceleration).xAccel;
-            } else {
-                RobotLog.e("Acceleration.getXAccel - acceleration is not an Acceleration");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.getXAccel - caught " + e);
+    public double getXAccel(Object accelerationArg) {
+        startBlockExecution(BlockType.GETTER, ".XAccel");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        if (acceleration != null) {
+            return acceleration.xAccel;
         }
         return 0;
     }
@@ -62,16 +51,11 @@ class AccelerationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, fieldName = "yAccel")
-    public double getYAccel(Object acceleration) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                return ((Acceleration) acceleration).yAccel;
-            } else {
-                RobotLog.e("Acceleration.getYAccel - acceleration is not an Acceleration");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.getYAccel - caught " + e);
+    public double getYAccel(Object accelerationArg) {
+        startBlockExecution(BlockType.GETTER, ".YAccel");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        if (acceleration != null) {
+            return acceleration.yAccel;
         }
         return 0;
     }
@@ -79,16 +63,11 @@ class AccelerationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, fieldName = "zAccel")
-    public double getZAccel(Object acceleration) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                return ((Acceleration) acceleration).zAccel;
-            } else {
-                RobotLog.e("Acceleration.getZAccel - acceleration is not an Acceleration");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.getZAccel - caught " + e);
+    public double getZAccel(Object accelerationArg) {
+        startBlockExecution(BlockType.GETTER, ".ZAccel");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        if (acceleration != null) {
+            return acceleration.zAccel;
         }
         return 0;
     }
@@ -96,16 +75,11 @@ class AccelerationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, fieldName = "acquisitionTime")
-    public long getAcquisitionTime(Object acceleration) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                return ((Acceleration) acceleration).acquisitionTime;
-            } else {
-                RobotLog.e("Acceleration.getAcquisitionTime - acceleration is not an Acceleration");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.getAcquisitionTime - caught " + e);
+    public long getAcquisitionTime(Object accelerationArg) {
+        startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        if (acceleration != null) {
+            return acceleration.acquisitionTime;
         }
         return 0;
     }
@@ -114,13 +88,8 @@ class AccelerationAccess extends Access {
     @JavascriptInterface
     @Block(classes = Acceleration.class, constructor = true)
     public Acceleration create() {
-        checkIfStopRequested();
-        try {
-            return new Acceleration();
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return new Acceleration();
     }
 
     @SuppressWarnings("unused")
@@ -128,13 +97,10 @@ class AccelerationAccess extends Access {
     @Block(classes = Acceleration.class, constructor = true)
     public Acceleration create_withArgs(
             String distanceUnitString, double xAccel, double yAccel, double zAccel, long acquisitionTime) {
-        checkIfStopRequested();
-        try {
-            DistanceUnit distanceUnit =
-                    DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
+        startBlockExecution(BlockType.CREATE, "");
+        DistanceUnit distanceUnit = checkArg(distanceUnitString, DistanceUnit.class, "distanceUnit");
+        if (distanceUnit != null) {
             return new Acceleration(distanceUnit, xAccel, yAccel, zAccel, acquisitionTime);
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.create - caught " + e);
         }
         return null;
     }
@@ -143,30 +109,19 @@ class AccelerationAccess extends Access {
     @JavascriptInterface
     @Block(classes = Acceleration.class, methodName = "fromGravity")
     public Acceleration fromGravity(double gx, double gy, double gz, long acquisitionTime) {
-        checkIfStopRequested();
-        try {
-            return Acceleration.fromGravity(gx, gy, gz, acquisitionTime);
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.fromGravity - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.FUNCTION, ".fromGravity");
+        return Acceleration.fromGravity(gx, gy, gz, acquisitionTime);
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, methodName = "toUnit")
-    public Acceleration toDistanceUnit(Object acceleration, String distanceUnitString) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                DistanceUnit distanceUnit =
-                        DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
-                return ((Acceleration) acceleration).toUnit(distanceUnit);
-            } else {
-                RobotLog.e("Acceleration.toDistanceUnit - acceleration is not an Acceleration");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.toDistanceUnit - caught " + e);
+    public Acceleration toDistanceUnit(Object accelerationArg, String distanceUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".toDistanceUnit");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        DistanceUnit distanceUnit = checkArg(distanceUnitString, DistanceUnit.class, "distanceUnit");
+        if (acceleration != null && distanceUnit != null) {
+            return acceleration.toUnit(distanceUnit);
         }
         return null;
     }
@@ -174,16 +129,11 @@ class AccelerationAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Acceleration.class, methodName = "toString")
-    public String toText(Object acceleration) {
-        checkIfStopRequested();
-        try {
-            if (acceleration instanceof Acceleration) {
-                return ((Acceleration) acceleration).toString();
-            } else {
-                RobotLog.e("Acceleration.toText - acceleration is not an Acceleration");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Acceleration.toText - caught " + e);
+    public String toText(Object accelerationArg) {
+        startBlockExecution(BlockType.FUNCTION, ".toText");
+        Acceleration acceleration = checkAcceleration(accelerationArg);
+        if (acceleration != null) {
+            return acceleration.toString();
         }
         return "";
     }

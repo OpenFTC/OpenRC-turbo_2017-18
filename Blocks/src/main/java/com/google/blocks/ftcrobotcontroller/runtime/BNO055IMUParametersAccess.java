@@ -13,9 +13,6 @@ import com.qualcomm.hardware.bosch.BNO055IMU.TempUnit;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
 
 /**
  * A class that provides JavaScript access to {@link BNO055IMU#Parameters}.
@@ -25,108 +22,82 @@ import java.util.Locale;
 class BNO055IMUParametersAccess extends Access {
 
     BNO055IMUParametersAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "IMU-BNO055.Parameters");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, constructor = true)
     public Parameters create() {
-        checkIfStopRequested();
-        try {
-            return new Parameters();
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return new Parameters();
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "accelUnit")
-    public void setAccelUnit(Object bno055imuParameters, String accelUnitString) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                AccelUnit accelUnit = AccelUnit.valueOf(accelUnitString.toUpperCase(Locale.ENGLISH));
-                ((Parameters) bno055imuParameters).accelUnit = accelUnit;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setAccelUnit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setAccelUnit - caught " + e);
+    public void setAccelUnit(Object parametersArg, String accelUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".setAccelUnit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        AccelUnit accelUnit = checkArg(accelUnitString, AccelUnit.class, "accelUnit");
+        if (parameters != null && accelUnit != null) {
+            parameters.accelUnit = accelUnit;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "accelUnit")
-    public String getAccelUnit(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                AccelUnit accelUnit = ((Parameters) bno055imuParameters).accelUnit;
-                if (accelUnit != null) {
-                    return accelUnit.toString();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getAccelUnit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getAccelUnit(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".AccelUnit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            AccelUnit accelUnit = parameters.accelUnit;
+            if (accelUnit != null) {
+                return accelUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getAccelUnit - caught " + e);
         }
         return "";
     }
 
+    enum Algorithm {
+        NAIVE,
+        JUST_LOGGING
+    }
+
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "accelerationIntegrationAlgorithm")
-    public void setAccelerationIntegrationAlgorithm(
-            Object bno055imuParameters, String accelerationIntegrationAlgorithm) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                accelerationIntegrationAlgorithm =
-                        accelerationIntegrationAlgorithm.toUpperCase(Locale.ENGLISH);
-                if (accelerationIntegrationAlgorithm.equals("NAIVE")) {
-                    ((Parameters) bno055imuParameters).accelerationIntegrationAlgorithm = null;
-                } else if (accelerationIntegrationAlgorithm.equals("JUST_LOGGING")) {
-                    ((Parameters) bno055imuParameters).accelerationIntegrationAlgorithm =
-                            new JustLoggingAccelerationIntegrator();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.setAccelerationIntegrationAlgorithm - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public void setAccelerationIntegrationAlgorithm(Object parametersArg, String algorithmString) {
+        startBlockExecution(BlockType.FUNCTION, ".setAccelerationIntegrationAlgorithm");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        Algorithm algorithm = checkArg(algorithmString, Algorithm.class, "accelerationIntegrationAlgorithm");
+        if (parameters != null && algorithm != null) {
+            switch (algorithm) {
+                case NAIVE:
+                    parameters.accelerationIntegrationAlgorithm = null;
+                    break;
+                case JUST_LOGGING:
+                    parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+                    break;
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setAccelerationIntegrationAlgorithm - caught " + e);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "accelerationIntegrationAlgorithm")
-    public String getAccelerationIntegrationAlgorithm(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                AccelerationIntegrator accelerationIntegrationAlgorithm =
-                        ((Parameters) bno055imuParameters).accelerationIntegrationAlgorithm;
-                if (accelerationIntegrationAlgorithm == null ||
-                        accelerationIntegrationAlgorithm instanceof NaiveAccelerationIntegrator) {
-                    return "NAIVE";
-                }
-                if (accelerationIntegrationAlgorithm instanceof JustLoggingAccelerationIntegrator) {
-                    return "JUST_LOGGING";
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getAccelerationIntegrationAlgorithm - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getAccelerationIntegrationAlgorithm(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".AccelerationIntegrationAlgorithm");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            AccelerationIntegrator accelerationIntegrator = parameters.accelerationIntegrationAlgorithm;
+            if (accelerationIntegrator == null ||
+                    accelerationIntegrator instanceof NaiveAccelerationIntegrator) {
+                return "NAIVE";
+            } else if (accelerationIntegrator instanceof JustLoggingAccelerationIntegrator) {
+                return "JUST_LOGGING";
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getAccelerationIntegrationAlgorithm - caught " + e);
         }
         return "";
     }
@@ -134,39 +105,26 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "angleUnit")
-    public void setAngleUnit(Object bno055imuParameters, String angleUnitString) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                AngleUnit angleUnit =
-                        AngleUnit.valueOf(angleUnitString.toUpperCase(Locale.ENGLISH));
-                ((Parameters) bno055imuParameters).angleUnit = angleUnit;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setAngleUnit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setAngleUnit - caught " + e);
+    public void setAngleUnit(Object parametersArg, String angleUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".setAngleUnit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        AngleUnit angleUnit = checkArg(angleUnitString, AngleUnit.class, "angleUnit");
+        if (parameters != null && angleUnit != null) {
+            parameters.angleUnit = angleUnit;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "angleUnit")
-    public String getAngleUnit(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                AngleUnit angleUnit = ((Parameters) bno055imuParameters).angleUnit;
-                if (angleUnit != null) {
-                    return angleUnit.toString();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getAngleUnit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getAngleUnit(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".AngleUnit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            AngleUnit angleUnit = parameters.angleUnit;
+            if (angleUnit != null) {
+                return angleUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getAngleUnit - caught " + e);
         }
         return "";
     }
@@ -174,37 +132,25 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "calibrationDataFile")
-    public void setCalibrationDataFile(Object bno055imuParameters, String calibrationDataFile) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                ((Parameters) bno055imuParameters).calibrationDataFile = calibrationDataFile;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setCalibrationDataFile - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setCalibrationDataFile - caught " + e);
+    public void setCalibrationDataFile(Object parametersArg, String calibrationDataFile) {
+        startBlockExecution(BlockType.FUNCTION, ".setCalibrationDataFile");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            parameters.calibrationDataFile = calibrationDataFile;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "calibrationDataFile")
-    public String getCalibrationDataFile(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                String calibrationDataFile = ((Parameters) bno055imuParameters).calibrationDataFile;
-                if (calibrationDataFile != null) {
-                    return calibrationDataFile;
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getCalibrationDataFile - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getCalibrationDataFile(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".CalibrationDataFile");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            String calibrationDataFile = parameters.calibrationDataFile;
+            if (calibrationDataFile != null) {
+                return calibrationDataFile;
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getCalibrationDataFile - caught " + e);
         }
         return "";
     }
@@ -212,37 +158,25 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "i2cAddr")
-    public void setI2cAddress7Bit(Object bno055imuParameters, int i2cAddr7Bit) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                ((Parameters) bno055imuParameters).i2cAddr = I2cAddr.create7bit(i2cAddr7Bit);
-            } else {
-                RobotLog.e("BNO055IMUParameters.setI2cAddress7Bit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setI2cAddress7Bit - caught " + e);
+    public void setI2cAddress7Bit(Object parametersArg, int i2cAddr7Bit) {
+        startBlockExecution(BlockType.FUNCTION, ".setI2cAddress7Bit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            parameters.i2cAddr = I2cAddr.create7bit(i2cAddr7Bit);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "i2cAddr")
-    public int getI2cAddress7Bit(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                I2cAddr i2cAddr = ((Parameters) bno055imuParameters).i2cAddr;
-                if (i2cAddr != null) {
-                    return i2cAddr.get7Bit();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getI2cAddress7Bit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public int getI2cAddress7Bit(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".I2cAddress7Bit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            I2cAddr i2cAddr = parameters.i2cAddr;
+            if (i2cAddr != null) {
+                return i2cAddr.get7Bit();
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getI2cAddress7Bit - caught " + e);
         }
         return 0;
     }
@@ -250,37 +184,25 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "i2cAddr")
-    public void setI2cAddress8Bit(Object bno055imuParameters, int i2cAddr8Bit) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                ((Parameters) bno055imuParameters).i2cAddr = I2cAddr.create8bit(i2cAddr8Bit);
-            } else {
-                RobotLog.e("BNO055IMUParameters.setI2cAddress8Bit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setI2cAddress8Bit - caught " + e);
+    public void setI2cAddress8Bit(Object parametersArg, int i2cAddr8Bit) {
+        startBlockExecution(BlockType.FUNCTION, ".setI2cAddress8Bit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            parameters.i2cAddr = I2cAddr.create8bit(i2cAddr8Bit);
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "i2cAddr")
-    public int getI2cAddress8Bit(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                I2cAddr i2cAddr = ((Parameters) bno055imuParameters).i2cAddr;
-                if (i2cAddr != null) {
-                    return i2cAddr.get8Bit();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getI2cAddress8Bit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public int getI2cAddress8Bit(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".I2cAddress8Bit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            I2cAddr i2cAddr = parameters.i2cAddr;
+            if (i2cAddr != null) {
+                return i2cAddr.get8Bit();
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getI2cAddress8Bit - caught " + e);
         }
         return 0;
     }
@@ -288,34 +210,22 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "loggingEnabled")
-    public void setLoggingEnabled(Object bno055imuParameters, boolean loggingEnabled) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                ((Parameters) bno055imuParameters).loggingEnabled = loggingEnabled;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setLoggingEnabled - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setLoggingEnabled - caught " + e);
+    public void setLoggingEnabled(Object parametersArg, boolean loggingEnabled) {
+        startBlockExecution(BlockType.FUNCTION, ".setLoggingEnabled");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            parameters.loggingEnabled = loggingEnabled;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "loggingEnabled")
-    public boolean getLoggingEnabled(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                return ((Parameters) bno055imuParameters).loggingEnabled;
-            } else {
-                RobotLog.e("BNO055IMUParameters.getLoggingEnabled - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getLoggingEnabled - caught " + e);
+    public boolean getLoggingEnabled(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".LoggingEnabled");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            return parameters.loggingEnabled;
         }
         return false;
     }
@@ -323,37 +233,25 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "loggingTag")
-    public void setLoggingTag(Object bno055imuParameters, String loggingTag) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                ((Parameters) bno055imuParameters).loggingTag = loggingTag;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setLoggingTag - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setLoggingTag - caught " + e);
+    public void setLoggingTag(Object parametersArg, String loggingTag) {
+        startBlockExecution(BlockType.FUNCTION, ".setLoggingTag");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            parameters.loggingTag = loggingTag;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "loggingTag")
-    public String getLoggingTag(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                String loggingTag = ((Parameters) bno055imuParameters).loggingTag;
-                if (loggingTag != null) {
-                    return loggingTag;
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getLoggingTag - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getLoggingTag(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".LoggingTag");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            String loggingTag = parameters.loggingTag;
+            if (loggingTag != null) {
+                return loggingTag;
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getLoggingTag - caught " + e);
         }
         return "";
     }
@@ -361,39 +259,26 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "mode")
-    public void setSensorMode(Object bno055imuParameters, String sensorModeString) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                SensorMode sensorMode =
-                        SensorMode.valueOf(sensorModeString.toUpperCase(Locale.ENGLISH));
-                ((Parameters) bno055imuParameters).mode = sensorMode;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setSensorMode - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setSensorMode - caught " + e);
+    public void setSensorMode(Object parametersArg, String sensorModeString) {
+        startBlockExecution(BlockType.FUNCTION, ".setSensorMode");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        SensorMode sensorMode = checkArg(sensorModeString, SensorMode.class, "sensorMode");
+        if (parameters != null && sensorMode != null) {
+            parameters.mode = sensorMode;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "mode")
-    public String getSensorMode(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                SensorMode sensorMode = ((Parameters) bno055imuParameters).mode;
-                if (sensorMode != null) {
-                    return sensorMode.toString();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getSensorMode - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getSensorMode(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".SensorMode");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            SensorMode sensorMode = parameters.mode;
+            if (sensorMode != null) {
+                return sensorMode.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getSensorMode - caught " + e);
         }
         return "";
     }
@@ -401,39 +286,26 @@ class BNO055IMUParametersAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "temperatureUnit")
-    public void setTempUnit(Object bno055imuParameters, String temperatureUnitString) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                TempUnit temperatureUnit =
-                        TempUnit.valueOf(temperatureUnitString.toUpperCase(Locale.ENGLISH));
-                ((Parameters) bno055imuParameters).temperatureUnit = temperatureUnit;
-            } else {
-                RobotLog.e("BNO055IMUParameters.setTempUnit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
-            }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.setTempUnit - caught " + e);
+    public void setTempUnit(Object parametersArg, String tempUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".setTempUnit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        TempUnit tempUnit = checkArg(tempUnitString, TempUnit.class, "tempUnit");
+        if (parameters != null && tempUnit != null) {
+            parameters.temperatureUnit = tempUnit;
         }
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
     @Block(classes = Parameters.class, fieldName = "temperatureUnit")
-    public String getTempUnit(Object bno055imuParameters) {
-        checkIfStopRequested();
-        try {
-            if (bno055imuParameters instanceof Parameters) {
-                TempUnit temperatureUnit = ((Parameters) bno055imuParameters).temperatureUnit;
-                if (temperatureUnit != null) {
-                    return temperatureUnit.toString();
-                }
-            } else {
-                RobotLog.e("BNO055IMUParameters.getTempUnit - " +
-                        "bno055imuParameters is not a BNO055IMU.Parameters");
+    public String getTempUnit(Object parametersArg) {
+        startBlockExecution(BlockType.GETTER, ".TempUnit");
+        Parameters parameters = checkBNO055IMUParameters(parametersArg);
+        if (parameters != null) {
+            TempUnit tempUnit = parameters.temperatureUnit;
+            if (tempUnit != null) {
+                return tempUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("BNO055IMUParameters.getTempUnit - caught " + e);
         }
         return "";
     }

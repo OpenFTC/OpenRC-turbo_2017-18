@@ -159,13 +159,13 @@ Blockly.Blocks['angularVelocity_create_withArgs'] = {
         .appendField('angleUnit')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('X_ROTATION_RATE').setCheck('Number')
-        .appendField('XRotationRate')
+        .appendField('xRotationRate')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('Y_ROTATION_RATE').setCheck('Number')
-        .appendField('YRotationRate')
+        .appendField('yRotationRate')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('Z_ROTATION_RATE').setCheck('Number')
-        .appendField('ZRotationRate')
+        .appendField('zRotationRate')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ACQUISITION_TIME').setCheck('Number')
         .appendField('acquisitionTime')

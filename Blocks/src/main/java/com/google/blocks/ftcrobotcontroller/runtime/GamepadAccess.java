@@ -5,7 +5,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 import android.webkit.JavascriptInterface;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.RobotLog;
 
 /**
  * A class that provides JavaScript access to a {@link Gamepad}.
@@ -16,7 +15,7 @@ class GamepadAccess extends Access {
     private final Gamepad gamepad;
 
     GamepadAccess(BlocksOpMode blocksOpMode, String identifier, Gamepad gamepad) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, identifier);
         this.gamepad = gamepad;
     }
 
@@ -24,7 +23,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "left_stick_x")
     public float getLeftStickX() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".LeftStickX");
         if (gamepad != null) {
             return gamepad.left_stick_x;
         }
@@ -35,7 +34,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "left_stick_y")
     public float getLeftStickY() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".LeftStickY");
         if (gamepad != null) {
             return gamepad.left_stick_y;
         }
@@ -46,7 +45,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "right_stick_x")
     public float getRightStickX() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".RightStickX");
         if (gamepad != null) {
             return gamepad.right_stick_x;
         }
@@ -57,7 +56,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "right_stick_y")
     public float getRightStickY() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".RightStickY");
         if (gamepad != null) {
             return gamepad.right_stick_y;
         }
@@ -68,7 +67,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "dpad_up")
     public boolean getDpadUp() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".DpadUp");
         if (gamepad != null) {
             return gamepad.dpad_up;
         }
@@ -79,7 +78,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "dpad_down")
     public boolean getDpadDown() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".DpadDown");
         if (gamepad != null) {
             return gamepad.dpad_down;
         }
@@ -90,7 +89,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "dpad_left")
     public boolean getDpadLeft() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".DpadLeft");
         if (gamepad != null) {
             return gamepad.dpad_left;
         }
@@ -101,7 +100,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "dpad_right")
     public boolean getDpadRight() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".DpadRight");
         if (gamepad != null) {
             return gamepad.dpad_right;
         }
@@ -112,7 +111,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "a")
     public boolean getA() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".A");
         if (gamepad != null) {
             return gamepad.a;
         }
@@ -123,7 +122,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "b")
     public boolean getB() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".B");
         if (gamepad != null) {
             return gamepad.b;
         }
@@ -134,7 +133,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "x")
     public boolean getX() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".X");
         if (gamepad != null) {
             return gamepad.x;
         }
@@ -145,7 +144,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "y")
     public boolean getY() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Y");
         if (gamepad != null) {
             return gamepad.y;
         }
@@ -156,7 +155,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "guide")
     public boolean getGuide() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Guide");
         if (gamepad != null) {
             return gamepad.guide;
         }
@@ -167,7 +166,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "start")
     public boolean getStart() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Start");
         if (gamepad != null) {
             return gamepad.start;
         }
@@ -178,7 +177,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "back")
     public boolean getBack() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".Back");
         if (gamepad != null) {
             return gamepad.back;
         }
@@ -189,7 +188,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "left_bumper")
     public boolean getLeftBumper() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".LeftBumper");
         if (gamepad != null) {
             return gamepad.left_bumper;
         }
@@ -200,7 +199,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "right_bumper")
     public boolean getRightBumper() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".RightBumper");
         if (gamepad != null) {
             return gamepad.right_bumper;
         }
@@ -211,7 +210,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "left_stick_button")
     public boolean getLeftStickButton() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".LeftStickButton");
         if (gamepad != null) {
             return gamepad.left_stick_button;
         }
@@ -222,7 +221,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "right_stick_button")
     public boolean getRightStickButton() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".RightStickButton");
         if (gamepad != null) {
             return gamepad.right_stick_button;
         }
@@ -233,7 +232,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "left_trigger")
     public float getLeftTrigger() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".LeftTrigger");
         if (gamepad != null) {
             return gamepad.left_trigger;
         }
@@ -244,7 +243,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, fieldName = "right_trigger")
     public float getRightTrigger() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".RightTrigger");
         if (gamepad != null) {
             return gamepad.right_trigger;
         }
@@ -255,7 +254,7 @@ class GamepadAccess extends Access {
     @JavascriptInterface
     @Block(classes = {Gamepad.class}, methodName = "atRest")
     public boolean getAtRest() {
-        checkIfStopRequested();
+        startBlockExecution(BlockType.GETTER, ".AtRest");
         if (gamepad != null) {
             return gamepad.atRest();
         }

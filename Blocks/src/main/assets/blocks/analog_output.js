@@ -4,7 +4,7 @@
  */
 
 // The following are generated dynamically in HardwareUtil.fetchJavaScriptForHardware():
-// createLedDropdown
+// createAnalogOutputDropdown
 // The following are defined in vars.js:
 // createNonEditableField
 // functionColor
@@ -15,7 +15,7 @@ Blockly.Blocks['analogOutput_setAnalogOutputVoltage'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField(createAnalogOutputDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setAnalogOutputVoltage'));
     this.appendValueInput('VOLTAGE') // no type, for compatibility
@@ -39,7 +39,7 @@ Blockly.Blocks['analogOutput_setAnalogOutputVoltage_Number'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField(createAnalogOutputDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setAnalogOutputVoltage'));
     this.appendValueInput('VOLTAGE').setCheck('Number')
@@ -59,7 +59,7 @@ Blockly.Blocks['analogOutput_setAnalogOutputFrequency'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField(createAnalogOutputDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setAnalogOutputFrequency'));
     this.appendValueInput('FREQUENCY') // no type, for compatibility
@@ -83,7 +83,7 @@ Blockly.Blocks['analogOutput_setAnalogOutputFrequency_Number'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField(createAnalogOutputDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setAnalogOutputFrequency'));
     this.appendValueInput('FREQUENCY').setCheck('Number')
@@ -103,7 +103,7 @@ Blockly.Blocks['analogOutput_setAnalogOutputMode'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField(createAnalogOutputDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setAnalogOutputMode'));
     this.appendValueInput('MODE') // no type, for compatibility
@@ -127,7 +127,7 @@ Blockly.Blocks['analogOutput_setAnalogOutputMode_Number'] = {
   init: function() {
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField(createAnalogOutputDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setAnalogOutputMode'));
     this.appendValueInput('MODE').setCheck('Number')

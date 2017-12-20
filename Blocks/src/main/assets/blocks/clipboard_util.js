@@ -10,7 +10,7 @@ function saveClipboardContent(clipboardContent, callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     saveClipboardContentViaBlocksIO(clipboardContent, callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     saveClipboardContentViaHttp(clipboardContent, callback);
   }
@@ -23,7 +23,7 @@ function fetchClipboardContent(callback) {
   if (typeof blocksIO !== 'undefined') {
     // html/js is within the WebView component within the Android app.
     fetchClipboardContentViaBlocksIO(callback);
-  } else if (window.location.protocol === 'http:') {
+  } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     // html/js is in a browser, loaded as an http:// URL.
     fetchClipboardContentViaHttp(callback);
   }

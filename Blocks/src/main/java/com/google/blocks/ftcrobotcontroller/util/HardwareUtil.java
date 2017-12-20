@@ -142,6 +142,16 @@ public class HardwareUtil {
                         .append("}\n");
             }
         }
+        jsHardware.append("function getHardwareIdentifierSuffixes() {\n")
+                .append("  var suffixes = [\n");
+        for (HardwareType hardwareType : HardwareType.values()) {
+            if (!hardwareType.identifierSuffix.isEmpty()) {
+                jsHardware.append("    '" + hardwareType.identifierSuffix + "',\n");
+            }
+        }
+        jsHardware.append("  ];\n")
+                .append("  return suffixes;\n")
+                .append("}\n");
 
         jsHardware.append("function addReservedWordsForHardware() {\n");
         for (HardwareItem hardwareItem : hardwareItemMap.getAllHardwareItems()) {

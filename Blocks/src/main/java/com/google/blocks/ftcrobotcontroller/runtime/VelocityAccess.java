@@ -4,10 +4,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.Locale;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
@@ -19,88 +15,67 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 class VelocityAccess extends Access {
 
     VelocityAccess(BlocksOpMode blocksOpMode, String identifier) {
-        super(blocksOpMode, identifier);
+        super(blocksOpMode, identifier, "Velocity");
+    }
+
+    private Velocity checkVelocity(Object velocityArg) {
+        return checkArg(velocityArg, Velocity.class, "velocity");
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String getDistanceUnit(Object velocity) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                DistanceUnit distanceUnit = ((Velocity) velocity).unit;
-                if (distanceUnit != null) {
-                    return distanceUnit.toString();
-                }
-            } else {
-                RobotLog.e("Velocity.getDistanceUnit - velocity is not a Velocity");
+    public String getDistanceUnit(Object velocityArg) {
+        startBlockExecution(BlockType.GETTER, ".DistanceUnit");
+        Velocity velocity = checkVelocity(velocityArg);
+        if (velocity != null) {
+            DistanceUnit distanceUnit = velocity.unit;
+            if (distanceUnit != null) {
+                return distanceUnit.toString();
             }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.getDistanceUnit - caught " + e);
         }
         return "";
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public double getXVeloc(Object velocity) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                return ((Velocity) velocity).xVeloc;
-            } else {
-                RobotLog.e("Velocity.getXVeloc - velocity is not a Velocity");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.getXVeloc - caught " + e);
+    public double getXVeloc(Object velocityArg) {
+        startBlockExecution(BlockType.GETTER, ".XVeloc");
+        Velocity velocity = checkVelocity(velocityArg);
+        if (velocity != null) {
+            return velocity.xVeloc;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public double getYVeloc(Object velocity) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                return ((Velocity) velocity).yVeloc;
-            } else {
-                RobotLog.e("Velocity.getYVeloc - velocity is not a Velocity");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.getYVeloc - caught " + e);
+    public double getYVeloc(Object velocityArg) {
+        startBlockExecution(BlockType.GETTER, ".YVeloc");
+        Velocity velocity = checkVelocity(velocityArg);
+        if (velocity != null) {
+            return velocity.yVeloc;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public double getZVeloc(Object velocity) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                return ((Velocity) velocity).zVeloc;
-            } else {
-                RobotLog.e("Velocity.getZVeloc - velocity is not a Velocity");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.getZVeloc - caught " + e);
+    public double getZVeloc(Object velocityArg) {
+        startBlockExecution(BlockType.GETTER, ".ZVeloc");
+        Velocity velocity = checkVelocity(velocityArg);
+        if (velocity != null) {
+            return velocity.zVeloc;
         }
         return 0;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public long getAcquisitionTime(Object velocity) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                return ((Velocity) velocity).acquisitionTime;
-            } else {
-                RobotLog.e("Velocity.getAcquisitionTime - velocity is not a Velocity");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.getAcquisitionTime - caught " + e);
+    public long getAcquisitionTime(Object velocityArg) {
+        startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
+        Velocity velocity = checkVelocity(velocityArg);
+        if (velocity != null) {
+            return velocity.acquisitionTime;
         }
         return 0;
     }
@@ -108,13 +83,8 @@ class VelocityAccess extends Access {
     @SuppressWarnings("unused")
     @JavascriptInterface
     public Velocity create() {
-        checkIfStopRequested();
-        try {
-            return new Velocity();
-        } catch (Exception e) {
-            RobotLog.e("Velocity.create - caught " + e);
-        }
-        return null;
+        startBlockExecution(BlockType.CREATE, "");
+        return new Velocity();
     }
 
     @SuppressWarnings("unused")
@@ -122,47 +92,33 @@ class VelocityAccess extends Access {
     public Velocity create_withArgs(
             String distanceUnitString, double xVeloc, double yVeloc, double zVeloc,
             long acquisitionTime) {
-        checkIfStopRequested();
-        try {
-            DistanceUnit distanceUnit =
-                    DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
+        startBlockExecution(BlockType.CREATE, "");
+        DistanceUnit distanceUnit = checkDistanceUnit(distanceUnitString);
+        if (distanceUnit != null) {
             return new Velocity(distanceUnit, xVeloc, yVeloc, zVeloc, acquisitionTime);
-        } catch (Exception e) {
-            RobotLog.e("Velocity.create - caught " + e);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public Velocity toDistanceUnit(Object velocity, String distanceUnitString) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                DistanceUnit distanceUnit =
-                        DistanceUnit.valueOf(distanceUnitString.toUpperCase(Locale.ENGLISH));
-                return ((Velocity) velocity).toUnit(distanceUnit);
-            } else {
-                RobotLog.e("Velocity.toDistanceUnit - velocity is not a Velocity");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.toDistanceUnit - caught " + e);
+    public Velocity toDistanceUnit(Object velocityArg, String distanceUnitString) {
+        startBlockExecution(BlockType.FUNCTION, ".toDistanceUnit");
+        Velocity velocity = checkVelocity(velocityArg);
+        DistanceUnit distanceUnit = checkDistanceUnit(distanceUnitString);
+        if (velocity != null && distanceUnit != null) {
+            return velocity.toUnit(distanceUnit);
         }
         return null;
     }
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    public String toText(Object velocity) {
-        checkIfStopRequested();
-        try {
-            if (velocity instanceof Velocity) {
-                return ((Velocity) velocity).toString();
-            } else {
-                RobotLog.e("Velocity.toText - velocity is not a Velocity");
-            }
-        } catch (Exception e) {
-            RobotLog.e("Velocity.toText - caught " + e);
+    public String toText(Object velocityArg) {
+        startBlockExecution(BlockType.FUNCTION, ".toText");
+        Velocity velocity = checkVelocity(velocityArg);
+        if (velocity != null) {
+            return velocity.toString();
         }
         return "";
     }

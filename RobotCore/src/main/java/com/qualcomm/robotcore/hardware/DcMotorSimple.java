@@ -78,7 +78,7 @@ public interface DcMotorSimple extends HardwareDevice {
      * <p>
      * <p>Setting a power level of zero will brake the motor</p>
      *
-     * @param power the new power level of the motor, a value in the interval [0.0, 1.0]
+     * @param power the new power level of the motor, a value in the interval [-1.0, 1.0]
      * @see #getPower()
      * @see DcMotor#setMode(DcMotor.RunMode)
      * @see DcMotor#setPowerFloat()
