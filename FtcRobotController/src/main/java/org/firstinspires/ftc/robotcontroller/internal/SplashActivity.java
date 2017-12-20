@@ -8,24 +8,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.cyanogenmod.updater.utils.MD5;
 
-import org.openftc.exceptions.VuforiaCurruptedException;
-import org.openftc.exceptions.VuforiaNotFoundOnSdcardException;
+import org.openftc.exceptions.VuforiaCorruptedException;
+import org.openftc.exceptions.VuforiaNotFoundException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class SplashActivity extends Activity
 {
@@ -59,19 +53,19 @@ public class SplashActivity extends Activity
             startActivity(intent);
             finish();
         }
-        catch (VuforiaNotFoundOnSdcardException e)
+        catch (VuforiaNotFoundException e)
         {
             e.printStackTrace();
             showLibNotOnSdcardDialog();
         }
-        catch (VuforiaCurruptedException e)
+        catch (VuforiaCorruptedException e)
         {
             e.printStackTrace();
             showLibCorruptedDialog();
         }
     }
 
-    private void setupVuforiaFilesForLaunch() throws VuforiaNotFoundOnSdcardException, VuforiaCurruptedException
+    private void setupVuforiaFilesForLaunch() throws VuforiaNotFoundException, VuforiaCorruptedException
     {
         libInProtectedStorage = new File(getFilesDir() + "/extra/libVuforiaReal.so");
         protectedExtraFolder = new File(getFilesDir() + "/extra/");
@@ -109,7 +103,7 @@ public class SplashActivity extends Activity
                      * Oooh, not good - it's corrupted.
                      * Show the user a dialog explaining the situation
                      */
-                    throw new VuforiaCurruptedException();
+                    throw new VuforiaCorruptedException();
                 }
             }
             else
@@ -118,7 +112,7 @@ public class SplashActivity extends Activity
                  * Welp, it doesn't exist on the SDcard either :(
                  * Show the user a dialog explaining the situation
                  */
-                throw new VuforiaNotFoundOnSdcardException();
+                throw new VuforiaNotFoundException();
             }
         }
     }
