@@ -119,7 +119,13 @@ public class SplashActivity extends Activity
 
     private void showLibNotOnSdcardDialog()
     {
-        String msg = "Please copy it to the FIRST folder on the root of the sdcard.<br><br><a href='https://github.com/OpenFTC/OpenFTC-app-turbo/raw/develop/doc/libVuforia.so'>You can find it in the 'doc' folder of the repository.</a>";
+        String msg = "Please copy it to the FIRST folder on the phone's storage.<br><br>" +
+
+                "<a href='https://github.com/OpenFTC/OpenFTC-app-turbo/raw/develop/doc/libVuforia.so'>" +
+                "You can find libVuforia.so in the 'doc' folder of the OpenFTC repository</a>.<br><br>" +
+
+                "You can copy it from your laptop, or download it to your phone from the above link " +
+                "and use a file manager app to move it to the correct location.";
 
         AlertDialog dialog = new AlertDialog.Builder(this)
         .setTitle("libVuforia.so not found!")
@@ -141,7 +147,8 @@ public class SplashActivity extends Activity
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("libVuforia.so corrupted!");
-        builder.setMessage("libVuforia.so is present in the FIRST folder on the SDcard, however, the MD5 checksum does not match what is expected.");
+        builder.setMessage("libVuforia.so is present in the FIRST folder. However, the MD5 " +
+                "checksum does not match what is expected. Delete and re-download the file.");
         builder.setCancelable(false);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener()
         {
