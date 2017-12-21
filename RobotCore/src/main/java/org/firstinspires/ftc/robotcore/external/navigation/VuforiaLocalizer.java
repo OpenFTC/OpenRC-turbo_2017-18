@@ -238,8 +238,7 @@ public interface VuforiaLocalizer {
          * @see #cameraMonitorViewParent
          * @see #fillCameraMonitorViewParent
          */
-        public @IdRes
-        int cameraMonitorViewIdParent = 0;
+        public @IdRes int cameraMonitorViewIdParent = 0;
 
         /**
          * The view that will be used as the parent for a live monitor which provides
