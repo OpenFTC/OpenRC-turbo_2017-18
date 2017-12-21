@@ -29,6 +29,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.ConceptVuforiaNavigation;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -44,6 +45,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.robot.AutonomousCommands;
+import org.firstinspires.ftc.teamcode.robot.Revbot;
 import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 
 /**
@@ -65,22 +68,21 @@ import org.firstinspires.ftc.teamcode.robot.RevbotValues;
  * is explained in {@link ConceptVuforiaNavigation}.
  */
 
-@Autonomous(name="Concept: VuMark Id", group ="Concept")
-public class VuforiaTest extends AutoBase {
+@Autonomous(name="Vuforia Testing", group ="Concept")
+public class VuforiaTest extends LinearOpMode {
 
     public static final String TAG = "VuforiaOld VuMark Sample";
 
     OpenGLMatrix lastLocation = null;
+    Revbot robot = new Revbot();
+    AutonomousCommands auto = new AutonomousCommands();
 
-    /**
-     * {@link #vuforia} is the variable we will use to store our instance of the VuforiaOld
-     * localization engine.
-     */
-    VuforiaLocalizer vuforia;
 
-    @Override public void runOpMode() throws InterruptedException {
+    @Override
+    public void runOpMode() throws InterruptedException {
 
-        super.runOpMode();
+        robot.init(this);
+
 
         /*
          * To start up VuforiaOld, tell it the view that we wish to use for camera monitor (on the RC phone);
@@ -131,8 +133,13 @@ public class VuforiaTest extends AutoBase {
 
         relicTrackables.activate();
 
+        final int STOP_RANGE=50;
+        final int TARGET_X=-1000;
+        final int TARGET_Y=0;
+
         while (opModeIsActive()) {
 
+            String str = "";
             /**
              * See if any of the instances of {@link relicTemplate} are currently visible.
              * {@link RelicRecoveryVuMark} is an enum which can have the following values:
@@ -173,33 +180,41 @@ public class VuforiaTest extends AutoBase {
                     double y = tY + 21;
                     double z = tZ + 240;
 
-                    if (x >= 0) {
-                        commands.strafeRight(0.5);
-                    } else if (x < 0) {
-                        commands.strafeLeft(0.5);
+                    if (y >= TARGET_Y+STOP_RANGE) {
+                        str+=" LEFT ";
+
+                    } else if (y <= TARGET_Y-STOP_RANGE) {
+                        str+=" RIGHT ";
                     }
 
-                    if (z >= 0) {
-                        commands.backward(0.5);
-                    } else if (z < 0) {
-                        commands.forward(0.5);
+                    if (z >= TARGET_X+STOP_RANGE) {
+                        str+=" BACKWARDS ";
+                    } else if (z < TARGET_X-STOP_RANGE) {
+                        str += " FORWARDS ";
                     }
 
-                    telemetry.addData("x", tX);
-                    telemetry.addData("y", tY);
-                    telemetry.addData("z", tZ);
+                    //telemetry.addData("x", tX);
+                    //telemetry.addData("y", tY);
+                    //telemetry.addData("z", tZ);
 
-                    robot.beep();
+                    //robot.beep();
 
                 }
             }
             else {
-                telemetry.addData("VuMark", "not visible");
-                commands.stopStrafing();
-                commands.stopDriving();
+                //telemetry.addData("VuMark", "not visible");
+                //commands.stopStrafing();
+                //commands.stopDriving();
+                str+=" NOTFOUND ";
             }
 
+            if(str.isEmpty())
+                str+="PERFECT!!!!!!!! :D";
+            telemetry.clear();
+            telemetry.addLine(str);
+
             telemetry.update();
+
         }
     }
 

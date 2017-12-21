@@ -156,4 +156,19 @@ public class AutonomousCommands {
         return teamColor.equals(RevbotValues.COLOR_RED) ? RevbotValues.DIRECTION_LEFT : RevbotValues.DIRECTION_RIGHT;
     }
 
+    //---------------------------------------
+    // Drive methods
+    public void DroneOp() {
+        myRobot.leftDrive.setPower(-myOpMode.gamepad1.left_stick_y);
+        myRobot.rightDrive.setPower(-myOpMode.gamepad1.right_stick_y);
+    }
+
+    public void TwoJoyOp() {
+
+    }
+
+    public void gearing() {
+
+    }
+
 }

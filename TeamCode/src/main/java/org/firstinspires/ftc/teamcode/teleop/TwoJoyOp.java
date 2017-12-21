@@ -31,8 +31,7 @@ public class TwoJoyOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            robot.leftDrive.setPower(-gamepad1.left_stick_y - gamepad1.left_trigger);
-            robot.rightDrive.setPower(-gamepad1.right_stick_y - gamepad1.left_trigger);
+
 
             teleOp.pollAllButtons();
 
