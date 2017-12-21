@@ -119,13 +119,17 @@ public class SplashActivity extends Activity
 
     private void showLibNotOnSdcardDialog()
     {
-        String msg = "Please copy it to the FIRST folder on the phone's storage.<br><br>" +
+        String msg = "libVuforia.so should have been copied to the phone the first time you deployed " +
+                "this app from Android Studio.<br><br>" +
+
+                "Re-deploying the app through Android Studio should fix the issue. Make sure to only " +
+                "have a single Android device connected, or the file will fail to copy.<br><br>" +
+
+                "If that doesn't work or isn't an option, you can copy libVuforia.so to the FIRST folder" +
+                " on the phone's storage yourself.<br><br>" +
 
                 "<a href='https://github.com/OpenFTC/OpenFTC-app-turbo/blob/5b706b920252ed810038849e4c52c7c5c89e56ef/doc/libVuforia.so?raw=true'>" +
-                "You can find libVuforia.so in the 'doc' folder of the OpenFTC repository</a>.<br><br>" +
-
-                "You can copy it from your laptop, or download it to your phone from the above link " +
-                "and use a file manager app to move it to the correct location.";
+                "You can find it in the 'doc' folder of the OpenFTC repository</a>.";
 
         AlertDialog dialog = new AlertDialog.Builder(this)
         .setTitle("libVuforia.so not found!")
