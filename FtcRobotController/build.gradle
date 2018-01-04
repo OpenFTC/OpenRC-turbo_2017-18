@@ -24,6 +24,15 @@ android {
         }
     }
 
+    // Selecting a release variant will prompt teams to set up a signing key. Now that there's
+    // a reason to select other variants (the stock feature of OpenFTC), it's better to filter out
+    // the ones that will confuse teams.
+    variantFilter { variant ->
+        if (variant.buildType.name == "release") {
+            setIgnore(true)
+        }
+    }
+
     compileSdkVersion 23
 
     compileOptions {

@@ -212,9 +212,9 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         try {
             try {
                 this.module.sendCommand(this);
-//              Modified for OpenFTC
+//              Modified for OpenFTC (commented out)
 //              RobotLog.d("Sending command.");
-//              logSerializationStatus(); //At this point, this command should have its serialization set.
+//              logSerializationStatus(); // At this point, this command should have its serialization set.
             } catch (LynxUnsupportedCommandNumberException e) {
                 // The module doesn't actually support this command, as it has an older sense of some interface.
                 // Act like we got a nack from the module
@@ -326,8 +326,7 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
             }
 
             // Retransmit
-            RobotLog.d("Retransmitting.");
-            logSerializationStatus(); // Is the serialization status still correct?
+//            logSerializationStatus(); // Is the serialization status still correct?
             this.module.retransmit(this);
         }
     }
@@ -340,6 +339,7 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         }
     }
 
+    // OpenFTC method
     private void logSerializationStatus() {
         String serializationStatus = (serialization == null) ? "unset" : "set";
         RobotLog.d("Initial command sent. Serialization status: " + serializationStatus);

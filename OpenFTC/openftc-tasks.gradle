@@ -1,0 +1,67 @@
+
+def adbLocation = android.getAdbExecutable().absolutePath
+
+task setupFirstFolder(type: Exec) {
+    def createFirstFolderCommand = [adbLocation, 'shell', 'mkdir', '-p', '/sdcard/FIRST']
+    commandLine createFirstFolderCommand
+
+    doLast {
+        exec {
+            def mtpBroadcastCommand = [adbLocation, 'shell', 'am', 'broadcast', '-a',
+                                       'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+                                       '-d', 'file:/sdcard/FIRST']
+            commandLine mtpBroadcastCommand
+        }
+    }
+}
+
+task pushVuforiaIfNecessary(type: Exec) {
+    dependsOn(setupFirstFolder)
+    def checkVuforiaCommand = [adbLocation, 'shell', 'ls', '/sdcard/FIRST/libVuforia.so']
+
+    commandLine checkVuforiaCommand
+    standardOutput = new ByteArrayOutputStream()
+    errorOutput = new ByteArrayOutputStream()
+    ignoreExitValue = true
+
+    ext.vuforiaCheckOutput = {
+        return standardOutput.toString()
+    }
+    ext.vuforiaCheckError = {
+        return errorOutput.toString()
+    }
+
+    doLast {
+        def vuforiaCheckExitedCleanly = (execResult.exitValue == 0)
+        exec {
+            workingDir '../doc/'
+
+            def pushVuforiaCommand = [adbLocation, 'push', 'libVuforia.so', '/sdcard/FIRST']
+            def combinedCheckOutput = "${vuforiaCheckOutput()}\n${vuforiaCheckError()}"
+            if(combinedCheckOutput.contains("No such file")) {
+                println "libVuforia.so not found on phone. Pushing!"
+                commandLine pushVuforiaCommand
+            } else if(vuforiaCheckExitedCleanly) {
+                commandLine 'echo', 'Skipping, libVuforia already exists.'
+            } else if(combinedCheckOutput.contains("no devices")) {
+                commandLine 'echo', 'Skipping, no device to push to.'
+            } else if(combinedCheckOutput.contains("more than one")) {
+                commandLine 'echo', 'Multiple Android devices found.'
+                logger.warn('\nUnable to check for libVuforia.so when multiple devices are connected.')
+                logger.warn('If any connected devices do not have libVuforia.so already, they will display an error when the app starts.')
+                logger.warn('If this occurs, you can simply deploy the app from Android Studio with only a single device connected.\n')
+            } else {
+                println combinedCheckOutput
+                commandLine 'echo', 'Failed to connect to phone.'
+            }
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    // I chose this task because it is never shown as "UP-TO-DATE" when you run Gradle without changing anything.
+    // We should verify that that hasn't changed whenever we update the Android Gradle plugin.
+    if (task.name == 'validateSigningOpenftcDebug') {
+        task.dependsOn(pushVuforiaIfNecessary)
+    }
+}
