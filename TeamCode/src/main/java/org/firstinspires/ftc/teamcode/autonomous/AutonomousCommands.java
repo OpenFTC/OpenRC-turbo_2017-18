@@ -1,6 +1,11 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.robot.Revbot;
+import org.firstinspires.ftc.teamcode.robot.RevbotCommands;
+import org.firstinspires.ftc.teamcode.robot.RevbotValues;
+import org.firstinspires.ftc.teamcode.robot.VuforiaCommands;
 
 /**
  * Created by 3565 on 12/15/2017.
@@ -10,9 +15,8 @@ public class AutonomousCommands {
 
     private LinearOpMode myOpMode;
     private Revbot myRobot;
-    private RevbotCommands commands = new RevbotCommands();
+    private RevbotCommands revbot = new RevbotCommands();
     private VuforiaCommands vuforia = new VuforiaCommands();
-
     public AutonomousCommands() {
 
     }
@@ -22,17 +26,25 @@ public class AutonomousCommands {
         myOpMode = opMode;
         myRobot = robot;
 
-        commands.init(opMode, robot);
+        revbot.init(opMode, robot);
         vuforia.init(opMode, robot);
-
     }
 
+    //-----------------------------------------------------------------------
     // Movement methods
+    
+    public void stop() {
+        revbot.closeClaw();
+        revbot.stopDriving();
+        revbot.stopLift();
+        revbot.stopStrafing();
+        revbot.stopWinch();
+    }
 
     public void strafeLeft(double power, long ms) {
-        commands.strafeLeft(power);
+        revbot.strafeLeft(power);
         myOpMode.sleep(ms);
-        commands.stopStrafing();
+        revbot.stopStrafing();
     }
 
     public void strafeRight(double power, long ms){
@@ -48,9 +60,9 @@ public class AutonomousCommands {
     }
 
     public void forward(double power, long ms) {
-        commands.forward(power);
+        revbot.forward(power);
         myOpMode.sleep(ms);
-        commands.stopDriving();
+        revbot.stopDriving();
     }
 
     public void backward(double power, long ms){
@@ -66,9 +78,9 @@ public class AutonomousCommands {
     }
 
     public void turnLeft(double power, long ms) {
-        commands.turnLeft(power);
+        revbot.turnLeft(power);
         myOpMode.sleep(ms);
-        commands.stopDriving();
+        revbot.stopDriving();
     }
 
     public void turnRight(double power, long ms) {
@@ -83,6 +95,9 @@ public class AutonomousCommands {
         }
     }
 
+    //-----------------------------------------------------------------------
+    // Other methods
+
     public void fondleBalls(String teamColor) {
 
         myOpMode.telemetry.addData("isRed", myRobot.color.red());
@@ -90,13 +105,13 @@ public class AutonomousCommands {
         myOpMode.telemetry.addData("isBlue", myRobot.color.blue());
         myOpMode.telemetry.update();
 
-        if ((teamColor.equals(RevbotValues.COLOR_BLUE) && commands.isBlue()) || (teamColor.equals(RevbotValues.COLOR_RED) && commands.isRed())) {
-            commands.fondleRight();
-        } else if ((teamColor.equals(RevbotValues.COLOR_BLUE) && commands.isRed()) || (teamColor.equals(RevbotValues.COLOR_RED) && commands.isBlue())) {
-            commands.fondleLeft();
+        if ((teamColor.equals(RevbotValues.COLOR_BLUE) && revbot.isBlue()) || (teamColor.equals(RevbotValues.COLOR_RED) && revbot.isRed())) {
+            revbot.fondleRight();
+        } else if ((teamColor.equals(RevbotValues.COLOR_BLUE) && revbot.isRed()) || (teamColor.equals(RevbotValues.COLOR_RED) && revbot.isBlue())) {
+            revbot.fondleLeft();
         } else {
-            commands.fondleRight();
-            commands.fondleLeft();
+            revbot.fondleRight();
+            revbot.fondleLeft();
         }
 
         myOpMode.sleep(1000);
@@ -127,9 +142,9 @@ public class AutonomousCommands {
     }
 
     public void raiseLift(double power, long ms) {
-        commands.raiseLift(power);
+        revbot.raiseLift(power);
         myOpMode.sleep(ms);
-        commands.stopLift();
+        revbot.stopLift();
     }
 
     public void lowerLift(double power, long ms) {
@@ -137,38 +152,14 @@ public class AutonomousCommands {
     }
 
     public void raiseWinch(long ms) {
-        commands.raiseWinch();
+        revbot.raiseWinch();
         myOpMode.sleep(ms);
-        commands.stopWinch();
+        revbot.stopWinch();
     }
 
     public void lowerWinch(long ms) {
-        commands.lowerWinch();
+        revbot.lowerWinch();
         myOpMode.sleep(4250);
-        commands.stopWinch();
+        revbot.stopWinch();
     }
-
-    public String determineFBDirection(String teamColor) {
-        return teamColor.equals(RevbotValues.COLOR_RED) ? RevbotValues.DIRECTION_FORWARD : RevbotValues.DIRECTION_BACKWARD;
-    }
-
-    public String determineLRDirection(String teamColor) {
-        return teamColor.equals(RevbotValues.COLOR_RED) ? RevbotValues.DIRECTION_LEFT : RevbotValues.DIRECTION_RIGHT;
-    }
-
-    //---------------------------------------
-    // Drive methods
-    public void DroneOp() {
-        myRobot.leftDrive.setPower(-myOpMode.gamepad1.left_stick_y);
-        myRobot.rightDrive.setPower(-myOpMode.gamepad1.right_stick_y);
-    }
-
-    public void TwoJoyOp() {
-
-    }
-
-    public void gearing() {
-
-    }
-
 }

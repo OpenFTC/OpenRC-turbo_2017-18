@@ -25,12 +25,12 @@ public class RevbotCommands {
     //-----------------------------------------------------------------------
     // Claw methods
 
-    public void openClaw() {
+    public void clawOpen() {
         myRobot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_OPENED_VALUE);
         myRobot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_OPENED_VALUE);
     }
 
-    public void closeClaw() {
+    public void clawClose() {
         myRobot.clawLeft.setPosition(RevbotValues.LEFT_CLAW_CLOSED_VALUE);
         myRobot.clawRight.setPosition(RevbotValues.RIGHT_CLAW_CLOSED_VALUE);
     }

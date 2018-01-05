@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Revbot;
-import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
 
 /**
  * Drone Op Teleop code. Main teleop class.
@@ -48,8 +47,9 @@ public class DroneOp extends LinearOpMode {
 
     private boolean smartDirect;
 
+
     // Double[] for saving joystick position and replicating direction/power
-    private double[] directSave = new double[3];
+    private double[] directionSave = new double[3];
 
     // Strength/weight of hyperPrecision variable
     private static final double HP_STRENGTH = 3;
@@ -67,9 +67,7 @@ public class DroneOp extends LinearOpMode {
         teleOp.init(this, robot);
 
         // Init directSave array
-        for (int i = 0; i < 3; i++) {
-            directSave[i] = 0;
-        }
+
 
         telemetry.addData("OpMode Status", "Initialized");
         telemetry.update();
@@ -83,14 +81,7 @@ public class DroneOp extends LinearOpMode {
             hyperPrecision = gamepad1.left_trigger * HP_STRENGTH + 1;
             smartDirect = gamepad1.left_bumper;
 
-            leftPower = -gamepad1.left_stick_y;
-            rightPower = -gamepad1.left_stick_y;
 
-            turnPower = gamepad1.right_stick_x;
-
-            strafeDrivePower = -gamepad1.left_stick_x;
-            leftPower += turnPower;
-            rightPower -= turnPower;
 
             strafeDrivePower /= hyperPrecision;
             leftPower /= hyperPrecision;
@@ -99,9 +90,7 @@ public class DroneOp extends LinearOpMode {
             // If directSave is on, use saved movement.
             if (gamepad1.right_trigger > MIN_DIRECTSAVE_VALUE) {
 
-                robot.leftDrive.setPower(directSave[0] * gamepad1.right_trigger);
-                robot.rightDrive.setPower(directSave[1] * gamepad1.right_trigger);
-                robot.strafeDrive.setPower(directSave[2] * gamepad1.right_trigger);
+
 
             } else {
 
@@ -136,9 +125,9 @@ public class DroneOp extends LinearOpMode {
                 // Save position to directSave
                 if (gamepad1.right_bumper) {
 
-                    directSave[0] = robot.leftDrive.getPower();
-                    directSave[1] = robot.rightDrive.getPower();
-                    directSave[2] = robot.strafeDrive.getPower();
+                    robot.leftDrive.setPower(directionSave[0] * gamepad1.right_trigger);
+                    robot.rightDrive.setPower(directionSave[1] * gamepad1.right_trigger);
+                    robot.strafeDrive.setPower(directionSave[2] * gamepad1.right_trigger);
 
                 }
 

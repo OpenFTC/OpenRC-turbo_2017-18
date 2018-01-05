@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.AutonomousCommands;
 import org.firstinspires.ftc.teamcode.robot.RevbotCommands;
 import org.firstinspires.ftc.teamcode.robot.Revbot;
 import org.firstinspires.ftc.teamcode.robot.RevbotValues;
@@ -20,7 +19,7 @@ import org.firstinspires.ftc.teamcode.robot.VuforiaCommands;
 public class AutoBase extends LinearOpMode {
 
     Revbot robot = new Revbot();
-    RevbotCommands commands = new RevbotCommands();
+    RevbotCommands revbot = new RevbotCommands();
     AutonomousCommands auto = new AutonomousCommands();
     VuforiaCommands vuforia = new VuforiaCommands();
 
@@ -34,16 +33,16 @@ public class AutoBase extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot.init(this);
-        commands.init(this, robot);
+        revbot.init(this, robot);
         auto.init(this, robot);
         vuforia.init(this, robot);
-        commands.closeClaw();
-        commands.fondleCenter();
-        commands.stopDriving();
-        commands.stopStrafing();
+        revbot.closeClaw();
+        revbot.fondleCenter();
+        revbot.stopDriving();
+        revbot.stopStrafing();
         auto.lowerWinch(4125);
         robot.beep();
-        telemetry.addData("Status: ", "Initialized");
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         robot.cubeLift.setPower(0.25);
@@ -55,7 +54,7 @@ public class AutoBase extends LinearOpMode {
         auto.strafeLeft(0.4, 750);
         sleep(500);
 
-        commands.raiseWinch();
+        revbot.raiseWinch();
         sleep(500);
 
         auto.fondleBalls("red");
@@ -63,7 +62,9 @@ public class AutoBase extends LinearOpMode {
 
         boxLocation = vuforia.readImage();
 
-        auto.move(0.75,500, teamColor.equals(RevbotValues.COLOR_RED) ? RevbotValues.DIRECTION_BACKWARD : RevbotValues.DIRECTION_FORWARD);
+        auto.move(0.75
+                , 500
+                , teamColor.equals(RevbotValues.COLOR_RED) ? RevbotValues.DIRECTION_BACKWARD : RevbotValues.DIRECTION_FORWARD);
         sleep(500);
 
         auto.strafeRight(0.5,750);

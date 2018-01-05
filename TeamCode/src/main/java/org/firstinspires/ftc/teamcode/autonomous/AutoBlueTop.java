@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by 3565 on 12/8/2017.
  */
 
-/**
+
 @SuppressWarnings("unused")
 @Autonomous(name = "Auto Blue Top", group = "auto")
 public class AutoBlueTop extends AutoBase {
@@ -42,10 +42,10 @@ public class AutoBlueTop extends AutoBase {
 
         sleep(1000);
 
-        auto.turnLeft(750, DEFAULT_MOTOR_SPEED);
+        auto.turnLeft(0.5, 750);
         sleep(1000);
 
-        auto.forward(750, DEFAULT_MOTOR_SPEED);
+        auto.forward(0.5, 750);
         sleep(1000);
 
         robot.cubeLift.setPower(-0.25);
@@ -57,5 +57,3 @@ public class AutoBlueTop extends AutoBase {
         }
     }
 }
-
- */

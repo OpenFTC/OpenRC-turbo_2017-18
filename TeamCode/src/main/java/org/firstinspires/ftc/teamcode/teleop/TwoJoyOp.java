@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Revbot;
 import org.firstinspires.ftc.teamcode.robot.RevbotCommands;
-import org.firstinspires.ftc.teamcode.robot.TeleOpCommands;
 
 /**
  * Created by josh on 12/2/17.

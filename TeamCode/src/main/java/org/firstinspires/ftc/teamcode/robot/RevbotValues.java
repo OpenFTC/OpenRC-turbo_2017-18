@@ -37,18 +37,9 @@ public class RevbotValues {
     // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.  Alt. is BACK
     public static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK;
 
-    // Error corrections
-    public  static final double  YAW_GAIN       =  0.018;   // Rate at which we respond to heading error
-    public  static final double  LATERAL_GAIN   =  0.0027;  // Rate at which we respond to off-axis error
-    public  static final double  AXIAL_GAIN     =  0.0017;  // Rate at which we respond to target distance errors
-
-    public static final double TARGET_DISTANCE = 400.0; // distance away from the target that the robot should end up, in mm
-
-    public static final String DIRECTION_LEFT = "left";
-    public static final String DIRECTION_RIGHT = "right";
-    public static final String DIRECTION_FORWARD = "forward";
-    public static final String DIRECTION_BACKWARD = "backward";
-    public static final String COLOR_RED = "red";
-    public static final String COLOR_BLUE = "blue";
+    public enum TeamColor {
+        RED,
+        BLUE
+    }
 
 }
