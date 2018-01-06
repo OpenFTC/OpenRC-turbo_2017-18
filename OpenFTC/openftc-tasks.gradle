@@ -34,6 +34,12 @@ task pushVuforiaIfNecessary(type: Exec) {
     doLast {
         def vuforiaCheckExitedCleanly = (execResult.exitValue == 0)
         exec {
+            def shellCommandStart = []
+
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                shellCommandStart = ['cmd', '/c']
+            }
+
             workingDir '../doc/'
 
             def pushVuforiaCommand = [adbLocation, 'push', 'libVuforia.so', '/sdcard/FIRST']
@@ -42,17 +48,17 @@ task pushVuforiaIfNecessary(type: Exec) {
                 println "libVuforia.so not found on phone. Pushing!"
                 commandLine pushVuforiaCommand
             } else if(vuforiaCheckExitedCleanly) {
-                commandLine 'echo', 'Skipping, libVuforia already exists.'
+                commandLine = shellCommandStart + ['echo', 'Skipping, libVuforia already exists.']
             } else if(combinedCheckOutput.contains("no devices")) {
-                commandLine 'echo', 'Skipping, no device to push to.'
+                commandLine = shellCommandStart + ['echo', 'Skipping, no device to push to.']
             } else if(combinedCheckOutput.contains("more than one")) {
-                commandLine 'echo', 'Multiple Android devices found.'
+                commandLine = shellCommandStart + ['echo', 'Multiple Android devices found.']
                 logger.warn('\nUnable to check for libVuforia.so when multiple devices are connected.')
                 logger.warn('If any connected devices do not have libVuforia.so already, they will display an error when the app starts.')
                 logger.warn('If this occurs, you can simply deploy the app from Android Studio with only a single device connected.\n')
             } else {
                 println combinedCheckOutput
-                commandLine 'echo', 'Failed to connect to phone.'
+                commandLine = shellCommandStart + ['echo', 'Failed to connect to phone.']
             }
         }
     }
