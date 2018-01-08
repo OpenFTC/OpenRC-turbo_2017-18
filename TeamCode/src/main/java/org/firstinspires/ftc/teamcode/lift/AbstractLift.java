@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.lift;
 
 /**
- * Created by josh on 1/5/18.
+ * Abstract class that all Lifts should extend from.
  */
 
-public abstract class Lift {
-
+public abstract class AbstractLift {
     public abstract void raise();
     public abstract void raise(long ms);
 

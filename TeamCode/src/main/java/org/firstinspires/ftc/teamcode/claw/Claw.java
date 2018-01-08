@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.hardware.Servo;
+package org.firstinspires.ftc.teamcode.claw;
 
 /**
- * Created by josh on 1/5/18.
+ * Abstract Claw
  */
 
 public abstract class Claw {
+    double CLOSED_POSITION, OPEN_POSITION;
+
     public abstract void open();
     public abstract void close();
 

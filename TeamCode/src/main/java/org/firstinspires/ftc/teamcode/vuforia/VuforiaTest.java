@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.vuforia;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -46,7 +46,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.robot.Revbot;
-import org.firstinspires.ftc.teamcode.robot.RevbotValues;
 
 /**
  * This OpMode illustrates the basics of using the VuforiaOld engine to determine
@@ -73,14 +72,13 @@ public class VuforiaTest extends LinearOpMode {
     public static final String TAG = "VuforiaOld VuMark Sample";
 
     OpenGLMatrix lastLocation = null;
-    Revbot robot = new Revbot();
-    AutonomousCommands auto = new AutonomousCommands();
+    private Revbot robot = new Revbot();
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        robot.init(this);
+        robot.init(hardwareMap);
 
 
         /*
@@ -105,7 +103,7 @@ public class VuforiaTest extends LinearOpMode {
          * Once you've obtained a license key, copy the string from the VuforiaOld web site
          * and paste it in to your code onthe next line, between the double quotes.
          */
-        parameters.vuforiaLicenseKey = RevbotValues.VUFORIA_LICENSE_KEY;
+        parameters.vuforiaLicenseKey = Vuforia.VUFORIA_LICENSE_KEY;
 
         /*
          * We also indicate which camera on the RC that we wish to use.
@@ -114,15 +112,15 @@ public class VuforiaTest extends LinearOpMode {
          */
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         parameters.useExtendedTracking = false;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        Vuforia.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
-        /**
+        /*
          * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
          * in this data set: all three of the VuMarks in the game were created from this one template,
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackables relicTrackables = Vuforia.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
@@ -139,7 +137,7 @@ public class VuforiaTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             String str = "";
-            /**
+            /*
              * See if any of the instances of {@link relicTemplate} are currently visible.
              * {@link RelicRecoveryVuMark} is an enum which can have the following values:
              * UNKNOWN, LEFT, CENTER, and RIGHT. When a VuMark is visible, something other than
@@ -175,20 +173,16 @@ public class VuforiaTest extends LinearOpMode {
                     double rY = rot.secondAngle;
                     double rZ = rot.thirdAngle;
 
-                    double x = tX - 57;
-                    double y = tY + 21;
-                    double z = tZ + 240;
-
-                    if (y >= TARGET_Y+STOP_RANGE) {
+                    if (tY >= TARGET_Y+STOP_RANGE) {
                         str+=" LEFT ";
 
-                    } else if (y <= TARGET_Y-STOP_RANGE) {
+                    } else if (tY <= TARGET_Y-STOP_RANGE) {
                         str+=" RIGHT ";
                     }
 
-                    if (z >= TARGET_X+STOP_RANGE) {
+                    if (tZ >= TARGET_X+STOP_RANGE) {
                         str+=" BACKWARDS ";
-                    } else if (z < TARGET_X-STOP_RANGE) {
+                    } else if (tZ < TARGET_X-STOP_RANGE) {
                         str += " FORWARDS ";
                     }
 

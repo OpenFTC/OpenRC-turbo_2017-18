@@ -1,39 +1,24 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.Revbot;
-import org.firstinspires.ftc.teamcode.robot.RevbotCommands;
-
 /**
- * Created by josh on 12/2/17.
+ * Created by josh on 1/7/18.
  */
 
 @SuppressWarnings("unused")
 @TeleOp(name="2 Joy Op", group = "teleop")
-public class TwoJoyOp extends LinearOpMode {
-
-    Revbot robot = new Revbot();
-    private TeleOpCommands teleOp = new TeleOpCommands();
-    private RevbotCommands commands = new RevbotCommands();
-
+public class TwoJoyOp extends AbstractRevbotDriveMethod {
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void setCurrentDirection(double[] direction) {
+        double left = -gamepad1.left_stick_y;
+        double right = -gamepad1.right_stick_y;
+        double strafe = (gamepad1.left_stick_x + gamepad1.right_stick_x) /2;
 
-        robot.init(this);
-        teleOp.init(this, robot);
-        telemetry.addData("OpMode Status", "Initialized");
-        telemetry.update();
+        direction[0] = left;
+        direction[1] = right;
+        direction[2] = strafe;
 
-        waitForStart();
-
-        while (opModeIsActive()) {
-
-
-
-            teleOp.pollAllButtons();
-
-        }
+        this.currentDirection = direction;
     }
 }

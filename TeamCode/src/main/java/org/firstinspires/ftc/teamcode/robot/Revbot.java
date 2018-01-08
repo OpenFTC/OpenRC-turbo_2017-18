@@ -3,14 +3,11 @@ package org.firstinspires.ftc.teamcode.robot;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * This is the hardware map for the 2017-2018 robot.
@@ -18,61 +15,48 @@ import com.qualcomm.robotcore.util.Range;
 @SuppressWarnings("unused")
 public class Revbot {
 
-    // Global opMode variable
-    private LinearOpMode myOpMode;
-
-    // Drive speeds
-    private double  driveAxial      = 0 ;   // Positive is forward
-    private double  driveLateral    = 0 ;   // Positive is right
-    private double  driveYaw        = 0 ;   // Positive is CCW
+    private HardwareMap hardwareMap;
 
     // Define hardware
-    public DcMotor leftDrive;
-    public DcMotor rightDrive;
-    public DcMotor strafeDrive;
+    public DcMotor leftDrive, rightDrive, strafeDrive;
     public DcMotor cubeLift;
 
-    public Servo clawRight;
-    public Servo clawLeft;
+    public Servo clawRight, clawLeft, relicClaw;
     public Servo fondler;
-    public CRServo armWinch;
+    public CRServo armWinch, relicSlide;
 
     public ColorSensor color;
-    public DistanceSensor distance;
-
-    public ElapsedTime elapsedTime = new ElapsedTime();
 
     private ToneGenerator tone;
 
-    public Revbot() {
-
-    }
-
     /**
      * void init() Initializes the hardware, call this method first
-     * @param opMode pass in "this" - current opMode
+     * @param aHwMap HardwareMap to pass in
      */
-    public void init(LinearOpMode opMode) {
-        // Save reference to opMode
-        myOpMode = opMode;
+    public void init(HardwareMap aHwMap) {
+        // Save reference to HardwareMap
+        this.hardwareMap = aHwMap;
 
         // Initalize drive motors
-        leftDrive  = myOpMode.hardwareMap.get(DcMotor.class, "leftDrive");
-        rightDrive = myOpMode.hardwareMap.get(DcMotor.class, "rightDrive");
-        strafeDrive = myOpMode.hardwareMap.get(DcMotor.class, "strafe");
+        leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
+        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+        strafeDrive = hardwareMap.get(DcMotor.class, "strafe");
 
         // Initialize other motors
-        cubeLift = myOpMode.hardwareMap.get(DcMotor.class, "cubeLift");
+        cubeLift = hardwareMap.get(DcMotor.class, "cubeLift");
 
         // Initialize servos
-        clawRight = myOpMode.hardwareMap.get(Servo.class, "clawRight");
-        clawLeft = myOpMode.hardwareMap.get(Servo.class, "clawLeft");
-        fondler = myOpMode.hardwareMap.get(Servo.class, "fondler");
-        armWinch = myOpMode.hardwareMap.get(CRServo.class, "winch");
+        clawRight = hardwareMap.get(Servo.class, "clawRight");
+        clawLeft = hardwareMap.get(Servo.class, "clawLeft");
+        relicClaw = hardwareMap.get(Servo.class, "relicClaw");
+
+        fondler = hardwareMap.get(Servo.class, "fondler");
+
+        armWinch = hardwareMap.get(CRServo.class, "winch");
+        relicSlide = hardwareMap.get(CRServo.class, "relicSlide");
 
         // Initialize sensors
-        color = myOpMode.hardwareMap.get(ColorSensor.class, "color");
-        distance = myOpMode.hardwareMap.get(DistanceSensor.class, "color");
+        color = hardwareMap.get(ColorSensor.class, "color");
 
         //Create a tone
         tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
@@ -86,13 +70,7 @@ public class Revbot {
         // Initialize the motors to run without encoders.
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        clawRight.setDirection(Dire);
-    }
-
-    public void moveRobot(double left, double right, double strafe) {
-        leftDrive.setPower(left);
-        rightDrive.setPower(right);
-        strafeDrive.setPower(strafe);
+        clawLeft.setDirection(Servo.Direction.REVERSE);
     }
 
     /**
@@ -106,11 +84,23 @@ public class Revbot {
      * void setMode(DcMotor.RunMode mode) Set all drive motors to the same mode.
      * @param mode desired motor mode.
      */
-    public void setMode(DcMotor.RunMode mode) {
+    private void setMode(DcMotor.RunMode mode) {
         leftDrive.setMode(mode);
         rightDrive.setMode(mode);
         strafeDrive.setMode(mode);
     }
 
-    public boolean LeoIsCool(){return false;} //Leo made this!
+    /**
+     * This method puts the current thread to sleep for the given time in msec.
+     *
+     * @param sleepTime specifies sleep time in msec.
+     */
+    public static void sleep(long sleepTime)
+    {
+        try{
+            Thread.sleep(sleepTime);
+        }catch(InterruptedException e){
+            System.out.println("got interrupted!");
+        }
+    }   //sleep
 }
