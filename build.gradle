@@ -6,9 +6,13 @@
 buildscript {
     repositories {
         jcenter()
+        // You need to add the following repository to download the
+        // new plugin.
+        google()
     }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 

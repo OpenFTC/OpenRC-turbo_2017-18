@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
 import org.firstinspires.ftc.teamcode.claw.CubeClaw;
+import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
 import org.firstinspires.ftc.teamcode.claw.RelicClaw;
 import org.firstinspires.ftc.teamcode.drivetrain.AbstractDrivetrain;
 import org.firstinspires.ftc.teamcode.drivetrain.RevbotDrivetrain;
@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.swivel.BallKnock;
  * Drive method (TeleOp) from which all methods extend from.
  */
 
-public abstract class AbstractRevbotDriveMethod extends LinearOpMode {
+public abstract class AbstractRevbotTeleOp extends LinearOpMode {
     private Revbot robot = new Revbot();
     private InputHandler inputHandler = new InputHandler();
 

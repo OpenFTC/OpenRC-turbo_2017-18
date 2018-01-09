@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @SuppressWarnings("unused")
 @TeleOp(name="2 Joy Op", group = "teleop")
-public class TwoJoyOp extends AbstractRevbotDriveMethod {
+public class TwoJoyOp extends AbstractRevbotTeleOp {
     @Override
     public void setCurrentDirection(double[] direction) {
         double left = -gamepad1.left_stick_y;
