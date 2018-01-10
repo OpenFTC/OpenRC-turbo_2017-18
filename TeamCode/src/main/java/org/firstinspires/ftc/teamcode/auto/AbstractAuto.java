@@ -107,7 +107,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     }
 
     private void cubeIntoCrypotbox() {
-        Direction direction = alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.BACKWARD;
+        Direction direction = alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD;
         switch (boxLocation) {
             case RIGHT:
                 drivetrain.drive(direction, 0.5, 500);

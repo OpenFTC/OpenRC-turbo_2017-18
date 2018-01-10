@@ -7,18 +7,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  */
 
 @SuppressWarnings("unused")
-@TeleOp(name="2 Joy Op", group = "teleop")
+@TeleOp(name = "2 Joy Op", group = "teleop")
 public class TwoJoyOp extends AbstractRevbotTeleOp {
     @Override
     public void setCurrentDirection(double[] direction) {
         double left = -gamepad1.left_stick_y;
         double right = -gamepad1.right_stick_y;
-        double strafe = (gamepad1.left_stick_x + gamepad1.right_stick_x) /2;
+        double strafe = (-gamepad1.left_stick_x + -gamepad1.right_stick_x) / 2;
 
         direction[0] = left;
         direction[1] = right;
         direction[2] = strafe;
 
-        this.currentDirection = direction;
+        super.setCurrentDirection(direction);
     }
 }

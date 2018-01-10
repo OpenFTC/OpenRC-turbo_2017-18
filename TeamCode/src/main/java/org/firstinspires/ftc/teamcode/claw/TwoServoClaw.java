@@ -7,7 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 public class TwoServoClaw extends Claw {
-    OneServoClaw claw1, claw2;
+    private OneServoClaw claw1;
+    private OneServoClaw claw2;
 
     TwoServoClaw(Servo servo1, Servo servo2) {
         this(servo1, servo2, 0,1);
@@ -37,5 +38,21 @@ public class TwoServoClaw extends Claw {
 
     public double getPosition() {
         return claw1.getPosition();
+    }
+
+    public OneServoClaw getClaw1() {
+        return claw1;
+    }
+
+    public void setClaw1(OneServoClaw claw1) {
+        this.claw1 = claw1;
+    }
+
+    public OneServoClaw getClaw2() {
+        return claw2;
+    }
+
+    public void setClaw2(OneServoClaw claw2) {
+        this.claw2 = claw2;
     }
 }

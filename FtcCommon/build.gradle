@@ -31,4 +31,5 @@ dependencies {
     implementation project(':RobotCore')
     implementation project(':Hardware')
     implementation project(':Inspection')
+    compile project(path: ':OpenFTC')
 }

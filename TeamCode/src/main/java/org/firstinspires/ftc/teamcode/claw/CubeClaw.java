@@ -16,18 +16,18 @@ public class CubeClaw extends TwoServoClaw {
     }
 
     public void openLeft() {
-        claw1.open();
+        getClaw1().open();
     }
 
     public void closeLeft() {
-        claw1.close();
+        getClaw1().close();
     }
 
     public void openRight() {
-        claw2.open();
+        getClaw2().open();
     }
 
     public void closeRight() {
-        claw2.close();
+        getClaw2().close();
     }
 }
