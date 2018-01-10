@@ -4,7 +4,7 @@
 ##### While every change is made with care not to break anything, FIRST has NOT tested our modifications.
 ##### Volunteers at competitions may be less willing to assist you if you use OpenFTC. Our community is very helpful though, so please create an issue or talk to us on Discord if you encounter any problems.
 
-[Sign up for our mailing list](https://goo.gl/forms/xFBIx0Ptk3Br7ZOD2) for notifications about updates and upcoming new projects. 
+[Sign up for our mailing list](http://eepurl.com/dgZbKj) for notifications about updates and upcoming new projects. 
 
 [Join us on Discord](https://discord.gg/Q3CgrxU) for real-time support or to ask questions.
 
