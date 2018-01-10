@@ -92,6 +92,12 @@ public class InspectionState {
     public InspectionState() {
     }
 
+    // Modified for OpenFTC: If this InspectionState will be sent to the DS, show that OpenFTC is installed)
+    public void initializeForDs() {
+        initializeLocal();
+        this.robotControllerVersion = robotControllerVersion.concat(" (OpenFTC " + org.openftc.BuildConfig.VERSION_NAME + ")");
+    }
+
     public void initializeLocal() {
         DeviceNameManager nameManager = DeviceNameManager.getInstance();
         StartResult startResult = nameManager.start();
