@@ -29,7 +29,7 @@ public class RelicSlide extends AbstractLift {
 
     @Override
     public void lower() {
-        servo.setPower(-1);
+
     }
 
     @Override

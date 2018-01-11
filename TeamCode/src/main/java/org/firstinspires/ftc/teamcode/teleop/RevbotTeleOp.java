@@ -37,7 +37,11 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         return currentDirection;
     }
 
-    public abstract void setCurrentDirection(double[] direction);
+    public abstract double[] getUserInput();
+
+    private void setCurrentDirection(double[] currentDirection) {
+        this.currentDirection = currentDirection;
+    }
 
     private double[] getSavedDirection() {
         return savedDirection;
@@ -71,7 +75,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            setCurrentDirection(getCurrentDirection());
+            setCurrentDirection(getUserInput());
             inputHandler.handleInput();
 
             if (inputHandler.useSavedDirection) {
@@ -131,7 +135,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
                 armWinch.stop();
             }
 
-            if (gamepad1.dpad_up) {
+            if (gamepad2.dpad_up) {
                 cubeLift.raise();
             } else if (gamepad1.dpad_down) {
                 cubeLift.lower();
@@ -162,16 +166,8 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             useSavedDirection = gamepad1.right_trigger > MIN_TRIGGER_VALUE;
 
 
-            if (gamepad2.x) {
-                ballKnock.swivelLeft();
-            } else if (gamepad2.y) {
-                ballKnock.swivelCenter();
-            } else if (gamepad2.b) {
-                ballKnock.swivelRight();
-            }
-
             if (gamepad2.a) {
-                cubeClaw.getClaw1().setPosition(gamepad2.left_trigger);
+
                 cubeClaw.getClaw2().setPosition(gamepad2.right_trigger);
             }
 
