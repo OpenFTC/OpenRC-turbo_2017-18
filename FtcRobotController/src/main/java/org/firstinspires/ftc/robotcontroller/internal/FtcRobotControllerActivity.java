@@ -306,6 +306,7 @@ public class FtcRobotControllerActivity extends Activity {
         if(BuildConfig.IS_OPENRC) {
             textOpenRCVersion = (TextView) findViewById(R.id.openrc_version);
             textOpenRCVersion.setText(org.openftc.rc.BuildConfig.VERSION_COMPLETE);
+        }
 
         immersion = new ImmersiveMode(getWindow().getDecorView());
         dimmer = new Dimmer(this);

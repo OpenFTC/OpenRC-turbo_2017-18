@@ -8,7 +8,6 @@ dependencies {
 
     openrcImplementation project(':RobotCore')
     openrcImplementation project(':Inspection')
-    openrcImplementation project(':Blocks')
     openrcImplementation project(':Hardware')
     openrcImplementation project(':FtcCommon')
     openrcImplementation project(':Turbo')

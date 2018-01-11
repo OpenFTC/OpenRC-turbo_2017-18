@@ -19,7 +19,9 @@ The OpenRC documentation is still under construction.
 
 ---
 
-OpenRC-turbo removes the OnBotJava and Blocks programming systems for teams that don't use them, speeding up deploy time by removing the large files required for those systems. If you use these systems, please see [OpenRC](https://github.com/OpenFTC/OpenRC).
+OpenRC-turbo removes the OnBotJava and Blocks programming systems for teams that don't use them, speeding up deploy time
+by removing the large files required for those systems. If you use these systems, please see
+[the standard version of OpenRC](https://github.com/OpenFTC/OpenRC).
 
 The OpenRC family of Robot Controller apps are brought to you by the OpenFTC community. They are based on the official
 [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit), but the AAR files used there have been
