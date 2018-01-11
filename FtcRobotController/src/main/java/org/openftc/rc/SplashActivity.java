@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.cyanogenmod.updater.utils.MD5;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.openftc.exceptions.VuforiaCorruptedException;
-import org.openftc.exceptions.VuforiaNotFoundException;
+import org.openftc.rc.exceptions.VuforiaCorruptedException;
+import org.openftc.rc.exceptions.VuforiaNotFoundException;
 
 import java.io.File;
 import java.io.FileInputStream;
