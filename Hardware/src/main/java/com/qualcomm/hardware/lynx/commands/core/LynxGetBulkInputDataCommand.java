@@ -40,8 +40,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxGetBulkInputDataCommand extends LynxDekaInterfaceCommand<LynxGetBulkInputDataResponse>
-    {
+public class LynxGetBulkInputDataCommand extends LynxDekaInterfaceCommand<LynxGetBulkInputDataResponse> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -50,36 +49,31 @@ public class LynxGetBulkInputDataCommand extends LynxDekaInterfaceCommand<LynxGe
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetBulkInputDataCommand(LynxModuleIntf module)
-        {
+    public LynxGetBulkInputDataCommand(LynxModuleIntf module) {
         super(module);
         this.response = new LynxGetBulkInputDataResponse(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static Class<? extends LynxInterfaceResponse> getResponseClass()
-        {
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
         return LynxGetBulkInputDataResponse.class;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return true;
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        }
-
     }
+
+    @Override
+    public boolean isResponseExpected() {
+        return true;
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+    }
+
+}

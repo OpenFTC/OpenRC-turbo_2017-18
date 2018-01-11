@@ -41,8 +41,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetDIODirectionResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetDIODirectionResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,36 +54,32 @@ public class LynxGetDIODirectionResponse extends LynxDekaInterfaceResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetDIODirectionResponse(LynxModuleIntf module)
-        {
+    public LynxGetDIODirectionResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public DigitalChannel.Mode getMode()
-        {
-        return this.direction==0 ? DigitalChannel.Mode.INPUT : DigitalChannel.Mode.OUTPUT;
-        }
+    public DigitalChannel.Mode getMode() {
+        return this.direction == 0 ? DigitalChannel.Mode.INPUT : DigitalChannel.Mode.OUTPUT;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.direction);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.direction = buffer.get();
-        }
     }
+}

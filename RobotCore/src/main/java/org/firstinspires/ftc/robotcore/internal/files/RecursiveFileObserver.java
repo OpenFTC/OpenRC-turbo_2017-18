@@ -45,12 +45,11 @@ import java.util.Stack;
  * recursively. It automatically starts/stops monitoring new folders/files
  * created after starting the watch. It can also monitor individual files. We also
  * make the paths easier to deal with by ALWAYS dealing in the currency of absolute paths.
- *
+ * <p>
  * Adapted from https://gist.github.com/gitanuj/888ef7592be1d3f617f6
  */
 @SuppressWarnings("WeakerAccess")
-public class RecursiveFileObserver
-    {
+public class RecursiveFileObserver {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
@@ -75,9 +74,9 @@ public class RecursiveFileObserver
     // In particular, for robustness we need to deal with the overflow condition.
 
     // the following are legal events.  they are sent as needed to any watch
-    public static final int IN_UNMOUNT      = 0x00002000;	// Backing fs was unmounted
-    public static final int IN_Q_OVERFLOW   = 0x00004000;	// Event queued overflowed
-    public static final int IN_IGNORED		= 0x00008000;	// File was ignored
+    public static final int IN_UNMOUNT = 0x00002000;    // Backing fs was unmounted
+    public static final int IN_Q_OVERFLOW = 0x00004000;    // Event queued overflowed
+    public static final int IN_IGNORED = 0x00008000;    // File was ignored
 
     // special flags
     /*public static final int IN_ONLYDIR	= 0x01000000;	// only watch the path if it is a directory
@@ -93,198 +92,168 @@ public class RecursiveFileObserver
 
     public static final String TAG = "FileSystemObserver";
 
-    /** maps absolute path to the watcher we have for same, if any */
+    /**
+     * maps absolute path to the watcher we have for same, if any
+     */
     protected final Map<String, SingleDirOrFileObserver> observers = new HashMap<>();
-    protected final String                     rootPath;
-    protected final int                        mask;
-    protected final Mode                       mode;
-    protected @NonNull final Listener          listener;
+    protected final String rootPath;
+    protected final int mask;
+    protected final Mode mode;
+    protected
+    @NonNull
+    final Listener listener;
 
-    public interface Listener
-        {
+    public interface Listener {
         /**
-         * @param file  the absolute path to the file on which the event occurred
+         * @param file the absolute path to the file on which the event occurred
          */
         void onEvent(int event, File file);
-        }
+    }
 
-    public enum Mode
-        {
+    public enum Mode {
         RECURSIVE, NONRECURSVIVE;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RecursiveFileObserver(File file, int mask, Mode mode, @NonNull Listener listener)
-        {
+    public RecursiveFileObserver(File file, int mask, Mode mode, @NonNull Listener listener) {
         this(file.getAbsolutePath(), mask, mode, listener);
-        }
+    }
 
-    public RecursiveFileObserver(String path, int mask, Mode mode, @NonNull Listener listener)
-        {
+    public RecursiveFileObserver(String path, int mask, Mode mode, @NonNull Listener listener) {
         this.rootPath = path;
         this.mask = mask;
         this.mode = mode;
         this.listener = listener;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // FileObserver implementation
     //----------------------------------------------------------------------------------------------
 
-    public void startWatching()
-        {
+    public void startWatching() {
         Stack<String> stack = new Stack<>();
         stack.push(rootPath);
 
         // Recursively watch all child directories
-        while (!stack.empty())
-            {
+        while (!stack.empty()) {
             String parent = stack.pop();
             startWatching(parent.equals(rootPath), parent);
 
-            if (mode == Mode.RECURSIVE)
-                {
+            if (mode == Mode.RECURSIVE) {
                 File path = new File(parent);
                 File[] files = path.listFiles();
-                if (files != null)
-                    {
-                    for (File file : files)
-                        {
-                        if (isWatchableDirectory(file))
-                            {
+                if (files != null) {
+                    for (File file : files) {
+                        if (isWatchableDirectory(file)) {
                             stack.push(file.getAbsolutePath());
-                            }
                         }
                     }
                 }
             }
         }
+    }
 
-    public void stopWatching()
-        {
-        synchronized (observers)
-            {
-            for (SingleDirOrFileObserver observer : observers.values())
-                {
+    public void stopWatching() {
+        synchronized (observers) {
+            for (SingleDirOrFileObserver observer : observers.values()) {
                 observer.stopWatching();
-                }
+            }
             observers.clear();
-            }
         }
+    }
 
-    protected class FileObserverListener implements FileObserverManager.Listener
-        {
-        @Override public void onEvent(int event, String path)
-            {
+    protected class FileObserverListener implements FileObserverManager.Listener {
+        @Override
+        public void onEvent(int event, String path) {
             File file;
-            if (path == null)
-                {
+            if (path == null) {
                 file = new File(RecursiveFileObserver.this.rootPath);
-                }
-            else
-                {
+            } else {
                 file = new File(RecursiveFileObserver.this.rootPath, path);
-                }
-            RecursiveFileObserver.this.notify(event, file);
             }
+            RecursiveFileObserver.this.notify(event, file);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // internal implementation
     //----------------------------------------------------------------------------------------------
 
-    protected void startWatching(boolean isRoot, String path)
-        {
-        synchronized (observers)
-            {
+    protected void startWatching(boolean isRoot, String path) {
+        synchronized (observers) {
             stopWatching(path);
             SingleDirOrFileObserver observer = new SingleDirOrFileObserver(isRoot, path);
             observer.startWatching();
             observers.put(path, observer);
-            }
         }
+    }
 
-    protected static boolean isWatchableDirectory(File file)
-        {
+    protected static boolean isWatchableDirectory(File file) {
         return file.isDirectory() && !file.getName().equals(".") && !file.getName().equals("..");
-        }
+    }
 
-    protected void stopWatching(String path)
-        {
-        synchronized (observers)
-            {
+    protected void stopWatching(String path) {
+        synchronized (observers) {
             SingleDirOrFileObserver observer = observers.remove(path);
-            if (observer != null)
-                {
+            if (observer != null) {
                 observer.stopWatching();
-                }
             }
         }
+    }
 
-    protected void notify(int event, File file)
-        {
+    protected void notify(int event, File file) {
         listener.onEvent(event & FileObserver.ALL_EVENTS, file);
-        }
+    }
 
-    protected class SingleDirOrFileObserver implements FileObserverManager.Listener
-        {
+    protected class SingleDirOrFileObserver implements FileObserverManager.Listener {
         protected final FileObserver fileObserver;
         protected final boolean isRoot;
         protected final String thisPath;
 
-        public SingleDirOrFileObserver(boolean isRoot, String thisPath)
-            {
+        public SingleDirOrFileObserver(boolean isRoot, String thisPath) {
             int mask = RecursiveFileObserver.this.mask | CREATE | DELETE_SELF;
             this.fileObserver = FileObserverManager.from(thisPath, mask, this);
             this.isRoot = isRoot;
             this.thisPath = thisPath;
-            }
+        }
 
-        public void startWatching()
-            {
+        public void startWatching() {
             fileObserver.startWatching();
-            }
+        }
 
-        public void stopWatching()
-            {
+        public void stopWatching() {
             fileObserver.stopWatching();
-            }
+        }
 
         @Override
-        public void onEvent(int event, String path)
-            {
+        public void onEvent(int event, String path) {
             File file;
             if (path == null || path.isEmpty()) // empty check is paranoia, null will (I think) occur
-                {
+            {
                 file = new File(thisPath);
-                }
-            else
-                {
+            } else {
                 file = new File(thisPath, path);
-                }
+            }
 
-            switch (event & FileObserver.ALL_EVENTS)
-                {
+            switch (event & FileObserver.ALL_EVENTS) {
                 case DELETE_SELF:
                     RecursiveFileObserver.this.stopWatching(thisPath);
                     // For non roots, our parent will see the delete: no point in notifying twice
-                    if (isRoot)
-                        {
+                    if (isRoot) {
                         RecursiveFileObserver.this.notify(event, file);
-                        }
+                    }
                     break;
                 case CREATE:
-                    if (RecursiveFileObserver.this.mode==Mode.RECURSIVE && isWatchableDirectory(file))
-                        {
+                    if (RecursiveFileObserver.this.mode == Mode.RECURSIVE && isWatchableDirectory(file)) {
                         RecursiveFileObserver.this.startWatching(false, file.getAbsolutePath());
-                        }
+                    }
                     /* fall through */
                 default:
                     RecursiveFileObserver.this.notify(event, file);
-                }
             }
         }
     }
+}

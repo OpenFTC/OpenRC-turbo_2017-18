@@ -41,8 +41,7 @@ import java.nio.ByteBuffer;
  * @see LynxGetMotorPIDControlLoopCoefficientsCommand
  * @see LynxSetMotorPIDControlLoopCoefficientsCommand
  */
-public class LynxGetMotorPIDControlLoopCoefficientsResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetMotorPIDControlLoopCoefficientsResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -57,50 +56,44 @@ public class LynxGetMotorPIDControlLoopCoefficientsResponse extends LynxDekaInte
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorPIDControlLoopCoefficientsResponse(LynxModuleIntf module)
-        {
+    public LynxGetMotorPIDControlLoopCoefficientsResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getP()
-        {
+    public int getP() {
         return this.p;
-        }
+    }
 
-    public int getI()
-        {
+    public int getI() {
         return this.i;
-        }
+    }
 
-    public int getD()
-        {
+    public int getD() {
         return this.d;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.putInt(this.p);
         buffer.putInt(this.i);
         buffer.putInt(this.d);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.p = buffer.getInt();
         this.i = buffer.getInt();
         this.d = buffer.getInt();
-        }
     }
+}

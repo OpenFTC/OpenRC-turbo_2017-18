@@ -40,74 +40,61 @@ import java.util.concurrent.Callable;
  * {@link HardwareDeviceHealthImpl} provides a delegatable-to implemenatation of HardwareDeviceHealth
  */
 @SuppressWarnings("WeakerAccess")
-public class HardwareDeviceHealthImpl implements HardwareDeviceHealth
-    {
+public class HardwareDeviceHealthImpl implements HardwareDeviceHealth {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected String        tag;
-    protected HealthStatus  healthStatus;
+    protected String tag;
+    protected HealthStatus healthStatus;
     protected Callable<HealthStatus> override;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public HardwareDeviceHealthImpl(String tag)
-        {
+    public HardwareDeviceHealthImpl(String tag) {
         this(tag, null);
-        }
+    }
 
-    public HardwareDeviceHealthImpl(String tag, @Nullable Callable<HealthStatus> override)
-        {
+    public HardwareDeviceHealthImpl(String tag, @Nullable Callable<HealthStatus> override) {
         this.tag = tag;
         this.healthStatus = HealthStatus.UNKNOWN;
         this.override = override;
-        }
+    }
 
-    public void close()
-        {
+    public void close() {
         setHealthStatus(HealthStatus.CLOSED);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDeviceHealth
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setHealthStatus(HealthStatus status)
-        {
-        synchronized (this)
-            {
+    public void setHealthStatus(HealthStatus status) {
+        synchronized (this) {
             // Once closed, don't accidentally go back
-            if (this.healthStatus != HealthStatus.CLOSED)
-                {
+            if (this.healthStatus != HealthStatus.CLOSED) {
                 this.healthStatus = status;
-                }
-            }
-        }
-
-    @Override
-    public HealthStatus getHealthStatus()
-        {
-        synchronized (this)
-            {
-            if (this.override != null)
-                {
-                try {
-                    HealthStatus result = override.call();
-                    if (result != HealthStatus.UNKNOWN)
-                        {
-                        return result;
-                        }
-                    }
-                catch (Exception e)
-                    {
-                    // ignore
-                    }
-                }
-            return this.healthStatus;
             }
         }
     }
+
+    @Override
+    public HealthStatus getHealthStatus() {
+        synchronized (this) {
+            if (this.override != null) {
+                try {
+                    HealthStatus result = override.call();
+                    if (result != HealthStatus.UNKNOWN) {
+                        return result;
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+            return this.healthStatus;
+        }
+    }
+}

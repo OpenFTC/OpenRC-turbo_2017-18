@@ -37,46 +37,39 @@ import com.qualcomm.hardware.lynx.LynxModule;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxFailSafeCommand extends LynxStandardCommand<LynxAck>
-    {
+public class LynxFailSafeCommand extends LynxStandardCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxFailSafeCommand(LynxModule module)
-        {
+    public LynxFailSafeCommand(LynxModule module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_FAIL_SAFE;
-        }
-
-    @Override
-    public boolean isResponseExpected()
-        {
-        return false;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[0];
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        }
     }
+
+    @Override
+    public boolean isResponseExpected() {
+        return false;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[0];
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+    }
+}

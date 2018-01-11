@@ -32,21 +32,21 @@ package com.qualcomm.robotcore.hardware;
 
 /**
  * Legacy Module for working with NXT devices.
- *
+ * <p>
  * The Modern Robotics Core Legacy Module provides backward compatibility to enable LEGO NXT devices
  * to connect to an Android device or a PC via a USB connection. Each Legacy Module has six (6) ports and
  * virtually any combination of devices can be connected to the module.
- *
+ * <p>
  * The Legacy Module firmware supports all NXT LEGO sensors (except the Lego Color Sensor),
  * HiTechnic sensors, Matrix controllers as well as the HiTechnic Tetrix motor and servo controllers.
- *
+ * <p>
  * Each Legacy Module port can operate in digital as well as analog modes. In digital mode, legacy
  * connector pins 5 and 6 can be set to logic 0 or logic 1.
- *
+ * <p>
  * In analog mode, the voltage on legacy connector pin 1 is measured using a 10 bit analog to digital
  * converter. Additionally, pins 5 and 6 can be set to logic 0 or logic 1 for control of the attached
  * device, such as a LEGO light sensor which uses pin 5 to turn the sensor LED on and off.
- *
+ * <p>
  * In I2C mode, legacy connector pins 5 and 6 are used to communicate with I2C devices in accordance
  * with the LEGO interpretation of I2C. Ports 4 and 5 can additionally be switched into pin 1 9v
  * supply mode to permit LEGO ultrasonic range sensors to be used
@@ -55,47 +55,53 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface LegacyModule extends HardwareDevice, I2cController {
 
-  /**
-   * Enable a physical port in analog read mode
-   * @param physicalPort physical port number on the device
-   */
-  void enableAnalogReadMode(int physicalPort);
+    /**
+     * Enable a physical port in analog read mode
+     *
+     * @param physicalPort physical port number on the device
+     */
+    void enableAnalogReadMode(int physicalPort);
 
-  /**
-   * Read an analog value from a device; only works in analog read mode
-   * @param physicalPort physical port number on the device
-   * @return byte[] containing the two analog values; low byte first, high byte second
-   */
-  byte[] readAnalogRaw(int physicalPort);
+    /**
+     * Read an analog value from a device; only works in analog read mode
+     *
+     * @param physicalPort physical port number on the device
+     * @return byte[] containing the two analog values; low byte first, high byte second
+     */
+    byte[] readAnalogRaw(int physicalPort);
 
-  /**
-   * Reads the analog voltage from a device. The port indicated must currently
-   * be in analog read mode.
-   * @param physicalPort the port whose voltage is to be read
-   * @return the voltage level read, in volts
-   */
-  double readAnalogVoltage(int physicalPort);
+    /**
+     * Reads the analog voltage from a device. The port indicated must currently
+     * be in analog read mode.
+     *
+     * @param physicalPort the port whose voltage is to be read
+     * @return the voltage level read, in volts
+     */
+    double readAnalogVoltage(int physicalPort);
 
-  /**
-   * Returns the maximum voltage that can be read by our analog inputs
-   * @return the maximum voltage that can be read by our analog inputs
-   */
-  double getMaxAnalogInputVoltage();
+    /**
+     * Returns the maximum voltage that can be read by our analog inputs
+     *
+     * @return the maximum voltage that can be read by our analog inputs
+     */
+    double getMaxAnalogInputVoltage();
 
-  /**
-   * Enable or disable 9V power on a port
-   * @param physicalPort physical port number on the device
-   * @param enable true to enable; false to disable
-   */
-  void enable9v(int physicalPort, boolean enable);
+    /**
+     * Enable or disable 9V power on a port
+     *
+     * @param physicalPort physical port number on the device
+     * @param enable       true to enable; false to disable
+     */
+    void enable9v(int physicalPort, boolean enable);
 
-  /**
-   * Set the value of digital line 0 or 1 while in analog mode.
-   * <p>
-   * These are port pins 5 and 6.
-   * @param physicalPort physical port number on the device
-   * @param line line 0 or 1
-   * @param set true to set; otherwise false
-   */
-  void setDigitalLine(int physicalPort, int line, boolean set);
+    /**
+     * Set the value of digital line 0 or 1 while in analog mode.
+     * <p>
+     * These are port pins 5 and 6.
+     *
+     * @param physicalPort physical port number on the device
+     * @param line         line 0 or 1
+     * @param set          true to set; otherwise false
+     */
+    void setDigitalLine(int physicalPort, int line, boolean set);
 }

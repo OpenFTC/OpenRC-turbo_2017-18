@@ -37,8 +37,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 /**
  * Created by bob on 2016-02-27.
  */
-public class LynxKeepAliveCommand extends LynxStandardCommand<LynxAck>
-    {
+public class LynxKeepAliveCommand extends LynxStandardCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -49,57 +48,48 @@ public class LynxKeepAliveCommand extends LynxStandardCommand<LynxAck>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxKeepAliveCommand(LynxModule module, boolean initialPing)
-        {
+    public LynxKeepAliveCommand(LynxModule module, boolean initialPing) {
         super(module);
         this.initialPing = initialPing;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_KEEP_ALIVE;
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return getStandardCommandNumber();
-        }
+    }
 
-    protected void noteAttentionRequired()
-        {
-        if (!this.initialPing)
-            {
+    protected void noteAttentionRequired() {
+        if (!this.initialPing) {
             super.noteAttentionRequired();
-            }
         }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         return new byte[0];
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        }
+    public void fromPayloadByteArray(byte[] rgb) {
+    }
 
     @Override
-    protected int getMsAwaitInterval()
-        {
+    protected int getMsAwaitInterval() {
         // It's our experience that keep alives (maybe just the initial one) can sometimes
         // take a little longer. Don't really know why.
         return 500;
-        }
     }
+}

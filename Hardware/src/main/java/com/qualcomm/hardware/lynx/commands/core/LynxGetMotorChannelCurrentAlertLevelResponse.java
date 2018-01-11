@@ -41,8 +41,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetMotorChannelCurrentAlertLevelResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetMotorChannelCurrentAlertLevelResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,36 +54,32 @@ public class LynxGetMotorChannelCurrentAlertLevelResponse extends LynxDekaInterf
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorChannelCurrentAlertLevelResponse(LynxModuleIntf module)
-        {
+    public LynxGetMotorChannelCurrentAlertLevelResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getCurrentLimit()
-        {
+    public int getCurrentLimit() {
         return TypeConversion.unsignedShortToInt(this.mACurrentLimit);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.putShort(this.mACurrentLimit);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.mACurrentLimit = buffer.getShort();
-        }
     }
+}

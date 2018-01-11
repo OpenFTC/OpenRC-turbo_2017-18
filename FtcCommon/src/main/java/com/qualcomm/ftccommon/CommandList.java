@@ -46,154 +46,170 @@ import java.util.ArrayList;
 @SuppressWarnings("WeakerAccess")
 public class CommandList extends RobotCoreCommandList {
 
-  public static final String CMD_RESTART_ROBOT = "CMD_RESTART_ROBOT";
+    public static final String CMD_RESTART_ROBOT = "CMD_RESTART_ROBOT";
 
-  public static final String CMD_INIT_OP_MODE = "CMD_INIT_OP_MODE";
-  public static final String CMD_RUN_OP_MODE = "CMD_RUN_OP_MODE";
+    public static final String CMD_INIT_OP_MODE = "CMD_INIT_OP_MODE";
+    public static final String CMD_RUN_OP_MODE = "CMD_RUN_OP_MODE";
 
-  public static final String CMD_SCAN = "CMD_SCAN";
-  public static final String CMD_SCAN_RESP = "CMD_SCAN_RESP";
+    public static final String CMD_SCAN = "CMD_SCAN";
+    public static final String CMD_SCAN_RESP = "CMD_SCAN_RESP";
 
-  public static final String CMD_REQUEST_CONFIGURATIONS = "CMD_REQUEST_CONFIGURATIONS";
-  public static final String CMD_REQUEST_CONFIGURATIONS_RESP = "CMD_REQUEST_CONFIGURATIONS_RESP";
+    public static final String CMD_REQUEST_CONFIGURATIONS = "CMD_REQUEST_CONFIGURATIONS";
+    public static final String CMD_REQUEST_CONFIGURATIONS_RESP = "CMD_REQUEST_CONFIGURATIONS_RESP";
 
-  public static final String CMD_REQUEST_CONFIGURATION_TEMPLATES = "CMD_REQUEST_CONFIGURATION_TEMPLATES";
-  public static final String CMD_REQUEST_CONFIGURATION_TEMPLATES_RESP = "CMD_REQUEST_CONFIGURATION_TEMPLATES_RESP";
+    public static final String CMD_REQUEST_CONFIGURATION_TEMPLATES = "CMD_REQUEST_CONFIGURATION_TEMPLATES";
+    public static final String CMD_REQUEST_CONFIGURATION_TEMPLATES_RESP = "CMD_REQUEST_CONFIGURATION_TEMPLATES_RESP";
 
-  public static final String CMD_REQUEST_PARTICULAR_CONFIGURATION = "CMD_REQUEST_PARTICULAR_CONFIGURATION"; // also works for (resource-based) templates
-  public static final String CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP = "CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP";
+    public static final String CMD_REQUEST_PARTICULAR_CONFIGURATION = "CMD_REQUEST_PARTICULAR_CONFIGURATION"; // also works for (resource-based) templates
+    public static final String CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP = "CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP";
 
-  public static final String CMD_ACTIVATE_CONFIGURATION = "CMD_ACTIVATE_CONFIGURATION";
+    public static final String CMD_ACTIVATE_CONFIGURATION = "CMD_ACTIVATE_CONFIGURATION";
 
-  public static final String CMD_SAVE_CONFIGURATION = "CMD_SAVE_CONFIGURATION";
-  public static final String CMD_DELETE_CONFIGURATION = "CMD_DELETE_CONFIGURATION";
+    public static final String CMD_SAVE_CONFIGURATION = "CMD_SAVE_CONFIGURATION";
+    public static final String CMD_DELETE_CONFIGURATION = "CMD_DELETE_CONFIGURATION";
 
-  public static final String CMD_DISCOVER_LYNX_MODULES = "CMD_DISCOVER_LYNX_MODULES";
-  public static final String CMD_DISCOVER_LYNX_MODULES_RESP = "CMD_DISCOVER_LYNX_MODULES_RESP";
+    public static final String CMD_DISCOVER_LYNX_MODULES = "CMD_DISCOVER_LYNX_MODULES";
+    public static final String CMD_DISCOVER_LYNX_MODULES_RESP = "CMD_DISCOVER_LYNX_MODULES_RESP";
 
-  public static final String CMD_REQUEST_REMEMBERED_GROUPS = "CMD_REQUEST_REMEMBERED_GROUPS";
-  public static final String CMD_REQUEST_REMEMBERED_GROUPS_RESP = "CMD_REQUEST_REMEMBERED_GROUPS_RESP";
+    public static final String CMD_REQUEST_REMEMBERED_GROUPS = "CMD_REQUEST_REMEMBERED_GROUPS";
+    public static final String CMD_REQUEST_REMEMBERED_GROUPS_RESP = "CMD_REQUEST_REMEMBERED_GROUPS_RESP";
 
-  /**
-   * Command to start programming mode (blocks).
-   */
-  public static final String CMD_START_PROGRAMMING_MODE = "CMD_START_PROGRAMMING_MODE";
-  public static final String CMD_START_DS_PROGRAM_AND_MANAGE = "CMD_START_DS_PROGRAM_AND_MANAGE";
+    /**
+     * Command to start programming mode (blocks).
+     */
+    public static final String CMD_START_PROGRAMMING_MODE = "CMD_START_PROGRAMMING_MODE";
+    public static final String CMD_START_DS_PROGRAM_AND_MANAGE = "CMD_START_DS_PROGRAM_AND_MANAGE";
 
-  /**
-   * Response to a command to start programming mode (blocks).
-   *
-   * Programming mode connection information will be in extra data.
-   */
-  public static final String CMD_START_PROGRAMMING_MODE_RESP = "CMD_START_PROGRAMMING_MODE_RESP";
-  public static final String CMD_START_DS_PROGRAM_AND_MANAGE_RESP = "CMD_START_DS_PROGRAM_AND_MANAGE_RESP";
+    /**
+     * Response to a command to start programming mode (blocks).
+     * <p>
+     * Programming mode connection information will be in extra data.
+     */
+    public static final String CMD_START_PROGRAMMING_MODE_RESP = "CMD_START_PROGRAMMING_MODE_RESP";
+    public static final String CMD_START_DS_PROGRAM_AND_MANAGE_RESP = "CMD_START_DS_PROGRAM_AND_MANAGE_RESP";
 
-  /**
-   * Notification that a message was logged during programming mode (blocks).
-   *
-   * Log message will be in extra data.
-   */
-  public static final String CMD_PROGRAMMING_MODE_LOG_NOTIFICATION = "CMD_PROGRAMMING_MODE_LOG_NOTIFICATION";
+    /**
+     * Notification that a message was logged during programming mode (blocks).
+     * <p>
+     * Log message will be in extra data.
+     */
+    public static final String CMD_PROGRAMMING_MODE_LOG_NOTIFICATION = "CMD_PROGRAMMING_MODE_LOG_NOTIFICATION";
 
-  /**
-   * Notification that the programming mode (blocks) server received a ping request.
-   *
-   * PingDetails (encoded as json) will be in extra data.
-   */
-  public static final String CMD_PROGRAMMING_MODE_PING_NOTIFICATION = "CMD_PROGRAMMING_MODE_PING_NOTIFICATION";
+    /**
+     * Notification that the programming mode (blocks) server received a ping request.
+     * <p>
+     * PingDetails (encoded as json) will be in extra data.
+     */
+    public static final String CMD_PROGRAMMING_MODE_PING_NOTIFICATION = "CMD_PROGRAMMING_MODE_PING_NOTIFICATION";
 
-  /**
-   * Command to stop programming mode (blocks).
-   */
-  public static final String CMD_STOP_PROGRAMMING_MODE = "CMD_STOP_PROGRAMMING_MODE";
+    /**
+     * Command to stop programming mode (blocks).
+     */
+    public static final String CMD_STOP_PROGRAMMING_MODE = "CMD_STOP_PROGRAMMING_MODE";
 
-  //------------------------------------------------------------------------------------------------
-  // Lynx firmware update suppport
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Lynx firmware update suppport
+    //------------------------------------------------------------------------------------------------
 
-  public static final String CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES = "CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES";
-  public static final String CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP = "CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP";
+    public static final String CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES = "CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES";
+    public static final String CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP = "CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP";
 
-  public static class LynxFirmwareImagesResp {
-    /** used to prompt user as to where to load images for updating */
-    File firstFolder = AppUtil.FIRST_FOLDER;
-    /** currently available images. files or assets. */
-    ArrayList<FWImage> firmwareImages = new ArrayList<FWImage>();
+    public static class LynxFirmwareImagesResp {
+        /**
+         * used to prompt user as to where to load images for updating
+         */
+        File firstFolder = AppUtil.FIRST_FOLDER;
+        /**
+         * currently available images. files or assets.
+         */
+        ArrayList<FWImage> firmwareImages = new ArrayList<FWImage>();
 
-    public String serialize() {
-      return SimpleGson.getInstance().toJson(this);
-    }
-    public static LynxFirmwareImagesResp deserialize(String serialized) {
-      return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareImagesResp.class);
-    }
-  }
-  public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES";
-  public static class USBAccessibleLynxModulesRequest {
-    public boolean includeModuleNumbers = false;
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
 
-    public String serialize() {
-      return SimpleGson.getInstance().toJson(this);
-    }
-    public static USBAccessibleLynxModulesRequest deserialize(String serialized) {
-      return SimpleGson.getInstance().fromJson(serialized, USBAccessibleLynxModulesRequest.class);
-    }
-  }
-  public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP";
-
-  public static class USBAccessibleLynxModulesResp
-    {
-    ArrayList<USBAccessibleLynxModule> modules = new ArrayList<USBAccessibleLynxModule>();
-
-    public String serialize() {
-      return SimpleGson.getInstance().toJson(this);
-    }
-    public static USBAccessibleLynxModulesResp deserialize(String serialized) {
-      return SimpleGson.getInstance().fromJson(serialized, USBAccessibleLynxModulesResp.class);
-    }
-  }
-
-  public static final String CMD_LYNX_FIRMWARE_UPDATE = "CMD_LYNX_FIRMWARE_UPDATE";
-  public static class LynxFirmwareUpdate {
-
-    SerialNumber serialNumber;
-    FWImage firmwareImageFile;
-
-    public String serialize() {
-      return SimpleGson.getInstance().toJson(this);
-    }
-    public static LynxFirmwareUpdate deserialize(String serialized) {
-      return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareUpdate.class);
-    }
-  }
-  public static final String CMD_LYNX_FIRMWARE_UPDATE_RESP = "CMD_LYNX_FIRMWARE_UPDATE_RESP";
-  public static class LynxFirmwareUpdateResp {
-
-    boolean success;
-
-    public String serialize() {
-      return SimpleGson.getInstance().toJson(this);
-    }
-    public static LynxFirmwareUpdateResp deserialize(String serialized) {
-      return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareUpdateResp.class);
-    }
-  }
-
-  public static final String CMD_LYNX_ADDRESS_CHANGE = "CMD_LYNX_ADDRESS_CHANGE";
-  public static class LynxAddressChangeRequest {
-
-    public static class AddressChange {
-      SerialNumber serialNumber;
-      int oldAddress;
-      int newAddress;
+        public static LynxFirmwareImagesResp deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareImagesResp.class);
+        }
     }
 
-    ArrayList<AddressChange> modulesToChange;
+    public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES";
 
-    public String serialize() {
-      return SimpleGson.getInstance().toJson(this);
+    public static class USBAccessibleLynxModulesRequest {
+        public boolean includeModuleNumbers = false;
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static USBAccessibleLynxModulesRequest deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, USBAccessibleLynxModulesRequest.class);
+        }
     }
-    public static LynxAddressChangeRequest deserialize(String serialized) {
-      return SimpleGson.getInstance().fromJson(serialized, LynxAddressChangeRequest.class);
+
+    public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP";
+
+    public static class USBAccessibleLynxModulesResp {
+        ArrayList<USBAccessibleLynxModule> modules = new ArrayList<USBAccessibleLynxModule>();
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static USBAccessibleLynxModulesResp deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, USBAccessibleLynxModulesResp.class);
+        }
     }
-  }
+
+    public static final String CMD_LYNX_FIRMWARE_UPDATE = "CMD_LYNX_FIRMWARE_UPDATE";
+
+    public static class LynxFirmwareUpdate {
+
+        SerialNumber serialNumber;
+        FWImage firmwareImageFile;
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static LynxFirmwareUpdate deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareUpdate.class);
+        }
+    }
+
+    public static final String CMD_LYNX_FIRMWARE_UPDATE_RESP = "CMD_LYNX_FIRMWARE_UPDATE_RESP";
+
+    public static class LynxFirmwareUpdateResp {
+
+        boolean success;
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static LynxFirmwareUpdateResp deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareUpdateResp.class);
+        }
+    }
+
+    public static final String CMD_LYNX_ADDRESS_CHANGE = "CMD_LYNX_ADDRESS_CHANGE";
+
+    public static class LynxAddressChangeRequest {
+
+        public static class AddressChange {
+            SerialNumber serialNumber;
+            int oldAddress;
+            int newAddress;
+        }
+
+        ArrayList<AddressChange> modulesToChange;
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static LynxAddressChangeRequest deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, LynxAddressChangeRequest.class);
+        }
+    }
 }

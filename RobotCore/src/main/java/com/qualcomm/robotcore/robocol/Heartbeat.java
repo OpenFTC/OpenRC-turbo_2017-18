@@ -45,145 +45,152 @@ import java.nio.ByteBuffer;
  * Used to know if the connection between the client/server is still alive
  */
 @SuppressWarnings("unused")
-public class Heartbeat extends RobocolParsableBase  {
+public class Heartbeat extends RobocolParsableBase {
 
-  //------------------------------------------------------------------------------------------------
-  // Constants
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------
 
-  public static final short PAYLOAD_SIZE = 8 + 1 + 3*8;
+    public static final short PAYLOAD_SIZE = 8 + 1 + 3 * 8;
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  private long       timestamp;
-  private RobotState robotState;
-  public  long       t0, t1, t2;    // for time synchronization, a la Network Time Protocol
+    private long timestamp;
+    private RobotState robotState;
+    public long t0, t1, t2;    // for time synchronization, a la Network Time Protocol
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public Heartbeat() {
-    timestamp = 0;
-    robotState = RobotState.NOT_STARTED;
-    t0 = t1 = t2 = 0;
-  }
-
-  public static Heartbeat createWithTimeStamp() {
-    Heartbeat result = new Heartbeat();
-    result.timestamp = System.nanoTime();
-    return result;
+    public Heartbeat() {
+        timestamp = 0;
+        robotState = RobotState.NOT_STARTED;
+        t0 = t1 = t2 = 0;
     }
 
-  //------------------------------------------------------------------------------------------------
-  // Time Synchronization
-  //------------------------------------------------------------------------------------------------
-
-  /** returns the time on the clock that is passed in the t0, t1, and t2 state variables */
-  public static long getMsTimeSyncTime() {
-    return System.currentTimeMillis();
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
-
-  /**
-   * Timestamp this Heartbeat was created at
-   * <p>
-   * Device dependent, cannot compare across devices
-   * @return timestamp
-   */
-  public long getTimestamp() {
-    return timestamp;
-  }
-
-  /**
-   * Number of seconds since Heartbeat was created
-   * <p>
-   * Device dependent, cannot compare across devices
-   * @return elapsed time
-   */
-  public double getElapsedSeconds() {
-    return (System.nanoTime() - timestamp) / (double)ElapsedTime.SECOND_IN_NANO;
-  }
-
-  /**
-   * Get Robocol message type
-   * @return RobocolParsable.MsgType.HEARTBEAT
-   */
-  @Override
-  public MsgType getRobocolMsgType() {
-    return RobocolParsable.MsgType.HEARTBEAT;
-  }
-
-  /**
-   * Get RobotState
-   * @return byte currentState of robot.
-   */
-  public byte getRobotState() {
-    return robotState.asByte();
-  }
-
-  /**
-   * Set RobotState
-   */
-  public void setRobotState(RobotState state) {
-    robotState = state;
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Serialization
-  //------------------------------------------------------------------------------------------------
-
-  /**
-   * Convert this Heartbeat into a byte array
-   */
-  @Override
-  public byte[] toByteArray() throws RobotCoreException {
-    ByteBuffer buffer = getWriteBuffer(PAYLOAD_SIZE);
-    try {
-      buffer.putLong(timestamp);
-      buffer.put(robotState.asByte());
-      buffer.putLong(t0);
-      buffer.putLong(t1);
-      buffer.putLong(t2);
-    } catch (BufferOverflowException e) {
-      RobotLog.logStacktrace(e);
+    public static Heartbeat createWithTimeStamp() {
+        Heartbeat result = new Heartbeat();
+        result.timestamp = System.nanoTime();
+        return result;
     }
-    return buffer.array();
-  }
 
-  /**
-   * Populate this Heartbeat from a byte array
-   */
-  @Override
-  public void fromByteArray(byte[] byteArray) throws RobotCoreException {
-    try {
-      ByteBuffer byteBuffer = getReadBuffer(byteArray);
-      timestamp      = byteBuffer.getLong();
-      robotState     = RobotState.fromByte(byteBuffer.get());
-      t0             = byteBuffer.getLong();
-      t1             = byteBuffer.getLong();
-      t2             = byteBuffer.getLong();
-    } catch (BufferUnderflowException e) {
-      throw RobotCoreException.createChained(e, "incoming packet too small");
+    //------------------------------------------------------------------------------------------------
+    // Time Synchronization
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     * returns the time on the clock that is passed in the t0, t1, and t2 state variables
+     */
+    public static long getMsTimeSyncTime() {
+        return System.currentTimeMillis();
     }
-  }
 
-  //------------------------------------------------------------------------------------------------
-  // Pretty Printing
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
-  /**
-   * String containing sequence number and timestamp
-   * @return String
-   */
-  @Override
-  public String toString() {
-    return String.format("Heartbeat - seq: %4d, time: %d", getSequenceNumber(), timestamp);
-  }
+    /**
+     * Timestamp this Heartbeat was created at
+     * <p>
+     * Device dependent, cannot compare across devices
+     *
+     * @return timestamp
+     */
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * Number of seconds since Heartbeat was created
+     * <p>
+     * Device dependent, cannot compare across devices
+     *
+     * @return elapsed time
+     */
+    public double getElapsedSeconds() {
+        return (System.nanoTime() - timestamp) / (double) ElapsedTime.SECOND_IN_NANO;
+    }
+
+    /**
+     * Get Robocol message type
+     *
+     * @return RobocolParsable.MsgType.HEARTBEAT
+     */
+    @Override
+    public MsgType getRobocolMsgType() {
+        return RobocolParsable.MsgType.HEARTBEAT;
+    }
+
+    /**
+     * Get RobotState
+     *
+     * @return byte currentState of robot.
+     */
+    public byte getRobotState() {
+        return robotState.asByte();
+    }
+
+    /**
+     * Set RobotState
+     */
+    public void setRobotState(RobotState state) {
+        robotState = state;
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Serialization
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     * Convert this Heartbeat into a byte array
+     */
+    @Override
+    public byte[] toByteArray() throws RobotCoreException {
+        ByteBuffer buffer = getWriteBuffer(PAYLOAD_SIZE);
+        try {
+            buffer.putLong(timestamp);
+            buffer.put(robotState.asByte());
+            buffer.putLong(t0);
+            buffer.putLong(t1);
+            buffer.putLong(t2);
+        } catch (BufferOverflowException e) {
+            RobotLog.logStacktrace(e);
+        }
+        return buffer.array();
+    }
+
+    /**
+     * Populate this Heartbeat from a byte array
+     */
+    @Override
+    public void fromByteArray(byte[] byteArray) throws RobotCoreException {
+        try {
+            ByteBuffer byteBuffer = getReadBuffer(byteArray);
+            timestamp = byteBuffer.getLong();
+            robotState = RobotState.fromByte(byteBuffer.get());
+            t0 = byteBuffer.getLong();
+            t1 = byteBuffer.getLong();
+            t2 = byteBuffer.getLong();
+        } catch (BufferUnderflowException e) {
+            throw RobotCoreException.createChained(e, "incoming packet too small");
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Pretty Printing
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     * String containing sequence number and timestamp
+     *
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return String.format("Heartbeat - seq: %4d, time: %d", getSequenceNumber(), timestamp);
+    }
 
 }

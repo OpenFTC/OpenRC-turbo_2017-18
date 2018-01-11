@@ -60,213 +60,187 @@ import java.util.List;
  */
 @SuppressWarnings("WeakerAccess")
 public final class UserI2cSensorType extends UserConfigurationType // final because of serialization concerns
-    {
+{
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected Class<? extends HardwareDevice>   clazz;
-    protected List<Constructor>                 constructors;
-    protected @Expose String                    description;
+    protected Class<? extends HardwareDevice> clazz;
+    protected List<Constructor> constructors;
+    protected
+    @Expose
+    String description;
 
-    protected static final Class<?>[] ctorI2cDeviceSynchSimple  = new Class<?>[]{I2cDeviceSynchSimple.class};
-    protected static final Class<?>[] ctorI2cDeviceSynch        = new Class<?>[]{I2cDeviceSynch.class};
-    protected static final Class<?>[] ctorI2cDevice             = new Class<?>[]{I2cDevice.class};
-    protected static final Class<?>[] ctorI2cControllerPort     = new Class<?>[]{I2cController.class, int.class};
+    protected static final Class<?>[] ctorI2cDeviceSynchSimple = new Class<?>[]{I2cDeviceSynchSimple.class};
+    protected static final Class<?>[] ctorI2cDeviceSynch = new Class<?>[]{I2cDeviceSynch.class};
+    protected static final Class<?>[] ctorI2cDevice = new Class<?>[]{I2cDevice.class};
+    protected static final Class<?>[] ctorI2cControllerPort = new Class<?>[]{I2cController.class, int.class};
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public UserI2cSensorType(Class<? extends HardwareDevice> clazz, String xmlTag)
-        {
+    public UserI2cSensorType(Class<? extends HardwareDevice> clazz, String xmlTag) {
         super(clazz, Flavor.I2C, xmlTag);
         this.clazz = clazz;
         this.constructors = findConstructors();
-        }
+    }
 
-    public static UserI2cSensorType getLynxEmbeddedIMUType()
-        {
+    public static UserI2cSensorType getLynxEmbeddedIMUType() {
         return (UserI2cSensorType) UserConfigurationTypeManager.getInstance().userTypeFromTag(AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.lynx_embedded_imu_xmltag));
-        }
+    }
 
     // Used by gson deserialization
-    public UserI2cSensorType()
-        {
+    public UserI2cSensorType() {
         super(Flavor.I2C);
-        }
+    }
 
-    public void processAnnotation(@Nullable I2cSensor i2cSensor)
-        {
-        if (i2cSensor != null)
-            {
-            if (name==null || name.isEmpty())
-                {
+    public void processAnnotation(@Nullable I2cSensor i2cSensor) {
+        if (i2cSensor != null) {
+            if (name == null || name.isEmpty()) {
                 name = ClassUtil.decodeStringRes(i2cSensor.name().trim());
-                }
+            }
             this.description = ClassUtil.decodeStringRes(i2cSensor.description());
-            }
         }
+    }
 
-    public void finishedAnnotations(Class clazz)
-        {
-        if (name==null || name.isEmpty())
-            {
+    public void finishedAnnotations(Class clazz) {
+        if (name == null || name.isEmpty()) {
             name = clazz.getSimpleName();
-            }
         }
+    }
 
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public String getDescription()
-        {
+    public String getDescription() {
         return this.description;
-        }
+    }
 
-    public boolean hasConstructors()
-        {
+    public boolean hasConstructors() {
         return this.constructors.size() > 0;
-        }
+    }
 
-    public Class<? extends HardwareDevice> getClazz()
-        {
+    public Class<? extends HardwareDevice> getClazz() {
         return this.clazz;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Instance creation
     //----------------------------------------------------------------------------------------------
 
-    public @NonNull HardwareDevice createInstance(RobotCoreLynxModule lynxModule,
-            Func<I2cDeviceSynchSimple> simpleSynchFunc,
-            Func<I2cDeviceSynch> synchFunc) throws InvocationTargetException
-        {
+    public
+    @NonNull
+    HardwareDevice createInstance(RobotCoreLynxModule lynxModule,
+                                  Func<I2cDeviceSynchSimple> simpleSynchFunc,
+                                  Func<I2cDeviceSynch> synchFunc) throws InvocationTargetException {
         try {
             Constructor ctor;
 
             ctor = findMatch(ctorI2cDeviceSynchSimple);
-            if (null != ctor)
-                {
+            if (null != ctor) {
                 I2cDeviceSynchSimple i2cDeviceSynchSimple = simpleSynchFunc.value();
-                return (HardwareDevice)ctor.newInstance(i2cDeviceSynchSimple);
-                }
+                return (HardwareDevice) ctor.newInstance(i2cDeviceSynchSimple);
+            }
 
             ctor = findMatch(ctorI2cDeviceSynch);
-            if (null != ctor)
-                {
+            if (null != ctor) {
                 I2cDeviceSynch i2cDeviceSynch = synchFunc.value();
-                return (HardwareDevice)ctor.newInstance(i2cDeviceSynch);
-                }
+                return (HardwareDevice) ctor.newInstance(i2cDeviceSynch);
             }
-         catch (IllegalAccessException|InstantiationException e)
-             {
-             throw new RuntimeException("internal error: exception");
-             }
-        throw new RuntimeException("internal error: unable to locate constructor for user sensor type");
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException("internal error: exception");
         }
+        throw new RuntimeException("internal error: unable to locate constructor for user sensor type");
+    }
 
-    public @NonNull
-    HardwareDevice createInstance(I2cController controller, int port) throws InvocationTargetException
-        {
+    public
+    @NonNull
+    HardwareDevice createInstance(I2cController controller, int port) throws InvocationTargetException {
         try {
             Constructor ctor;
 
             ctor = findMatch(ctorI2cDeviceSynch);
-            if (null == ctor) ctor = findMatch(ctorI2cDeviceSynchSimple);
-            if (null != ctor)
-                {
-                I2cDevice      i2cDevice      = new I2cDeviceImpl(controller, port);
+            if (null == ctor) {
+                ctor = findMatch(ctorI2cDeviceSynchSimple);
+            }
+            if (null != ctor) {
+                I2cDevice i2cDevice = new I2cDeviceImpl(controller, port);
                 I2cDeviceSynch i2cDeviceSynch = new I2cDeviceSynchImpl(i2cDevice, true);
-                return (HardwareDevice)ctor.newInstance(i2cDeviceSynch);
-                }
+                return (HardwareDevice) ctor.newInstance(i2cDeviceSynch);
+            }
 
             ctor = findMatch(ctorI2cDevice);
-            if (null != ctor)
-                {
+            if (null != ctor) {
                 I2cDevice i2cDevice = new I2cDeviceImpl(controller, port);
-                return (HardwareDevice)ctor.newInstance(i2cDevice);
-                }
+                return (HardwareDevice) ctor.newInstance(i2cDevice);
+            }
 
             ctor = findMatch(ctorI2cControllerPort);
-            if (null != ctor)
-                {
-                return (HardwareDevice)ctor.newInstance(controller, port);
-                }
+            if (null != ctor) {
+                return (HardwareDevice) ctor.newInstance(controller, port);
             }
-         catch (IllegalAccessException|InstantiationException e)
-             {
-             throw new RuntimeException("internal error: exception");
-             }
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException("internal error: exception");
+        }
         throw new RuntimeException("internal error: unable to locate constructor for user sensor type");
-        }
+    }
 
-    protected Constructor findMatch(Class<?>[] prototype)
-        {
-        for (Constructor ctor : this.constructors)
-            {
+    protected Constructor findMatch(Class<?>[] prototype) {
+        for (Constructor ctor : this.constructors) {
             Class<?>[] parameters = ctor.getParameterTypes();
-            if (match(parameters, prototype))
-                {
+            if (match(parameters, prototype)) {
                 return ctor;
-                }
             }
-        return null;
         }
+        return null;
+    }
 
-    protected List<Constructor> findConstructors()
-        {
+    protected List<Constructor> findConstructors() {
         List<Constructor> result = new LinkedList<Constructor>();
         List<Constructor> constructors = ClassUtil.getDeclaredConstructors(clazz);
-        for (Constructor<?> ctor : constructors)
-            {
+        for (Constructor<?> ctor : constructors) {
             int requiredModifiers = Modifier.PUBLIC;
             int prohibitedModifiers = Modifier.STATIC | Modifier.ABSTRACT;
-            if (!((ctor.getModifiers() & requiredModifiers) == requiredModifiers && (ctor.getModifiers() & prohibitedModifiers) == 0))
+            if (!((ctor.getModifiers() & requiredModifiers) == requiredModifiers && (ctor.getModifiers() & prohibitedModifiers) == 0)) {
                 continue;
+            }
 
             Class<?>[] parameters = ctor.getParameterTypes();
-            switch (flavor)
-                {
+            switch (flavor) {
                 case I2C:
                     if (match(parameters, ctorI2cControllerPort)
                             || match(parameters, ctorI2cDevice)
                             || match(parameters, ctorI2cDeviceSynch)
-                            || match(parameters, ctorI2cDeviceSynchSimple))
-                        {
+                            || match(parameters, ctorI2cDeviceSynchSimple)) {
                         result.add(ctor);
-                        }
-                    break;
-                }
-            }
-        return result;
-        }
-
-    protected boolean match(Class<?>[] declared, Class<?>[] desired)
-        {
-        if (declared.length == desired.length)
-            {
-            for (int i = 0; i < declared.length; i++)
-                {
-                if (!declared[i].equals(desired[i]))
-                    {
-                    return false;
                     }
-                }
-            return true;
+                    break;
             }
-        else
+        }
+        return result;
+    }
+
+    protected boolean match(Class<?>[] declared, Class<?>[] desired) {
+        if (declared.length == desired.length) {
+            for (int i = 0; i < declared.length; i++) {
+                if (!declared[i].equals(desired[i])) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
             return false;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization (used in local marshalling during configuration editing)
     //----------------------------------------------------------------------------------------------
 
-    private Object writeReplace()
-        {
+    private Object writeReplace() {
         return new SerializationProxy(this);
-        }
     }
+}

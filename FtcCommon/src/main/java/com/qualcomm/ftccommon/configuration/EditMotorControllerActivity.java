@@ -33,21 +33,22 @@ package com.qualcomm.ftccommon.configuration;
 import com.qualcomm.ftccommon.R;
 import com.qualcomm.robotcore.hardware.configuration.MotorControllerConfiguration;
 
-public class EditMotorControllerActivity extends EditMotorListActivity
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditMotorControllerActivity extends EditMotorListActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_MOTOR_CONTROLLER;
 
-    public EditMotorControllerActivity()
-        {
+    public EditMotorControllerActivity() {
         super();
         this.layoutControllerNameBanner = R.layout.motor_controller_banner;
-        }
+    }
 
     @Override
-    public void finishOk()
-        {
-        ((MotorControllerConfiguration)controllerConfiguration).setMotors(this.itemList);
+    public void finishOk() {
+        ((MotorControllerConfiguration) controllerConfiguration).setMotors(this.itemList);
         super.finishOk();
-        }
     }
+}

@@ -35,13 +35,14 @@ package com.qualcomm.robotcore.hardware;
 /**
  * {@link Light} instances are sources of illumination. They can inform as to whether
  * they are on or off.
+ *
  * @see SwitchableLight
  */
-public interface Light
-    {
+public interface Light {
     /**
      * Answers whether the light is on or off
+     *
      * @return whether the light is on or off
      */
     boolean isLightOn();
-    }
+}

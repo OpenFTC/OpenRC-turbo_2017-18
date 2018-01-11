@@ -36,103 +36,98 @@ package org.firstinspires.ftc.robotcore.external.navigation;
  * {@link NavUtil} is a collection of utilities that provide useful manipulations of
  * objects related to navigation.
  */
-public class NavUtil
-    {
+public class NavUtil {
     //----------------------------------------------------------------------------------------------
     // Arithmetic: some handy helpers
     //----------------------------------------------------------------------------------------------
 
-    public static Position plus(Position a, Position b)
-        {
+    public static Position plus(Position a, Position b) {
         return new Position(a.unit,
-                a.x      + a.unit.fromUnit(b.unit, b.x),
-                a.y      + a.unit.fromUnit(b.unit, b.y),
-                a.z      + a.unit.fromUnit(b.unit, b.z),
+                a.x + a.unit.fromUnit(b.unit, b.x),
+                a.y + a.unit.fromUnit(b.unit, b.y),
+                a.z + a.unit.fromUnit(b.unit, b.z),
                 Math.max(a.acquisitionTime, b.acquisitionTime));
-        }
-    public static Velocity plus(Velocity a, Velocity b)
-        {
+    }
+
+    public static Velocity plus(Velocity a, Velocity b) {
         return new Velocity(a.unit,
                 a.xVeloc + a.unit.fromUnit(b.unit, b.xVeloc),
                 a.yVeloc + a.unit.fromUnit(b.unit, b.yVeloc),
                 a.zVeloc + a.unit.fromUnit(b.unit, b.zVeloc),
                 Math.max(a.acquisitionTime, b.acquisitionTime));
-        }
-    public static Acceleration plus(Acceleration a, Acceleration b)
-        {
+    }
+
+    public static Acceleration plus(Acceleration a, Acceleration b) {
         return new Acceleration(a.unit,
                 a.xAccel + a.unit.fromUnit(b.unit, b.xAccel),
                 a.yAccel + a.unit.fromUnit(b.unit, b.yAccel),
                 a.zAccel + a.unit.fromUnit(b.unit, b.zAccel),
                 Math.max(a.acquisitionTime, b.acquisitionTime));
-        }
+    }
 
-    public static Position minus(Position a, Position b)
-        {
+    public static Position minus(Position a, Position b) {
         return new Position(a.unit,
-                a.x      - a.unit.fromUnit(b.unit, b.x),
-                a.y      - a.unit.fromUnit(b.unit, b.y),
-                a.z      - a.unit.fromUnit(b.unit, b.z),
+                a.x - a.unit.fromUnit(b.unit, b.x),
+                a.y - a.unit.fromUnit(b.unit, b.y),
+                a.z - a.unit.fromUnit(b.unit, b.z),
                 Math.max(a.acquisitionTime, b.acquisitionTime));
-        }
-    public static Velocity minus(Velocity a, Velocity b)
-        {
+    }
+
+    public static Velocity minus(Velocity a, Velocity b) {
         return new Velocity(a.unit,
                 a.xVeloc - a.unit.fromUnit(b.unit, b.xVeloc),
                 a.yVeloc - a.unit.fromUnit(b.unit, b.yVeloc),
                 a.zVeloc - a.unit.fromUnit(b.unit, b.zVeloc),
                 Math.max(a.acquisitionTime, b.acquisitionTime));
-        }
-    public static Acceleration minus(Acceleration a, Acceleration b)
-        {
+    }
+
+    public static Acceleration minus(Acceleration a, Acceleration b) {
         return new Acceleration(a.unit,
                 a.xAccel - a.unit.fromUnit(b.unit, b.xAccel),
                 a.yAccel - a.unit.fromUnit(b.unit, b.yAccel),
                 a.zAccel - a.unit.fromUnit(b.unit, b.zAccel),
                 Math.max(a.acquisitionTime, b.acquisitionTime));
-        }
+    }
 
-    public static Position scale(Position p, double scale)
-        {
+    public static Position scale(Position p, double scale) {
         return new Position(p.unit,
                 p.x * scale,
                 p.y * scale,
                 p.z * scale,
                 p.acquisitionTime);
-        }
-    public static Velocity scale(Velocity v, double scale)
-        {
+    }
+
+    public static Velocity scale(Velocity v, double scale) {
         return new Velocity(v.unit,
                 v.xVeloc * scale,
                 v.yVeloc * scale,
                 v.zVeloc * scale,
                 v.acquisitionTime);
-        }
-    public static Acceleration scale(Acceleration a, double scale)
-        {
+    }
+
+    public static Acceleration scale(Acceleration a, double scale) {
         return new Acceleration(a.unit,
                 a.xAccel * scale,
                 a.yAccel * scale,
                 a.zAccel * scale,
                 a.acquisitionTime);
-        }
+    }
 
-    public static Position integrate(Velocity v, double dt)
-        {
+    public static Position integrate(Velocity v, double dt) {
         return new Position(v.unit,
                 v.xVeloc * dt,
                 v.yVeloc * dt,
                 v.zVeloc * dt,
                 v.acquisitionTime);
-        }
-    public static Velocity integrate(Acceleration a, double dt)
-        {
+    }
+
+    public static Velocity integrate(Acceleration a, double dt) {
         return new Velocity(a.unit,
                 a.xAccel * dt,
                 a.yAccel * dt,
                 a.zAccel * dt,
                 a.acquisitionTime);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Integration
@@ -141,40 +136,37 @@ public class NavUtil
     /**
      * Integrate between two velocities to determine a change in position using an assumption
      * that the mean of the velocities has been acting the entire interval.
-
-     * @param cur    the current velocity
-     * @param prev   the previous velocity
-     * @return       an approximation to the change in position over the interval
      *
+     * @param cur  the current velocity
+     * @param prev the previous velocity
+     * @return an approximation to the change in position over the interval
      * @see <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule">Simpson's Rule</a>
      */
-    public static Position meanIntegrate(Velocity cur, Velocity prev)
-        {
+    public static Position meanIntegrate(Velocity cur, Velocity prev) {
         double duration = (cur.acquisitionTime - prev.acquisitionTime) * 1e-9;
         Velocity meanVelocity = scale(plus(cur, prev), 0.5);
         return integrate(meanVelocity, duration);
-        }
+    }
 
     /**
      * Integrate between two accelerations to determine a change in velocity using an assumption
      * that the mean of the accelerations has been acting the entire interval.
      *
-     * @param cur    the current acceleration
-     * @param prev   the previous acceleration
-     * @return       an approximation to the change in velocity over the interval
-     *
+     * @param cur  the current acceleration
+     * @param prev the previous acceleration
+     * @return an approximation to the change in velocity over the interval
      * @see <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule">Simpson's Rule</a>
      */
-    public static Velocity meanIntegrate(Acceleration cur, Acceleration prev)
-        {
+    public static Velocity meanIntegrate(Acceleration cur, Acceleration prev) {
         double duration = (cur.acquisitionTime - prev.acquisitionTime) * 1e-9;
-        Acceleration meanAcceleration = scale(plus(cur,prev), 0.5);
+        Acceleration meanAcceleration = scale(plus(cur, prev), 0.5);
         return integrate(meanAcceleration, duration);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    private NavUtil() { }
+    private NavUtil() {
     }
+}

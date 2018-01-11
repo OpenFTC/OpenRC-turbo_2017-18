@@ -35,18 +35,16 @@ package org.firstinspires.ftc.robotcore.internal.stellaris;
 /**
  * This command simply accepts the command and sets the global status to success. The format of
  * the packet is as follows:
- *     Byte[0] = 0x03;
- *     Byte[1] = checksum(Byte[2]);
- *     Byte[2] = COMMAND_PING;
+ * Byte[0] = 0x03;
+ * Byte[1] = checksum(Byte[2]);
+ * Byte[2] = COMMAND_PING;
  * The ping command has 3 bytes and the value for COMMAND_PING is 0x20 and the checksum of one
  * byte is that same byte, making Byte[1] also 0x20. Since the ping command has no real return status,
  * the receipt of an ACK can be interpreted as a successful ping to the flash loader.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderPingCommand extends FlashLoaderCommand
-    {
-    public FlashLoaderPingCommand()
-        {
+public class FlashLoaderPingCommand extends FlashLoaderCommand {
+    public FlashLoaderPingCommand() {
         super(0x20);
-        }
     }
+}

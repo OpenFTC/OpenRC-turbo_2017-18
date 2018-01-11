@@ -39,34 +39,39 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 public class MotorConfiguration extends DeviceConfiguration {
 
-  public MotorConfiguration(int port, String name, boolean enabled) {
-    super(port, MotorConfigurationType.getUnspecifiedMotorType(), name, enabled);
-  }
-
-  public MotorConfiguration(int port) {
-    this(port, DISABLED_DEVICE_NAME, false);
-  }
-
-  public @NonNull MotorConfigurationType getMotorType() {
-    if (getConfigurationType() instanceof MotorConfigurationType) {
-      return (MotorConfigurationType) getConfigurationType();
-    } else {
-      return MotorConfigurationType.getUnspecifiedMotorType();
+    public MotorConfiguration(int port, String name, boolean enabled) {
+        super(port, MotorConfigurationType.getUnspecifiedMotorType(), name, enabled);
     }
-  }
 
-  @Override public ConfigurationType getSpinnerChoiceType() {
-    if (getMotorType() != null) {
-      return getMotorType();
+    public MotorConfiguration(int port) {
+        this(port, DISABLED_DEVICE_NAME, false);
     }
-    return super.getSpinnerChoiceType();
-  }
 
-  /** returns the list of the extant motor configuration types */
-  public static ConfigurationType[] getAllMotorConfigurationTypes() {
-    List<ConfigurationType> list = new LinkedList<ConfigurationType>();
-    list.add(BuiltInConfigurationType.NOTHING);
-    list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.MOTOR));
-    return list.toArray(new ConfigurationType[list.size()]);
-  }
+    public
+    @NonNull
+    MotorConfigurationType getMotorType() {
+        if (getConfigurationType() instanceof MotorConfigurationType) {
+            return (MotorConfigurationType) getConfigurationType();
+        } else {
+            return MotorConfigurationType.getUnspecifiedMotorType();
+        }
+    }
+
+    @Override
+    public ConfigurationType getSpinnerChoiceType() {
+        if (getMotorType() != null) {
+            return getMotorType();
+        }
+        return super.getSpinnerChoiceType();
+    }
+
+    /**
+     * returns the list of the extant motor configuration types
+     */
+    public static ConfigurationType[] getAllMotorConfigurationTypes() {
+        List<ConfigurationType> list = new LinkedList<ConfigurationType>();
+        list.add(BuiltInConfigurationType.NOTHING);
+        list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.MOTOR));
+        return list.toArray(new ConfigurationType[list.size()]);
+    }
 }

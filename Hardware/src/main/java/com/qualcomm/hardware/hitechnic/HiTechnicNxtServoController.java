@@ -76,29 +76,28 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * HiTechnic NXT Servo Controller
  */
-public final class HiTechnicNxtServoController extends HiTechnicNxtController implements ServoController
-    {
+public final class HiTechnicNxtServoController extends HiTechnicNxtController implements ServoController {
     //------------------------------------------------------------------------------------------------
     // Constants
     //------------------------------------------------------------------------------------------------
 
     protected static final I2cAddr I2C_ADDRESS = I2cAddr.create8bit(2);
     protected static final int SERVO_FIRST = ModernRoboticsConstants.INITIAL_SERVO_PORT;
-    protected static final int SERVO_LAST = ModernRoboticsConstants.INITIAL_SERVO_PORT + ModernRoboticsConstants.NUMBER_OF_SERVOS -1;
+    protected static final int SERVO_LAST = ModernRoboticsConstants.INITIAL_SERVO_PORT + ModernRoboticsConstants.NUMBER_OF_SERVOS - 1;
 
     protected static final byte PWM_ENABLE = (byte) 0x00;
     protected static final byte PWM_ENABLE_WITHOUT_TIMEOUT = (byte) 0xaa;
     protected static final byte PWM_DISABLE = (byte) 0xff;
 
-    protected static final byte[] ADDRESS_CHANNEL_MAP = new byte[]{(byte)-1/*not used*/, (byte)0x42, (byte)0x43, (byte)0x44, (byte)0x45, (byte)0x46, (byte)0x47};
+    protected static final byte[] ADDRESS_CHANNEL_MAP = new byte[]{(byte) -1/*not used*/, (byte) 0x42, (byte) 0x43, (byte) 0x44, (byte) 0x45, (byte) 0x46, (byte) 0x47};
     protected static final int ADDRESS_PWM = 0x48;
 
     protected static final int iRegWindowFirst = 0x40;
-    protected static final int iRegWindowMax   = 0x48+1;  // first register not included
+    protected static final int iRegWindowMax = 0x48 + 1;  // first register not included
 
-    protected static final double apiPositionMin   = Servo.MIN_POSITION;
-    protected static final double apiPositionMax   = Servo.MAX_POSITION;
-    protected static final double servoPositionMin =   0.0;
+    protected static final double apiPositionMin = Servo.MIN_POSITION;
+    protected static final double apiPositionMax = Servo.MAX_POSITION;
+    protected static final double servoPositionMin = 0.0;
     protected static final double servoPositionMax = 255.0;
 
     //------------------------------------------------------------------------------------------------
@@ -106,14 +105,13 @@ public final class HiTechnicNxtServoController extends HiTechnicNxtController im
     //------------------------------------------------------------------------------------------------
 
     protected LastKnown<Double>[] commandedServoPositions;
-    protected LastKnown<Boolean>  lastKnownPwmEnabled;
+    protected LastKnown<Boolean> lastKnownPwmEnabled;
 
     //------------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------------
 
-    public HiTechnicNxtServoController(final Context context, I2cController module, int physicalPort)
-        {
+    public HiTechnicNxtServoController(final Context context, I2cController module, int physicalPort) {
         super(context, module, physicalPort, I2C_ADDRESS);
         this.commandedServoPositions = LastKnown.createArray(ADDRESS_CHANNEL_MAP.length);
         this.lastKnownPwmEnabled = new LastKnown<Boolean>();
@@ -122,7 +120,7 @@ public final class HiTechnicNxtServoController extends HiTechnicNxtController im
         // a while. So we set up a heartbeat request to try to prevent that. We try to use
         // heartbeats which are as minimally disruptive as possible.
         I2cDeviceSynch.HeartbeatAction heartbeatAction = new I2cDeviceSynch.HeartbeatAction(true, true,
-            new I2cDeviceSynch.ReadWindow(ADDRESS_CHANNEL_MAP[1], 1, I2cDeviceSynch.ReadMode.ONLY_ONCE));
+                new I2cDeviceSynch.ReadWindow(ADDRESS_CHANNEL_MAP[1], 1, I2cDeviceSynch.ReadMode.ONLY_ONCE));
 
         // Per the HiTechnic servo controller spec, there is a ten second timeout
         this.i2cDeviceSynch.setHeartbeatAction(heartbeatAction);
@@ -137,150 +135,130 @@ public final class HiTechnicNxtServoController extends HiTechnicNxtController im
         this.i2cDeviceSynch.setReadWindow(new I2cDeviceSynch.ReadWindow(iRegWindowFirst, iRegWindowMax - iRegWindowFirst, I2cDeviceSynch.ReadMode.BALANCED));
 
         finishConstruction();
-        }
+    }
 
-    protected void controllerNowArmedOrPretending()
-        {
+    protected void controllerNowArmedOrPretending() {
         adjustHookingToMatchEngagement();
-        }
+    }
 
     @Override
-    protected void doHook()
-        {
+    protected void doHook() {
         this.i2cDeviceSynch.engage();
-        }
+    }
 
     @Override
-    public void initializeHardware()
-        {
+    public void initializeHardware() {
         pwmDisable();
-        }
+    }
 
     @Override
-    protected void doUnhook()
-        {
+    protected void doUnhook() {
         this.i2cDeviceSynch.disengage();
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // HardwareDevice interface
     //------------------------------------------------------------------------------------------------
 
-    @Override public Manufacturer getManufacturer()
-        {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.HiTechnic;
-        }
+    }
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return context.getString(R.string.nxtServoControllerName);
-        }
+    }
 
     @Override
-    public String getConnectionInfo()
-        {
+    public String getConnectionInfo() {
         return String.format(context.getString(R.string.controllerPortConnectionInfoFormat), controller.getConnectionInfo(), this.physicalPort);
-        }
+    }
 
     @Override
-    public void resetDeviceConfigurationForOpMode()
-        {
+    public void resetDeviceConfigurationForOpMode() {
         floatHardware();
-        }
+    }
 
     @Override
-    public int getVersion()
-        {
+    public int getVersion() {
         return 2;
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // ServoController interface
     //------------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized void pwmEnable()
-        {
+    public synchronized void pwmEnable() {
         // Avoid doing this repeatedly as we call it each and every position change
-        if (lastKnownPwmEnabled.updateValue(true))
-            {
+        if (lastKnownPwmEnabled.updateValue(true)) {
             this.write8(ADDRESS_PWM, PWM_ENABLE);
-            }
         }
+    }
 
     @Override
-    public synchronized void pwmDisable()
-        {
-        if (lastKnownPwmEnabled.updateValue(false))
-            {
+    public synchronized void pwmDisable() {
+        if (lastKnownPwmEnabled.updateValue(false)) {
             this.write8(ADDRESS_PWM, PWM_DISABLE);
 
             // Make any subsequent positioning actually actuate
-            for (LastKnown<Double> commandedPosition : commandedServoPositions)
-                {
+            for (LastKnown<Double> commandedPosition : commandedServoPositions) {
                 commandedPosition.invalidate();
-                }
             }
         }
+    }
 
     @Override
-    public synchronized PwmStatus getPwmStatus()
-        {
+    public synchronized PwmStatus getPwmStatus() {
         return this.read8(ADDRESS_PWM) == PWM_DISABLE
-            ? PwmStatus.DISABLED
-            : PwmStatus.ENABLED;
-        }
+                ? PwmStatus.DISABLED
+                : PwmStatus.ENABLED;
+    }
 
     @Override
-    public synchronized void setServoPosition(int servo, double position)
-        {
+    public synchronized void setServoPosition(int servo, double position) {
         validateServo(servo);
         position = Range.clip(position, apiPositionMin, apiPositionMax);
         validateApiPosition(position);  // will catch NaNs, for example
 
         // Don't update if we know we're already there
-        if (commandedServoPositions[servo].updateValue(position))
-            {
-            byte bPosition = (byte)Range.scale(position, apiPositionMin, apiPositionMax, servoPositionMin, servoPositionMax);
+        if (commandedServoPositions[servo].updateValue(position)) {
+            byte bPosition = (byte) Range.scale(position, apiPositionMin, apiPositionMax, servoPositionMin, servoPositionMax);
             this.write8(ADDRESS_CHANNEL_MAP[servo], bPosition);
             this.pwmEnable();
-            }
         }
+    }
 
     @Override
     public synchronized double getServoPosition(int servo)
     // One would think we could just read the servo position registers. But they always report as zero
-        {
+    {
         validateServo(servo);
         Double commanded = this.commandedServoPositions[servo].getRawValue();
-        return commanded==null ? Double.NaN : commanded;
-        }
+        return commanded == null ? Double.NaN : commanded;
+    }
 
     //------------------------------------------------------------------------------------------------
     // Utility
     //------------------------------------------------------------------------------------------------
 
-    @Override protected void floatHardware()
-        {
+    @Override
+    protected void floatHardware() {
         this.pwmDisable();
-        }
+    }
 
-    private void validateServo(int servo)
-        {
-        if (servo < SERVO_FIRST || servo > SERVO_LAST)
-            {
+    private void validateServo(int servo) {
+        if (servo < SERVO_FIRST || servo > SERVO_LAST) {
             throw new IllegalArgumentException(String.format("Servo %d is invalid; valid servos are %d..%d", servo, SERVO_FIRST, SERVO_LAST));
-            }
         }
+    }
 
-    private void validateApiPosition(double position)
-        {
-        if (apiPositionMin <= position && position <= apiPositionMax)
-            {
+    private void validateApiPosition(double position) {
+        if (apiPositionMin <= position && position <= apiPositionMax) {
             // all is well
-            }
-        else
+        } else {
             throw new IllegalArgumentException(String.format("illegal servo position %f; must be in interval [%f,%f]", position, apiPositionMin, apiPositionMax));
         }
     }
+}

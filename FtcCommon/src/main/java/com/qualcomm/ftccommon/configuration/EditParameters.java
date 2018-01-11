@@ -54,8 +54,7 @@ import java.util.List;
  * from instances of {@link EditActivity}.
  */
 @SuppressWarnings("WeakerAccess")
-public class EditParameters<ITEM_T extends DeviceConfiguration> implements Serializable
-    {
+public class EditParameters<ITEM_T extends DeviceConfiguration> implements Serializable {
     //------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------
@@ -98,7 +97,9 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
     /**
      * what we know to be on the USB bus
      */
-    private @NonNull ScannedDevices scannedDevices = new ScannedDevices();
+    private
+    @NonNull
+    ScannedDevices scannedDevices = new ScannedDevices();
 
     /**
      * for a USB controller, the entire list of controllers we have attached
@@ -125,315 +126,251 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
     // Construction
     //------------------------------------------------------------------------------------------
 
-    public EditParameters(EditActivity editActivity, DeviceConfiguration configuration)
-        {
+    public EditParameters(EditActivity editActivity, DeviceConfiguration configuration) {
         this(editActivity);
         this.configuration = configuration;
-        }
+    }
 
-    public EditParameters(EditActivity editActivity, DeviceConfiguration configuration, RobotConfigMap robotConfigMap)
-        {
+    public EditParameters(EditActivity editActivity, DeviceConfiguration configuration, RobotConfigMap robotConfigMap) {
         this(editActivity);
         this.configuration = configuration;
         this.robotConfigMap = robotConfigMap;
         this.haveRobotConfigMapParameter = true;
-        }
+    }
 
-    public EditParameters(EditActivity editActivity, Class<ITEM_T> itemClass, List<ITEM_T> list)
-        {
+    public EditParameters(EditActivity editActivity, Class<ITEM_T> itemClass, List<ITEM_T> list) {
         this(editActivity);
         setItems(itemClass, list);
-        }
+    }
 
-    public EditParameters(EditActivity editActivity, DeviceConfiguration configuration, Class<ITEM_T> itemClass, List<ITEM_T> list)
-        {
+    public EditParameters(EditActivity editActivity, DeviceConfiguration configuration, Class<ITEM_T> itemClass, List<ITEM_T> list) {
         this(editActivity);
         this.configuration = configuration;
         setItems(itemClass, list);
-        }
+    }
 
-    public EditParameters(EditActivity editActivity, Class<ITEM_T> itemClass, List<ITEM_T> list, int maxItemCount)
-        {
+    public EditParameters(EditActivity editActivity, Class<ITEM_T> itemClass, List<ITEM_T> list, int maxItemCount) {
         this(editActivity);
         setItems(itemClass, list);
         this.maxItemCount = maxItemCount;
-        }
+    }
 
-    private void setItems(Class<ITEM_T> itemClass, List<ITEM_T> list)
-        {
+    private void setItems(Class<ITEM_T> itemClass, List<ITEM_T> list) {
         this.itemClass = itemClass;
         this.currentItems = list;
-        for (DeviceConfiguration item : list)
-            {
+        for (DeviceConfiguration item : list) {
             Assert.assertTrue(itemClass.isInstance(item));
-            }
         }
+    }
 
-    public EditParameters(EditActivity editActivity)
-        {
+    public EditParameters(EditActivity editActivity) {
         this.isConfigDirty = editActivity.currentCfgFile.isDirty();
-        }
+    }
 
-    public EditParameters()
-        {
-        }
+    public EditParameters() {
+    }
 
     //------------------------------------------------------------------------------------------
     // Accessors
     //------------------------------------------------------------------------------------------
 
-    public DeviceConfiguration getConfiguration()
-        {
+    public DeviceConfiguration getConfiguration() {
         return this.configuration;
-        }
+    }
 
-    public List<ITEM_T> getCurrentItems()
-        {
+    public List<ITEM_T> getCurrentItems() {
         return this.currentItems == null ? new LinkedList<ITEM_T>() : this.currentItems;
-        }
+    }
 
-    public Class<ITEM_T> getItemClass()
-        {
+    public Class<ITEM_T> getItemClass() {
         Assert.assertNotNull(this.itemClass);
         return this.itemClass;
-        }
+    }
 
-    public int getMaxItemCount()
-        {
-        if (this.currentItems == null)
+    public int getMaxItemCount() {
+        if (this.currentItems == null) {
             return this.maxItemCount;
-        else
+        } else {
             return Math.max(this.maxItemCount, this.currentItems.size());
         }
+    }
 
-    public boolean isGrowable()
-        {
+    public boolean isGrowable() {
         return this.growable;
-        }
+    }
 
-    public void setGrowable(boolean growable)
-        {
+    public void setGrowable(boolean growable) {
         this.growable = growable;
-        }
+    }
 
-    public @NonNull ScannedDevices getScannedDevices()
-        {
+    public
+    @NonNull
+    ScannedDevices getScannedDevices() {
         return this.scannedDevices;
-        }
+    }
 
-    public void setScannedDevices(@NonNull ScannedDevices devices)
-        {
+    public void setScannedDevices(@NonNull ScannedDevices devices) {
         this.scannedDevices = devices;
-        }
+    }
 
-    public void setInitialPortNumber(int initialPortNumber)
-        {
+    public void setInitialPortNumber(int initialPortNumber) {
         this.initialPortNumber = initialPortNumber;
-        }
+    }
 
-    public int getInitialPortNumber()
-        {
+    public int getInitialPortNumber() {
         return this.initialPortNumber;
-        }
+    }
 
-    public RobotConfigMap getRobotConfigMap()
-        {
+    public RobotConfigMap getRobotConfigMap() {
         return this.robotConfigMap;
-        }
+    }
 
-    public void setRobotConfigMap(RobotConfigMap robotConfigMap)
-        {
+    public void setRobotConfigMap(RobotConfigMap robotConfigMap) {
         this.robotConfigMap = robotConfigMap;
         this.haveRobotConfigMapParameter = true;
-        }
+    }
 
-    public boolean haveRobotConfigMapParameter()
-        {
+    public boolean haveRobotConfigMapParameter() {
         return this.haveRobotConfigMapParameter;
-        }
+    }
 
-    public @NonNull List<RobotConfigFile> getExtantRobotConfigurations()
-        {
+    public
+    @NonNull
+    List<RobotConfigFile> getExtantRobotConfigurations() {
         return this.extantRobotConfigurations;
-        }
+    }
 
-    public void setExtantRobotConfigurations(List<RobotConfigFile> configurations)
-        {
+    public void setExtantRobotConfigurations(List<RobotConfigFile> configurations) {
         this.extantRobotConfigurations = configurations;
-        }
+    }
 
-    public ConfigurationType[] getConfigurationTypes()
-        {
+    public ConfigurationType[] getConfigurationTypes() {
         return this.configurationTypes;
-        }
+    }
 
-    public void setConfigurationTypes(ConfigurationType[] configurationTypes)
-        {
+    public void setConfigurationTypes(ConfigurationType[] configurationTypes) {
         this.configurationTypes = configurationTypes;
-        }
+    }
 
-    public RobotConfigFile getCurrentCfgFile()
-        {
+    public RobotConfigFile getCurrentCfgFile() {
         return this.currentCfgFile;
-        }
+    }
 
-    public void setCurrentCfgFile(RobotConfigFile currentCfgFile)
-        {
+    public void setCurrentCfgFile(RobotConfigFile currentCfgFile) {
         this.currentCfgFile = currentCfgFile;
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Operations
     //------------------------------------------------------------------------------------------
 
-    public void putIntent(Intent intent)
-        {
+    public void putIntent(Intent intent) {
         intent.putExtras(this.toBundle());
-        }
+    }
 
-    public Bundle toBundle()
-        {
+    public Bundle toBundle() {
         Bundle result = new Bundle();
 
-        if (this.configuration != null)
-            {
+        if (this.configuration != null) {
             result.putSerializable("configuration", this.configuration);
-            }
-        if (this.scannedDevices != null && this.scannedDevices.size() > 0)
-            {
+        }
+        if (this.scannedDevices != null && this.scannedDevices.size() > 0) {
             result.putSerializable("scannedDevices", this.scannedDevices);
-            }
-        if (this.robotConfigMap != null && this.robotConfigMap.size() > 0)
-            {
+        }
+        if (this.robotConfigMap != null && this.robotConfigMap.size() > 0) {
             result.putSerializable("robotConfigMap", this.robotConfigMap);
-            }
-        if (this.extantRobotConfigurations != null && this.extantRobotConfigurations.size() > 0)
-            {
+        }
+        if (this.extantRobotConfigurations != null && this.extantRobotConfigurations.size() > 0) {
             result.putString("extantRobotConfigurations", RobotConfigFileManager.serializeXMLConfigList(extantRobotConfigurations));
-            }
-        if (this.configurationTypes != null)
-            {
+        }
+        if (this.configurationTypes != null) {
             result.putSerializable("configurationTypes", this.configurationTypes);
-            }
-        if (this.currentCfgFile != null)
-            {
+        }
+        if (this.currentCfgFile != null) {
             result.putString("currentCfgFile", RobotConfigFileManager.serializeConfig(this.currentCfgFile));
-            }
+        }
         result.putBoolean("haveRobotConfigMap", this.haveRobotConfigMapParameter);
         result.putInt("initialPortNumber", this.initialPortNumber);
         result.putInt("maxItemCount", this.maxItemCount);
         result.putBoolean("growable", this.growable);
         result.putBoolean("isConfigDirty", this.isConfigDirty);
-        if (this.itemClass != null)
-            {
+        if (this.itemClass != null) {
             result.putString("itemClass", this.itemClass.getCanonicalName());
-            }
-        if (this.currentItems != null)
-            {
-            for (int i = 0; i < currentItems.size(); i++)
-                {
+        }
+        if (this.currentItems != null) {
+            for (int i = 0; i < currentItems.size(); i++) {
                 result.putSerializable(String.valueOf(i), currentItems.get(i));
-                }
             }
+        }
         return result;
-        }
+    }
 
-    public static @NonNull <RESULT_ITEM extends DeviceConfiguration> EditParameters<RESULT_ITEM> fromIntent(EditActivity editActivity, Intent intent)
-        {
+    public static
+    @NonNull
+    <RESULT_ITEM extends DeviceConfiguration> EditParameters<RESULT_ITEM> fromIntent(EditActivity editActivity, Intent intent) {
         return fromBundle(editActivity, intent.getExtras());
+    }
+
+    public static
+    @NonNull
+    <RESULT_ITEM extends DeviceConfiguration> EditParameters<RESULT_ITEM> fromBundle(EditActivity editActivity, Bundle bundle) {
+        EditParameters<RESULT_ITEM> result = new EditParameters<RESULT_ITEM>();
+        if (bundle == null) {
+            return result;
         }
 
-    public static @NonNull <RESULT_ITEM extends DeviceConfiguration> EditParameters<RESULT_ITEM> fromBundle(EditActivity editActivity, Bundle bundle)
-        {
-        EditParameters<RESULT_ITEM> result = new EditParameters<RESULT_ITEM>();
-        if (bundle == null) return result;
-
-        for (String key : bundle.keySet())
-            {
-            if (key.equals("configuration"))
-                {
+        for (String key : bundle.keySet()) {
+            if (key.equals("configuration")) {
                 result.configuration = (DeviceConfiguration) bundle.getSerializable(key);
-                }
-            else if (key.equals("scannedDevices"))
-                {
+            } else if (key.equals("scannedDevices")) {
                 result.scannedDevices = new ScannedDevices((HashMap<SerialNumber, DeviceManager.DeviceType>) bundle.getSerializable(key));
-                }
-            else if (key.equals("robotConfigMap"))
-                {
-                result.robotConfigMap = (RobotConfigMap)(bundle.getSerializable(key));
-                }
-            else if (key.equals("haveRobotConfigMap"))
-                {
+            } else if (key.equals("robotConfigMap")) {
+                result.robotConfigMap = (RobotConfigMap) (bundle.getSerializable(key));
+            } else if (key.equals("haveRobotConfigMap")) {
                 result.haveRobotConfigMapParameter = bundle.getBoolean(key);
-                }
-            else if (key.equals("extantRobotConfigurations"))
-                {
+            } else if (key.equals("extantRobotConfigurations")) {
                 result.extantRobotConfigurations = RobotConfigFileManager.deserializeXMLConfigList(bundle.getString(key));
-                }
-            else if (key.equals("configurationTypes"))
-                {
+            } else if (key.equals("configurationTypes")) {
                 Object[] objects = (Object[]) bundle.getSerializable(key);
                 result.configurationTypes = new ConfigurationType[objects.length];
-                for (int i = 0; i < objects.length; i++)
-                    {
-                    result.configurationTypes[i] = (ConfigurationType)objects[i];
-                    }
+                for (int i = 0; i < objects.length; i++) {
+                    result.configurationTypes[i] = (ConfigurationType) objects[i];
                 }
-            else if (key.equals("currentCfgFile"))
-                {
+            } else if (key.equals("currentCfgFile")) {
                 result.currentCfgFile = RobotConfigFileManager.deserializeConfig(bundle.getString(key));
-                }
-            else if (key.equals("initialPortNumber"))
-                {
+            } else if (key.equals("initialPortNumber")) {
                 result.initialPortNumber = bundle.getInt(key);
-                }
-            else if (key.equals("maxItemCount"))
-                {
+            } else if (key.equals("maxItemCount")) {
                 result.maxItemCount = bundle.getInt(key);
-                }
-            else if (key.equals("growable"))
-                {
+            } else if (key.equals("growable")) {
                 result.growable = bundle.getBoolean(key);
-                }
-            else if (key.equals("isConfigDirty"))
-                {
+            } else if (key.equals("isConfigDirty")) {
                 result.isConfigDirty = bundle.getBoolean(key);
-                }
-            else if (key.equals("itemClass"))
-                {
+            } else if (key.equals("itemClass")) {
                 try {
                     result.itemClass = (Class<RESULT_ITEM>) Class.forName(bundle.getString(key));
-                    }
-                catch (ClassNotFoundException e)
-                    {
+                } catch (ClassNotFoundException e) {
                     result.itemClass = null;
-                    }
                 }
-            else
-                {
-                try
-                    {
+            } else {
+                try {
                     int i = Integer.parseInt(key);
                     RESULT_ITEM dev = (RESULT_ITEM) bundle.getSerializable(key);
-                    if (result.currentItems == null)
-                        {
+                    if (result.currentItems == null) {
                         result.currentItems = new ArrayList<RESULT_ITEM>();
-                        }
+                    }
                     result.currentItems.add(i, dev);
-                    }
-                catch (NumberFormatException e)
-                    {
+                } catch (NumberFormatException e) {
                     continue;
-                    }
                 }
             }
+        }
 
         // Propagate dirtiness upon deserialization, both forwards and backwards through the activity stack.
-        if (result.isConfigDirty)
-            {
+        if (result.isConfigDirty) {
             editActivity.currentCfgFile.markDirty();
-            }
+        }
 
         return result;
-        }
     }
+}

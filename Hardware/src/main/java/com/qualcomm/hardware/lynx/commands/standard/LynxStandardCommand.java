@@ -41,54 +41,51 @@ import com.qualcomm.hardware.lynx.commands.LynxResponse;
  * Created by bob on 2016-03-04.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class LynxStandardCommand<RESPONSE extends LynxMessage> extends LynxCommand<RESPONSE>
-    {
+public abstract class LynxStandardCommand<RESPONSE extends LynxMessage> extends LynxCommand<RESPONSE> {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
-    public static final int COMMAND_NUMBER_ACK                     = 0x7f01;
-    public static final int COMMAND_NUMBER_NACK                    = 0x7f02;
-    public static final int COMMAND_NUMBER_GET_MODULE_STATUS       = 0x7f03;
-    public static final int COMMAND_NUMBER_KEEP_ALIVE              = 0x7f04;
-    public static final int COMMAND_NUMBER_FAIL_SAFE               = 0x7f05;
-    public static final int COMMAND_NUMBER_SET_NEW_MODULE_ADDRESS  = 0x7f06;
-    public static final int COMMAND_NUMBER_QUERY_INTERFACE         = 0x7f07;
-    public static final int COMMAND_NUMBER_START_DOWNLOAD          = 0x7f08;
-    public static final int COMMAND_NUMBER_DOWNLOAD_CHUNK          = 0x7f09;
-    public static final int COMMAND_NUMBER_SET_MODULE_LED_COLOR    = 0x7f0a;
-    public static final int COMMAND_NUMBER_GET_MODULE_LED_COLOR    = 0x7f0b;
-    public static final int COMMAND_NUMBER_SET_MODULE_LED_PATTERN  = 0x7f0c;
-    public static final int COMMAND_NUMBER_GET_MODULE_LED_PATTERN  = 0x7f0d;
-    public static final int COMMAND_NUMBER_DEBUG_LOG_LEVEL         = 0x7f0e;
-    public static final int COMMAND_NUMBER_DISCOVERY               = 0x7f0f;
+    public static final int COMMAND_NUMBER_ACK = 0x7f01;
+    public static final int COMMAND_NUMBER_NACK = 0x7f02;
+    public static final int COMMAND_NUMBER_GET_MODULE_STATUS = 0x7f03;
+    public static final int COMMAND_NUMBER_KEEP_ALIVE = 0x7f04;
+    public static final int COMMAND_NUMBER_FAIL_SAFE = 0x7f05;
+    public static final int COMMAND_NUMBER_SET_NEW_MODULE_ADDRESS = 0x7f06;
+    public static final int COMMAND_NUMBER_QUERY_INTERFACE = 0x7f07;
+    public static final int COMMAND_NUMBER_START_DOWNLOAD = 0x7f08;
+    public static final int COMMAND_NUMBER_DOWNLOAD_CHUNK = 0x7f09;
+    public static final int COMMAND_NUMBER_SET_MODULE_LED_COLOR = 0x7f0a;
+    public static final int COMMAND_NUMBER_GET_MODULE_LED_COLOR = 0x7f0b;
+    public static final int COMMAND_NUMBER_SET_MODULE_LED_PATTERN = 0x7f0c;
+    public static final int COMMAND_NUMBER_GET_MODULE_LED_PATTERN = 0x7f0d;
+    public static final int COMMAND_NUMBER_DEBUG_LOG_LEVEL = 0x7f0e;
+    public static final int COMMAND_NUMBER_DISCOVERY = 0x7f0f;
 
-    public static final int COMMAND_NUMBER_FIRST                   = COMMAND_NUMBER_ACK;
-    public static final int COMMAND_NUMBER_LAST                    = COMMAND_NUMBER_DISCOVERY;
+    public static final int COMMAND_NUMBER_FIRST = COMMAND_NUMBER_ACK;
+    public static final int COMMAND_NUMBER_LAST = COMMAND_NUMBER_DISCOVERY;
 
-    public static boolean isStandardPacketId(int packetId)
-        {
+    public static boolean isStandardPacketId(int packetId) {
         return isStandardCommandNumber(packetId) || isStandardResponseNumber(packetId);
-        }
-    public static boolean isStandardCommandNumber(int packetId)
-        {
+    }
+
+    public static boolean isStandardCommandNumber(int packetId) {
         return COMMAND_NUMBER_FIRST <= packetId && packetId <= COMMAND_NUMBER_LAST;
-        }
-    public static boolean isStandardResponseNumber(int packetId)
-        {
+    }
+
+    public static boolean isStandardResponseNumber(int packetId) {
         return (LynxResponse.RESPONSE_BIT & packetId) != 0 && isStandardCommandNumber(packetId & ~LynxResponse.RESPONSE_BIT);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxStandardCommand(LynxModule module)
-        {
+    public LynxStandardCommand(LynxModule module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
-    }
+}

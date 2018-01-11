@@ -41,31 +41,31 @@ import java.io.Closeable;
  * Provides service functionality for {@link MediaTransferProtocolMonitor}
  */
 @SuppressWarnings("WeakerAccess")
-public class MediaTransferProtocolMonitorService extends StartableService
-    {
+public class MediaTransferProtocolMonitorService extends StartableService {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "MTPMonitorService";
 
-    @Override public String getTag() { return TAG; }
+    @Override
+    public String getTag() {
+        return TAG;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public MediaTransferProtocolMonitorService()
-        {
-        super(new Supplier<Closeable>()
-            {
-            @Override public Closeable get()
-                {
+    public MediaTransferProtocolMonitorService() {
+        super(new Supplier<Closeable>() {
+            @Override
+            public Closeable get() {
                 MediaTransferProtocolMonitor result = MediaTransferProtocolMonitor.getInstance();
                 result.start();
                 return result;
-                }
-            });
-        }
-
+            }
+        });
     }
+
+}

@@ -41,24 +41,20 @@ import java.nio.ByteOrder;
  * Created by bob on 3/27/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class UsbDescriptorHeader
-    {
+public abstract class UsbDescriptorHeader {
     public int bLength;
     public int bDescriptorType;
 
-    public UsbDescriptorHeader(byte[] bytes)
-        {
+    public UsbDescriptorHeader(byte[] bytes) {
         this(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN));
-        }
+    }
 
-    public UsbDescriptorHeader(ByteBuffer descriptor)
-        {
+    public UsbDescriptorHeader(ByteBuffer descriptor) {
         this.bLength = TypeConversion.unsignedByteToInt(descriptor.get());
         this.bDescriptorType = TypeConversion.unsignedByteToInt(descriptor.get());
-        }
-
-    protected int cbOverhead()
-        {
-        return 2;
-        }
     }
+
+    protected int cbOverhead() {
+        return 2;
+    }
+}

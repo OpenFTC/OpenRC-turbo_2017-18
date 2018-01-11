@@ -37,24 +37,22 @@ package org.firstinspires.ftc.robotcore.internal.stellaris;
  * {@link FlashLoaderGetStatusCommand}.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderGetStatusResponse extends FlashLoaderDatagram
-    {
+public class FlashLoaderGetStatusResponse extends FlashLoaderDatagram {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public static final byte STATUS_SUCCESS      = (byte)0x40;
-    public static final byte STATUS_UNKNOWN_CMD  = (byte)0x41;
-    public static final byte STATUS_INVALID_CMD  = (byte)0x42;
-    public static final byte STATUS_INVALID_ADDR = (byte)0x43;
-    public static final byte STATUS_FLASH_FAIL   = (byte)0x44;
+    public static final byte STATUS_SUCCESS = (byte) 0x40;
+    public static final byte STATUS_UNKNOWN_CMD = (byte) 0x41;
+    public static final byte STATUS_INVALID_CMD = (byte) 0x42;
+    public static final byte STATUS_INVALID_ADDR = (byte) 0x43;
+    public static final byte STATUS_FLASH_FAIL = (byte) 0x44;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public FlashLoaderGetStatusResponse()
-        {
+    public FlashLoaderGetStatusResponse() {
         super(1);
-        }
     }
+}

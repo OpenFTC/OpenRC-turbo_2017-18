@@ -38,15 +38,13 @@ import com.qualcomm.hardware.lynx.commands.LynxResponse;
 /**
  * Created by bob on 2016-04-01.
  */
-public abstract class LynxStandardResponse extends LynxResponse
-    {
+public abstract class LynxStandardResponse extends LynxResponse {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxStandardResponse(LynxModule module)
-        {
+    public LynxStandardResponse(LynxModule module) {
         super(module);
-        }
-
     }
+
+}

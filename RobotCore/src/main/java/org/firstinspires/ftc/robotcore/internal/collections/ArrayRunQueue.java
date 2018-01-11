@@ -42,175 +42,152 @@ import java.util.NoSuchElementException;
  * runs of repeats of the same element very efficiently.
  */
 @SuppressWarnings("WeakerAccess")
-public class ArrayRunQueue<E>
-    {
+public class ArrayRunQueue<E> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected ArrayDeque<E>     elements;
+    protected ArrayDeque<E> elements;
     protected CircularIntBuffer counts;
-    protected int               size;
+    protected int size;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ArrayRunQueue()
-        {
+    public ArrayRunQueue() {
         this(8);
-        }
+    }
 
-    public ArrayRunQueue(int initialCapacity)
-        {
+    public ArrayRunQueue(int initialCapacity) {
         elements = new ArrayDeque<E>(initialCapacity);
-        counts   = new CircularIntBuffer(initialCapacity);
+        counts = new CircularIntBuffer(initialCapacity);
         clear();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    protected int computedSize()
-        {
+    protected int computedSize() {
         int total = 0;
-        for (int i = 0; i < counts.size(); i++)
-            {
+        for (int i = 0; i < counts.size(); i++) {
             total += counts.get(i);
-            }
+        }
         return total;
-        }
+    }
 
-    protected void verifyInvariants()
-        {
+    protected void verifyInvariants() {
         // Assert.assertTrue(computedSize()==size, "computed=%d size=%d", computedSize(), size);    // is slow, so disable for now
-        }
+    }
 
-    public boolean isEmpty()
-        {
+    public boolean isEmpty() {
         return counts.isEmpty();
-        }
+    }
 
-    public int size()
-        {
+    public int size() {
         return size;
-        }
+    }
 
-    public E getFirst()
-        {
-        if (!isEmpty())
-            {
+    public E getFirst() {
+        if (!isEmpty()) {
             return elements.getFirst();
-            }
+        }
         throw new NoSuchElementException("getFirst");
-        }
+    }
 
-    public E getLast()
-        {
-        if (!isEmpty())
-            {
+    public E getLast() {
+        if (!isEmpty()) {
             return elements.getLast();
-            }
-        throw new NoSuchElementException("getLast");
         }
+        throw new NoSuchElementException("getLast");
+    }
 
     //----------------------------------------------------------------------------------------------
     // Adding
     //----------------------------------------------------------------------------------------------
 
-    public boolean offerLast(E e)
-        {
+    public boolean offerLast(E e) {
         addLast(e);
         return true;
-        }
+    }
 
-    public void addLast(@NonNull E element)
-        {
+    public void addLast(@NonNull E element) {
         addLast(element, 1);
-        }
+    }
 
-    public void addLast(@NonNull E element, int count)
-        {
+    public void addLast(@NonNull E element, int count) {
         try {
-            if (count < 0) throw new IllegalArgumentException(String.format("count must be >= 0: %d", count));
-            if (count > 0)
-                {
+            if (count < 0) {
+                throw new IllegalArgumentException(String.format("count must be >= 0: %d", count));
+            }
+            if (count > 0) {
                 int sizeAfter = size() + count;
-                if (!isEmpty() && same(elements.getLast(), element))
-                    {
+                if (!isEmpty() && same(elements.getLast(), element)) {
                     int index = counts.size() - 1;
                     counts.put(index, counts.get(index) + count);
-                    }
-                else
-                    {
+                } else {
                     elements.addLast(element);
                     counts.addLast(count);
-                    }
-                size = sizeAfter;
                 }
+                size = sizeAfter;
             }
-        finally
-            {
+        } finally {
             verifyInvariants();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Removing
     //----------------------------------------------------------------------------------------------
 
-    public void clear()
-        {
+    public void clear() {
         elements.clear();
         counts.clear();
         size = 0;
         verifyInvariants();
-        }
+    }
 
-    /** @return the last element removed, or NoSuchElementException if nothing was removed */
-    public E removeFirstCount(int countToRemove)
-        {
+    /**
+     * @return the last element removed, or NoSuchElementException if nothing was removed
+     */
+    public E removeFirstCount(int countToRemove) {
         try {
-            if (countToRemove < 0)      throw new IllegalArgumentException(String.format("count must be >= 0: %d", countToRemove));
-            if (countToRemove > size)   throw new NoSuchElementException(String.format("count must be <= size: count=%d size=%d", countToRemove, size));
+            if (countToRemove < 0) {
+                throw new IllegalArgumentException(String.format("count must be >= 0: %d", countToRemove));
+            }
+            if (countToRemove > size) {
+                throw new NoSuchElementException(String.format("count must be <= size: count=%d size=%d", countToRemove, size));
+            }
 
             E elementLastRemoved = null;
-            if (countToRemove > 0)
-                {
+            if (countToRemove > 0) {
                 int sizeAfter = size() - countToRemove;
-                while (countToRemove > 0)
-                    {
+                while (countToRemove > 0) {
                     int firstCount = counts.get(0);
-                    if (firstCount <= countToRemove)
-                        {
+                    if (firstCount <= countToRemove) {
                         countToRemove -= firstCount;
                         counts.removeFirst();
                         elementLastRemoved = elements.removeFirst();
-                        }
-                    else
-                        {
+                    } else {
                         counts.put(0, firstCount - countToRemove);
                         countToRemove = 0;
                         elementLastRemoved = elements.getFirst();
-                        }
                     }
-                size = sizeAfter;
                 }
+                size = sizeAfter;
+            }
             return elementLastRemoved;
-            }
-        finally
-            {
+        } finally {
             verifyInvariants();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected boolean same(E e1, E e2)
-        {
+    protected boolean same(E e1, E e2) {
         return e1.equals(e2);
-        }
     }
+}

@@ -39,8 +39,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi.eeprom;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EEPROM_232R extends FT_EEPROM
-    {
+public class FT_EEPROM_232R extends FT_EEPROM {
     public boolean HighIO = false;
     public boolean ExternalOscillator = false;
     public boolean InvertTXD = false;
@@ -58,12 +57,10 @@ public class FT_EEPROM_232R extends FT_EEPROM
     public byte CBus4 = 0;
     public boolean LoadVCP = false;
 
-    public FT_EEPROM_232R()
-        {
-        }
+    public FT_EEPROM_232R() {
+    }
 
-    public static final class CBUS
-        {
+    public static final class CBUS {
         static final int TXDEN = 0;
         static final int PWRON = 1;
         static final int RXLED = 2;
@@ -78,8 +75,7 @@ public class FT_EEPROM_232R extends FT_EEPROM
         static final int BIT_BANG_WR = 11;
         static final int BIT_BANG_RD = 12;
 
-        public CBUS()
-            {
-            }
+        public CBUS() {
         }
     }
+}

@@ -43,8 +43,7 @@ import java.nio.ByteOrder;
  * Created by bob on 3/27/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class UsbDeviceDescriptor extends UsbDescriptorHeader
-    {
+public class UsbDeviceDescriptor extends UsbDescriptorHeader {
     public int bcdUSB;
     public int bDeviceClass;
     public int bDeviceSubClass;
@@ -60,29 +59,27 @@ public class UsbDeviceDescriptor extends UsbDescriptorHeader
     public int iSerialNumber;
     public int bNumConfigurations;
 
-    public UsbDeviceDescriptor(byte[] bytes)
-        {
+    public UsbDeviceDescriptor(byte[] bytes) {
         this(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN));
-        }
-    
-    public UsbDeviceDescriptor(ByteBuffer descriptor)
-        {
+    }
+
+    public UsbDeviceDescriptor(ByteBuffer descriptor) {
         super(descriptor);                                                          // 0,1
         Assert.assertTrue(bLength >= 18);
 
-        bcdUSB          = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 2,3
-        bDeviceClass    = TypeConversion.unsignedByteToInt(descriptor.get());       // 4
+        bcdUSB = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 2,3
+        bDeviceClass = TypeConversion.unsignedByteToInt(descriptor.get());       // 4
         bDeviceSubClass = TypeConversion.unsignedByteToInt(descriptor.get());       // 5
         bDeviceProtocol = TypeConversion.unsignedByteToInt(descriptor.get());       // 6
 
         bMaxPacketSize0 = TypeConversion.unsignedByteToInt(descriptor.get());       // 7
-        idVendor        = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 8,9
-        idProduct       = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 10,11
-        bcdDevice       = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 12,13
+        idVendor = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 8,9
+        idProduct = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 10,11
+        bcdDevice = TypeConversion.unsignedShortToInt(descriptor.getShort()); // 12,13
 
-        iManufacturer       = TypeConversion.unsignedByteToInt(descriptor.get());   // 14
-        iProduct            = TypeConversion.unsignedByteToInt(descriptor.get());   // 15
-        iSerialNumber       = TypeConversion.unsignedByteToInt(descriptor.get());   // 16
-        bNumConfigurations  = TypeConversion.unsignedByteToInt(descriptor.get());   // 17
-        }
+        iManufacturer = TypeConversion.unsignedByteToInt(descriptor.get());   // 14
+        iProduct = TypeConversion.unsignedByteToInt(descriptor.get());   // 15
+        iSerialNumber = TypeConversion.unsignedByteToInt(descriptor.get());   // 16
+        bNumConfigurations = TypeConversion.unsignedByteToInt(descriptor.get());   // 17
     }
+}

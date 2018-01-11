@@ -56,8 +56,7 @@ import java.util.Map;
  * @see VuforiaTrackable#getListener()
  */
 @SuppressWarnings("WeakerAccess")
-public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listener
-    {
+public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listener {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -78,8 +77,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public VuforiaTrackableDefaultListener(VuforiaTrackable trackable)
-        {
+    public VuforiaTrackableDefaultListener(VuforiaTrackable trackable) {
         this.trackable = trackable;
         this.newPoseAvailable = false;
         this.newLocationAvailable = false;
@@ -89,20 +87,20 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
 
         this.poseCorrectionMatrices = new HashMap<VuforiaLocalizer.CameraDirection, OpenGLMatrix>();
         this.poseCorrectionMatrices.put(VuforiaLocalizer.CameraDirection.BACK, new OpenGLMatrix(new float[]
-            {
-                0, -1,  0,  0,
-               -1,  0,  0,  0,
-                0,  0, -1,  0,
-                0,  0,  0,  1
-            }));
+                {
+                        0, -1, 0, 0,
+                        -1, 0, 0, 0,
+                        0, 0, -1, 0,
+                        0, 0, 0, 1
+                }));
         this.poseCorrectionMatrices.put(VuforiaLocalizer.CameraDirection.FRONT, new OpenGLMatrix(new float[]
-            {
-                0,  1,  0,  0,
-               -1,  0,  0,  0,
-                0,  0,  1,  0,
-                0,  0,  0,  1
-            }));
-        }
+                {
+                        0, 1, 0, 0,
+                        -1, 0, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                }));
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
@@ -113,42 +111,41 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * the camera being used. This information is needed in order to compute the robot location.
      *
      * @param phoneLocationOnRobot the location of the phone on the robot
-     * @param cameraDirection which camera on the phone is use
+     * @param cameraDirection      which camera on the phone is use
      * @see #getPhoneLocationOnRobot()
      * @see #getCameraDirection()
      * @see #getRobotLocation()
      */
-    public synchronized void setPhoneInformation(@NonNull OpenGLMatrix phoneLocationOnRobot, @NonNull VuforiaLocalizer.CameraDirection cameraDirection)
-        {
+    public synchronized void setPhoneInformation(@NonNull OpenGLMatrix phoneLocationOnRobot, @NonNull VuforiaLocalizer.CameraDirection cameraDirection) {
         this.phoneLocationOnRobotInverted = phoneLocationOnRobot.inverted();
         this.cameraDirection = cameraDirection;
-        }
+    }
 
     /**
      * Returns the location of the phone on the robot, as previously set, or null if that
      * has never been set.
+     *
      * @return the location of the phone on the robot
      * @see #setPhoneInformation(OpenGLMatrix, VuforiaLocalizer.CameraDirection)
      */
-    public synchronized OpenGLMatrix getPhoneLocationOnRobot()
-        {
+    public synchronized OpenGLMatrix getPhoneLocationOnRobot() {
         return this.phoneLocationOnRobotInverted == null ? null : this.phoneLocationOnRobotInverted.inverted();
-        }
+    }
 
     /**
      * Returns the identity of the camera in use
+     *
      * @return the identity of the camera in use
      * @see #setPhoneInformation(OpenGLMatrix, VuforiaLocalizer.CameraDirection)
      */
-    public synchronized VuforiaLocalizer.CameraDirection getCameraDirection()
-        {
+    public synchronized VuforiaLocalizer.CameraDirection getCameraDirection() {
         return this.cameraDirection;
-        }
+    }
 
     /**
      * Returns the {@link OpenGLMatrix} transform that represents the location of the robot
      * on the field, or null if that cannot be computed.
-     *
+     * <p>
      * <p>The pose will be null if the trackable is not currently visible. The location of the trackable
      * will be null if a location wasn't previously provided with {@link VuforiaTrackable#setLocation(OpenGLMatrix)}.
      * The phone location on the robot will be null if {@link #setPhoneInformation(OpenGLMatrix, VuforiaLocalizer.CameraDirection)}
@@ -160,13 +157,13 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @see #setPhoneInformation(OpenGLMatrix, VuforiaLocalizer.CameraDirection)
      * @see VuforiaTrackable#setLocation(OpenGLMatrix)
      */
-    public synchronized @Nullable OpenGLMatrix getRobotLocation()
-        {
+    public synchronized
+    @Nullable
+    OpenGLMatrix getRobotLocation() {
         // Capture the location in order to avoid races with concurrent updates
         OpenGLMatrix trackableLocationOnField = trackable.getLocation();
         OpenGLMatrix pose = this.getPose();
-        if (pose != null && trackableLocationOnField != null && this.phoneLocationOnRobotInverted != null)
-            {
+        if (pose != null && trackableLocationOnField != null && this.phoneLocationOnRobotInverted != null) {
             /**
              * The target is visible and we know the target's location on the field. Put
              * together the overall transformation matrix that computes the robot's
@@ -177,34 +174,35 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
                             .multiplied(pose.inverted())
                             .multiplied(phoneLocationOnRobotInverted);
             return result;
-            }
-        else
+        } else {
             return null;
         }
+    }
 
     /**
      * The {@link #poseCorrectionMatrices} correct for the different coordinate systems used
      * in Vuforia and our phone coordinate system here. Here, with the phone in flat front of you
      * in portrait mode (as it is when running the robot controller app), Z is pointing upwards, up
      * out of the screen, X points to your right, and Y points away from you.
+     *
      * @see #setPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection, OpenGLMatrix)
      */
-    public @NonNull OpenGLMatrix getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection direction)
-        {
-        synchronized (this.poseCorrectionMatrices)
-            {
+    public
+    @NonNull
+    OpenGLMatrix getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection direction) {
+        synchronized (this.poseCorrectionMatrices) {
             return this.poseCorrectionMatrices.get(direction);
-            }
         }
+    }
 
-    /** @see #getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection) */
-    public void setPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection direction, @NonNull OpenGLMatrix matrix)
-        {
-        synchronized (this.poseCorrectionMatrices)
-            {
+    /**
+     * @see #getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection)
+     */
+    public void setPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection direction, @NonNull OpenGLMatrix matrix) {
+        synchronized (this.poseCorrectionMatrices) {
             this.poseCorrectionMatrices.put(direction, matrix);
-            }
         }
+    }
 
     /**
      * Returns the location of the robot, but only if a new location has been detected since
@@ -213,22 +211,20 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @return the location of the robot
      * @see #getRobotLocation()
      */
-    public synchronized OpenGLMatrix getUpdatedRobotLocation()
-        {
-        if (this.newLocationAvailable)
-            {
+    public synchronized OpenGLMatrix getUpdatedRobotLocation() {
+        if (this.newLocationAvailable) {
             this.newLocationAvailable = false;
             return getRobotLocation();
-            }
-        else
+        } else {
             return null;
         }
+    }
 
     /**
      * Returns the pose of the trackable if it is currently visible. If it is not currently
      * visible, null is returned. The pose of the trackable is the location of the trackable
      * in the phone's coordinate system.
-     *
+     * <p>
      * <p>Note that whether a trackable is visible or not is constantly dynamically changing
      * in the background as the phone is moved about. Thus, just because one call to getPose()
      * returns a non-null matrix doesn't a second call a short time later will return the same
@@ -239,30 +235,32 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @see #getRawPose()
      * @see #isVisible()
      */
-    public synchronized @Nullable OpenGLMatrix getPose()
-        {
+    public synchronized
+    @Nullable
+    OpenGLMatrix getPose() {
         OpenGLMatrix pose = getRawPose();
-        return pose==null ? null : this.getPoseCorrectionMatrix(this.cameraDirection).multiplied(pose);
-        }
+        return pose == null ? null : this.getPoseCorrectionMatrix(this.cameraDirection).multiplied(pose);
+    }
 
     /**
      * Returns the raw pose of the trackable as reported by Vuforia. This differs from the
      * value reported by {@link #getPose()} since Vuforia and we here have different notions
      * of the phone coordinate system.
+     *
      * @return the raw pose of the trackable as reported by Vuforia
      * @see #getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection)
      */
-    public synchronized @Nullable OpenGLMatrix getRawPose()
-        {
-        if (this.currentPose != null)
-            {
+    public synchronized
+    @Nullable
+    OpenGLMatrix getRawPose() {
+        if (this.currentPose != null) {
             OpenGLMatrix result = new VuforiaPoseMatrix(this.currentPose).toOpenGL();
             // RobotLog.vv(TAG, "rawPose -> %s", result.toString());
             return result;
-            }
-        else
+        } else {
             return null;
         }
+    }
 
     /**
      * Returns the raw pose of the trackable, but only if a new pose is available since the last call
@@ -271,16 +269,16 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @return the raw pose of the trackable
      * @see #getRawPose()
      */
-    public synchronized @Nullable OpenGLMatrix getRawUpdatedPose()
-        {
-        if (this.newPoseAvailable)
-            {
+    public synchronized
+    @Nullable
+    OpenGLMatrix getRawUpdatedPose() {
+        if (this.newPoseAvailable) {
             this.newPoseAvailable = false;
             return getRawPose();
-            }
-        else
+        } else {
             return null;
         }
+    }
 
     /**
      * Answers whether the associated trackable is currently visible or not
@@ -288,10 +286,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @return whether the associated trackable is currently visible or not
      * @see #getPose()
      */
-    public boolean isVisible()
-        {
+    public boolean isVisible() {
         return getPose() != null;
-        }
+    }
 
     /**
      * Returns the pose associated with the last known tracked location of this trackable, if any.
@@ -300,10 +297,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @return the pose associated with the last known tracked location of this trackable, if any.
      * @see #getRawPose()
      */
-    public synchronized OpenGLMatrix getLastTrackedRawPose()
-        {
+    public synchronized OpenGLMatrix getLastTrackedRawPose() {
         return this.lastTrackedPose == null ? null : new VuforiaPoseMatrix(this.lastTrackedPose).toOpenGL();
-        }
+    }
 
     /**
      * Returns the instance id of the currently visible VuMark associated with this
@@ -312,10 +308,11 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @return the instance id of the currently visible VuMark
      * @see <a href="https://library.vuforia.com/content/vuforia-library/en/reference/java/classcom_1_1vuforia_1_1VuMarkTemplate.html">VuMark template</a>
      */
-    public synchronized @Nullable VuMarkInstanceId getVuMarkInstanceId()
-        {
+    public synchronized
+    @Nullable
+    VuMarkInstanceId getVuMarkInstanceId() {
         return vuMarkInstanceId;
-        }
+    }
 
     /**
      * {@link #onTracked(TrackableResult, VuforiaTrackable) onTracked} is called by the system to notify the
@@ -323,29 +320,28 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      *
      * @param trackableResult the Vuforia trackable result object in which we were located
      */
-    @Override public synchronized void onTracked(TrackableResult trackableResult, VuforiaTrackable child)
-        {
+    @Override
+    public synchronized void onTracked(TrackableResult trackableResult, VuforiaTrackable child) {
         this.currentPose = trackableResult.getPose();
         this.newPoseAvailable = true;
         this.newLocationAvailable = true;
         this.lastTrackedPose = this.currentPose;
 
-        if (trackableResult.isOfType(VuMarkTargetResult.getClassType()))
-            {
-            VuMarkTargetResult vuMarkTargetResult = (VuMarkTargetResult)trackableResult;
+        if (trackableResult.isOfType(VuMarkTargetResult.getClassType())) {
+            VuMarkTargetResult vuMarkTargetResult = (VuMarkTargetResult) trackableResult;
             VuMarkTarget vuMarkTarget = (VuMarkTarget) vuMarkTargetResult.getTrackable();
             vuMarkInstanceId = new VuMarkInstanceId(vuMarkTarget.getInstanceId());
-            }
         }
+    }
 
     /**
      * Called by the system to inform the trackable that it is no longer visible.
      */
-    @Override public synchronized void onNotTracked()
-        {
+    @Override
+    public synchronized void onNotTracked() {
         this.currentPose = null;
         this.newPoseAvailable = true;
         this.newLocationAvailable = true;
         this.vuMarkInstanceId = null;
-        }
     }
+}

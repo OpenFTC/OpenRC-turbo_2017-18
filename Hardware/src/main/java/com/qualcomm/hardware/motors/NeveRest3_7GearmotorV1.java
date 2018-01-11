@@ -42,9 +42,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
  * {@link NeveRest3_7GearmotorV1} represents the original v1 3-magnetic-pole version of the
  * NeveRest 3.7-geared gearmotor.
  */
-@MotorType(xmlTag="NeveRest3.7v1Gearmotor", name="NeveRest 3.7 v1 Gearmotor", ticksPerRev=44.4, gearing=3.7, maxRPM=1784, orientation=Rotation.CCW)
-@DistributorInfo(distributor="AndyMark", model="am-3461")
-@ModernRoboticsMotorControllerParams(P=128, I=40, D=192, ratio=57)
-public interface NeveRest3_7GearmotorV1
-    {
-    }
+@MotorType(xmlTag = "NeveRest3.7v1Gearmotor", name = "NeveRest 3.7 v1 Gearmotor", ticksPerRev = 44.4, gearing = 3.7, maxRPM = 1784, orientation = Rotation.CCW)
+@DistributorInfo(distributor = "AndyMark", model = "am-3461")
+@ModernRoboticsMotorControllerParams(P = 128, I = 40, D = 192, ratio = 57)
+public interface NeveRest3_7GearmotorV1 {
+}

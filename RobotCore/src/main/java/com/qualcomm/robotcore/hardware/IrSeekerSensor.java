@@ -39,131 +39,141 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface IrSeekerSensor extends HardwareDevice {
 
-  /**
-   * Enumeration of device modes
-   */
-  enum Mode {
-    MODE_600HZ, MODE_1200HZ
-  }
-
-  /**
-   * IR Sensor attached to an IR Seeker
-   * <p>
-   * Get the angle of this sensor, along with signal strength
-   */
-  class IrSeekerIndividualSensor {
-    private double angle = 0;
-    private double strength = 0;
-
     /**
-     * Constructor
+     * Enumeration of device modes
      */
-    public IrSeekerIndividualSensor() {
-      this(0, 0);
+    enum Mode {
+        MODE_600HZ, MODE_1200HZ
     }
 
     /**
-     * Constructor
+     * IR Sensor attached to an IR Seeker
+     * <p>
+     * Get the angle of this sensor, along with signal strength
      */
-    public IrSeekerIndividualSensor(double angle, double strength) {
-      this.angle = angle;
-      this.strength = strength;
+    class IrSeekerIndividualSensor {
+        private double angle = 0;
+        private double strength = 0;
+
+        /**
+         * Constructor
+         */
+        public IrSeekerIndividualSensor() {
+            this(0, 0);
+        }
+
+        /**
+         * Constructor
+         */
+        public IrSeekerIndividualSensor(double angle, double strength) {
+            this.angle = angle;
+            this.strength = strength;
+        }
+
+        /**
+         * Get the angle at which this sensor is mounted
+         *
+         * @return sensor angle
+         */
+        public double getSensorAngle() {
+            return angle;
+        }
+
+        /**
+         * Get the strength of the IR signal detected by this sensor
+         *
+         * @return IR strength, scaled from 0 to 1
+         */
+        public double getSensorStrength() {
+            return strength;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("IR Sensor: %3.1f degrees at %3.1f%% power", angle, strength * 100.0);
+        }
     }
 
     /**
-     * Get the angle at which this sensor is mounted
-     * @return sensor angle
+     * Set the minimum threshold for a signal to be considered detected
+     *
+     * @param threshold minimum threshold
      */
-    public double getSensorAngle() {
-      return angle;
-    }
+    void setSignalDetectedThreshold(double threshold);
 
     /**
-     * Get the strength of the IR signal detected by this sensor
-     * @return IR strength, scaled from 0 to 1
+     * Get the minimum threshold for a signal to be considered detected
+     *
+     * @return threshold
      */
-    public double getSensorStrength() {
-      return strength;
-    }
+    double getSignalDetectedThreshold();
 
-    @Override
-    public String toString() {
-      return String.format("IR Sensor: %3.1f degrees at %3.1f%% power", angle, strength * 100.0);
-    }
-  }
+    /**
+     * Set the device mode
+     *
+     * @param mode sample rate
+     */
+    void setMode(Mode mode);
 
-  /**
-   * Set the minimum threshold for a signal to be considered detected
-   * @param threshold minimum threshold
-   */
-  void setSignalDetectedThreshold(double threshold);
+    /**
+     * Get the device mode
+     *
+     * @return device mode
+     */
+    Mode getMode();
 
-  /**
-   * Get the minimum threshold for a signal to be considered detected
-   * @return threshold
-   */
-  double getSignalDetectedThreshold();
+    /**
+     * Returns true if an IR signal is detected
+     *
+     * @return true if signal is detected; otherwise false
+     */
+    boolean signalDetected();
 
-  /**
-   * Set the device mode
-   * @param mode sample rate
-   */
-  void setMode(Mode mode);
+    /**
+     * Estimated angle in which the signal is coming from
+     * <p>
+     * If the signal is estimated to be directly ahead, 0 will be returned. If the signal is to the
+     * left a negative angle will be returned. If the signal is to the right a positive angle will be
+     * returned. If no signal is detected, a 0 will be returned.
+     * <p>
+     * NOTE: not all sensors give an accurate angle.
+     *
+     * @return angle to IR signal
+     */
+    double getAngle();
 
-  /**
-   * Get the device mode
-   * @return device mode
-   */
-  Mode getMode();
+    /**
+     * IR Signal strength
+     * <p>
+     * Detected IR signal strength, on a scale of 0.0 to 1.0, where 0 is no signal detected and 1 is
+     * max IR signal detected.
+     *
+     * @return signal strength, scaled from 0 to 1
+     */
+    double getStrength();
 
-  /**
-   * Returns true if an IR signal is detected
-   * @return true if signal is detected; otherwise false
-   */
-  boolean signalDetected();
+    /**
+     * Get a list of all IR sensors attached to this seeker. The list will include the angle at which
+     * the sensor is mounted, and the signal strength.
+     *
+     * @return array of IrSensors
+     */
+    IrSeekerIndividualSensor[] getIndividualSensors();
 
-  /**
-   * Estimated angle in which the signal is coming from
-   * <p>
-   * If the signal is estimated to be directly ahead, 0 will be returned. If the signal is to the
-   * left a negative angle will be returned. If the signal is to the right a positive angle will be
-   * returned. If no signal is detected, a 0 will be returned.
-   * <p>
-   * NOTE: not all sensors give an accurate angle.
-   * @return angle to IR signal
-   */
-  double getAngle();
+    /**
+     * Set the I2C address to a new value.
+     */
+    void setI2cAddress(I2cAddr newAddress);
 
-  /**
-   * IR Signal strength
-   * <p>
-   * Detected IR signal strength, on a scale of 0.0 to 1.0, where 0 is no signal detected and 1 is
-   * max IR signal detected.
-   * @return signal strength, scaled from 0 to 1
-   */
-  double getStrength();
-
-  /**
-   * Get a list of all IR sensors attached to this seeker. The list will include the angle at which
-   * the sensor is mounted, and the signal strength.
-   * @return array of IrSensors
-   */
-  IrSeekerIndividualSensor[] getIndividualSensors();
-
-  /**
-   * Set the I2C address to a new value.
-   *
-   */
-  void setI2cAddress(I2cAddr newAddress);
-
-  /**
-   * Get the current I2C Address of this object.
-   * Not necessarily the same as the I2C address of the actual device.
-   *
-   * Return the current I2C address.
-   * @return current I2C address
-   */
-  I2cAddr getI2cAddress();
+    /**
+     * Get the current I2C Address of this object.
+     * Not necessarily the same as the I2C address of the actual device.
+     * <p>
+     * Return the current I2C address.
+     *
+     * @return current I2C address
+     */
+    I2cAddr getI2cAddress();
 
 
 }

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="about_turbo_version_title">Turbo Version</string>
-    <string name="about_turbo_version">1.1</string>
-    <string name="pref_line_wrap_log_title">Line Wrap</string>
-    <string name="pref_line_wrap_log_summary">Limits scrolling to the vertical axis</string>
-    <string name="pref_line_wrap_log">line_wrap_log</string>
-</resources>

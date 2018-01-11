@@ -36,8 +36,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * Created by bob on 3/27/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public enum UsbDescriptorType
-    {
+public enum UsbDescriptorType {
     // Table 9.6, USB Spec
     DEVICE(1),
     CONFIGURATION(2),
@@ -53,13 +52,11 @@ public enum UsbDescriptorType
     BOS(15),
     DEVICE_CAPABILITY(16),
     SUPERSPEED_USB_ENDPOINT_COMPANION(48),
-    SUPERSPEEDPLUS_ISOCHRONOUS_ENDPOINT_COMPANION(49),
-    ;
+    SUPERSPEEDPLUS_ISOCHRONOUS_ENDPOINT_COMPANION(49),;
 
     final int value;
 
-    UsbDescriptorType(int value)
-        {
+    UsbDescriptorType(int value) {
         this.value = value;
-        }
     }
+}

@@ -50,8 +50,7 @@ import java.nio.ByteOrder;
  * and controller module.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxDatagram
-    {
+public class LynxDatagram {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
@@ -62,25 +61,26 @@ public class LynxDatagram
      */
     public static final ByteOrder LYNX_ENDIAN = ByteOrder.LITTLE_ENDIAN;
 
-    /** How much are the frame bytes and packet length accounted for in the overall packet length? */
+    /**
+     * How much are the frame bytes and packet length accounted for in the overall packet length?
+     */
     public static final int cbFrameBytesAndPacketLength = 4;
 
     /**
      * Two particular bytes identify the start of a valid Controller Module data packet
      */
-    public static final byte[] frameBytes = new byte[] { 0x44, 0x4b };
+    public static final byte[] frameBytes = new byte[]{0x44, 0x4b};
 
     /**
      * Does the indicated data begin with the framing bytes?
      */
-    public static boolean beginsWithFraming(byte[] data)
-        {
+    public static boolean beginsWithFraming(byte[] data) {
         return data.length >= frameBytes.length && data[0] == frameBytes[0] && data[1] == frameBytes[1];
-        }
-    public static boolean beginsWithFraming(ByteBuffer buffer)
-        {
-        return buffer.get()==frameBytes[0] && buffer.get()==frameBytes[1];
-        }
+    }
+
+    public static boolean beginsWithFraming(ByteBuffer buffer) {
+        return buffer.get() == frameBytes[0] && buffer.get() == frameBytes[1];
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -133,24 +133,24 @@ public class LynxDatagram
     /**
      * If non-null, then this is the time window over which the payload of the datagram was received
      */
-    private @Nullable TimeWindow payloadTimeWindow;
+    private
+    @Nullable
+    TimeWindow payloadTimeWindow;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxDatagram()
-        {
+    public LynxDatagram() {
         this.destModuleAddress = 0;
         this.sourceModuleAddress = 0;
         this.messageNumber = 0;
         this.referenceNumber = 0;
         this.packetId = 0;
         this.payloadData = new byte[0];
-        }
+    }
 
-    public LynxDatagram(LynxMessage command) throws LynxUnsupportedCommandNumberException
-        {
+    public LynxDatagram(LynxMessage command) throws LynxUnsupportedCommandNumberException {
         this();
 
         int commandNumber = command.getCommandNumber();
@@ -161,115 +161,108 @@ public class LynxDatagram
         this.setReferenceNumber(command.getReferenceNumber());
         this.setPacketId(commandNumber);
         this.setPayloadData(command.toPayloadByteArray());
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public void setPayloadTimeWindow(TimeWindow payloadTimeWindow)
-        {
+    public void setPayloadTimeWindow(TimeWindow payloadTimeWindow) {
         this.payloadTimeWindow = payloadTimeWindow;
-        }
+    }
 
-    public @NonNull TimeWindow getPayloadTimeWindow()
-        {
+    public
+    @NonNull
+    TimeWindow getPayloadTimeWindow() {
         return payloadTimeWindow == null ? new TimeWindow() : payloadTimeWindow;
-        }
+    }
 
-    public int getPacketLength()
-        {
+    public int getPacketLength() {
         return TypeConversion.unsignedShortToInt(this.packetLength);
-        }
-    public void setPacketLength(int value)
-        {
-        this.packetLength = (byte)value;
-        }
-    public static int getFixedPacketLength()
-        {
+    }
+
+    public void setPacketLength(int value) {
+        this.packetLength = (byte) value;
+    }
+
+    public static int getFixedPacketLength() {
         return 11;
-        }
-    public int updatePacketLength()
-        {
+    }
+
+    public int updatePacketLength() {
         int cb = getFixedPacketLength() + payloadData.length;
         setPacketLength(cb);
         return cb;
-        }
+    }
 
-    public int getDestModuleAddress()
-        {
+    public int getDestModuleAddress() {
         return TypeConversion.unsignedByteToInt(this.destModuleAddress);
-        }
-    public void setDestModuleAddress(int value)
-        {
-        this.destModuleAddress = (byte)value;
-        }
+    }
 
-    public int getSourceModuleAddress()
-        {
+    public void setDestModuleAddress(int value) {
+        this.destModuleAddress = (byte) value;
+    }
+
+    public int getSourceModuleAddress() {
         return TypeConversion.unsignedByteToInt(this.sourceModuleAddress);
-        }
-    public void setSourceModuleAddress(int value)
-        {
-        this.sourceModuleAddress = (byte)value;
-        }
+    }
 
-    public int getMessageNumber()
-        {
+    public void setSourceModuleAddress(int value) {
+        this.sourceModuleAddress = (byte) value;
+    }
+
+    public int getMessageNumber() {
         return TypeConversion.unsignedByteToInt(this.messageNumber);
-        }
-    public void setMessageNumber(int value)
-        {
-        this.messageNumber = (byte)value;
-        }
+    }
 
-    public int getReferenceNumber()
-        {
+    public void setMessageNumber(int value) {
+        this.messageNumber = (byte) value;
+    }
+
+    public int getReferenceNumber() {
         return TypeConversion.unsignedByteToInt(this.referenceNumber);
-        }
-    public void setReferenceNumber(int value)
-        {
-        this.referenceNumber = (byte)value;
-        }
+    }
 
-    public int getPacketId()
-        {
+    public void setReferenceNumber(int value) {
+        this.referenceNumber = (byte) value;
+    }
+
+    public int getPacketId() {
         return TypeConversion.unsignedShortToInt(this.packetId);
-        }
-    public void setPacketId(int value)
-        {
-        this.packetId = (short)value;
-        }
-    public boolean isResponse()
-        {
+    }
+
+    public void setPacketId(int value) {
+        this.packetId = (short) value;
+    }
+
+    public boolean isResponse() {
         return getPacketId() >= LynxResponse.RESPONSE_BIT;
-        }
+    }
 
-    /** Note that we clear the response bit. */
-    public int getCommandNumber()
-        {
+    /**
+     * Note that we clear the response bit.
+     */
+    public int getCommandNumber() {
         return getPacketId() & ~LynxResponse.RESPONSE_BIT;
-        }
+    }
 
-    public byte[] getPayloadData()
-        {
+    public byte[] getPayloadData() {
         return this.payloadData;
-        }
-    public void setPayloadData(byte[] data)
-        {
-        this.payloadData = data;
-        }
+    }
 
-    public int getChecksum()
-        {
+    public void setPayloadData(byte[] data) {
+        this.payloadData = data;
+    }
+
+    public int getChecksum() {
         return TypeConversion.unsignedByteToInt(this.checksum);
-        }
-    public void setChecksum(int value)
-        {
-        this.checksum = (byte)value;
-        }
-    public byte computeChecksum()
-        {
+    }
+
+    public void setChecksum(int value) {
+        this.checksum = (byte) value;
+    }
+
+    public byte computeChecksum() {
         byte result = 0;
         result = checksumBytes(result, frameBytes);
         result = checksumBytes(result, TypeConversion.shortToByteArray(this.packetLength, LYNX_ENDIAN));
@@ -280,26 +273,24 @@ public class LynxDatagram
         result = checksumBytes(result, TypeConversion.shortToByteArray(this.packetId, LYNX_ENDIAN));
         result = checksumBytes(result, this.payloadData);
         return result;
-        }
-    private static byte checksumBytes(byte result, byte[] data)
-        {
-        for (int ib = 0; ib < data.length; ib++)
-            {
+    }
+
+    private static byte checksumBytes(byte result, byte[] data) {
+        for (int ib = 0; ib < data.length; ib++) {
             result += data[ib];
-            }
+        }
         return result;
-        }
-    public boolean isChecksumValid()
-        {
+    }
+
+    public boolean isChecksumValid() {
         return this.checksum == computeChecksum();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transmission and reception
     //----------------------------------------------------------------------------------------------
 
-    public byte[] toByteArray()
-        {
+    public byte[] toByteArray() {
         int cb = updatePacketLength();
         setChecksum(computeChecksum());
 
@@ -317,16 +308,17 @@ public class LynxDatagram
         buffer.put(this.checksum);
 
         return buffer.array();
-        }
+    }
 
-    public void fromByteArray(byte[] byteArray) throws RobotCoreException
-        {
+    public void fromByteArray(byte[] byteArray) throws RobotCoreException {
         ByteBuffer buffer = ByteBuffer.wrap(byteArray);
         buffer.order(LYNX_ENDIAN);
 
         try {
-            if (!beginsWithFraming(buffer)) throw illegalDatagram();
-            this.packetLength  = buffer.getShort();
+            if (!beginsWithFraming(buffer)) {
+                throw illegalDatagram();
+            }
+            this.packetLength = buffer.getShort();
             this.destModuleAddress = buffer.get();
             this.sourceModuleAddress = buffer.get();
             this.messageNumber = buffer.get();
@@ -338,15 +330,12 @@ public class LynxDatagram
             buffer.get(this.payloadData);
             //
             this.checksum = buffer.get();
-            }
-        catch (BufferUnderflowException e)
-            {
+        } catch (BufferUnderflowException e) {
             throw RobotCoreException.createChained(e, "Lynx datagram buffer underflow");
-            }
-        }
-
-    private RobotCoreException illegalDatagram()
-        {
-        return new RobotCoreException("illegal Lynx datagram format");
         }
     }
+
+    private RobotCoreException illegalDatagram() {
+        return new RobotCoreException("illegal Lynx datagram format");
+    }
+}

@@ -41,8 +41,7 @@ package org.firstinspires.ftc.robotcore.external.navigation;
  * @see <a href="https://www.youtube.com/watch?v=zc8b2Jo7mno">https://www.youtube.com/watch?v=zc8b2Jo7mno</a>
  * @see <a href="https://www.youtube.com/watch?v=mHVwd8gYLnI">https://www.youtube.com/watch?v=mHVwd8gYLnI</a>
  */
-public class Quaternion
-    {
+public class Quaternion {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -62,42 +61,37 @@ public class Quaternion
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public Quaternion()
-        {
+    public Quaternion() {
         this(0, 0, 0, 0, 0);
-        }
+    }
 
-    public Quaternion(float w, float x, float y, float z, long acquisitionTime)
-        {
+    public Quaternion(float w, float x, float y, float z, long acquisitionTime) {
         this.w = w;
         this.x = x;
         this.y = y;
         this.z = z;
         this.acquisitionTime = acquisitionTime;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public float magnitude()
-        {
-        return (float)Math.sqrt(w*w + x*x + y*y + z*z);
-        }
+    public float magnitude() {
+        return (float) Math.sqrt(w * w + x * x + y * y + z * z);
+    }
 
-    public Quaternion normalized()
-        {
+    public Quaternion normalized() {
         float mag = this.magnitude();
         return new Quaternion(
-            w / mag,
-            x / mag,
-            y / mag,
-            z / mag,
-            this.acquisitionTime);
-        }
-
-    public Quaternion congugate()
-        {
-        return new Quaternion(w, -x, -y, -z, this.acquisitionTime);
-        }
+                w / mag,
+                x / mag,
+                y / mag,
+                z / mag,
+                this.acquisitionTime);
     }
+
+    public Quaternion congugate() {
+        return new Quaternion(w, -x, -y, -z, this.acquisitionTime);
+    }
+}

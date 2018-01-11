@@ -45,128 +45,137 @@ import java.util.Collections;
  */
 public class Network {
 
-  /**
-   * Get the Loopback Address
-   * @return 127.0.0.1
-   */
-  public static InetAddress getLoopbackAddress() {
-    try {
-      return InetAddress.getByAddress(new byte[] {127, 0 , 0, 1});
-    } catch (UnknownHostException e) {
-      // since we don't expect a failure here, return null
-      return null;
-    }
-  }
-
-  /**
-   * Get local IP addresses
-   * @return a collection of all local IP addresses
-   */
-  public static ArrayList<InetAddress> getLocalIpAddresses() {
-
-    ArrayList<InetAddress> addresses = new ArrayList<InetAddress>();
-
-    try {
-      for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-        addresses.addAll(Collections.list(iface.getInetAddresses()));
-      }
-    } catch (SocketException e) {
-      // NetworkInterface.getNetworkInterfaces() threw an exception
-      // return an empty collection
-    }
-
-    return addresses;
-  }
-
-  /**
-   * Get local IP addresses of a given interface
-   * @param networkInterface
-   * @return a collection of all IP addresses for the given interface
-   */
-  public static ArrayList<InetAddress> getLocalIpAddress(String networkInterface) {
-
-    ArrayList<InetAddress> addresses = new ArrayList<InetAddress>();
-
-    try {
-      for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-        if (iface.getName() == networkInterface) {
-          addresses.addAll(Collections.list(iface.getInetAddresses()));
+    /**
+     * Get the Loopback Address
+     *
+     * @return 127.0.0.1
+     */
+    public static InetAddress getLoopbackAddress() {
+        try {
+            return InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
+        } catch (UnknownHostException e) {
+            // since we don't expect a failure here, return null
+            return null;
         }
-      }
-    } catch (SocketException e) {
-      // NetworkInterface.getNetworkInterfaces() threw an exception
-      // return an empty collection
     }
 
-    return addresses;
-  }
+    /**
+     * Get local IP addresses
+     *
+     * @return a collection of all local IP addresses
+     */
+    public static ArrayList<InetAddress> getLocalIpAddresses() {
 
-  /**
-   * Remove all IPv6 addresses from a collection
-   * @param addresses
-   * @return A new collection with all IPv6 addresses removed
-   */
-  public static ArrayList<InetAddress> removeIPv6Addresses(Collection<InetAddress> addresses) {
+        ArrayList<InetAddress> addresses = new ArrayList<InetAddress>();
 
-    ArrayList<InetAddress> filtered = new ArrayList<InetAddress>();
-    for (InetAddress addr : addresses) {
-      if (addr instanceof Inet4Address) {
-        filtered.add(addr);
-      }
+        try {
+            for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                addresses.addAll(Collections.list(iface.getInetAddresses()));
+            }
+        } catch (SocketException e) {
+            // NetworkInterface.getNetworkInterfaces() threw an exception
+            // return an empty collection
+        }
+
+        return addresses;
     }
 
-    return filtered;
-  }
+    /**
+     * Get local IP addresses of a given interface
+     *
+     * @param networkInterface
+     * @return a collection of all IP addresses for the given interface
+     */
+    public static ArrayList<InetAddress> getLocalIpAddress(String networkInterface) {
 
-  /**
-   * Remove all IPv4 addresses from a collection
-   * @param addresses
-   * @return A new collection with all IPv4 addresses removed
-   */
-  public static ArrayList<InetAddress> removeIPv4Addresses(Collection<InetAddress> addresses) {
+        ArrayList<InetAddress> addresses = new ArrayList<InetAddress>();
 
-    ArrayList<InetAddress> filtered = new ArrayList<InetAddress>();
-    for (InetAddress addr : addresses) {
-      if (addr instanceof Inet6Address) {
-        filtered.add(addr);
-      }
+        try {
+            for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (iface.getName() == networkInterface) {
+                    addresses.addAll(Collections.list(iface.getInetAddresses()));
+                }
+            }
+        } catch (SocketException e) {
+            // NetworkInterface.getNetworkInterfaces() threw an exception
+            // return an empty collection
+        }
+
+        return addresses;
     }
 
-    return filtered;
-  }
+    /**
+     * Remove all IPv6 addresses from a collection
+     *
+     * @param addresses
+     * @return A new collection with all IPv6 addresses removed
+     */
+    public static ArrayList<InetAddress> removeIPv6Addresses(Collection<InetAddress> addresses) {
 
-  /**
-   * Remove all loopback addresses from a collection
-   * @param addresses
-   * @return A new collection with all loopback addresses removed.
-   */
-  public static ArrayList<InetAddress> removeLoopbackAddresses(Collection<InetAddress> addresses) {
+        ArrayList<InetAddress> filtered = new ArrayList<InetAddress>();
+        for (InetAddress addr : addresses) {
+            if (addr instanceof Inet4Address) {
+                filtered.add(addr);
+            }
+        }
 
-    ArrayList<InetAddress> filtered = new ArrayList<InetAddress>();
-    for (InetAddress addr : addresses) {
-      if (!addr.isLoopbackAddress()) {
-        filtered.add(addr);
-      }
+        return filtered;
     }
 
-    return filtered;
-  }
+    /**
+     * Remove all IPv4 addresses from a collection
+     *
+     * @param addresses
+     * @return A new collection with all IPv4 addresses removed
+     */
+    public static ArrayList<InetAddress> removeIPv4Addresses(Collection<InetAddress> addresses) {
 
-  /**
-   * Get the host address of each InetAddress in a collection
-   * @param addresses
-   * @return a collection of host addresses
-   */
-  public static ArrayList<String> getHostAddresses(Collection<InetAddress> addresses) {
+        ArrayList<InetAddress> filtered = new ArrayList<InetAddress>();
+        for (InetAddress addr : addresses) {
+            if (addr instanceof Inet6Address) {
+                filtered.add(addr);
+            }
+        }
 
-    ArrayList<String> hostnames = new ArrayList<String>();
-
-    for (InetAddress addr : addresses) {
-      String host = addr.getHostAddress();
-      if (host.contains("%")) host = host.substring(0, host.indexOf('%'));
-      hostnames.add(host);
+        return filtered;
     }
 
-    return hostnames;
-  }
+    /**
+     * Remove all loopback addresses from a collection
+     *
+     * @param addresses
+     * @return A new collection with all loopback addresses removed.
+     */
+    public static ArrayList<InetAddress> removeLoopbackAddresses(Collection<InetAddress> addresses) {
+
+        ArrayList<InetAddress> filtered = new ArrayList<InetAddress>();
+        for (InetAddress addr : addresses) {
+            if (!addr.isLoopbackAddress()) {
+                filtered.add(addr);
+            }
+        }
+
+        return filtered;
+    }
+
+    /**
+     * Get the host address of each InetAddress in a collection
+     *
+     * @param addresses
+     * @return a collection of host addresses
+     */
+    public static ArrayList<String> getHostAddresses(Collection<InetAddress> addresses) {
+
+        ArrayList<String> hostnames = new ArrayList<String>();
+
+        for (InetAddress addr : addresses) {
+            String host = addr.getHostAddress();
+            if (host.contains("%")) {
+                host = host.substring(0, host.indexOf('%'));
+            }
+            hostnames.add(host);
+        }
+
+        return hostnames;
+    }
 }

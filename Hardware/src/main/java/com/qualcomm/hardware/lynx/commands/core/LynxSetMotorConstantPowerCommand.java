@@ -43,14 +43,13 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxSetMotorConstantPowerCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetMotorConstantPowerCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final static int cbPayload = 3;
-    public final static int apiPowerLast  =  32767;
+    public final static int apiPowerLast = 32767;
     public final static int apiPowerFirst = -apiPowerLast;
 
     private byte motor;
@@ -60,44 +59,41 @@ public class LynxSetMotorConstantPowerCommand extends LynxDekaInterfaceCommand<L
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetMotorConstantPowerCommand(LynxModuleIntf module)
-        {
+    public LynxSetMotorConstantPowerCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetMotorConstantPowerCommand(LynxModuleIntf module, int motorZ, int power)
-        {
+    public LynxSetMotorConstantPowerCommand(LynxModuleIntf module, int motorZ, int power) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        if (power < apiPowerFirst || power > apiPowerLast) throw new IllegalArgumentException(String.format("illegal power: %d", power));
-        this.motor = (byte)motorZ;
-        this.power = (short)power;
+        if (power < apiPowerFirst || power > apiPowerLast) {
+            throw new IllegalArgumentException(String.format("illegal power: %d", power));
         }
+        this.motor = (byte) motorZ;
+        this.power = (short) power;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.putShort(this.power);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
         this.power = buffer.getShort();
-        }
     }
+}

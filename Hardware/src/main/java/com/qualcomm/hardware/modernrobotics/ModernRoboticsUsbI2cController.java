@@ -44,62 +44,57 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * Modern Robotics USB I2cControllers. Not all possible shared functionality has yet been
  * lifted here; more sharing is possible.
  */
-public abstract class ModernRoboticsUsbI2cController extends ModernRoboticsUsbDevice implements I2cController
-    {
+public abstract class ModernRoboticsUsbI2cController extends ModernRoboticsUsbDevice implements I2cController {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final int                                 numberOfI2cPorts;
+    protected final int numberOfI2cPorts;
     protected final I2cPortReadyBeginEndNotifications[] i2cPortReadyBeginEndCallbacks;
-    protected       boolean                             notificationsActive;
+    protected boolean notificationsActive;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     public ModernRoboticsUsbI2cController(int numberOfI2cPorts, Context context, SerialNumber serialNumber, EventLoopManager manager, OpenRobotUsbDevice openRobotUsbDevice, CreateReadWriteRunnable createReadWriteRunnable)
-        throws RobotCoreException, InterruptedException
-        {
+            throws RobotCoreException, InterruptedException {
         super(context, serialNumber, manager, openRobotUsbDevice, createReadWriteRunnable);
-        this.numberOfI2cPorts              = numberOfI2cPorts;
+        this.numberOfI2cPorts = numberOfI2cPorts;
         this.i2cPortReadyBeginEndCallbacks = new I2cPortReadyBeginEndNotifications[numberOfI2cPorts];
-        this.notificationsActive           = false;
-        }
+        this.notificationsActive = false;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected void throwIfI2cPortIsInvalid(int port)
-        {
-        if (port < 0 || port >= numberOfI2cPorts)
-            {
+    protected void throwIfI2cPortIsInvalid(int port) {
+        if (port < 0 || port >= numberOfI2cPorts) {
             throw new IllegalArgumentException(String.format("port %d is invalid; valid ports are %d..%d", port, 0, numberOfI2cPorts - 1));
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Arming
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized boolean isArmed()
-        {
+    public synchronized boolean isArmed() {
         return super.isArmed();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Notifications management
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized void registerForPortReadyBeginEndCallback(I2cPortReadyBeginEndNotifications callback, int port)
-        {
+    public synchronized void registerForPortReadyBeginEndCallback(I2cPortReadyBeginEndNotifications callback, int port) {
         // Validate arguments
         throwIfI2cPortIsInvalid(port);
-        if (callback==null)
+        if (callback == null) {
             throw new IllegalArgumentException(String.format("illegal null: registerForI2cNotificationsCallback(null,%d)", port));
+        }
 
         // Tear down anyone who's there
         this.deregisterForPortReadyBeginEndCallback(port);
@@ -108,79 +103,63 @@ public abstract class ModernRoboticsUsbI2cController extends ModernRoboticsUsbDe
         i2cPortReadyBeginEndCallbacks[port] = callback;
 
         // Tell him things are starting
-        if (this.notificationsActive)
-            {
+        if (this.notificationsActive) {
             try {
                 callback.onPortIsReadyCallbacksBegin(port);
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                }
             }
         }
+    }
 
     @Override
-    public synchronized I2cPortReadyBeginEndNotifications getPortReadyBeginEndCallback(int port)
-        {
+    public synchronized I2cPortReadyBeginEndNotifications getPortReadyBeginEndCallback(int port) {
         throwIfI2cPortIsInvalid(port);
         return i2cPortReadyBeginEndCallbacks[port];
-        }
+    }
 
     @Override
-    public synchronized void deregisterForPortReadyBeginEndCallback(int port)
-        {
+    public synchronized void deregisterForPortReadyBeginEndCallback(int port) {
         throwIfI2cPortIsInvalid(port);
 
         // Tell any existing guy he won't be notified any more. Note that we send this
         // even if notifications aren't currently active
-        if (i2cPortReadyBeginEndCallbacks[port] != null)
-            {
+        if (i2cPortReadyBeginEndCallbacks[port] != null) {
             try {
                 i2cPortReadyBeginEndCallbacks[port].onPortIsReadyCallbacksEnd(port);
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                }
             }
+        }
 
         // forget anyone who's there
         i2cPortReadyBeginEndCallbacks[port] = null;
-        }
+    }
 
     @Override
-    public void startupComplete() throws InterruptedException
-        {
+    public void startupComplete() throws InterruptedException {
         this.notificationsActive = true;
 
-        if (i2cPortReadyBeginEndCallbacks != null)
-            {
-            for (int port = 0; port < numberOfI2cPorts; port++)
-                {
+        if (i2cPortReadyBeginEndCallbacks != null) {
+            for (int port = 0; port < numberOfI2cPorts; port++) {
                 I2cPortReadyBeginEndNotifications callback = i2cPortReadyBeginEndCallbacks[port];
-                if (callback != null)
-                    {
+                if (callback != null) {
                     callback.onPortIsReadyCallbacksBegin(port);
-                    }
                 }
             }
-        }
-
-    @Override
-    public void shutdownComplete() throws InterruptedException
-        {
-        if (i2cPortReadyBeginEndCallbacks != null)
-            {
-            for (int port = 0; port < numberOfI2cPorts; port++)
-                {
-                I2cPortReadyBeginEndNotifications callback = i2cPortReadyBeginEndCallbacks[port];
-                if (callback != null)
-                    {
-                    callback.onPortIsReadyCallbacksEnd(port);
-                    }
-                }
-            }
-        this.notificationsActive = false;
         }
     }
+
+    @Override
+    public void shutdownComplete() throws InterruptedException {
+        if (i2cPortReadyBeginEndCallbacks != null) {
+            for (int port = 0; port < numberOfI2cPorts; port++) {
+                I2cPortReadyBeginEndNotifications callback = i2cPortReadyBeginEndCallbacks[port];
+                if (callback != null) {
+                    callback.onPortIsReadyCallbacksEnd(port);
+                }
+            }
+        }
+        this.notificationsActive = false;
+    }
+}

@@ -36,14 +36,15 @@ import java.util.List;
 
 /**
  * {@link VuforiaTrackables} represents a set of targets that can be visually tracked.
+ *
  * @see VuforiaLocalizer#loadTrackablesFromAsset(String)
  * @see VuforiaLocalizer#loadTrackablesFromFile(String)
  */
-public interface VuforiaTrackables extends List<VuforiaTrackable>
-    {
+public interface VuforiaTrackables extends List<VuforiaTrackable> {
     /**
      * Sets the name for this {@link VuforiaTrackables} and any of its contained
      * trackables which do not already have a user-specified name
+     *
      * @param name the name for this trackables
      * @see #getName()
      */
@@ -51,6 +52,7 @@ public interface VuforiaTrackables extends List<VuforiaTrackable>
 
     /**
      * Returns the user-specified name for this trackables.
+     *
      * @return the user-specified name for this trackables.
      * @see #setName(String)
      */
@@ -59,6 +61,7 @@ public interface VuforiaTrackables extends List<VuforiaTrackable>
     /**
      * Activates this trackables so that its localizer is actively seeking the presence
      * of the trackables that it contains.
+     *
      * @see #deactivate()
      */
     void activate();
@@ -66,13 +69,15 @@ public interface VuforiaTrackables extends List<VuforiaTrackable>
     /**
      * Deactivates this trackables, causing its localizer to no longer see the presence
      * of the trackables it contains.
+     *
      * @see #activate()
      */
     void deactivate();
 
     /**
      * Returns the {@link VuforiaLocalizer} which manages this list of trackables.
+     *
      * @return the {@link VuforiaLocalizer} which manages this list of trackables.
      */
     VuforiaLocalizer getLocalizer();
-    }
+}

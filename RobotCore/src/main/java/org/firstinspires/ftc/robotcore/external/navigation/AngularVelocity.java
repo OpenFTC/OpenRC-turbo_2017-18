@@ -34,7 +34,7 @@ package org.firstinspires.ftc.robotcore.external.navigation;
 
 /**
  * Instances of {@link AngularVelocity} represent an instantaneous body-referenced 3D rotation rate.
- *
+ * <p>
  * <p>The instantaneous rate of change of an {@link Orientation}, which is what we are representing
  * here, has unexpected subtleties. As described in Section 9.3 of the MIT Kinematics Lecture below,
  * the <em>instantaneous</em> body-referenced rotation rate angles are decoupled (their order does not
@@ -46,8 +46,7 @@ package org.firstinspires.ftc.robotcore.external.navigation;
  * @see <a href="http://www.chrobotics.com/library/understanding-euler-angles">Understanding Euler Angles</a>
  * @see <a href="https://en.wikipedia.org/wiki/Angular_velocity">Angular Velocity</a>
  */
-public class AngularVelocity
-    {
+public class AngularVelocity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -84,19 +83,17 @@ public class AngularVelocity
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public AngularVelocity()
-        {
+    public AngularVelocity() {
         this(AngleUnit.DEGREES, 0, 0, 0, 0);
-        }
+    }
 
-    public AngularVelocity(AngleUnit unit, float xRotationRate, float yRotationRate, float zRotationRate, long acquisitionTime)
-        {
+    public AngularVelocity(AngleUnit unit, float xRotationRate, float yRotationRate, float zRotationRate, long acquisitionTime) {
         this.unit = unit;
         this.xRotationRate = xRotationRate;
         this.yRotationRate = yRotationRate;
         this.zRotationRate = zRotationRate;
         this.acquisitionTime = acquisitionTime;
-        }
+    }
 
     /**
      * Converts this {@link AngularVelocity} to one with the indicated angular units.
@@ -104,17 +101,15 @@ public class AngularVelocity
      * @param unit the units to use in the returned [@link AngularVelocity}
      * @return a new [@link AngularVelocity} with the same data but in the indicated units
      */
-    public AngularVelocity toAngleUnit(AngleUnit unit)
-        {
-        if (unit != this.unit)
-            {
+    public AngularVelocity toAngleUnit(AngleUnit unit) {
+        if (unit != this.unit) {
             return new AngularVelocity(unit,
                     unit.fromUnit(this.unit, xRotationRate),
                     unit.fromUnit(this.unit, yRotationRate),
                     unit.fromUnit(this.unit, zRotationRate),
                     this.acquisitionTime);
-            }
-        else
+        } else {
             return this;
         }
     }
+}

@@ -45,8 +45,7 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EE_Ctrl
-    {
+public class FT_EE_Ctrl {
     private static final short EE_MAX_SIZE = 1024;
     private static final int PULL_DOWN_IN_USB_SUSPEND = 4;
     private static final int ENABLE_SERIAL_NUMBER = 8;
@@ -58,60 +57,47 @@ public class FT_EE_Ctrl
     int mEepromSize;
     boolean mEepromBlank;
 
-    public FT_EE_Ctrl(FtDevice dev)
-        {
+    public FT_EE_Ctrl(FtDevice dev) {
         this.mDevice = dev;
-        }
+    }
 
-    public int readWord(short offset) throws RobotUsbException
-        {
+    public int readWord(short offset) throws RobotUsbException {
         byte[] dataRead = new byte[2];
         byte rc = -1;
-        if (offset >= 1024)
-            {
+        if (offset >= 1024) {
             return rc;
-            }
-        else
-            {
+        } else {
             this.mDevice.getConnection().controlTransfer(-64, 144, 0, offset, dataRead, 2, 0);
             int value = dataRead[1] & 255;
             value <<= 8;
             value |= dataRead[0] & 255;
             return value;
-            }
         }
+    }
 
-    public void writeWord(short offset, short value) throws RobotUsbException
-        {
-        if (offset >= 1024)
-            {
+    public void writeWord(short offset, short value) throws RobotUsbException {
+        if (offset >= 1024) {
             throw new IllegalArgumentException(String.format("offset >= 1024: %d", offset));
-            }
-        else
-            {
+        } else {
             int status = this.mDevice.getConnection().controlTransfer(64, 145, value, offset, (byte[]) null, 0, 0);
             FtDevice.throwIfStatus(status, "writeWord");
-            }
         }
+    }
 
-    public int eraseEeprom() throws RobotUsbException
-        {
+    public int eraseEeprom() throws RobotUsbException {
         return this.mDevice.getConnection().controlTransfer(64, 146, 0, 0, (byte[]) null, 0, 0);
-        }
+    }
 
-    public short programEeprom(FT_EEPROM eeprom) throws RobotUsbException
-        {
+    public short programEeprom(FT_EEPROM eeprom) throws RobotUsbException {
         return 1;
-        }
+    }
 
-    boolean programEeprom(int[] dataToWrite, int ee_size) throws RobotUsbException
-        {
+    boolean programEeprom(int[] dataToWrite, int ee_size) throws RobotUsbException {
         int checksumLocation = ee_size;
         int Checksum = 'ꪪ';
         int addressCounter = 0;
 
-        while (addressCounter < checksumLocation)
-            {
+        while (addressCounter < checksumLocation) {
             this.writeWord((short) addressCounter, (short) dataToWrite[addressCounter]);
             int var9 = dataToWrite[addressCounter] ^ Checksum;
             var9 &= '\uffff';
@@ -121,174 +107,139 @@ public class FT_EE_Ctrl
             Checksum &= '\uffff';
             ++addressCounter;
             Log.d("FT_EE_Ctrl", "Entered WriteWord Checksum : " + Checksum);
-            }
+        }
 
         this.writeWord((short) checksumLocation, (short) Checksum);
         return true;
-        }
+    }
 
-    public FT_EEPROM readEeprom()
-        {
+    public FT_EEPROM readEeprom() {
         return null;
-        }
+    }
 
-    int setUSBConfig(Object ee)
-        {
+    int setUSBConfig(Object ee) {
         FT_EEPROM ft = (FT_EEPROM) ee;
         boolean word0x04 = false;
         byte lowerbits = 0;
         boolean upperbits = false;
         int lowerbits1 = lowerbits | 128;
-        if (ft.RemoteWakeup)
-            {
+        if (ft.RemoteWakeup) {
             lowerbits1 |= 32;
-            }
+        }
 
-        if (ft.SelfPowered)
-            {
+        if (ft.SelfPowered) {
             lowerbits1 |= 64;
-            }
+        }
 
         short upperbits1 = ft.MaxPower;
         int upperbits2 = upperbits1 / 2;
         upperbits2 <<= 8;
         int word0x041 = upperbits2 | lowerbits1;
         return word0x041;
-        }
+    }
 
-    void getUSBConfig(FT_EEPROM ee, int dataRead)
-        {
+    void getUSBConfig(FT_EEPROM ee, int dataRead) {
         byte mP = (byte) (dataRead >> 8);
         ee.MaxPower = (short) (2 * mP);
         byte P = (byte) dataRead;
-        if ((P & 64) == 64 && (P & 128) == 128)
-            {
+        if ((P & 64) == 64 && (P & 128) == 128) {
             ee.SelfPowered = true;
-            }
-        else
-            {
+        } else {
             ee.SelfPowered = false;
-            }
-
-        if ((P & 32) == 32)
-            {
-            ee.RemoteWakeup = true;
-            }
-        else
-            {
-            ee.RemoteWakeup = false;
-            }
-
         }
 
-    int setDeviceControl(Object ee)
-        {
+        if ((P & 32) == 32) {
+            ee.RemoteWakeup = true;
+        } else {
+            ee.RemoteWakeup = false;
+        }
+
+    }
+
+    int setDeviceControl(Object ee) {
         FT_EEPROM ft = (FT_EEPROM) ee;
         byte data = 0;
         int data1;
-        if (ft.PullDownEnable)
-            {
+        if (ft.PullDownEnable) {
             data1 = data | 4;
-            }
-        else
-            {
+        } else {
             data1 = data & 251;
-            }
+        }
 
-        if (ft.SerNumEnable)
-            {
+        if (ft.SerNumEnable) {
             data1 |= 8;
-            }
-        else
-            {
+        } else {
             data1 &= 247;
-            }
+        }
 
         return data1;
-        }
+    }
 
-    void getDeviceControl(Object ee, int dataRead)
-        {
+    void getDeviceControl(Object ee, int dataRead) {
         FT_EEPROM ft = (FT_EEPROM) ee;
-        if ((dataRead & 4) > 0)
-            {
+        if ((dataRead & 4) > 0) {
             ft.PullDownEnable = true;
-            }
-        else
-            {
+        } else {
             ft.PullDownEnable = false;
-            }
-
-        if ((dataRead & 8) > 0)
-            {
-            ft.SerNumEnable = true;
-            }
-        else
-            {
-            ft.SerNumEnable = false;
-            }
-
         }
 
-    int setStringDescriptor(String s, int[] data, int addrs, int pointer, boolean rdevice)
-        {
+        if ((dataRead & 8) > 0) {
+            ft.SerNumEnable = true;
+        } else {
+            ft.SerNumEnable = false;
+        }
+
+    }
+
+    int setStringDescriptor(String s, int[] data, int addrs, int pointer, boolean rdevice) {
         int i = 0;
         int strLength = s.length() * 2 + 2;
         data[pointer] = strLength << 8 | addrs * 2;
-        if (rdevice)
-            {
+        if (rdevice) {
             data[pointer] += 128;
-            }
+        }
 
         char[] strchar = s.toCharArray();
         data[addrs++] = strLength | 768;
         strLength -= 2;
         strLength /= 2;
 
-        do
-            {
+        do {
             data[addrs++] = strchar[i];
             ++i;
-            } while (i < strLength);
+        } while (i < strLength);
 
         return addrs;
-        }
+    }
 
-    String getStringDescriptor(int addr, int[] dataRead)
-        {
+    String getStringDescriptor(int addr, int[] dataRead) {
         String descriptor = "";
         int len = dataRead[addr] & 255;
         len = len / 2 - 1;
         ++addr;
         int endaddr = addr + len;
 
-        for (int i = addr; i < endaddr; ++i)
-            {
+        for (int i = addr; i < endaddr; ++i) {
             descriptor = descriptor + (char) dataRead[i];
-            }
+        }
 
         return descriptor;
-        }
+    }
 
-    void clearUserDataArea(int saddr, int eeprom_size, int[] data)
-        {
-        while (saddr < eeprom_size)
-            {
+    void clearUserDataArea(int saddr, int eeprom_size, int[] data) {
+        while (saddr < eeprom_size) {
             data[saddr++] = 0;
-            }
-
         }
 
-    int getEepromSize(byte location) throws FtDeviceIOException, RobotUsbException
-        {
+    }
+
+    int getEepromSize(byte location) throws FtDeviceIOException, RobotUsbException {
         short data = 192;
         short address = (short) (location & -1);
         int[] dataRead = new int[3];
         int eeData = this.readWord(address);
-        if (eeData != '\uffff')
-            {
-            switch (eeData)
-                {
+        if (eeData != '\uffff') {
+            switch (eeData) {
                 case 70:
                     this.mEepromType = 70;
                     this.mEepromSize = 64;
@@ -311,10 +262,8 @@ public class FT_EE_Ctrl
                     return 256;
                 default:
                     return 0;
-                }
             }
-        else
-            {
+        } else {
             short address1 = 192;
             this.writeWord(address1, (short) data);
             dataRead[0] = this.readWord((short) 192);
@@ -324,62 +273,49 @@ public class FT_EE_Ctrl
             this.mEepromBlank = true;
             byte address2 = 0;
             int wordRead1 = this.readWord(address2);
-            if ((wordRead1 & 255) == 192)
-                {
+            if ((wordRead1 & 255) == 192) {
                 this.eraseEeprom();
                 this.mEepromType = 70;
                 this.mEepromSize = 64;
                 return 64;
-                }
-            else
-                {
+            } else {
                 address2 = 64;
                 wordRead1 = this.readWord(address2);
-                if ((wordRead1 & 255) == 192)
-                    {
+                if ((wordRead1 & 255) == 192) {
                     this.eraseEeprom();
                     this.mEepromType = 86;
                     this.mEepromSize = 128;
                     return 128;
-                    }
-                else
-                    {
+                } else {
                     address1 = 192;
                     wordRead1 = this.readWord(address1);
-                    if ((wordRead1 & 255) == 192)
-                        {
+                    if ((wordRead1 & 255) == 192) {
                         this.eraseEeprom();
                         this.mEepromType = 102;
                         this.mEepromSize = 128;
                         return 256;
-                        }
-                    else
-                        {
+                    } else {
                         this.eraseEeprom();
                         return 0;
-                        }
                     }
                 }
             }
         }
+    }
 
-    public int writeUserData(byte[] data) throws RobotUsbException
-        {
+    public int writeUserData(byte[] data) throws RobotUsbException {
         return 0;
-        }
+    }
 
-    public byte[] readUserData(int length) throws RobotUsbException
-        {
+    public byte[] readUserData(int length) throws RobotUsbException {
         return null;
-        }
+    }
 
-    public int getUserSize() throws RobotUsbException
-        {
+    public int getUserSize() throws RobotUsbException {
         return 0;
-        }
+    }
 
-    static final class EepromType
-        {
+    static final class EepromType {
         static final short TYPE_46 = 70;
         static final short TYPE_52 = 82;
         static final short TYPE_56 = 86;
@@ -387,8 +323,7 @@ public class FT_EE_Ctrl
         static final short TYPE_MTP = 1;
         static final short INVALID = 255;
 
-        EepromType()
-            {
-            }
+        EepromType() {
         }
     }
+}

@@ -43,78 +43,81 @@ import java.io.Serializable;
  * {@link DistributorInfoState} contains metadata transcribed from {@link DistributorInfo}
  */
 @SuppressWarnings("WeakerAccess")
-public class DistributorInfoState implements Serializable, Cloneable
-    {
+public class DistributorInfoState implements Serializable, Cloneable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    private @NonNull @Expose String distributor;
-    private @NonNull @Expose String model;
-    private @NonNull @Expose String url;
+    private
+    @NonNull
+    @Expose
+    String distributor;
+    private
+    @NonNull
+    @Expose
+    String model;
+    private
+    @NonNull
+    @Expose
+    String url;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public DistributorInfoState()
-        {
+    public DistributorInfoState() {
         distributor = "";
         model = "";
         url = "";
-        }
+    }
 
-    public static DistributorInfoState from(DistributorInfo info)
-        {
+    public static DistributorInfoState from(DistributorInfo info) {
         DistributorInfoState result = new DistributorInfoState();
         result.setDistributor(ClassUtil.decodeStringRes(info.distributor()));
         result.setModel(ClassUtil.decodeStringRes(info.model()));
         result.setUrl(ClassUtil.decodeStringRes(info.url()));
         return result;
-        }
+    }
 
-    public DistributorInfoState clone()
-        {
+    public DistributorInfoState clone() {
         try {
-            return (DistributorInfoState)super.clone();
-            }
-        catch (CloneNotSupportedException e)
-            {
+            return (DistributorInfoState) super.clone();
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException("internal error: Parameters not cloneable");
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public @NonNull String getDistributor()
-        {
+    public
+    @NonNull
+    String getDistributor() {
         return distributor;
-        }
-
-    public void setDistributor(@NonNull String distributor)
-        {
-        this.distributor = distributor.trim();
-        }
-
-    public @NonNull String getModel()
-        {
-        return model;
-        }
-
-    public void setModel(@NonNull String model)
-        {
-        this.model = model.trim();
-        }
-
-    public @NonNull String getUrl()
-        {
-        return url;
-        }
-
-    public void setUrl(@NonNull String url)
-        {
-        this.url = url.trim();
-        }
     }
+
+    public void setDistributor(@NonNull String distributor) {
+        this.distributor = distributor.trim();
+    }
+
+    public
+    @NonNull
+    String getModel() {
+        return model;
+    }
+
+    public void setModel(@NonNull String model) {
+        this.model = model.trim();
+    }
+
+    public
+    @NonNull
+    String getUrl() {
+        return url;
+    }
+
+    public void setUrl(@NonNull String url) {
+        this.url = url.trim();
+    }
+}

@@ -84,22 +84,21 @@ import java.util.concurrent.TimeUnit;
  * unit. Sensors using this integrated circuit are available from several manufacturers.
  */
 public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I2cDeviceSynch, BNO055IMU.Parameters>
-        implements BNO055IMU, Gyroscope, IntegratingGyroscope, I2cAddrConfig, OpModeManagerNotifier.Notifications
-    {
+        implements BNO055IMU, Gyroscope, IntegratingGyroscope, I2cAddrConfig, OpModeManagerNotifier.Notifications {
     //------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------
 
-    protected SensorMode             currentMode;
+    protected SensorMode currentMode;
 
-    protected final Object           dataLock = new Object();
+    protected final Object dataLock = new Object();
     protected AccelerationIntegrator accelerationAlgorithm;
 
-    protected final Object           startStopLock = new Object();
-    protected ExecutorService        accelerationMananger;
-    protected float                  delayScale             = 1;
-    protected static final int       msAwaitChipId          = 2000;
-    protected static final int       msAwaitSelfTest        = 2000;
+    protected final Object startStopLock = new Object();
+    protected ExecutorService accelerationMananger;
+    protected float delayScale = 1;
+    protected static final int msAwaitChipId = 2000;
+    protected static final int msAwaitSelfTest = 2000;
     // The msAwaitSelfTest value is lore. We choose here to use the same value for awaiting chip id,
     // on the (not completely unreasonable) theory that similar things are happening in the chip in both
     // cases. A survey of other libraries is as follows:
@@ -111,11 +110,11 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     /**
      * One of two primary register windows we use for reading from the BNO055.
-     * 
-     * Given the maximum allowable size of a register window, the set of registers on 
+     * <p>
+     * Given the maximum allowable size of a register window, the set of registers on
      * a BNO055 can be usefully divided into two windows, which we here call lowerWindow
-     * and upperWindow. 
-     * 
+     * and upperWindow.
+     * <p>
      * When we find the need to change register windows depending on what data is being requested
      * from the sensor, we try to use these two windows so as to reduce the number of register
      * window switching that might be required as other data is read in the future.
@@ -129,11 +128,10 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
      * @see #lowerWindow
      */
     protected static final I2cDeviceSynch.ReadWindow upperWindow = newWindow(Register.EUL_H_LSB, Register.TEMP);
-    
-    protected static I2cDeviceSynch.ReadWindow newWindow(Register regFirst, Register regMax)
-        {
-        return new I2cDeviceSynch.ReadWindow(regFirst.bVal, regMax.bVal-regFirst.bVal, readMode);
-        }
+
+    protected static I2cDeviceSynch.ReadWindow newWindow(Register regFirst, Register regMax) {
+        return new I2cDeviceSynch.ReadWindow(regFirst.bVal, regMax.bVal - regFirst.bVal, readMode);
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -141,30 +139,29 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     /**
      * This constructor is used by {@link UserConfigurationType#createInstance(I2cController, int)}
+     *
      * @see UserConfigurationType#createInstance(I2cController, int)
      * @see I2cSensor
      */
-    public BNO055IMUImpl(I2cDeviceSynch deviceClient)
-        {
+    public BNO055IMUImpl(I2cDeviceSynch deviceClient) {
         super(deviceClient, true, disabledParameters());
 
         this.deviceClient.setReadWindow(lowerWindow);
         this.deviceClient.engage();
 
-        this.currentMode           = null;
+        this.currentMode = null;
         this.accelerationAlgorithm = new NaiveAccelerationIntegrator();
-        this.accelerationMananger  = null;
+        this.accelerationMananger = null;
 
         this.registerArmingStateCallback(false);
-        }
+    }
 
     // A concrete instance to use that allows us to avoid ever having NULL parameters
-    protected static Parameters disabledParameters()
-        {
+    protected static Parameters disabledParameters() {
         Parameters result = new Parameters();
         result.mode = SensorMode.DISABLED;
         return result;
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Notifications
@@ -173,48 +170,49 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     // the opmode ends. To that end, it implements OpModeManagerNotifier.Notifications.
     //------------------------------------------------------------------------------------------
 
-    @Override public void resetDeviceConfigurationForOpMode()
-        {
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
         stopAccelerationIntegration();
         this.parameters = disabledParameters();
         super.resetDeviceConfigurationForOpMode();
-        }
+    }
 
-    @Override public void onOpModePreInit(OpMode opMode)
-        {
-        }
+    @Override
+    public void onOpModePreInit(OpMode opMode) {
+    }
 
-    @Override public void onOpModePreStart(OpMode opMode)
-        {
-        }
+    @Override
+    public void onOpModePreStart(OpMode opMode) {
+    }
 
-    @Override public void onOpModePostStop(OpMode opMode)
-        {
+    @Override
+    public void onOpModePostStop(OpMode opMode) {
         stopAccelerationIntegration();
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Initialization
     //------------------------------------------------------------------------------------------
 
-    @Override public I2cAddr getI2cAddress()
-        {
+    @Override
+    public I2cAddr getI2cAddress() {
         return this.parameters.i2cAddr;
-        }
+    }
 
-    @Override public void setI2cAddress(I2cAddr newAddress)
-        {
+    @Override
+    public void setI2cAddress(I2cAddr newAddress) {
         this.parameters.i2cAddr = newAddress;
         this.deviceClient.setI2cAddress(newAddress);
-        }
+    }
 
     /**
      * Initialize the device to be running in the indicated operation mode
      */
-    @Override public boolean internalInitialize(@NonNull Parameters parameters)
-        {
-        if (parameters.mode==SensorMode.DISABLED)
+    @Override
+    public boolean internalInitialize(@NonNull Parameters parameters) {
+        if (parameters.mode == SensorMode.DISABLED) {
             return false;
+        }
 
         // Remember parameters so they're accessible starting during initialization.
         // Disconnect from user parameters so he won't interfere with us later.
@@ -235,38 +233,35 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
         SystemStatus expectedStatus = parameters.mode.isFusionMode() ? SystemStatus.RUNNING_FUSION : SystemStatus.RUNNING_NO_FUSION;
 
-        for (int attempt=0; !Thread.currentThread().isInterrupted() && attempt < 5; attempt++)
-            {
-            if (internalInitializeOnce(expectedStatus))
-                {
+        for (int attempt = 0; !Thread.currentThread().isInterrupted() && attempt < 5; attempt++) {
+            if (internalInitializeOnce(expectedStatus)) {
                 this.isInitialized = true;
                 return true;
-                }
+            }
 
             // Hack: try again with more delay next time
             delayScale = Math.min(3, delayScale * 1.2f);
             log_w("retrying IMU initialization");
-            }
+        }
 
         log_e("IMU initialization failed");
         this.parameters = prevParameters;
         return false;
-        }
+    }
 
     /**
      * Do one attempt at initializing the device to be running in the indicated operation mode
      */
-    protected boolean internalInitializeOnce(SystemStatus expectedStatus)
-        {
+    protected boolean internalInitializeOnce(SystemStatus expectedStatus) {
         // Validate parameters
-        if (SensorMode.CONFIG == parameters.mode)
+        if (SensorMode.CONFIG == parameters.mode) {
             throw new IllegalArgumentException("SensorMode.CONFIG illegal for use as initialization mode");
+        }
 
         ElapsedTime elapsed = new ElapsedTime();
-        if (parameters.accelerationIntegrationAlgorithm != null)
-            {
+        if (parameters.accelerationIntegrationAlgorithm != null) {
             this.accelerationAlgorithm = parameters.accelerationIntegrationAlgorithm;
-            }
+        }
 
         // Lore: "send a throw-away command [...] just to make sure the BNO is in a good state
         // and ready to accept commands (this seems to be necessary after a hard power down)."
@@ -274,20 +269,18 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
         // Make sure we have the right device
         byte chipId = read8(Register.CHIP_ID);
-        if (chipId != bCHIP_ID_VALUE)
-            {
+        if (chipId != bCHIP_ID_VALUE) {
             delayExtra(650);     // delay value is from from Table 0-2 in the BNO055 specification
             chipId = read8(Register.CHIP_ID);
-            if (chipId != bCHIP_ID_VALUE)
-                {
+            if (chipId != bCHIP_ID_VALUE) {
                 log_e("unexpected chip: expected=%d found=%d", bCHIP_ID_VALUE, chipId);
                 return false;
-                }
             }
-        
+        }
+
         // Get us into config mode, for sure
         setSensorMode(SensorMode.CONFIG);
-        
+
         // Reset the system, and wait for the chip id register to switch back from its reset state 
         // to the it's chip id state. This can take a very long time, some 650ms (Table 0-2, p13) 
         // perhaps. While in the reset state the chip id (and other registers) reads as 0xFF.
@@ -295,24 +288,21 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         try {
             elapsed.reset();
             write8(Register.SYS_TRIGGER, 0x20);
-            for (;;)
-                {
+            for (; ; ) {
                 chipId = read8(Register.CHIP_ID);
-                if (chipId == bCHIP_ID_VALUE)
+                if (chipId == bCHIP_ID_VALUE) {
                     break;
+                }
                 delayExtra(10);
-                if (elapsed.milliseconds() > msAwaitChipId)
-                    {
+                if (elapsed.milliseconds() > msAwaitChipId) {
                     log_e("failed to retrieve chip id");
                     return false;
-                    }
                 }
+            }
             delayLoreExtra(50);
-            }
-        finally
-            {
+        } finally {
             TimestampedI2cData.suppressNewHealthWarnings(false);
-            }
+        }
 
         // Set to normal power mode
         write8(Register.PWR_MODE, POWER_MODE.NORMAL.getValue());
@@ -324,10 +314,10 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
         // Set the output units. Section 3.6, p31
         int unitsel = (parameters.pitchMode.bVal << 7) |       // pitch angle convention
-                      (parameters.temperatureUnit.bVal << 4) | // temperature
-                      (parameters.angleUnit.bVal << 2) |       // euler angle units
-                      (parameters.angleUnit.bVal << 1) |       // gyro units, per second
-                      (parameters.accelUnit.bVal /*<< 0*/);    // accelerometer units
+                (parameters.temperatureUnit.bVal << 4) | // temperature
+                (parameters.angleUnit.bVal << 2) |       // euler angle units
+                (parameters.angleUnit.bVal << 1) |       // gyro units, per second
+                (parameters.accelUnit.bVal /*<< 0*/);    // accelerometer units
         write8(Register.UNIT_SEL, unitsel);
 
         // Use or don't use the external crystal
@@ -368,34 +358,27 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         final int successfulResult = 0x07;
         final int successfulResultMask = 0x07;
         boolean selfTestSuccessful = false;
-        while (!selfTestSuccessful && elapsed.milliseconds() < msAwaitSelfTest)
-            {
-            selfTestSuccessful = (read8(Register.SELFTEST_RESULT)&successfulResultMask) == successfulResult;    // SELFTEST_RESULT=0x36
-            }
-        if (!selfTestSuccessful)
-            {
+        while (!selfTestSuccessful && elapsed.milliseconds() < msAwaitSelfTest) {
+            selfTestSuccessful = (read8(Register.SELFTEST_RESULT) & successfulResultMask) == successfulResult;    // SELFTEST_RESULT=0x36
+        }
+        if (!selfTestSuccessful) {
             int result = read8(Register.SELFTEST_RESULT);
             log_e("self test failed: 0x%02x", result);
             return false;
-            }
+        }
 
-        if (this.parameters.calibrationData != null)
-            {
+        if (this.parameters.calibrationData != null) {
             writeCalibrationData(this.parameters.calibrationData);
-            }
-        else if (this.parameters.calibrationDataFile != null)
-            {
+        } else if (this.parameters.calibrationDataFile != null) {
             try {
                 File file = AppUtil.getInstance().getSettingsFile(this.parameters.calibrationDataFile);
                 String serialized = ReadWriteFile.readFileOrThrow(file);
                 CalibrationData data = CalibrationData.deserialize(serialized);
                 writeCalibrationData(data);
-                }
-            catch (IOException e)
-                {
+            } catch (IOException e) {
                 // Ignore the absence of the indicated file, etc
-                }
             }
+        }
 
         // Finally, enter the requested operating mode (see section 3.3).
         setSensorMode(parameters.mode);
@@ -405,155 +388,142 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         // where the first mode request somehow doesn't take, so we re-issue. We don't understand the
         // circumstances that cause this condition (or we'd avoid them!).
         SystemStatus status = getSystemStatus();
-        if (status != expectedStatus)
-            {
+        if (status != expectedStatus) {
             log_w("re-issuing IMU mode: system status=%s expected=%s", status, expectedStatus);
             delayLore(100);
             setSensorMode(parameters.mode);
             status = getSystemStatus();
-            }
+        }
 
-        if (status==expectedStatus)
+        if (status == expectedStatus) {
             return true;
-        else
-            {
+        } else {
             log_w("IMU initialization failed: system status=%s expected=%s", status, expectedStatus);
             return false;
-            }
         }
-    
+    }
+
     protected void setSensorMode(SensorMode mode)
     /* The default operation mode after power-on is CONFIGMODE. When the user changes to another 
     operation mode, the sensors which are required in that particular sensor mode are powered, 
-    while the sensors whose signals are not required are set to suspend mode. */
-        {
+    while the sensors whose signals are not required are set to suspend mode. */ {
         // Remember the mode, 'cause that's easy
         this.currentMode = mode;
-        
+
         // Actually change the operation/sensor mode
         this.write8(Register.OPR_MODE, mode.bVal & 0x0F);                           // OPR_MODE=0x3D
 
         // Delay per Table 3-6 of BNO055 Data sheet (p21)
-        if (mode == SensorMode.CONFIG)
+        if (mode == SensorMode.CONFIG) {
             delayExtra(19);
-        else
+        } else {
             delayExtra(7);
         }
+    }
 
-    public synchronized SystemStatus getSystemStatus()
-        {
+    public synchronized SystemStatus getSystemStatus() {
         byte bVal = read8(Register.SYS_STAT);
         SystemStatus status = SystemStatus.from(bVal);
-        if (status==SystemStatus.UNKNOWN)
-            {
+        if (status == SystemStatus.UNKNOWN) {
             log_w("unknown system status observed: 0x%08x", bVal);
-            }
-        return status;
         }
+        return status;
+    }
 
-    public synchronized SystemError getSystemError()
-        {
+    public synchronized SystemError getSystemError() {
         byte bVal = read8(Register.SYS_ERR);
         SystemError error = SystemError.from(bVal);
-        if (error==SystemError.UNKNOWN)
-            {
+        if (error == SystemError.UNKNOWN) {
             log_w("unknown system error observed: 0x%08x", bVal);
-            }
-        return error;
         }
+        return error;
+    }
 
-    public synchronized CalibrationStatus getCalibrationStatus()
-        {
+    public synchronized CalibrationStatus getCalibrationStatus() {
         byte bVal = read8(Register.CALIB_STAT);
         return new CalibrationStatus(bVal);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void close()
-        {
+    public void close() {
         stopAccelerationIntegration();
         super.close();
-        }
+    }
 
-    @Override public abstract String getDeviceName();
+    @Override
+    public abstract String getDeviceName();
 
-    @Override public abstract Manufacturer getManufacturer();
+    @Override
+    public abstract Manufacturer getManufacturer();
 
     //----------------------------------------------------------------------------------------------
     // Gyroscope
     //----------------------------------------------------------------------------------------------
 
-    @Override public Set<Axis> getAngularVelocityAxes()
-        {
+    @Override
+    public Set<Axis> getAngularVelocityAxes() {
         Set<Axis> result = new HashSet<Axis>();
         result.add(Axis.X);
         result.add(Axis.Y);
         result.add(Axis.Z);
         return result;
-        }
-
-    @Override public Set<Axis> getAngularOrientationAxes()
-        {
-        Set<Axis> result = new HashSet<Axis>();
-        result.add(Axis.X);
-        result.add(Axis.Y);
-        result.add(Axis.Z);
-        return result;
-        }
+    }
 
     @Override
-    public synchronized AngularVelocity getAngularVelocity(org.firstinspires.ftc.robotcore.external.navigation.AngleUnit unit)
-        {
+    public Set<Axis> getAngularOrientationAxes() {
+        Set<Axis> result = new HashSet<Axis>();
+        result.add(Axis.X);
+        result.add(Axis.Y);
+        result.add(Axis.Z);
+        return result;
+    }
+
+    @Override
+    public synchronized AngularVelocity getAngularVelocity(org.firstinspires.ftc.robotcore.external.navigation.AngleUnit unit) {
         VectorData vector = getVector(VECTOR.GYROSCOPE, getAngularScale());
         float zRotationRate = -vector.next();
-        float yRotationRate =  vector.next();
-        float xRotationRate =  vector.next();
+        float yRotationRate = vector.next();
+        float xRotationRate = vector.next();
         return new AngularVelocity(parameters.angleUnit.toAngleUnit(),
-                    xRotationRate, yRotationRate, zRotationRate,
-                    vector.data.nanoTime)
+                xRotationRate, yRotationRate, zRotationRate,
+                vector.data.nanoTime)
                 .toAngleUnit(unit);
-        }
+    }
 
     @Override
-    public Orientation getAngularOrientation(AxesReference reference, AxesOrder order, org.firstinspires.ftc.robotcore.external.navigation.AngleUnit angleUnit)
-        {
+    public Orientation getAngularOrientation(AxesReference reference, AxesOrder order, org.firstinspires.ftc.robotcore.external.navigation.AngleUnit angleUnit) {
         return getAngularOrientation().toAxesReference(reference).toAxesOrder(order).toAngleUnit(angleUnit);
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Calibration
     //------------------------------------------------------------------------------------------
 
-    public synchronized boolean isSystemCalibrated()
-        {
+    public synchronized boolean isSystemCalibrated() {
         byte b = this.read8(Register.CALIB_STAT);
-        return ((b>>6) & 0x03) == 0x03;
-        }
+        return ((b >> 6) & 0x03) == 0x03;
+    }
 
-    public synchronized boolean isGyroCalibrated()
-        {
+    public synchronized boolean isGyroCalibrated() {
         byte b = this.read8(Register.CALIB_STAT);
-        return ((b>>4) & 0x03) == 0x03;
-        }
+        return ((b >> 4) & 0x03) == 0x03;
+    }
 
-    public synchronized boolean isAccelerometerCalibrated()
-        {
+    public synchronized boolean isAccelerometerCalibrated() {
         byte b = this.read8(Register.CALIB_STAT);
-        return ((b>>2) & 0x03) == 0x03;
-        }
+        return ((b >> 2) & 0x03) == 0x03;
+    }
 
-    public synchronized boolean isMagnetometerCalibrated()
-        {
+    public synchronized boolean isMagnetometerCalibrated() {
         byte b = this.read8(Register.CALIB_STAT);
         return ((b/*>>0*/) & 0x03) == 0x03;
-        }
+    }
 
-    public CalibrationData readCalibrationData()
-        {
+    public CalibrationData readCalibrationData() {
         // From Section 3.11.4 of the datasheet:
         //
         // "The calibration profile includes sensor offsets and sensor radius. Host system can
@@ -566,28 +536,31 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         //      http://iotdk.intel.com/docs/master/upm/classupm_1_1_b_n_o055.html
 
         SensorMode prevMode = this.currentMode;
-        if (prevMode != SensorMode.CONFIG) setSensorMode(SensorMode.CONFIG);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(SensorMode.CONFIG);
+        }
 
         CalibrationData result = new CalibrationData();
         result.dxAccel = readShort(Register.ACC_OFFSET_X_LSB);
         result.dyAccel = readShort(Register.ACC_OFFSET_Y_LSB);
         result.dzAccel = readShort(Register.ACC_OFFSET_Z_LSB);
-        result.dxMag   = readShort(Register.MAG_OFFSET_X_LSB);
-        result.dyMag   = readShort(Register.MAG_OFFSET_Y_LSB);
-        result.dzMag   = readShort(Register.MAG_OFFSET_Z_LSB);
-        result.dxGyro  = readShort(Register.GYR_OFFSET_X_LSB);
-        result.dyGyro  = readShort(Register.GYR_OFFSET_Y_LSB);
-        result.dzGyro  = readShort(Register.GYR_OFFSET_Z_LSB);
+        result.dxMag = readShort(Register.MAG_OFFSET_X_LSB);
+        result.dyMag = readShort(Register.MAG_OFFSET_Y_LSB);
+        result.dzMag = readShort(Register.MAG_OFFSET_Z_LSB);
+        result.dxGyro = readShort(Register.GYR_OFFSET_X_LSB);
+        result.dyGyro = readShort(Register.GYR_OFFSET_Y_LSB);
+        result.dzGyro = readShort(Register.GYR_OFFSET_Z_LSB);
         result.radiusAccel = readShort(Register.ACC_RADIUS_LSB);
-        result.radiusMag   = readShort(Register.MAG_RADIUS_LSB);
+        result.radiusMag = readShort(Register.MAG_RADIUS_LSB);
 
         // Restore the previous mode and return
-        if (prevMode != SensorMode.CONFIG) setSensorMode(prevMode);
-        return result;
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(prevMode);
         }
+        return result;
+    }
 
-    public void writeCalibrationData(CalibrationData data)
-        {
+    public void writeCalibrationData(CalibrationData data) {
         // Section 3.11.4:
         //
         // It is important that the correct offsets and corresponding sensor radius are used.
@@ -599,7 +572,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         //    3. Change operation mode to fusion mode
 
         SensorMode prevMode = this.currentMode;
-        if (prevMode != SensorMode.CONFIG) setSensorMode(SensorMode.CONFIG);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(SensorMode.CONFIG);
+        }
 
         writeShort(Register.ACC_OFFSET_X_LSB, data.dxAccel);
         writeShort(Register.ACC_OFFSET_Y_LSB, data.dyAccel);
@@ -610,49 +585,49 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         writeShort(Register.GYR_OFFSET_X_LSB, data.dxGyro);
         writeShort(Register.GYR_OFFSET_Y_LSB, data.dyGyro);
         writeShort(Register.GYR_OFFSET_Z_LSB, data.dzGyro);
-        writeShort(Register.ACC_RADIUS_LSB,   data.radiusAccel);
-        writeShort(Register.MAG_RADIUS_LSB,   data.radiusMag);
+        writeShort(Register.ACC_RADIUS_LSB, data.radiusAccel);
+        writeShort(Register.MAG_RADIUS_LSB, data.radiusMag);
 
         // Restore the previous mode and return
-        if (prevMode != SensorMode.CONFIG) setSensorMode(prevMode);
+        if (prevMode != SensorMode.CONFIG) {
+            setSensorMode(prevMode);
         }
+    }
 
     //------------------------------------------------------------------------------------------
     // IBNO055IMU data retrieval
     //------------------------------------------------------------------------------------------
 
-    public synchronized Temperature getTemperature()
-        {
+    public synchronized Temperature getTemperature() {
         byte b = this.read8(Register.TEMP);
-        return new Temperature(this.parameters.temperatureUnit.toTempUnit(), (double)b, System.nanoTime());
-        }
+        return new Temperature(this.parameters.temperatureUnit.toTempUnit(), (double) b, System.nanoTime());
+    }
 
-    public synchronized MagneticFlux getMagneticFieldStrength()
-        {
+    public synchronized MagneticFlux getMagneticFieldStrength() {
         VectorData vector = getVector(VECTOR.MAGNETOMETER, getFluxScale());
         return new MagneticFlux(vector.next(), vector.next(), vector.next(), vector.data.nanoTime);
-        }
-    public synchronized Acceleration getOverallAcceleration()
-        {
+    }
+
+    public synchronized Acceleration getOverallAcceleration() {
         VectorData vector = getVector(VECTOR.ACCELEROMETER, getMetersAccelerationScale());
         return new Acceleration(DistanceUnit.METER, vector.next(), vector.next(), vector.next(), vector.data.nanoTime);
-        }
-    public synchronized Acceleration getLinearAcceleration()
-        {
+    }
+
+    public synchronized Acceleration getLinearAcceleration() {
         VectorData vector = getVector(VECTOR.LINEARACCEL, getMetersAccelerationScale());
         return new Acceleration(DistanceUnit.METER, vector.next(), vector.next(), vector.next(), vector.data.nanoTime);
-        }
-    public synchronized Acceleration getGravity()
-        {
+    }
+
+    public synchronized Acceleration getGravity() {
         VectorData vector = getVector(VECTOR.GRAVITY, getMetersAccelerationScale());
         return new Acceleration(DistanceUnit.METER, vector.next(), vector.next(), vector.next(), vector.data.nanoTime);
-        }
-    public synchronized AngularVelocity getAngularVelocity()
-        {
+    }
+
+    public synchronized AngularVelocity getAngularVelocity() {
         return getAngularVelocity(parameters.angleUnit.toAngleUnit());
-        }
-    public synchronized Orientation getAngularOrientation()
-        {
+    }
+
+    public synchronized Orientation getAngularOrientation() {
         // Data returned from VECTOR.EULER is heading, roll, pitch, in that order.
         //
         // Note that the IMU returns heading in what one might call 'compass' direction, with values
@@ -670,10 +645,9 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
                 angleUnit.normalize(vector.next()),
                 angleUnit.normalize(vector.next()),
                 vector.data.nanoTime);
-        }
+    }
 
-    public synchronized Quaternion getQuaternionOrientation()
-        {
+    public synchronized Quaternion getQuaternionOrientation() {
         // Ensure we can see the registers we need
         deviceClient.ensureReadWindow(
                 new I2cDeviceSynch.ReadWindow(Register.QUA_DATA_W_LSB.bVal, 8, readMode),
@@ -683,28 +657,25 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         TimestampedData ts = deviceClient.readTimeStamped(Register.QUA_DATA_W_LSB.bVal, 8);
         VectorData vector = new VectorData(ts, (1 << 14));
         return new Quaternion(vector.next(), vector.next(), vector.next(), vector.next(), vector.data.nanoTime);
-        }
+    }
 
     /**
      * Return the number by which we need to divide a raw angle as read from the device in order
      * to convert it to our current angular units. See Table 3-22 of the BNO055 spec
      */
-    protected float getAngularScale()
-        {
+    protected float getAngularScale() {
         return this.parameters.angleUnit == AngleUnit.DEGREES ? 16.0f : 900.0f;
-        }
+    }
 
     /**
      * Return the number by which we need to divide a raw acceleration as read from the device in order
      * to convert it to our current acceleration units. See Table 3-17 of the BNO055 spec.
      */
-    protected float getAccelerationScale()
-        {
+    protected float getAccelerationScale() {
         return this.parameters.accelUnit == AccelUnit.METERS_PERSEC_PERSEC ? 100.0f : 1.0f;
-        }
+    }
 
-    protected float getMetersAccelerationScale()
-        {
+    protected float getMetersAccelerationScale() {
         // Logically, the difference in scale between m/s^2 and mg should be 1000 / gravity
         // == 1000 / 9.80665 == 101.97162. And that's not 100. But if we actually use the
         // logically correct scale factor, the magnitude of the reported gravity vector doesn't
@@ -719,83 +690,79 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         return this.parameters.accelUnit == AccelUnit.METERS_PERSEC_PERSEC
                 ? getAccelerationScale()
                 : getAccelerationScale() /*in mg*/ * scaleConversionFactor;
-        }
+    }
 
     /**
      * Return the number by which we need to divide a raw acceleration as read from the device in order
      * to convert it to our current angular units. See Table 3-19 of the BNO055 spec. Note that the
      * BNO055 natively uses micro Teslas; we instead use Teslas.
      */
-    protected float getFluxScale()
-        {
+    protected float getFluxScale() {
         return 16.0f * 1000000.0f;
-        }
+    }
 
-    protected VectorData getVector(final VECTOR vector, float scale)
-        {
+    protected VectorData getVector(final VECTOR vector, float scale) {
         // Ensure that the 6 bytes for this vector are visible in the register window.
         ensureReadWindow(new I2cDeviceSynch.ReadWindow(vector.getValue(), 6, readMode));
 
         // Read the data
         return new VectorData(deviceClient.readTimeStamped(vector.getValue(), 6), scale);
-        }
+    }
 
-    protected static class VectorData
-        {
-        public    TimestampedData   data;
-        public    float             scale;
-        protected ByteBuffer        buffer;
+    protected static class VectorData {
+        public TimestampedData data;
+        public float scale;
+        protected ByteBuffer buffer;
 
-        public VectorData(TimestampedData data, float scale)
-            {
+        public VectorData(TimestampedData data, float scale) {
             this.data = data;
             this.scale = scale;
             buffer = ByteBuffer.wrap(data.data).order(ByteOrder.LITTLE_ENDIAN);
-            }
-
-        public float next()
-            {
-            return buffer.getShort() / scale;
-            }
         }
+
+        public float next() {
+            return buffer.getShort() / scale;
+        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Position and velocity management
     //------------------------------------------------------------------------------------------
-    
-    public Acceleration getAcceleration()
-        {
-        synchronized (dataLock)
-            {
+
+    public Acceleration getAcceleration() {
+        synchronized (dataLock) {
             Acceleration result = this.accelerationAlgorithm.getAcceleration();
-            if (result == null) result = new Acceleration();
-            return result;
+            if (result == null) {
+                result = new Acceleration();
             }
+            return result;
         }
-    public Velocity getVelocity()
-        {
-        synchronized (dataLock)
-            {
+    }
+
+    public Velocity getVelocity() {
+        synchronized (dataLock) {
             Velocity result = this.accelerationAlgorithm.getVelocity();
-            if (result == null) result = new Velocity();
-            return result;
+            if (result == null) {
+                result = new Velocity();
             }
+            return result;
         }
-    public Position getPosition()
-        {
-        synchronized (dataLock)
-            {
+    }
+
+    public Position getPosition() {
+        synchronized (dataLock) {
             Position result = this.accelerationAlgorithm.getPosition();
-            if (result == null) result = new Position();
-            return result;
+            if (result == null) {
+                result = new Position();
             }
+            return result;
         }
+    }
 
     public void startAccelerationIntegration(Position initalPosition, Velocity initialVelocity, int msPollInterval)
     // Start integrating acceleration to determine position and velocity by polling for acceleration every while
-        {
-        synchronized (this.startStopLock)
-            {
+    {
+        synchronized (this.startStopLock) {
             // Stop doing this if we're already in flight
             this.stopAccelerationIntegration();
 
@@ -807,167 +774,148 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
             // Start the whole schebang a rockin...
             this.accelerationMananger.execute(new AccelerationManager(msPollInterval));
-            }
         }
-    
+    }
+
     public void stopAccelerationIntegration() // needs a different lock than 'synchronized(this)'
-        {
-        synchronized (this.startStopLock)
-            {
+    {
+        synchronized (this.startStopLock) {
             // Stop the integration thread
-            if (this.accelerationMananger != null)
-                {
+            if (this.accelerationMananger != null) {
                 this.accelerationMananger.shutdownNow();
                 ThreadPool.awaitTerminationOrExitApplication(this.accelerationMananger, 10, TimeUnit.SECONDS, "IMU acceleration", "unresponsive user acceleration code");
                 this.accelerationMananger = null;
-                }
             }
         }
+    }
 
-    /** Maintains current velocity and position by integrating acceleration */
-    class AccelerationManager implements Runnable
-        {
+    /**
+     * Maintains current velocity and position by integrating acceleration
+     */
+    class AccelerationManager implements Runnable {
         protected final int msPollInterval;
         protected final static long nsPerMs = ElapsedTime.MILLIS_IN_NANO;
-        
-        AccelerationManager(int msPollInterval)
-            {
+
+        AccelerationManager(int msPollInterval) {
             this.msPollInterval = msPollInterval;
-            }
-        
-        @Override public void run()
-            {
+        }
+
+        @Override
+        public void run() {
             // Don't let inappropriate exceptions sneak out
-            try
-                {
+            try {
                 // Loop until we're asked to stop
-                while (!isStopRequested())
-                    {
+                while (!isStopRequested()) {
                     // Read the latest available acceleration
                     final Acceleration linearAcceleration = BNO055IMUImpl.this.getLinearAcceleration();
 
                     // Have the algorithm do its thing
-                    synchronized (dataLock)
-                        {
+                    synchronized (dataLock) {
                         accelerationAlgorithm.update(linearAcceleration);
-                        }
-                    
+                    }
+
                     // Wait an appropriate interval before beginning again
-                    if (msPollInterval > 0)
-                        {
+                    if (msPollInterval > 0) {
                         long msSoFar = (System.nanoTime() - linearAcceleration.acquisitionTime) / nsPerMs;
                         long msReadFudge = 5;   // very roughly accounts for delta from read request to acquisitionTime setting
-                        Thread.sleep(Math.max(0,msPollInterval - msSoFar - msReadFudge));
-                        }
-                    else
+                        Thread.sleep(Math.max(0, msPollInterval - msSoFar - msReadFudge));
+                    } else {
                         Thread.yield(); // never do a hard spin
                     }
                 }
-            catch (InterruptedException|CancellationException e)
-                {
+            } catch (InterruptedException | CancellationException e) {
                 return;
-                }
             }
         }
+    }
 
-    boolean isStopRequested()
-        {
+    boolean isStopRequested() {
         return Thread.currentThread().isInterrupted();
-        }
+    }
 
-    @Override public synchronized byte read8(final Register reg)
-        {
+    @Override
+    public synchronized byte read8(final Register reg) {
         return deviceClient.read8(reg.bVal);
-        }
+    }
 
-    @Override public synchronized byte[] read(final Register reg, final int cb)
-        {
+    @Override
+    public synchronized byte[] read(final Register reg, final int cb) {
         return deviceClient.read(reg.bVal, cb);
-        }
+    }
 
-    protected short readShort(final Register reg)
-        {
+    protected short readShort(final Register reg) {
         byte[] data = read(reg, 2);
         return TypeConversion.byteArrayToShort(data, ByteOrder.LITTLE_ENDIAN);
-        }
+    }
 
 
-    @Override public void write8(Register reg, int data)
-        {
+    @Override
+    public void write8(Register reg, int data) {
         this.deviceClient.write8(reg.bVal, data);
-        }
-    @Override public void write(Register reg, byte[] data)
-        {
-        this.deviceClient.write(reg.bVal, data);
-        }
+    }
 
-    protected void writeShort(final Register reg, short value)
-        {
+    @Override
+    public void write(Register reg, byte[] data) {
+        this.deviceClient.write(reg.bVal, data);
+    }
+
+    protected void writeShort(final Register reg, short value) {
         byte[] data = TypeConversion.shortToByteArray(value, ByteOrder.LITTLE_ENDIAN);
         write(reg, data);
-        }
-    protected void waitForWriteCompletions()
-        {
+    }
+
+    protected void waitForWriteCompletions() {
         // We use ATOMIC for legacy reasons, but now that we have WRITTEN, that might
         // be a better choice.
         this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Internal utility
     //------------------------------------------------------------------------------------------
-    
-    protected String getLoggingTag()
-        {
-        return parameters.loggingTag;
-        }
 
-    protected void log_v(String format, Object... args)
-        {
-        if (this.parameters.loggingEnabled)
-            {
+    protected String getLoggingTag() {
+        return parameters.loggingTag;
+    }
+
+    protected void log_v(String format, Object... args) {
+        if (this.parameters.loggingEnabled) {
             String message = String.format(format, args);
             Log.v(getLoggingTag(), message);
-            }
         }
+    }
 
-    protected void log_d(String format, Object... args)
-        {
-        if (this.parameters.loggingEnabled)
-            {
+    protected void log_d(String format, Object... args) {
+        if (this.parameters.loggingEnabled) {
             String message = String.format(format, args);
             Log.d(getLoggingTag(), message);
-            }
         }
+    }
 
-    protected void log_w(String format, Object... args)
-        {
-        if (this.parameters.loggingEnabled)
-            {
+    protected void log_w(String format, Object... args) {
+        if (this.parameters.loggingEnabled) {
             String message = String.format(format, args);
             Log.w(getLoggingTag(), message);
-            }
         }
+    }
 
-    protected void log_e(String format, Object... args)
-        {
-        if (this.parameters.loggingEnabled)
-            {
+    protected void log_e(String format, Object... args) {
+        if (this.parameters.loggingEnabled) {
             String message = String.format(format, args);
             Log.e(getLoggingTag(), message);
-            }
         }
+    }
 
     protected void ensureReadWindow(I2cDeviceSynch.ReadWindow needed)
     // We optimize small windows into larger ones if we can
-        {
+    {
         I2cDeviceSynch.ReadWindow windowToSet = lowerWindow.containsWithSameMode(needed)
-            ? lowerWindow
-            : upperWindow.containsWithSameMode(needed)
+                ? lowerWindow
+                : upperWindow.containsWithSameMode(needed)
                 ? upperWindow
                 : needed;           // just use what's needed if it's not within our two main windows
         this.deviceClient.ensureReadWindow(needed, windowToSet);
-        }
+    }
 
     // Our write logic doesn't actually know when the I2C writes are issued. All it knows is
     // when the write has made it to the USB Core Device Interface Module. It's a pretty
@@ -979,113 +927,112 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     protected final static int msExtra = 50;
 
-    protected void delayExtra(int ms)
-        {
+    protected void delayExtra(int ms) {
         delay(ms + msExtra);
-        }
-    protected void delayLoreExtra(int ms)
-        {
+    }
+
+    protected void delayLoreExtra(int ms) {
         delayLore(ms + msExtra);
-        }
+    }
 
     /**
      * delayLore() implements a delay that only known by lore and mythology to be necessary.
-     * 
-     * @see #delay(int) 
+     *
+     * @see #delay(int)
      */
-    protected void delayLore(int ms)
-        {
+    protected void delayLore(int ms) {
         delay(ms);
-        }
+    }
 
     /**
      * delay() implements delays which are known to be necessary according to the BNO055 specification
-     * 
-     * @see #delayLore(int) 
+     *
+     * @see #delayLore(int)
      */
-    protected void delay(int ms)
-        {
-        try
-            {
+    protected void delay(int ms) {
+        try {
             // delays are usually relative to preceding writes, so make sure they're all out to the controller
             this.waitForWriteCompletions();
-            Thread.sleep((int)(ms * delayScale));
-            }
-        catch (InterruptedException e)
-            {
+            Thread.sleep((int) (ms * delayScale));
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
         }
+    }
 
-    protected void enterConfigModeFor(Runnable action)
-        {
+    protected void enterConfigModeFor(Runnable action) {
         SensorMode modePrev = this.currentMode;
         setSensorMode(SensorMode.CONFIG);
         delayLoreExtra(25);
-        try
-            {
+        try {
             action.run();
-            }
-        finally
-            {
+        } finally {
             setSensorMode(modePrev);
             delayLoreExtra(20);
-            }
         }
+    }
 
-    protected <T> T enterConfigModeFor(Func<T> lambda)
-        {
+    protected <T> T enterConfigModeFor(Func<T> lambda) {
         T result;
-        
+
         SensorMode modePrev = this.currentMode;
         setSensorMode(SensorMode.CONFIG);
         delayLoreExtra(25);
-        try
-            {
+        try {
             result = lambda.value();
-            }
-        finally
-            {
+        } finally {
             setSensorMode(modePrev);
             delayLoreExtra(20);
-            }
+        }
         //
         return result;
-        }
-    
+    }
+
     //------------------------------------------------------------------------------------------
     // Constants
     //------------------------------------------------------------------------------------------
 
-    final static byte bCHIP_ID_VALUE = (byte)0xa0;
+    final static byte bCHIP_ID_VALUE = (byte) 0xa0;
 
-    enum VECTOR
-        {
-            ACCELEROMETER   (Register.ACC_DATA_X_LSB),
-            MAGNETOMETER    (Register.MAG_DATA_X_LSB),
-            GYROSCOPE       (Register.GYR_DATA_X_LSB),
-            EULER           (Register.EUL_H_LSB),
-            LINEARACCEL     (Register.LIA_DATA_X_LSB),
-            GRAVITY         (Register.GRV_DATA_X_LSB);
+    enum VECTOR {
+        ACCELEROMETER(Register.ACC_DATA_X_LSB),
+        MAGNETOMETER(Register.MAG_DATA_X_LSB),
+        GYROSCOPE(Register.GYR_DATA_X_LSB),
+        EULER(Register.EUL_H_LSB),
+        LINEARACCEL(Register.LIA_DATA_X_LSB),
+        GRAVITY(Register.GRV_DATA_X_LSB);
         //------------------------------------------------------------------------------------------
         protected byte value;
-        VECTOR(int value) { this.value = (byte)value; }
-        VECTOR(Register register) { this(register.bVal); }
-        public byte getValue() { return this.value; }
+
+        VECTOR(int value) {
+            this.value = (byte) value;
         }
 
-    enum POWER_MODE
-        {
-            NORMAL(0X00),
-            LOWPOWER(0X01),
-            SUSPEND(0X02);
-        //------------------------------------------------------------------------------------------
-        protected byte value;
-        POWER_MODE(int value) { this.value = (byte)value; }
-        public byte getValue() { return this.value; }
+        VECTOR(Register register) {
+            this(register.bVal);
         }
 
+        public byte getValue() {
+            return this.value;
+        }
     }
+
+    enum POWER_MODE {
+        NORMAL(0X00),
+        LOWPOWER(0X01),
+        SUSPEND(0X02);
+        //------------------------------------------------------------------------------------------
+        protected byte value;
+
+        POWER_MODE(int value) {
+            this.value = (byte) value;
+        }
+
+        public byte getValue() {
+            return this.value;
+        }
+    }
+
+}
 
 // This code is in part modelled after https://github.com/adafruit/Adafruit_BNO055
 

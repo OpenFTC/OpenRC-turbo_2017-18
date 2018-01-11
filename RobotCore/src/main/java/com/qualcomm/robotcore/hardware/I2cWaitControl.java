@@ -35,8 +35,7 @@ package com.qualcomm.robotcore.hardware;
 /**
  * Values in {@link I2cWaitControl} control the semantics of waiting on I2c writes
  */
-public enum I2cWaitControl
-    {
+public enum I2cWaitControl {
     /**
      * No write timing control is performed. The associated write might not actually
      * make it out to the I2c device if a subsequent write updates the same locations with
@@ -57,4 +56,4 @@ public enum I2cWaitControl
      * particular I2c location has been updated.
      */
     WRITTEN
-    }
+}

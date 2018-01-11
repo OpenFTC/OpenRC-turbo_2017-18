@@ -41,7 +41,9 @@ import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDeviceImplBase;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
+
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
+
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
@@ -52,123 +54,115 @@ import java.io.IOException;
  * {@link RobotUsbManagerTty} is a RobotUsbManager that manages the (single) embedded 'USB' device
  * that lives on a serial port.
  */
-public class RobotUsbManagerTty implements RobotUsbManager
-    {
+public class RobotUsbManagerTty implements RobotUsbManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "RobotUsbManagerTty";
 
-    protected Context      context;
+    protected Context context;
     protected SerialNumber serialNumberEmbedded;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobotUsbManagerTty(Context context)
-        {
+    public RobotUsbManagerTty(Context context) {
         this.context = context;
         serialNumberEmbedded = LynxConstants.SERIAL_NUMBER_EMBEDDED;
-        }
+    }
 
-    Object getLock()
-        {
+    Object getLock() {
         return RobotUsbManagerTty.class;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbManager
     //----------------------------------------------------------------------------------------------
 
-    @Override public int scanForDevices() throws RobotCoreException
-        {
+    @Override
+    public int scanForDevices() throws RobotCoreException {
         return 1;
-        }
-
-    @Override public int getScanCount()
-        {
-        return 1;
-        }
-
-    @Override public SerialNumber getDeviceSerialNumberByIndex(int index) throws RobotCoreException
-        {
-        switch (index)
-            {
-            case 0: return serialNumberEmbedded;
-            default: throw  new IndexOutOfBoundsException("index too large: " + index);
-            }
-        }
-
-    @Override public String getDeviceDescriptionByIndex(int index) throws RobotCoreException
-        {
-        switch (index)
-            {
-            case 0: return context.getString(R.string.descriptionLynxEmbeddedModule);
-            default: throw  new IndexOutOfBoundsException("index too large: " + index);
-            }
-        }
+    }
 
     @Override
-    public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException
-        {
-        synchronized (getLock())
-            {
-            if (serialNumberEmbedded.equals(serialNumber))
-                {
-                if (!RobotUsbDeviceImplBase.isOpen(serialNumber))
-                    {
+    public int getScanCount() {
+        return 1;
+    }
+
+    @Override
+    public SerialNumber getDeviceSerialNumberByIndex(int index) throws RobotCoreException {
+        switch (index) {
+            case 0:
+                return serialNumberEmbedded;
+            default:
+                throw new IndexOutOfBoundsException("index too large: " + index);
+        }
+    }
+
+    @Override
+    public String getDeviceDescriptionByIndex(int index) throws RobotCoreException {
+        switch (index) {
+            case 0:
+                return context.getString(R.string.descriptionLynxEmbeddedModule);
+            default:
+                throw new IndexOutOfBoundsException("index too large: " + index);
+        }
+    }
+
+    @Override
+    public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
+        synchronized (getLock()) {
+            if (serialNumberEmbedded.equals(serialNumber)) {
+                if (!RobotUsbDeviceImplBase.isOpen(serialNumber)) {
                     File file = findSerialDevTty();
                     SerialPort serialPort = null;
                     try {
                         serialPort = new SerialPort(file, LynxConstants.SERIAL_MODULE_BAUD_RATE);
-                        }
-                    catch (IOException e)
-                        {
+                    } catch (IOException e) {
                         throw RobotCoreException.createChained(e, "exception in %s.open(%s)", TAG, file.getPath());
-                        }
+                    }
 
                     RobotUsbDeviceTty deviceTTY = new RobotUsbDeviceTty(serialPort, serialNumberEmbedded, file);
-                    deviceTTY.setFirmwareVersion(new RobotUsbDevice.FirmwareVersion(1,0));
+                    deviceTTY.setFirmwareVersion(new RobotUsbDevice.FirmwareVersion(1, 0));
                     deviceTTY.setDeviceType(DeviceManager.DeviceType.LYNX_USB_DEVICE);
                     deviceTTY.setUsbIdentifiers(RobotUsbDevice.USBIdentifiers.createLynxIdentifiers());
-                    try { deviceTTY.setBaudRate(LynxConstants.SERIAL_MODULE_BAUD_RATE); } catch (RobotUsbException e) {/*ignored*/}
+                    try {
+                        deviceTTY.setBaudRate(LynxConstants.SERIAL_MODULE_BAUD_RATE);
+                    } catch (RobotUsbException e) {/*ignored*/}
                     return deviceTTY;
-                    }
                 }
-            return null;
             }
+            return null;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    private static File findSerialDevTty()
-        {
+    private static File findSerialDevTty() {
         // Older versions of Dragonboard software have the serial port named “/dev/ttyHS0”, while new
         // versions have the name “/dev/ttyHS4”. Try that guy explicitly, first.
         File result = new File("/dev/ttyHS4");
-        if (result.exists())
-            {
+        if (result.exists()) {
             RobotLog.vv(RobotUsbDeviceTty.TAG, "using serial tty=" + result.getAbsolutePath());
             return result;
-            }
+        }
 
         // If we can't find that guy, that'd be odd, but let's just see who we *can* find
         // and hope for the best.
         for (int i = 0; i <= 255; i++) // per AOSP\kernel\Documentation\devicetree\bindings\tty\serial\msm_serial_hs.txt
-            {
+        {
             String path = "/dev/ttyHS" + i;
             result = new File(path);
-            if (result.exists())
-                {
+            if (result.exists()) {
                 RobotLog.vv(RobotUsbDeviceTty.TAG, "using serial tty=" + result.getAbsolutePath());
                 return result;
-                }
             }
-        throw new RuntimeException("unable to locate Lynx serial /dev/ttyHSx");
         }
-
+        throw new RuntimeException("unable to locate Lynx serial /dev/ttyHSx");
     }
+
+}

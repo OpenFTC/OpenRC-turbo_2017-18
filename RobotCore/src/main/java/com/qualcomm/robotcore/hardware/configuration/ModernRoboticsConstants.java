@@ -37,8 +37,7 @@ package com.qualcomm.robotcore.hardware.configuration;
  * to modern robotics controllers
  */
 @SuppressWarnings("WeakerAccess")
-public class ModernRoboticsConstants
-    {
+public class ModernRoboticsConstants {
     public final static int USB_BAUD_RATE = 250000;
     public final static int LATENCY_TIMER = 1;      // historically, was 2ms, but there's no reason not to cut that down (is there?)
 
@@ -53,35 +52,40 @@ public class ModernRoboticsConstants
     public final static int NUMBER_OF_DIGITAL_IOS = 8;
     public final static int NUMBER_OF_ANALOG_OUTPUTS = 2;
 
-    public static void validateMotorZ(int motorZ)
-        {
-        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS)
+    public static void validateMotorZ(int motorZ) {
+        if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS) {
             throw new IllegalArgumentException(String.format("invalid motor: %d", motorZ));
         }
-    public static void validatePwmChannelZ(int channelZ)
-        {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_PWM_CHANNELS)
+    }
+
+    public static void validatePwmChannelZ(int channelZ) {
+        if (channelZ < 0 || channelZ >= NUMBER_OF_PWM_CHANNELS) {
             throw new IllegalArgumentException(String.format("invalid pwm channel: %d", channelZ));
         }
-    public static void validateServoChannelZ(int channelZ)
-        {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVOS)
+    }
+
+    public static void validateServoChannelZ(int channelZ) {
+        if (channelZ < 0 || channelZ >= NUMBER_OF_SERVOS) {
             throw new IllegalArgumentException(String.format("invalid servo channel: %d", channelZ));
         }
-    public static void validateI2cChannelZ(int channelZ)
-        {
-        if (channelZ < 0 || channelZ >= NUMBER_OF_I2C_CHANNELS)
+    }
+
+    public static void validateI2cChannelZ(int channelZ) {
+        if (channelZ < 0 || channelZ >= NUMBER_OF_I2C_CHANNELS) {
             throw new IllegalArgumentException(String.format("invalid i2c channel: %d", channelZ));
         }
-    public static void validateAnalogInputZ(int analogInputZ)
-        {
-        if (analogInputZ < 0 || analogInputZ >= NUMBER_OF_ANALOG_INPUTS)
+    }
+
+    public static void validateAnalogInputZ(int analogInputZ) {
+        if (analogInputZ < 0 || analogInputZ >= NUMBER_OF_ANALOG_INPUTS) {
             throw new IllegalArgumentException(String.format("invalid analog input: %d", analogInputZ));
         }
-    public static void validateDigitalIOZ(int digitalIOZ)
-        {
-        if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS)
+    }
+
+    public static void validateDigitalIOZ(int digitalIOZ) {
+        if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS) {
             throw new IllegalArgumentException(String.format("invalid digital pin: %d", digitalIOZ));
         }
-
     }
+
+}

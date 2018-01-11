@@ -38,24 +38,20 @@ import com.qualcomm.robotcore.util.Util;
  * {@link FlashLoaderCommand} represents datagrams that begin with a distinguished command byte
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderCommand extends FlashLoaderDatagram
-    {
+public class FlashLoaderCommand extends FlashLoaderDatagram {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public FlashLoaderCommand(int command)
-        {
+    public FlashLoaderCommand(int command) {
         this(command, new byte[0]);
-        }
-
-    public FlashLoaderCommand(int command, byte[] data)
-        {
-        super(makePayload(command, data));
-        }
-
-    protected static byte[] makePayload(int command, byte[] data)
-        {
-        return Util.concatenateByteArrays(new byte[] {(byte) command}, data);
-        }
     }
+
+    public FlashLoaderCommand(int command, byte[] data) {
+        super(makePayload(command, data));
+    }
+
+    protected static byte[] makePayload(int command, byte[] data) {
+        return Util.concatenateByteArrays(new byte[]{(byte) command}, data);
+    }
+}

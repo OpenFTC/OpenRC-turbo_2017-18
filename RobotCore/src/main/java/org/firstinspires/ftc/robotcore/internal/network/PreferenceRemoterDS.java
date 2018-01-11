@@ -45,21 +45,26 @@ import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
  * preference settings.
  */
 @SuppressWarnings("WeakerAccess")
-public class PreferenceRemoterDS extends PreferenceRemoter
-    {
+public class PreferenceRemoterDS extends PreferenceRemoter {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_prefremds";
-    public String getTag() { return TAG; }
 
-    @SuppressLint("StaticFieldLeak") protected static PreferenceRemoterDS theInstance = null;
-    public synchronized static PreferenceRemoterDS getInstance()
-        {
-        if (null == theInstance) theInstance = new PreferenceRemoterDS();
-        return theInstance;
+    public String getTag() {
+        return TAG;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    protected static PreferenceRemoterDS theInstance = null;
+
+    public synchronized static PreferenceRemoterDS getInstance() {
+        if (null == theInstance) {
+            theInstance = new PreferenceRemoterDS();
         }
+        return theInstance;
+    }
 
     protected PreferencesHelper.StringMap mapGroupOwnerToDeviceName;
 
@@ -67,76 +72,68 @@ public class PreferenceRemoterDS extends PreferenceRemoter
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public PreferenceRemoterDS()
-        {
+    public PreferenceRemoterDS() {
         loadRenameMap();
 
         // Remove preferences that indicate state with temporary knowledge
         preferencesHelper.remove(context.getString(R.string.pref_wifip2p_groupowner_lastconnectedto));
         preferencesHelper.remove(context.getString(R.string.pref_wifip2p_channel));
         preferencesHelper.remove(context.getString(R.string.pref_has_independent_phone_battery_rc));
-        }
+    }
 
     @Override
-    protected SharedPreferences.OnSharedPreferenceChangeListener makeSharedPrefListener()
-        {
+    protected SharedPreferences.OnSharedPreferenceChangeListener makeSharedPrefListener() {
         return new SharedPreferencesListenerDS();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Managing WifiP2p's refusal to track changes in robot controller name
     //----------------------------------------------------------------------------------------------
 
-    public void onPhoneBoot()
-        {
+    public void onPhoneBoot() {
         RobotLog.vv(TAG, "onPhoneBoot()");
         clearRenameMap();
-        }
+    }
 
-    public void onWifiToggled(boolean enabled)
-        {
+    public void onWifiToggled(boolean enabled) {
         RobotLog.vv(TAG, "onWifiToggled(%s)", enabled);
-        if (!enabled)
-            {
+        if (!enabled) {
             clearRenameMap();
-            }
         }
+    }
 
-    protected void clearRenameMap()
-        {
+    protected void clearRenameMap() {
         RobotLog.vv(TAG, "clearRenameMap()");
         mapGroupOwnerToDeviceName = new PreferencesHelper.StringMap();
         saveRenameMap();
-        }
-    protected void saveRenameMap()
-        {
-        preferencesHelper.writeStringMapPrefIfDifferent(context.getString(R.string.pref_wifip2p_groupowner_map), mapGroupOwnerToDeviceName);
-        }
-    protected void loadRenameMap()
-        {
-        mapGroupOwnerToDeviceName = preferencesHelper.readStringMap(context.getString(R.string.pref_wifip2p_groupowner_map), new PreferencesHelper.StringMap());
-        }
+    }
 
-    public String getDeviceNameForWifiP2pGroupOwner(String groupOwnerName)
-        {
+    protected void saveRenameMap() {
+        preferencesHelper.writeStringMapPrefIfDifferent(context.getString(R.string.pref_wifip2p_groupowner_map), mapGroupOwnerToDeviceName);
+    }
+
+    protected void loadRenameMap() {
+        mapGroupOwnerToDeviceName = preferencesHelper.readStringMap(context.getString(R.string.pref_wifip2p_groupowner_map), new PreferencesHelper.StringMap());
+    }
+
+    public String getDeviceNameForWifiP2pGroupOwner(String groupOwnerName) {
         String result = mapGroupOwnerToDeviceName.get(groupOwnerName);
         return result != null ? result : groupOwnerName;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Remoting
     //----------------------------------------------------------------------------------------------
 
-    @Override public CallbackResult handleCommandRobotControllerPreference(String extra)
-        {
+    @Override
+    public CallbackResult handleCommandRobotControllerPreference(String extra) {
         RobotControllerPreference rcPrefAndValue = RobotControllerPreference.deserialize(extra);
 
         RobotLog.vv(getTag(), "handleRobotControllerPreference() pref=%s", rcPrefAndValue.getPrefName());
 
         // Some of the driver station's local settings will track corresponding settings
         // on the robot controller: the RC is the 'master', the DS the 'slave'
-        if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_sound_on_off)))
-            {
+        if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_sound_on_off))) {
             // We're being told that the sound setting of the robot controller has changed
 
             // Remember the remote setting
@@ -144,16 +141,10 @@ public class PreferenceRemoterDS extends PreferenceRemoter
 
             // Our own DS sound setting tracks the RC's setting.
             preferencesHelper.writePrefIfDifferent(context.getString(R.string.pref_sound_on_off), rcPrefAndValue.getValue());
-            }
-
-        else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_app_theme)))
-            {
+        } else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_app_theme))) {
             // Remember the theme of the robot controller as they told us it is
             preferencesHelper.writePrefIfDifferent(context.getString(R.string.pref_app_theme_rc), rcPrefAndValue.getValue());
-            }
-
-        else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_device_name)))
-            {
+        } else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_device_name))) {
             // We're being told that the name of the robot controller has changed.
 
             // Remember the name of the robot controller as they told us it is
@@ -169,86 +160,64 @@ public class PreferenceRemoterDS extends PreferenceRemoter
             // our wifi). It'll all be fine when we reboot, but until then, we've got to keep the
             // names straight.
             String groupOwner = preferencesHelper.readString(context.getString(R.string.pref_wifip2p_groupowner_connectedto), "");
-            if (groupOwner.isEmpty())
+            if (groupOwner.isEmpty()) {
                 groupOwner = preferencesHelper.readString(context.getString(R.string.pref_wifip2p_groupowner_lastconnectedto), "");
+            }
 
-            if (!groupOwner.isEmpty())
-                {
-                String now = (String)rcPrefAndValue.getValue();
+            if (!groupOwner.isEmpty()) {
+                String now = (String) rcPrefAndValue.getValue();
                 mapGroupOwnerToDeviceName.put(groupOwner, now);
                 saveRenameMap();
-                }
-            else
-                {
+            } else {
                 RobotLog.ee(TAG, "odd: we got a name change from an RC we're not actually connected to");
-                }
             }
-
-        else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_wifip2p_remote_channel_change_works)))
-            {
+        } else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_wifip2p_remote_channel_change_works))) {
             // Just remember that here locally
             preferencesHelper.writePrefIfDifferent(rcPrefAndValue.getPrefName(), rcPrefAndValue.getValue());
-            }
-
-        else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_has_independent_phone_battery)))
-            {
+        } else if (rcPrefAndValue.getPrefName().equals(context.getString(R.string.pref_has_independent_phone_battery))) {
             // Remember that setting of the robot controller
             preferencesHelper.writePrefIfDifferent(context.getString(R.string.pref_has_independent_phone_battery_rc), rcPrefAndValue.getValue());
-            }
-        
-        return CallbackResult.HANDLED;
         }
+
+        return CallbackResult.HANDLED;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Preferences
     //----------------------------------------------------------------------------------------------
 
-    protected class SharedPreferencesListenerDS implements SharedPreferences.OnSharedPreferenceChangeListener
-        {
-        @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String dsPrefName)
-            {
+    protected class SharedPreferencesListenerDS implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String dsPrefName) {
             RobotLog.vv(TAG, "onSharedPreferenceChanged(name=%s, value=%s)", dsPrefName, preferencesHelper.readPref(dsPrefName));
 
             String rcPrefName = null;
-            if (dsPrefName.equals(context.getString(R.string.pref_sound_on_off_rc)))
-                {
+            if (dsPrefName.equals(context.getString(R.string.pref_sound_on_off_rc))) {
                 rcPrefName = context.getString(R.string.pref_sound_on_off);
-                }
-            else if (dsPrefName.equals(context.getString(R.string.pref_device_name_rc)))
-                {
+            } else if (dsPrefName.equals(context.getString(R.string.pref_device_name_rc))) {
                 rcPrefName = context.getString(R.string.pref_device_name);
-                }
-            else if (dsPrefName.equals(context.getString(R.string.pref_app_theme_rc)))
-                {
+            } else if (dsPrefName.equals(context.getString(R.string.pref_app_theme_rc))) {
                 rcPrefName = context.getString(R.string.pref_app_theme);
-                }
-            else if (dsPrefName.equals(context.getString(R.string.pref_wifip2p_channel)))
-                {
+            } else if (dsPrefName.equals(context.getString(R.string.pref_wifip2p_channel))) {
                 rcPrefName = context.getString(R.string.pref_wifip2p_channel);
-                }
-            if (rcPrefName != null)
-                {
+            }
+            if (rcPrefName != null) {
                 Object value = preferencesHelper.readPref(dsPrefName);
-                if (value != null)
-                    {
+                if (value != null) {
                     sendPreference(new RobotControllerPreference(rcPrefName, value));
-                    }
                 }
+            }
 
             // Remember who we *were* connected to in case we disconnect
-            if (dsPrefName.equals(context.getString(R.string.pref_wifip2p_groupowner_connectedto)))
-                {
+            if (dsPrefName.equals(context.getString(R.string.pref_wifip2p_groupowner_connectedto))) {
                 String rcGroupOwnerName = preferencesHelper.readString(dsPrefName, "");
-                if (!rcGroupOwnerName.isEmpty())
-                    {
+                if (!rcGroupOwnerName.isEmpty()) {
                     preferencesHelper.writePrefIfDifferent(context.getString(R.string.pref_wifip2p_groupowner_lastconnectedto), rcGroupOwnerName);
-                    }
-                else
-                    {
+                } else {
                     RobotLog.vv(TAG, "%s has been removed", dsPrefName);
-                    }
                 }
             }
         }
-
     }
+
+}

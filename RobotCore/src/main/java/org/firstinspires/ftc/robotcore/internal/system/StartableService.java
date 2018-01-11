@@ -51,96 +51,93 @@ import java.io.IOException;
  * on top of the instantiation of a closeable object
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class StartableService extends Service
-    {
+public abstract class StartableService extends Service {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public abstract String getTag();
 
-    protected final Supplier<Closeable>   instantiator;
-    protected       Closeable             instance;
+    protected final Supplier<Closeable> instantiator;
+    protected Closeable instance;
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
-    protected StartableService(Supplier<Closeable> instantiator)
-        {
+    protected StartableService(Supplier<Closeable> instantiator) {
         this.instantiator = instantiator;
-        }
+    }
 
-    @Override public void onCreate()
-        {
+    @Override
+    public void onCreate() {
         RobotLog.vv(getTag(), "onCreate()");
-        }
+    }
 
-    @Override public int onStartCommand(Intent intent, int flags, int startId)
-        {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         RobotLog.vv(getTag(), "onStartCommand() intent=%s flags=0x%x startId=%d", intent, flags, startId);
 
         instance = instantiator.get();
 
         return START_NOT_STICKY;
-        }
+    }
 
-    @Override public void onDestroy()
-        {
+    @Override
+    public void onDestroy() {
         RobotLog.vv(getTag(), "onDestroy()");
 
-        if (instance != null)
-            {
+        if (instance != null) {
             try {
                 instance.close();
-                }
-            catch (IOException e)
-                {
+            } catch (IOException e) {
                 RobotLog.ee(getTag(), e, "exception during close; ignored");
-                }
-            instance = null;
             }
+            instance = null;
         }
+    }
 
-    @Override public void onConfigurationChanged(Configuration newConfig)
-        {
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
         RobotLog.vv(getTag(), "onConfigurationChanged()");
-        }
+    }
 
-    @Override public void onLowMemory()
-        {
+    @Override
+    public void onLowMemory() {
         RobotLog.vv(getTag(), "onLowMemory()");
-        }
+    }
 
-    @Override public void onTrimMemory(int level)
-        {
+    @Override
+    public void onTrimMemory(int level) {
         RobotLog.vv(getTag(), "onTrimMemory()");
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Binding
     //----------------------------------------------------------------------------------------------
 
-    @Nullable @Override public IBinder onBind(Intent intent)
-        {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
         RobotLog.vv(getTag(), "onBind()");
         return null; // we're not this kind of service: we're a 'startable' not a 'bindable' one
-        }
+    }
 
-    @Override public boolean onUnbind(Intent intent)
-        {
+    @Override
+    public boolean onUnbind(Intent intent) {
         RobotLog.vv(getTag(), "onUnbind()");
         return super.onUnbind(intent);
-        }
-
-    @Override public void onRebind(Intent intent)
-        {
-        RobotLog.vv(getTag(), "onRebind()");
-        }
-
-    @Override public void onTaskRemoved(Intent rootIntent)
-        {
-        RobotLog.vv(getTag(), "onTaskRemoved()");;
-        }
-
     }
+
+    @Override
+    public void onRebind(Intent intent) {
+        RobotLog.vv(getTag(), "onRebind()");
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        RobotLog.vv(getTag(), "onTaskRemoved()");
+        ;
+    }
+
+}

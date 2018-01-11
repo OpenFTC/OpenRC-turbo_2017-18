@@ -10,6 +10,29 @@ android {
         targetSdkVersion 19
     }
 
+    flavorDimensions 'type'
+    productFlavors {
+        openrc {
+            dimension 'type'
+            buildConfigField 'boolean', 'IS_OPENRC', 'true'
+            buildConfigField 'boolean', 'IS_TURBO', 'true'
+        }
+        stock {
+            dimension 'type'
+            buildConfigField 'boolean', 'IS_OPENRC', 'false'
+            buildConfigField 'boolean', 'IS_TURBO', 'false'
+        }
+    }
+
+    // Selecting a release variant will prompt teams to set up a signing key. Now that there's
+    // a reason to select other variants (the stock feature of OpenRC), it's better to filter out
+    // the ones that will confuse teams.
+    variantFilter { variant ->
+        if (variant.buildType.name == "release") {
+            setIgnore(true)
+        }
+    }
+
     compileSdkVersion 23
 
     compileOptions {

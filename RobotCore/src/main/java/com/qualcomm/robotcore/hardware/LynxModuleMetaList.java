@@ -53,127 +53,115 @@ import java.util.Locale;
  * {@link LynxModuleMetaList} is a container of {@link RobotCoreLynxModule}s.
  * Its primary use is for transmission of module information from RC to DS.
  */
-public class LynxModuleMetaList implements Iterable<LynxModuleMeta>
-    {
+public class LynxModuleMetaList implements Iterable<LynxModuleMeta> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public SerialNumber     serialNumber; // the serial number of the LynxUSBDevice
+    public SerialNumber serialNumber; // the serial number of the LynxUSBDevice
     public LynxModuleMeta[] modules;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxModuleMetaList(SerialNumber serialNumber)
-        {
+    public LynxModuleMetaList(SerialNumber serialNumber) {
         this(serialNumber, new LynxModuleMeta[0]);
-        }
+    }
 
-    public LynxModuleMetaList(SerialNumber serialNumber, Collection<LynxModuleMeta> modules)
-        {
+    public LynxModuleMetaList(SerialNumber serialNumber, Collection<LynxModuleMeta> modules) {
         this(serialNumber, metaFromModules(modules));
-        }
+    }
 
-    public LynxModuleMetaList(SerialNumber serialNumber, List<RobotCoreLynxModule> modules)
-        {
+    public LynxModuleMetaList(SerialNumber serialNumber, List<RobotCoreLynxModule> modules) {
         this(serialNumber, metaFromModules(modules));
-        }
+    }
 
-    private static LynxModuleMeta[] metaFromModules(List<RobotCoreLynxModule> modules)
-        {
+    private static LynxModuleMeta[] metaFromModules(List<RobotCoreLynxModule> modules) {
         LynxModuleMeta[] result = new LynxModuleMeta[modules.size()];
-        for (int i=0; i < result.length; i++)
-            {
+        for (int i = 0; i < result.length; i++) {
             result[i] = new LynxModuleMeta(modules.get(i));
-            }
-        return result;
         }
+        return result;
+    }
 
-    private static LynxModuleMeta[] metaFromModules(Collection<LynxModuleMeta> modules)
-        {
+    private static LynxModuleMeta[] metaFromModules(Collection<LynxModuleMeta> modules) {
         LynxModuleMeta[] result = new LynxModuleMeta[modules.size()];
         int i = 0;
-        for (LynxModuleMeta meta : modules)
-            {
+        for (LynxModuleMeta meta : modules) {
             result[i++] = meta;
-            }
-        return result;
         }
+        return result;
+    }
 
-    private LynxModuleMetaList(SerialNumber serialNumber, LynxModuleMeta[] modules)
-        {
+    private LynxModuleMetaList(SerialNumber serialNumber, LynxModuleMeta[] modules) {
         this.serialNumber = serialNumber;
         this.modules = modules;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Iteration
     //----------------------------------------------------------------------------------------------
 
-    @Override public Iterator<LynxModuleMeta> iterator()
-        {
+    @Override
+    public Iterator<LynxModuleMeta> iterator() {
         return Arrays.asList(this.modules).iterator();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization
     //----------------------------------------------------------------------------------------------
 
-    protected LynxModuleMetaList flatten()
-        {
+    protected LynxModuleMetaList flatten() {
         LynxModuleMeta[] flatModules = new LynxModuleMeta[this.modules.length];
-        for (int i = 0; i < this.modules.length; i++)
-            {
+        for (int i = 0; i < this.modules.length; i++) {
             flatModules[i] = new LynxModuleMeta(this.modules[i]);
-            }
+        }
         return new LynxModuleMetaList(serialNumber, flatModules);
-        }
+    }
 
-    public String toSerializationString()
-        {
+    public String toSerializationString() {
         return SimpleGson.getInstance().toJson(this.flatten());
-        }
+    }
 
-    public static LynxModuleMetaList fromSerializationString(String serialization)
-        {
-        JsonDeserializer deserializer = new JsonDeserializer()
-            {
-            @Override public Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
-                {
+    public static LynxModuleMetaList fromSerializationString(String serialization) {
+        JsonDeserializer deserializer = new JsonDeserializer() {
+            @Override
+            public Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
                 return context.deserialize(json, LynxModuleMeta.class);
-                }
-            };
+            }
+        };
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(RobotCoreLynxModule.class, deserializer)
                 .create();
 
         return gson.fromJson(serialization, LynxModuleMetaList.class);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    public @Override String toString()
-        {
+    public
+    @Override
+    String toString() {
         StringBuilder result = new StringBuilder();
         boolean first = true;
         result.append("[");
-        for (LynxModuleMeta module : this.modules)
-            {
-            if (!first) result.append(" ");
+        for (LynxModuleMeta module : this.modules) {
+            if (!first) {
+                result.append(" ");
+            }
             result.append(String.format(Locale.getDefault(), "%d(%s)", module.getModuleAddress(), module.isParent()));
             first = false;
-            }
+        }
         result.append("]");
         return result.toString();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
 
-    }
+}

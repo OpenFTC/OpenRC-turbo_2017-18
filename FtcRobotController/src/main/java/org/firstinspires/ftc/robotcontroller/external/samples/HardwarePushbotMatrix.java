@@ -38,31 +38,30 @@ import com.qualcomm.robotcore.hardware.ServoController;
  * This class can be used to define all the specific hardware for a single robot.
  * In this case that robot is a Pushbot, using Matrix Hardware.
  * See PushbotTeleopTank_Iterative for a usage examples.
- *
+ * <p>
  * This is coded as an Extension of HardwarePushbot to illustrate that the only additional
  * action REQUIRED for a MATRIX controller is enabling the Servos.
- *
+ * <p>
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
- *
+ * <p>
  * Matrix Controller has been assigned the name:  "matrix controller"
- *
+ * <p>
  * Motor channel:  Left  drive motor:        "left_drive"
  * Motor channel:  Right drive motor:        "right_drive"
  * Motor channel:  Manipulator drive motor:  "left_arm"
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
- *
+ * <p>
  * In addition, the Matrix Controller has been assigned the name:  "matrix controller"
  */
-public class HardwarePushbotMatrix extends HardwarePushbot
-{
+public class HardwarePushbotMatrix extends HardwarePushbot {
     /* Public OpMode members. */
     private MatrixDcMotorController matrixMotorController = null;
     private ServoController matrixServoController = null;
 
     /* Constructor */
-    public HardwarePushbotMatrix(){
+    public HardwarePushbotMatrix() {
 
     }
 

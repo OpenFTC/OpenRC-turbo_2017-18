@@ -39,22 +39,21 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * A simple buffer for sending bulk data to USB.
  */
 @SuppressWarnings("WeakerAccess")
-public class BulkPacketBufferOut extends BulkPacketBuffer
-    {
+public class BulkPacketBufferOut extends BulkPacketBuffer {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public BulkPacketBufferOut(int size)
-        {
+    public BulkPacketBufferOut(int size) {
         super(size);
-        }
+    }
 
-    /** snarf a copy of the data into our buffer */
-    public void copyFrom(byte[] data, int ib, int cb)
-        {
+    /**
+     * snarf a copy of the data into our buffer
+     */
+    public void copyFrom(byte[] data, int ib, int cb) {
         byteBuffer.clear();
         byteBuffer.put(data, ib, cb);
         setCurrentLength(cb);
-        }
     }
+}

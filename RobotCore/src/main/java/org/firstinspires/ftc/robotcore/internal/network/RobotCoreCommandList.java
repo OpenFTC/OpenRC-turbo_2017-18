@@ -40,78 +40,76 @@ import java.io.File;
 /**
  * {@link RobotCoreCommandList} contains network commands that are accessible in the RobotCore module
  */
-public class RobotCoreCommandList
-    {
+public class RobotCoreCommandList {
     //----------------------------------------------------------------------------------------------
     // User interface remoting
     //----------------------------------------------------------------------------------------------
 
     public static final String CMD_SHOW_TOAST = "CMD_SHOW_TOAST";
-    static public class ShowToast
-        {
-        public int     duration;
-        public String  message;
 
-        public String serialize()
-            {
-            return SimpleGson.getInstance().toJson(this);
-            }
-        public static ShowToast deserialize(String serialized)
-            {
-            return SimpleGson.getInstance().fromJson(serialized, ShowToast.class);
-            }
-        }
-
-    public static final String CMD_SHOW_PROGRESS = "CMD_SHOW_PROGRESS";
-    static public class ShowProgress extends ProgressParameters
-        {
+    static public class ShowToast {
+        public int duration;
         public String message;
 
-        public String serialize()
-            {
+        public String serialize() {
             return SimpleGson.getInstance().toJson(this);
-            }
-        public static ShowProgress deserialize(String serialized)
-            {
-            return SimpleGson.getInstance().fromJson(serialized, ShowProgress.class);
-            }
         }
+
+        public static ShowToast deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, ShowToast.class);
+        }
+    }
+
+    public static final String CMD_SHOW_PROGRESS = "CMD_SHOW_PROGRESS";
+
+    static public class ShowProgress extends ProgressParameters {
+        public String message;
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static ShowProgress deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, ShowProgress.class);
+        }
+    }
 
     public static final String CMD_DISMISS_PROGRESS = "CMD_DISMISS_PROGRESS";
 
     public static final String CMD_SHOW_DIALOG = "CMD_SHOW_DIALOG";
-    static public class ShowDialog
-        {
+
+    static public class ShowDialog {
         public String uuidString;
         public String title;
         public String message;
 
-        public String serialize()
-            {
+        public String serialize() {
             return SimpleGson.getInstance().toJson(this);
-            }
-        public static ShowDialog deserialize(String serialized)
-            {
-            return SimpleGson.getInstance().fromJson(serialized, ShowDialog.class);
-            }
         }
+
+        public static ShowDialog deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, ShowDialog.class);
+        }
+    }
 
     public static final String CMD_DISMISS_ALL_DIALOGS = "CMD_DISMISS_ALL_DIALOGS";
     public static final String CMD_DISMISS_DIALOG = "CMD_DISMISS_DIALOG";
-    static public class DismissDialog
-        {
+
+    static public class DismissDialog {
         public String uuidString;
 
-        public DismissDialog(String uuidString) { this.uuidString = uuidString; }
-        public String serialize()
-            {
-            return SimpleGson.getInstance().toJson(this);
-            }
-        public static DismissDialog deserialize(String serialized)
-            {
-            return SimpleGson.getInstance().fromJson(serialized, DismissDialog.class);
-            }
+        public DismissDialog(String uuidString) {
+            this.uuidString = uuidString;
         }
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static DismissDialog deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, DismissDialog.class);
+        }
+    }
 
     public static final String CMD_REQUEST_INSPECTION_REPORT = "CMD_REQUEST_INSPECTION_REPORT";
     public static final String CMD_REQUEST_INSPECTION_REPORT_RESP = "CMD_REQUEST_INSPECTION_REPORT_RESP";
@@ -120,14 +118,14 @@ public class RobotCoreCommandList
     // Robot semantics and management
     //----------------------------------------------------------------------------------------------
 
-    public static final String CMD_NOTIFY_INIT_OP_MODE          = "CMD_NOTIFY_INIT_OP_MODE";
-    public static final String CMD_NOTIFY_RUN_OP_MODE           = "CMD_NOTIFY_RUN_OP_MODE";
+    public static final String CMD_NOTIFY_INIT_OP_MODE = "CMD_NOTIFY_INIT_OP_MODE";
+    public static final String CMD_NOTIFY_RUN_OP_MODE = "CMD_NOTIFY_RUN_OP_MODE";
 
-    public static final String CMD_REQUEST_UI_STATE             = "CMD_REQUEST_UI_STATE";
-    public static final String CMD_NOTIFY_ACTIVE_CONFIGURATION  = "CMD_NOTIFY_ACTIVE_CONFIGURATION";
-    public static final String CMD_NOTIFY_OP_MODE_LIST          = "CMD_NOTIFY_OP_MODE_LIST";
-    public static final String CMD_NOTIFY_USER_DEVICE_LIST      = "CMD_NOTIFY_USER_DEVICE_LIST";
-    public static final String CMD_NOTIFY_ROBOT_STATE           = "CMD_NOTIFY_ROBOT_STATE";
+    public static final String CMD_REQUEST_UI_STATE = "CMD_REQUEST_UI_STATE";
+    public static final String CMD_NOTIFY_ACTIVE_CONFIGURATION = "CMD_NOTIFY_ACTIVE_CONFIGURATION";
+    public static final String CMD_NOTIFY_OP_MODE_LIST = "CMD_NOTIFY_OP_MODE_LIST";
+    public static final String CMD_NOTIFY_USER_DEVICE_LIST = "CMD_NOTIFY_USER_DEVICE_LIST";
+    public static final String CMD_NOTIFY_ROBOT_STATE = "CMD_NOTIFY_ROBOT_STATE";
 
     // Used for sending a (pref,value) pair either from a RC to a DS or the other way around.
     // The pair is always a setting of the robot controller. When sent to the RC, it is a request
@@ -139,7 +137,7 @@ public class RobotCoreCommandList
     // Wifi management
     //----------------------------------------------------------------------------------------------
 
-    public static final String CMD_CLEAR_REMEMBERED_GROUPS                      = "CMD_CLEAR_REMEMBERED_GROUPS";
+    public static final String CMD_CLEAR_REMEMBERED_GROUPS = "CMD_CLEAR_REMEMBERED_GROUPS";
     public static final String CMD_NOTIFY_WIFI_DIRECT_REMEMBERED_GROUPS_CHANGED = "CMD_NOTIFY_WIFI_DIRECT_REMEMBERED_GROUPS_CHANGED";
 
     public static final String CMD_DISCONNECT_FROM_WIFI_DIRECT = "CMD_DISCONNECT_FROM_WIFI_DIRECT";
@@ -151,20 +149,17 @@ public class RobotCoreCommandList
     /**
      * For the moment (perhaps forever), firmware images can only either be files or assets
      */
-    public static class FWImage
-        {
+    public static class FWImage {
         public File file;
         public boolean isAsset;
 
-        public FWImage(File file, boolean isAsset)
-            {
+        public FWImage(File file, boolean isAsset) {
             this.file = file;
             this.isAsset = isAsset;
-            }
+        }
 
-        public String getName()
-            {
+        public String getName() {
             return file.getName();
-            }
         }
     }
+}

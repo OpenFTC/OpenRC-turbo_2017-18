@@ -38,9 +38,10 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
  * RobotCoreLynxUsbDevice is the subset of the functionality of the LynxUsbDevice
  * which is accessible from the RobotCore subsystem.
  */
-public interface RobotCoreLynxUsbDevice
-    {
+public interface RobotCoreLynxUsbDevice {
     void failSafe();
+
     LynxModuleMetaList discoverModules() throws RobotCoreException, InterruptedException;
+
     void close();
-    }
+}

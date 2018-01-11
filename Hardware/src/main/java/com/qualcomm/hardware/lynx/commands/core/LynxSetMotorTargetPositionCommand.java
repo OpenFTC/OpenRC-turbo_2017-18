@@ -43,65 +43,61 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxSetMotorTargetPositionCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetMotorTargetPositionCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final int cbPayload = 7;
     public final int apiToleranceFirst = 0;
-    public final int apiToleranceLast  = 65535;
+    public final int apiToleranceLast = 65535;
 
-    private byte  motor;
-    private int   target;
+    private byte motor;
+    private int target;
     private short tolerance;    // unsigned
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetMotorTargetPositionCommand(LynxModuleIntf module)
-        {
+    public LynxSetMotorTargetPositionCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetMotorTargetPositionCommand(LynxModuleIntf module, int motorZ, int target, int tolerance)
-        {
+    public LynxSetMotorTargetPositionCommand(LynxModuleIntf module, int motorZ, int target, int tolerance) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        if (tolerance < apiToleranceFirst || tolerance > apiToleranceLast) throw new IllegalArgumentException(String.format("illegal tolerance: %d", tolerance));
-        this.motor     = (byte)motorZ;
-        this.target    = target;
-        this.tolerance = (short)tolerance;
+        if (tolerance < apiToleranceFirst || tolerance > apiToleranceLast) {
+            throw new IllegalArgumentException(String.format("illegal tolerance: %d", tolerance));
         }
+        this.motor = (byte) motorZ;
+        this.target = target;
+        this.tolerance = (short) tolerance;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.putInt(this.target);
         buffer.putShort(this.tolerance);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
         this.target = buffer.getInt();
         this.tolerance = buffer.getShort();
-        }
     }
+}

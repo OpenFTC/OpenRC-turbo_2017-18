@@ -44,83 +44,84 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @SuppressWarnings("WeakerAccess")
 public class ModernRoboticsTouchSensor implements TouchSensor {
 
-  private DigitalChannelController digitalController = null;
-  private AnalogInputController analogInputController = null;
-  private int physicalPort = -1;
-  private double analogThreshold;
+    private DigitalChannelController digitalController = null;
+    private AnalogInputController analogInputController = null;
+    private int physicalPort = -1;
+    private double analogThreshold;
 
-  public ModernRoboticsTouchSensor(DigitalChannelController digitalController, int physicalPort) {
-    this.digitalController = digitalController;
-    this.physicalPort = physicalPort;
-    this.digitalController.setDigitalChannelMode(physicalPort, DigitalChannel.Mode.INPUT);
-  }
+    public ModernRoboticsTouchSensor(DigitalChannelController digitalController, int physicalPort) {
+        this.digitalController = digitalController;
+        this.physicalPort = physicalPort;
+        this.digitalController.setDigitalChannelMode(physicalPort, DigitalChannel.Mode.INPUT);
+    }
 
-  public ModernRoboticsTouchSensor(AnalogInputController analogController, int physicalPort) {
-    this.analogInputController = analogController;
-    this.physicalPort = physicalPort;
-    this.analogThreshold = analogController.getMaxAnalogInputVoltage() / 2;
-  }
+    public ModernRoboticsTouchSensor(AnalogInputController analogController, int physicalPort) {
+        this.analogInputController = analogController;
+        this.physicalPort = physicalPort;
+        this.analogThreshold = analogController.getMaxAnalogInputVoltage() / 2;
+    }
 
-  public boolean isDigital() {
-    return digitalController != null;
-  }
+    public boolean isDigital() {
+        return digitalController != null;
+    }
 
-  public boolean isAnalog() {
-    return !isDigital();
-  }
+    public boolean isAnalog() {
+        return !isDigital();
+    }
 
-  public double getAnalogVoltageThreshold() {
-    return analogThreshold;
-  }
+    public double getAnalogVoltageThreshold() {
+        return analogThreshold;
+    }
 
-  public void setAnalogVoltageThreshold(double threshold) {
-    this.analogThreshold = threshold;
-  }
+    public void setAnalogVoltageThreshold(double threshold) {
+        this.analogThreshold = threshold;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("Touch Sensor: %1.2f", getValue());
-  }
+    @Override
+    public String toString() {
+        return String.format("Touch Sensor: %1.2f", getValue());
+    }
 
-  @Override
-  public double getValue() {
-    return isPressed() ? 1.0 : 0.0;
-  }
+    @Override
+    public double getValue() {
+        return isPressed() ? 1.0 : 0.0;
+    }
 
-  @Override
-  public boolean isPressed() {
-    return isDigital()
-            ? digitalController.getDigitalChannelState(physicalPort)
-            : analogInputController.getAnalogInputVoltage(physicalPort) > getAnalogVoltageThreshold();
-  }
+    @Override
+    public boolean isPressed() {
+        return isDigital()
+                ? digitalController.getDigitalChannelState(physicalPort)
+                : analogInputController.getAnalogInputVoltage(physicalPort) > getAnalogVoltageThreshold();
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.ModernRobotics;
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.ModernRobotics;
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeMRTouchSensor);
-  }
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeMRTouchSensor);
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return isDigital()
-            ? digitalController.getConnectionInfo()+ "; digital port " + physicalPort
-            : analogInputController.getConnectionInfo() + "; analog port " + physicalPort;
-  }
+    @Override
+    public String getConnectionInfo() {
+        return isDigital()
+                ? digitalController.getConnectionInfo() + "; digital port " + physicalPort
+                : analogInputController.getConnectionInfo() + "; analog port " + physicalPort;
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public int getVersion() {
+        return 1;
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-  }
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
-  @Override
-  public void close() {
+    @Override
+    public void close() {
 
-  }
+    }
 }

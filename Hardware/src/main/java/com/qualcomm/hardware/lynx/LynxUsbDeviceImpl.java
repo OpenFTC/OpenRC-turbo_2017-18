@@ -83,19 +83,22 @@ import java.util.concurrent.TimeUnit;
  * It polls for incoming traffic and sorts same according to the module address involved.
  */
 @SuppressWarnings("WeakerAccess,UnnecessaryLocalVariable")
-public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
-    {
+public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice {
     //----------------------------------------------------------------------------------------------
     // Debugging
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxUsb";
-    @Override protected String getTag() { return TAG; }
 
-    public static boolean DEBUG_LOG_MESSAGES          = false;
-    public static boolean DEBUG_LOG_DATAGRAMS         = false;
-    public static boolean DEBUG_LOG_DATAGRAMS_FINISH  = false;
-    public static boolean DEBUG_LOG_DATAGRAMS_LOCK    = false;
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
+    public static boolean DEBUG_LOG_MESSAGES = false;
+    public static boolean DEBUG_LOG_DATAGRAMS = false;
+    public static boolean DEBUG_LOG_DATAGRAMS_FINISH = false;
+    public static boolean DEBUG_LOG_DATAGRAMS_LOCK = false;
 
     protected static long randSeed = System.nanoTime();
 
@@ -103,60 +106,61 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected static final WeakReferenceSet<LynxUsbDeviceImpl>  extantDevices = new WeakReferenceSet<LynxUsbDeviceImpl>();
-    protected static final LynxCommExceptionHandler             exceptionHandler = new LynxCommExceptionHandler(TAG);
+    protected static final WeakReferenceSet<LynxUsbDeviceImpl> extantDevices = new WeakReferenceSet<LynxUsbDeviceImpl>();
+    protected static final LynxCommExceptionHandler exceptionHandler = new LynxCommExceptionHandler(TAG);
 
-    protected final ConcurrentHashMap<Integer, LynxModule>  knownModules;               // module address -> module
-    protected final ConcurrentHashMap<Integer, LynxModule>  knownModulesChanging;       // module address -> module
+    protected final ConcurrentHashMap<Integer, LynxModule> knownModules;               // module address -> module
+    protected final ConcurrentHashMap<Integer, LynxModule> knownModulesChanging;       // module address -> module
     protected final ConcurrentHashMap<Integer, LynxModuleMeta> discoveredModules;       // like knownModules, but different
-    protected final ConcurrentHashMap<Integer, String>      missingModules;             // module address -> module name
-    protected final MessageKeyedLock                        networkTransmissionLock;
-    protected       ExecutorService                         incomingDatagramPoller;
-    protected       boolean                                 resetAttempted;
-    protected       boolean                                 hasShutdownAbnormally;
-    protected       boolean                                 isSystemSynthetic;
-    protected       boolean                                 isEngaged;
-    protected       boolean                                 wasPollingWhenEngaged;
-    protected final Object                                  engageLock = new Object();  // must hold to access isEngaged
+    protected final ConcurrentHashMap<Integer, String> missingModules;             // module address -> module name
+    protected final MessageKeyedLock networkTransmissionLock;
+    protected ExecutorService incomingDatagramPoller;
+    protected boolean resetAttempted;
+    protected boolean hasShutdownAbnormally;
+    protected boolean isSystemSynthetic;
+    protected boolean isEngaged;
+    protected boolean wasPollingWhenEngaged;
+    protected final Object engageLock = new Object();  // must hold to access isEngaged
 
     // The lynx hw schematic puts the reset and prog lines on particular pins, CBUS0 and CBUS1 respectively
-    protected final static int cbusNReset           = 0x01;
-    protected final static int cbusNProg            = 0x02;
-    protected final static int cbusMask             = cbusNReset | cbusNProg;
-    protected final static int cbusNeitherAsserted  = cbusNReset | cbusNProg;
-    protected final static int cbusBothAsserted     = 0;
-    protected final static int cbusProgAsserted     = cbusNReset;
-    protected final static int cbusResetAsserted    = cbusNProg;
+    protected final static int cbusNReset = 0x01;
+    protected final static int cbusNProg = 0x02;
+    protected final static int cbusMask = cbusNReset | cbusNProg;
+    protected final static int cbusNeitherAsserted = cbusNReset | cbusNProg;
+    protected final static int cbusBothAsserted = 0;
+    protected final static int cbusProgAsserted = cbusNReset;
+    protected final static int cbusResetAsserted = cbusNProg;
 
     protected final static int msNetworkTransmissionLockAcquisitionTimeMax = 500;
-    protected final static int msCbusWiggle         = 75;       // more of a guess than anything
-    protected final static int msResetRecovery      = 200;      // more of a guess than anything
+    protected final static int msCbusWiggle = 75;       // more of a guess than anything
+    protected final static int msResetRecovery = 200;      // more of a guess than anything
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    /** Use {@link #findOrCreateAndArm(Context, SerialNumber, EventLoopManager, OpenRobotUsbDevice)} instead */
-    protected LynxUsbDeviceImpl(final Context context, final SerialNumber serialNumber, EventLoopManager manager, final ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice)
-        {
+    /**
+     * Use {@link #findOrCreateAndArm(Context, SerialNumber, EventLoopManager, OpenRobotUsbDevice)} instead
+     */
+    protected LynxUsbDeviceImpl(final Context context, final SerialNumber serialNumber, EventLoopManager manager, final ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice) {
         super(context, serialNumber, manager, openRobotUsbDevice);
-        this.incomingDatagramPoller  = null;
-        this.knownModules            = new ConcurrentHashMap<Integer, LynxModule>();
-        this.knownModulesChanging    = new ConcurrentHashMap<Integer, LynxModule>();
-        this.discoveredModules       = new ConcurrentHashMap<Integer, LynxModuleMeta>();
-        this.missingModules          = new ConcurrentHashMap<Integer, String>();
+        this.incomingDatagramPoller = null;
+        this.knownModules = new ConcurrentHashMap<Integer, LynxModule>();
+        this.knownModulesChanging = new ConcurrentHashMap<Integer, LynxModule>();
+        this.discoveredModules = new ConcurrentHashMap<Integer, LynxModuleMeta>();
+        this.missingModules = new ConcurrentHashMap<Integer, String>();
         this.networkTransmissionLock = new MessageKeyedLock("lynx xmit lock", msNetworkTransmissionLockAcquisitionTimeMax);
-        this.resetAttempted          = false;
-        this.hasShutdownAbnormally   = false;
-        this.isSystemSynthetic       = false;
-        this.isEngaged               = true;
-        this.wasPollingWhenEngaged   = true;
+        this.resetAttempted = false;
+        this.hasShutdownAbnormally = false;
+        this.isSystemSynthetic = false;
+        this.isEngaged = true;
+        this.wasPollingWhenEngaged = true;
 
         // findOrCreateAndArm will lock this for us
         extantDevices.add(this);
 
         finishConstruction();
-        }
+    }
 
     /**
      * Either finds an already-open device with the indicated serial number and returns same, as-is,
@@ -164,176 +168,152 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
      * so that we can do reference counting (allowing multiple opens of the same device) while at
      * the same time maintaining the semantic that close() must be idempotent on a given instance.
      */
-    public static LynxUsbDevice findOrCreateAndArm(final Context context, final SerialNumber serialNumber, EventLoopManager manager, final ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice) throws RobotCoreException, InterruptedException
-        {
-        synchronized (extantDevices)
-            {
-            for (LynxUsbDeviceImpl device : extantDevices)
-                {
-                if (device.getSerialNumber().equals(serialNumber))
-                    {
+    public static LynxUsbDevice findOrCreateAndArm(final Context context, final SerialNumber serialNumber, EventLoopManager manager, final ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice) throws RobotCoreException, InterruptedException {
+        synchronized (extantDevices) {
+            for (LynxUsbDeviceImpl device : extantDevices) {
+                if (device.getSerialNumber().equals(serialNumber)) {
                     device.addRef(); // new delegate must own another reference
                     RobotLog.vv(TAG, "using existing [%s]: 0x%08x", serialNumber, device.hashCode());
                     return new LynxUsbDeviceDelegate(device);
-                    }
                 }
+            }
 
             LynxUsbDeviceImpl newDevice = new LynxUsbDeviceImpl(context, serialNumber, manager, openRobotUsbDevice); // has ref count of one
             RobotLog.vv(TAG, "creating new [%s]: 0x%08x", serialNumber, newDevice.hashCode());
             newDevice.armOrPretend();
             return new LynxUsbDeviceDelegate(newDevice);
-            }
         }
+    }
 
-    @Override public LynxUsbDeviceImpl getDelegationTarget()
-        {
+    @Override
+    public LynxUsbDeviceImpl getDelegationTarget() {
         return this;
-        }
+    }
 
-    @Override public boolean isSystemSynthetic()
-        {
+    @Override
+    public boolean isSystemSynthetic() {
         return this.isSystemSynthetic;
-        }
+    }
 
-    @Override public void setSystemSynthetic(boolean systemSynthetic)
-        {
+    @Override
+    public void setSystemSynthetic(boolean systemSynthetic) {
         this.isSystemSynthetic = systemSynthetic;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override protected void doClose()
-        {
+    @Override
+    protected void doClose() {
         // Take the extantDevices lock before the arming lock so as to preserve lock order. If
         // extantDevices and armingLock are both to be acquired, then the former MUST be done first.
-        synchronized (extantDevices)
-            {
+        synchronized (extantDevices) {
             super.doClose();
 
             // Once we're closed, there's no reason for anyone to find us any more.
             // Note that close() will lock extantDevices for us
             extantDevices.remove(this);
-            }
         }
+    }
 
-    @Override public Manufacturer getManufacturer()
-        {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.Lynx;
-        }
+    }
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return context.getString(R.string.moduleDisplayNameLynxUsbDevice);
-        }
+    }
 
     @Override
-    public String getConnectionInfo()
-        {
+    public String getConnectionInfo() {
         return "USB " + getSerialNumber();
-        }
+    }
 
     @Override
-    public void resetDeviceConfigurationForOpMode()
-        {
-        }
+    public void resetDeviceConfigurationForOpMode() {
+    }
 
     @Override
-    public int getVersion()
-        {
+    public int getVersion() {
         return 1;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // SyncdDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public ShutdownReason getShutdownReason()
-        {
-        return this.hasShutdownAbnormally || robotUsbDevice==null || !robotUsbDevice.isOpen()
+    public ShutdownReason getShutdownReason() {
+        return this.hasShutdownAbnormally || robotUsbDevice == null || !robotUsbDevice.isOpen()
                 ? ShutdownReason.ABNORMAL
                 : ShutdownReason.NORMAL;
-        }
+    }
 
-    protected boolean hasShutdownAbnormally()
-        {
+    protected boolean hasShutdownAbnormally() {
         return getShutdownReason() != ShutdownReason.NORMAL;
-        }
+    }
 
     @Override
-    public void setOwner(RobotUsbModule owner)
-        {
+    public void setOwner(RobotUsbModule owner) {
         // ignored
-        }
+    }
 
     @Override
-    public RobotUsbModule getOwner()
-        {
+    public RobotUsbModule getOwner() {
         return this;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Arming and disarming
     //----------------------------------------------------------------------------------------------
 
-    @Override public synchronized void engage()
-        {
-        synchronized (engageLock)
-            {
-            if (!this.isEngaged)
-                {
-                if (wasPollingWhenEngaged && isArmed())
-                    {
+    @Override
+    public synchronized void engage() {
+        synchronized (engageLock) {
+            if (!this.isEngaged) {
+                if (wasPollingWhenEngaged && isArmed()) {
                     startPollingForIncomingDatagrams();
-                    }
-                for (LynxModule module : getKnownModules())
-                    {
+                }
+                for (LynxModule module : getKnownModules()) {
                     module.engage();
-                    }
+                }
                 this.isEngaged = true;
-                }
             }
         }
-
-    @Override public synchronized void disengage()
-        {
-        synchronized (engageLock)
-            {
-            if (this.isEngaged)
-                {
-                this.isEngaged = false;
-                for (LynxModule module : getKnownModules())
-                    {
-                    module.disengage();
-                    }
-                this.wasPollingWhenEngaged = stopPollingForIncomingDatagrams();
-                }
-            }
-        }
-
-    @Override public synchronized boolean isEngaged()
-        {
-        synchronized (engageLock)
-            {
-            return this.isEngaged;
-            }
-        }
+    }
 
     @Override
-    protected void doPretend() throws RobotCoreException, InterruptedException
-        {
+    public synchronized void disengage() {
+        synchronized (engageLock) {
+            if (this.isEngaged) {
+                this.isEngaged = false;
+                for (LynxModule module : getKnownModules()) {
+                    module.disengage();
+                }
+                this.wasPollingWhenEngaged = stopPollingForIncomingDatagrams();
+            }
+        }
+    }
+
+    @Override
+    public synchronized boolean isEngaged() {
+        synchronized (engageLock) {
+            return this.isEngaged;
+        }
+    }
+
+    @Override
+    protected void doPretend() throws RobotCoreException, InterruptedException {
         // Nothing to do: see transmit()
         RobotLog.vv(TAG, "doPretend() serial=%s", serialNumber);
-        }
+    }
 
     @Override
-    protected void armDevice(RobotUsbDevice device) throws RobotCoreException, InterruptedException
-        {
-        synchronized (armingLock)
-            {
+    protected void armDevice(RobotUsbDevice device) throws RobotCoreException, InterruptedException {
+        synchronized (armingLock) {
             RobotLog.vv(TAG, "armDevice() serial=%s...", serialNumber);
 
             Assert.assertTrue(device != null);
@@ -351,28 +331,27 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             // we might reasonably *always* reset, but for now we make sure we do it at least once
             // but not thereafter.
             //
-            if (!resetAttempted)
-                {
+            if (!resetAttempted) {
                 resetAttempted = true;
                 resetDevice(this.robotUsbDevice);
-                }
+            }
 
             this.hasShutdownAbnormally = false;
-            if (eventLoopManager!=null) eventLoopManager.registerSyncdDevice(this);
+            if (eventLoopManager != null) {
+                eventLoopManager.registerSyncdDevice(this);
+            }
             resetNetworkTransmissionLock();
             startPollingForIncomingDatagrams();
             pingAndQueryKnownInterfaces();
             startRegularPinging();
 
             RobotLog.vv(TAG, "...done armDevice()");
-            }
         }
+    }
 
     @Override
-    protected void disarmDevice() throws InterruptedException
-        {
-        synchronized (armingLock)
-            {
+    protected void disarmDevice() throws InterruptedException {
+        synchronized (armingLock) {
             RobotLog.vv(TAG, "disarmDevice() serial=%s...", serialNumber);
 
             // Note: new transmissions are not accepted because we're not in the armed state
@@ -383,196 +362,169 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
 
             stopRegularPinging();
             stopPollingForIncomingDatagrams();
-            if (robotUsbDevice != null)
-                {
+            if (robotUsbDevice != null) {
                 robotUsbDevice.close();
                 robotUsbDevice = null;
-                }
+            }
 
             resetNetworkTransmissionLock();
-            if (eventLoopManager!=null) eventLoopManager.unregisterSyncdDevice(this);
+            if (eventLoopManager != null) {
+                eventLoopManager.unregisterSyncdDevice(this);
+            }
 
             RobotLog.vv(TAG, "...done disarmDevice()");
-            }
         }
+    }
 
-    @Override protected void doCloseFromArmed() throws RobotCoreException, InterruptedException
-        {
+    @Override
+    protected void doCloseFromArmed() throws RobotCoreException, InterruptedException {
         failSafe();
         closeModules();
         super.doCloseFromArmed();
-        }
+    }
 
-    @Override protected void doCloseFromOther() throws RobotCoreException, InterruptedException
-        {
+    @Override
+    protected void doCloseFromOther() throws RobotCoreException, InterruptedException {
         closeModules();
         super.doCloseFromOther();
-        }
+    }
 
-    protected void closeModules()
-        {
-        for (LynxModule module : getKnownModules())
-            {
+    protected void closeModules() {
+        for (LynxModule module : getKnownModules()) {
             module.close();
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override public void failSafe()
-        {
-        for (LynxModule module : getKnownModules())
-            {
+    @Override
+    public void failSafe() {
+        for (LynxModule module : getKnownModules()) {
             try {
-                if (module.isUserModule())
-                    {
+                if (module.isUserModule()) {
                     module.failSafe();
-                    }
                 }
-            catch (RobotCoreException|LynxNackException|InterruptedException e)
-                {
+            } catch (RobotCoreException | LynxNackException | InterruptedException e) {
                 exceptionHandler.handleException(e);
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
-    
-    protected Collection<LynxModule> getKnownModules()
-        {
-        synchronized (this.knownModules)
-            {
-            return this.knownModules.values();
-            }
-        }
 
-    protected LynxModule findKnownModule(int moduleAddress)
-        {
-        synchronized (this.knownModules)
-            {
+    protected Collection<LynxModule> getKnownModules() {
+        synchronized (this.knownModules) {
+            return this.knownModules.values();
+        }
+    }
+
+    protected LynxModule findKnownModule(int moduleAddress) {
+        synchronized (this.knownModules) {
             LynxModule result = this.knownModules.get(moduleAddress);
-            if (result == null)
-                {
+            if (result == null) {
                 // See if it's a module whose address is changing
                 result = this.knownModulesChanging.get(moduleAddress);
-                }
-            return result;
             }
+            return result;
         }
-    
-    public void changeModuleAddress(LynxModule module, int newAddress, Runnable runnable)
-        {
+    }
+
+    public void changeModuleAddress(LynxModule module, int newAddress, Runnable runnable) {
         int oldAddress = module.getModuleAddress();
-        if (newAddress != oldAddress)
-            {
-            if (knownModules.size()==1)
-                {
-                synchronized (knownModules)
-                    {
+        if (newAddress != oldAddress) {
+            if (knownModules.size() == 1) {
+                synchronized (knownModules) {
                     this.knownModulesChanging.put(newAddress, module);
-                    }
+                }
                 runnable.run();
-                synchronized (this.knownModules)
-                    {
+                synchronized (this.knownModules) {
                     this.knownModules.put(newAddress, module);
                     this.knownModules.remove(oldAddress);
                     this.knownModulesChanging.remove(newAddress);
-                    }
                 }
-            else
-                {
+            } else {
                 // Module address changing should only be attempted with a singly attached parent module
                 RobotLog.ee(TAG, "%s: too many modules (%d) to attempt update of %d", getSerialNumber(), knownModules.size(), oldAddress);
-                }
             }
         }
+    }
 
-    @Override public void noteMissingModule(LynxModule module, String moduleName)
-        {
+    @Override
+    public void noteMissingModule(LynxModule module, String moduleName) {
         this.missingModules.put(module.getModuleAddress(), moduleName);
         RobotLog.ee(TAG, "module #%d is missing: ignoring", module.getModuleAddress());
-        }
+    }
 
-    /** For lynx modules, in addition to reporting arming issues, we also need to report
+    /**
+     * For lynx modules, in addition to reporting arming issues, we also need to report
      * any issues having to do with configured modules which are absent. However, we avoid
-     * being *too* verbose, choosing instead to prioritize our messages. */
-    @Override protected String composeGlobalWarning()
-        {
+     * being *too* verbose, choosing instead to prioritize our messages.
+     */
+    @Override
+    protected String composeGlobalWarning() {
         List<String> warnings = new ArrayList<String>();
         //
         String armingWarning = super.composeGlobalWarning();
         warnings.add(armingWarning);
         //
         if (armingWarning.isEmpty()) // no point warning about missing pieces if the whole is missing in the first place
-            {
-            for (String moduleName : this.missingModules.values())
-                {
+        {
+            for (String moduleName : this.missingModules.values()) {
                 warnings.add(AppUtil.getDefContext().getString(R.string.errorExpansionHubIsMissing, moduleName));
-                }
+            }
 
-            for (LynxModule module : this.getKnownModules())
-                {
+            for (LynxModule module : this.getKnownModules()) {
                 List<String> moduleWarnings = module.getGlobalWarnings();
                 warnings.addAll(moduleWarnings);
-                }
             }
+        }
         //
         return RobotLog.combineGlobalWarnings(warnings);
-        }
+    }
 
-    @Override public void addConfiguredModule(LynxModule module) throws RobotCoreException, InterruptedException, LynxNackException
-        {
+    @Override
+    public void addConfiguredModule(LynxModule module) throws RobotCoreException, InterruptedException, LynxNackException {
         RobotLog.vv(TAG, "addConfiguredModule() module#=%d", module.getModuleAddress());
         boolean added = false;
 
-        synchronized (this.knownModules)
-            {
-            if (!this.knownModules.containsKey(module.getModuleAddress()))
-                {
+        synchronized (this.knownModules) {
+            if (!this.knownModules.containsKey(module.getModuleAddress())) {
                 this.knownModules.put(module.getModuleAddress(), module);
                 added = true;
-                }
-            else
-                {
+            } else {
                 RobotLog.ee(TAG, "addConfiguredModule() module#=%d: already exists; ignored", module.getModuleAddress());
-                }
             }
+        }
 
-        if (added)
-            {
+        if (added) {
             try {
                 module.pingAndQueryKnownInterfacesAndEtc(randSeed);
-                }
-            catch (RobotCoreException|InterruptedException|RuntimeException e)
-                {
+            } catch (RobotCoreException | InterruptedException | RuntimeException e) {
                 RobotLog.logExceptionHeader(TAG, e, "addConfiguredModule() module#=%d", module.getModuleAddress());
                 // If we don't full add, then we don't add at all
-                synchronized (this.knownModules)
-                    {
+                synchronized (this.knownModules) {
                     this.knownModules.remove(module.getModuleAddress());
-                    }
+                }
                 throw e;
-                }
             }
         }
+    }
 
-    @Override public void removeConfiguredModule(LynxModule module)
-        {
-        synchronized (this.knownModules)
-            {
-            if (this.knownModules.remove(module.getModuleAddress()) == null)
-                {
+    @Override
+    public void removeConfiguredModule(LynxModule module) {
+        synchronized (this.knownModules) {
+            if (this.knownModules.remove(module.getModuleAddress()) == null) {
                 RobotLog.ee(TAG, "removeConfiguredModule(): mod#=%d wasn't there", module.getModuleAddress());
-                }
             }
         }
+    }
 
-    @Override public LynxModuleMetaList discoverModules() throws RobotCoreException, InterruptedException
-        {
+    @Override
+    public LynxModuleMetaList discoverModules() throws RobotCoreException, InterruptedException {
         RobotLog.vv(TAG, "lynx discovery beginning...transmitting LynxDiscoveryCommand()...");
 
         // Initialize our set of known modules and send out discovery requests
@@ -588,9 +540,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             // Wait an interval sufficient so as to guarantee that we'll see all the replies
             // that are there to see
             long nsPerModuleInterval = 3 * ElapsedTime.MILLIS_IN_NANO;
-            int  maxNumberOfModules  = 254;
-            long nsPacketTimeMax     = 50 * ElapsedTime.MILLIS_IN_NANO;     // "entire packet must be received within 50ms from the first Frame Byte"
-            long nsSlop              = 200 * ElapsedTime.MILLIS_IN_NANO;    // should be oodles
+            int maxNumberOfModules = 254;
+            long nsPacketTimeMax = 50 * ElapsedTime.MILLIS_IN_NANO;     // "entire packet must be received within 50ms from the first Frame Byte"
+            long nsSlop = 200 * ElapsedTime.MILLIS_IN_NANO;    // should be oodles
             long nsWait = nsPerModuleInterval * maxNumberOfModules + nsPacketTimeMax + nsSlop;
 
             long msWait = (nsWait / ElapsedTime.MILLIS_IN_NANO);
@@ -598,24 +550,19 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             RobotLog.vv(TAG, "discovery waiting %dms and %dns", msWait, nsWait);
             Thread.sleep(msWait, (int) nsWait);
             RobotLog.vv(TAG, "discovery waiting complete: #modules=%d", discoveredModules.size());
-            }
-        catch (LynxNackException e)
-            {
+        } catch (LynxNackException e) {
             throw e.wrap();
-            }
-        finally
-            {
+        } finally {
             // Tidy up
             fakeModule.close();
-            }
+        }
 
         LynxModuleMetaList result = new LynxModuleMetaList(serialNumber, discoveredModules.values());
         RobotLog.vv(TAG, "...lynx discovery completed");
         return result;
-        }
+    }
 
-    protected void onLynxDiscoveryResponseReceived(LynxDatagram datagram)
-        {
+    protected void onLynxDiscoveryResponseReceived(LynxDatagram datagram) {
         LynxDiscoveryResponse incomingResponse = new LynxDiscoveryResponse();
         incomingResponse.setSerialization(datagram);
         incomingResponse.loadFromSerialization();
@@ -623,121 +570,106 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         RobotLog.vv(TAG, "onLynxDiscoveryResponseReceived()... module#=%d isParent=%s", incomingResponse.getDiscoveredModuleAddress(), Boolean.toString(incomingResponse.isParent()));
         try {
             // Be paranoid about duplicates
-            synchronized (this.discoveredModules)
-                {
-                if (!this.discoveredModules.containsKey(datagram.getSourceModuleAddress()))
-                    {
+            synchronized (this.discoveredModules) {
+                if (!this.discoveredModules.containsKey(datagram.getSourceModuleAddress())) {
                     RobotLog.vv(TAG, "discovered lynx module#=%d isParent=%s", incomingResponse.getDiscoveredModuleAddress(), Boolean.toString(incomingResponse.isParent()));
                     LynxModuleMeta meta = new LynxModuleMeta(incomingResponse.getDiscoveredModuleAddress(), incomingResponse.isParent());
                     discoveredModules.put(meta.getModuleAddress(), meta);
-                    }
                 }
             }
-        finally
-            {
+        } finally {
             RobotLog.vv(TAG, "...onLynxDiscoveryResponseReceived()");
-            }
         }
+    }
 
-    protected void pingAndQueryKnownInterfaces() throws RobotCoreException, InterruptedException
-        {
+    protected void pingAndQueryKnownInterfaces() throws RobotCoreException, InterruptedException {
         // Be sure to do the parent first so that it locks in
-        for (LynxModule module : getKnownModules())
-            {
-            if (module.isParent())
-                {
+        for (LynxModule module : getKnownModules()) {
+            if (module.isParent()) {
                 // Do our main work here
                 module.pingAndQueryKnownInterfacesAndEtc(randSeed);
-                }
-            }
-        for (LynxModule module : getKnownModules())
-            {
-            if (!module.isParent())
-                {
-                module.pingAndQueryKnownInterfacesAndEtc(randSeed);
-                }
             }
         }
+        for (LynxModule module : getKnownModules()) {
+            if (!module.isParent()) {
+                module.pingAndQueryKnownInterfacesAndEtc(randSeed);
+            }
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transmitting and receiving
     //----------------------------------------------------------------------------------------------
 
-    protected void resetNetworkTransmissionLock() throws InterruptedException
-        {
+    protected void resetNetworkTransmissionLock() throws InterruptedException {
         this.networkTransmissionLock.reset();
-        }
+    }
 
     /* Because there is no collision management for the RS485 child bus, it is ill-advised for the
      * Host to concurrently expect data from multiple RS485 child bus siblings (waiting for
      * acknowledgement or requested data).
      */
-    @Override public void acquireNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException
-        {
+    @Override
+    public void acquireNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException {
         this.networkTransmissionLock.acquire(message);
-        }
+    }
 
-    @Override public void releaseNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException
-        {
+    @Override
+    public void releaseNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException {
         this.networkTransmissionLock.release(message);
-        }
+    }
 
-    protected void startPollingForIncomingDatagrams()
-        {
-        if (incomingDatagramPoller == null)
-            {
+    protected void startPollingForIncomingDatagrams() {
+        if (incomingDatagramPoller == null) {
             incomingDatagramPoller = ThreadPool.newSingleThreadExecutor("lynx dg poller");
             incomingDatagramPoller.execute(new IncomingDatagramPoller());
-            }
         }
+    }
 
-    protected boolean stopPollingForIncomingDatagrams()
-        {
+    protected boolean stopPollingForIncomingDatagrams() {
         boolean wasEngaged = incomingDatagramPoller != null;
 
         // Make sure the FTDI layer interrupts reads etc
-        if (this.robotUsbDevice != null) this.robotUsbDevice.requestReadInterrupt(true);
+        if (this.robotUsbDevice != null) {
+            this.robotUsbDevice.requestReadInterrupt(true);
+        }
 
-        if (incomingDatagramPoller != null)
-            {
+        if (incomingDatagramPoller != null) {
             RobotLog.vv(TAG, "shutting down incoming datagrams");
             incomingDatagramPoller.shutdownNow();
             ThreadPool.awaitTerminationOrExitApplication(incomingDatagramPoller, 5, TimeUnit.SECONDS, "Lynx incoming datagram poller", "internal error");
             incomingDatagramPoller = null;
-            }
+        }
 
         // Clear the forced interrupt so we can re-engage later, maybe // TODO review
-        if (this.robotUsbDevice != null) this.robotUsbDevice.requestReadInterrupt(false);
+        if (this.robotUsbDevice != null) {
+            this.robotUsbDevice.requestReadInterrupt(false);
+        }
 
         return wasEngaged;
-        }
+    }
 
-    protected void startRegularPinging()
-        {
-        for (LynxModule module : getKnownModules())
-            {
+    protected void startRegularPinging() {
+        for (LynxModule module : getKnownModules()) {
             module.startPingTimer();
-            }
         }
-    void stopRegularPinging()
-        {
-        for (LynxModule module : getKnownModules())
-            {
-            module.stopPingTimer(true);
-            }
-        }
+    }
 
-    @Override public void transmit(LynxMessage message) throws InterruptedException
+    void stopRegularPinging() {
+        for (LynxModule module : getKnownModules()) {
+            module.stopPingTimer(true);
+        }
+    }
+
+    @Override
+    public void transmit(LynxMessage message) throws InterruptedException
     // Note that this might be called on ANY thread.
-        {
-        synchronized (engageLock)
-            {
-            if (this.isArmedOrArming() && !this.hasShutdownAbnormally() && isEngaged)
-                {
-                if (DEBUG_LOG_DATAGRAMS || DEBUG_LOG_MESSAGES)
-                    {
+    {
+        synchronized (engageLock) {
+            if (this.isArmedOrArming() && !this.hasShutdownAbnormally() && isEngaged) {
+                if (DEBUG_LOG_DATAGRAMS || DEBUG_LOG_MESSAGES) {
                     RobotLog.vv(TAG, "xmit'ing: mod=%d cmd=0x%02x(%s) msg#=%d ref#=%d ", message.getModuleAddress(), message.getCommandNumber(), message.getClass().getSimpleName(), message.getMessageNumber(), message.getReferenceNumber());
-                    }
+                }
 
                 LynxDatagram datagram = message.getSerialization();
                 Assert.assertTrue(datagram != null);
@@ -746,9 +678,8 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
 
                 try {
                     this.robotUsbDevice.write(bytes);
-                    }
-                catch (RobotUsbException|RuntimeException e)    // RuntimeException is just paranoia
-                    {
+                } catch (RobotUsbException | RuntimeException e)    // RuntimeException is just paranoia
+                {
                     // For now, at least, we're brutal: we don't quarter ANY usb transmission errors
                     // before giving up and shutting things down. In the wake of future experience, it
                     // might later be reasonable to reconsider this decision.
@@ -757,7 +688,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     RobotLog.ee(TAG, e, "exception thrown in LynxUsbDevice.transmit");
                     //
                     return;
-                    }
+                }
 
                 long now = System.nanoTime();
                 message.setNanotimeLastTransmit(now);
@@ -767,161 +698,129 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 // Keep Alive". Other messages will do the trick, too.
                 //
                 message.resetModulePingTimer();
-                }
-            else
-                {
+            } else {
                 message.onPretendTransmit();
-                }
             }
+        }
 
         // Do this last so as to make LynxModule.retransmitDatagrams() interlock more robust
         message.noteHasBeenTransmitted();
-        }
+    }
 
-    protected void shutdownAbnormally()
-        {
+    protected void shutdownAbnormally() {
         this.hasShutdownAbnormally = true;
         String format = context.getString(robotUsbDevice.isAttached() ? R.string.warningProblemCommunicatingWithUSBDevice : R.string.warningUSBDeviceDetached);
         setGlobalWarning(String.format(format, HardwareFactory.getDeviceDisplayName(context, serialNumber)));
-        }
+    }
 
-    protected void pretendFinishExtantCommands() throws InterruptedException
-        {
-        for (LynxModule module : getKnownModules())
-            {
+    protected void pretendFinishExtantCommands() throws InterruptedException {
+        for (LynxModule module : getKnownModules()) {
             module.pretendFinishExtantCommands();
-            }
         }
+    }
 
-    protected void abandonUnfinishedCommands()
-        {
-        for (LynxModule module : getKnownModules())
-            {
+    protected void abandonUnfinishedCommands() {
+        for (LynxModule module : getKnownModules()) {
             module.abandonUnfinishedCommands();
-            }
         }
+    }
 
-    class IncomingDatagramPoller implements Runnable
-        {
-        boolean stopRequested  = false;
-        byte[]  scratch        = new byte[2];
-        byte[]  prefix         = new byte[4];
+    class IncomingDatagramPoller implements Runnable {
+        boolean stopRequested = false;
+        byte[] scratch = new byte[2];
+        byte[] prefix = new byte[4];
         boolean isSynchronized = false;
 
-        @Override public void run()
-            {
-            ThreadPool.logThreadLifeCycle("lynx incoming datagrams", new Runnable()
-                {
-                @Override public void run()
-                    {
+        @Override
+        public void run() {
+            ThreadPool.logThreadLifeCycle("lynx incoming datagrams", new Runnable() {
+                @Override
+                public void run() {
                     // Boost the thread priority in the hopes of receiving data more quickly
-                    Thread.currentThread().setPriority(Thread.NORM_PRIORITY+1);
+                    Thread.currentThread().setPriority(Thread.NORM_PRIORITY + 1);
 
-                    while (!stopRequested && !Thread.currentThread().isInterrupted() && !hasShutdownAbnormally())
-                        {
+                    while (!stopRequested && !Thread.currentThread().isInterrupted() && !hasShutdownAbnormally()) {
                         // Did we get a datagram?
                         LynxDatagram datagram = pollForIncomingDatagram();
-                        if (datagram != null)
-                            {
+                        if (datagram != null) {
                             // Discovery is a special case
-                            if (datagram.getPacketId() == LynxDiscoveryResponse.getStandardCommandNumber())
-                                {
+                            if (datagram.getPacketId() == LynxDiscoveryResponse.getStandardCommandNumber()) {
                                 onLynxDiscoveryResponseReceived(datagram);
-                                }
-                            else
-                                {
+                            } else {
                                 // Tell the corresponding module, if it's for something we know about
                                 LynxModule module = findKnownModule(datagram.getSourceModuleAddress());
-                                if (module != null)
-                                    {
+                                if (module != null) {
                                     try {
                                         module.onIncomingDatagramReceived(datagram);
-                                        }
-                                    catch (InterruptedException whoCares)
-                                        {
+                                    } catch (InterruptedException whoCares) {
                                         break;
-                                        }
                                     }
                                 }
                             }
                         }
                     }
-                });
-            }
+                }
+            });
+        }
 
-        void readIncomingBytes(byte[] buffer, int cbToRead, @Nullable TimeWindow timeWindow) throws InterruptedException, RobotUsbException
-            {
+        void readIncomingBytes(byte[] buffer, int cbToRead, @Nullable TimeWindow timeWindow) throws InterruptedException, RobotUsbException {
             // We specify an essentially infinite read timeout waiting for the next packet to come in
             long msReadTimeout = Integer.MAX_VALUE;
             int cbRead = robotUsbDevice.read(buffer, 0, cbToRead, msReadTimeout, timeWindow);
-            if (cbRead == cbToRead)
-                {
+            if (cbRead == cbToRead) {
                 // We got all the data we came for. Just return gracefully
-                }
-            else if (cbRead == 0)
-                {
+            } else if (cbRead == 0) {
                 // Couldn't read the data in the time allotted. Because we allot
                 // an infinite amount of time, that means that an interrupt occurred, but
                 // one that was eaten. Re-signal the interrupt.
                 RobotLog.ee(TAG, "readIncomingBytes() cbToRead=%d cbRead=%d: throwing InterruptedException", cbToRead, cbRead);
                 throw new InterruptedException("interrupt during robotUsbDevice.read()");
-                }
-            else
-                {
+            } else {
                 RobotLog.ee(TAG, "readIncomingBytes() cbToRead=%d cbRead=%d: throwing RobotCoreException", cbToRead, cbRead);
                 throw new RobotUsbUnspecifiedException("readIncomingBytes() cbToRead=%d cbRead=%d", cbToRead, cbRead);
-                }
             }
+        }
 
-        byte readSingleByte(byte[] buffer) throws InterruptedException, RobotUsbException
-            {
+        byte readSingleByte(byte[] buffer) throws InterruptedException, RobotUsbException {
             readIncomingBytes(buffer, 1, null);
             return buffer[0];
-            }
+        }
 
-        LynxDatagram pollForIncomingDatagram()
-            {
-            while (!stopRequested && !Thread.currentThread().isInterrupted() && !hasShutdownAbnormally())
-                {
+        LynxDatagram pollForIncomingDatagram() {
+            while (!stopRequested && !Thread.currentThread().isInterrupted() && !hasShutdownAbnormally()) {
                 try {
-                    if (!isSynchronized)
-                        {
+                    if (!isSynchronized) {
                         // Synchronize by looking for the first framing byte
-                        if (readSingleByte(scratch) != LynxDatagram.frameBytes[0])
-                            {
+                        if (readSingleByte(scratch) != LynxDatagram.frameBytes[0]) {
                             continue;
-                            }
+                        }
 
                         // Having found the first, if we don't next see the second, then go back to looking for the first
-                        if (readSingleByte(scratch) != LynxDatagram.frameBytes[1])
-                            {
+                        if (readSingleByte(scratch) != LynxDatagram.frameBytes[1]) {
                             continue;
-                            }
+                        }
 
                         // Read the packet length
                         readIncomingBytes(scratch, 2, null);
 
                         // Assemble the prefix
                         System.arraycopy(LynxDatagram.frameBytes, 0, prefix, 0, 2);
-                        System.arraycopy(scratch,                 0, prefix, 2, 2);
+                        System.arraycopy(scratch, 0, prefix, 2, 2);
 
                         // We think we are in sync. Next time, just try the faster path
                         RobotLog.vv(TAG, "synchronization gained: serial=%s", serialNumber);
                         isSynchronized = true;
-                        }
-                    else
-                        {
+                    } else {
                         // Read the prefix in fewer read calls for better performance
                         readIncomingBytes(prefix, 4, null);
 
                         // If we're not in sync, then go back to the slow way
-                        if (!LynxDatagram.beginsWithFraming(prefix))
-                            {
+                        if (!LynxDatagram.beginsWithFraming(prefix)) {
                             RobotLog.vv(TAG, "synchronization lost: serial=%s", serialNumber);
                             isSynchronized = false;
                             continue;
-                            }
                         }
+                    }
 
                     // Compute the packet length, allocate a buffer for the suffix, and read same
                     int cbPacketLength = TypeConversion.unsignedShortToInt(TypeConversion.byteArrayToShort(prefix, 2, LynxDatagram.LYNX_ENDIAN));
@@ -935,22 +834,17 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     LynxDatagram datagram = new LynxDatagram();
                     datagram.setPayloadTimeWindow(payloadTimeWindow);
                     datagram.fromByteArray(completePacket);
-                    if (datagram.isChecksumValid())
-                        {
-                        if (DEBUG_LOG_DATAGRAMS)
-                            {
+                    if (datagram.isChecksumValid()) {
+                        if (DEBUG_LOG_DATAGRAMS) {
                             RobotLog.vv(TAG, "rec'd: mod=%d cmd=0x%02x msg#=%d ref#=%d ", datagram.getSourceModuleAddress(), datagram.getPacketId(), datagram.getMessageNumber(), datagram.getReferenceNumber());
-                            }
-                        return datagram;
                         }
-                    else
-                        {
+                        return datagram;
+                    } else {
                         // Invalid checksum. The Lynx specification indicates we are simply to ignore.
                         RobotLog.ee(TAG, "invalid checksum received; message ignored");
-                        }
                     }
-                catch (RobotUsbFTDIException|RobotUsbDeviceClosedException|RuntimeException e)  // RuntimeException is just paranoia
-                    {
+                } catch (RobotUsbFTDIException | RobotUsbDeviceClosedException | RuntimeException e)  // RuntimeException is just paranoia
+                {
                     RobotLog.vv(TAG, "device closed in incoming datagram loop");
                     shutdownAbnormally();
                     robotUsbDevice.close();
@@ -958,68 +852,58 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     // We're not going to be receiving any more incoming messages, so get out of whatever we've got
                     try {
                         pretendFinishExtantCommands();
-                        }
-                    catch (InterruptedException ignored)
-                        {
+                    } catch (InterruptedException ignored) {
                         stopRequested = true;
-                        }
                     }
-                catch (RobotUsbException|RobotCoreException e)
-                    {
+                } catch (RobotUsbException | RobotCoreException e) {
                     // Something disorderly happened. We'll choose to ignore it, and trust to
                     // retransmission logic to fix
                     RobotLog.vv(TAG, e, "exception thrown in incoming datagram loop; ignored");
-                    }
-                catch (InterruptedException e)
-                    {
+                } catch (InterruptedException e) {
                     stopRequested = true;
-                    }
                 }
+            }
 
             return null;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Firmware control
     //----------------------------------------------------------------------------------------------
 
-    /** A simple, cursory test to see whether we can get access to the cbus FTDI functionality.
-     * Currently not very robust */
-    protected static RobotUsbDeviceFtdi accessCBus(RobotUsbDevice robotUsbDevice)
-        {
-        if (robotUsbDevice instanceof RobotUsbDeviceFtdi)
-            {
-            RobotUsbDeviceFtdi deviceFtdi = (RobotUsbDeviceFtdi)robotUsbDevice;
-            if (deviceFtdi.supportsCbusBitbang())
-                {
+    /**
+     * A simple, cursory test to see whether we can get access to the cbus FTDI functionality.
+     * Currently not very robust
+     */
+    protected static RobotUsbDeviceFtdi accessCBus(RobotUsbDevice robotUsbDevice) {
+        if (robotUsbDevice instanceof RobotUsbDeviceFtdi) {
+            RobotUsbDeviceFtdi deviceFtdi = (RobotUsbDeviceFtdi) robotUsbDevice;
+            if (deviceFtdi.supportsCbusBitbang()) {
                 return deviceFtdi;
-                }
             }
+        }
         RobotLog.ee(TAG, "accessCBus() unexpectedly failed; ignoring");
         return null;
-        }
+    }
 
     /**
      * Issues a hardware reset to the lynx module.
      */
-    public static void resetDevice(RobotUsbDevice robotUsbDevice)
-        {
+    public static void resetDevice(RobotUsbDevice robotUsbDevice) {
         RobotLog.vv(LynxModule.TAG, "resetDevice() serial=%s", robotUsbDevice.getSerialNumber());
 
         int msDelay = msCbusWiggle;
         try {
-            if (LynxConstants.isEmbeddedSerialNumber(robotUsbDevice.getSerialNumber()))
-                {
+            if (LynxConstants.isEmbeddedSerialNumber(robotUsbDevice.getSerialNumber())) {
                 boolean prevState = DragonboardLynxDragonboardIsPresentPin.getInstance().getState();
                 RobotLog.vv(LynxModule.TAG, "resetting embedded usb device: isPresent: was=%s", prevState);
 
                 // Make sure we're 'present'. Our reset pin won't operate unless we are
-                if (!prevState)
-                    {
+                if (!prevState) {
                     DragonboardLynxDragonboardIsPresentPin.getInstance().setState(true);
                     Thread.sleep(msDelay);
-                    }
+                }
 
                 DragonboardLynxResetPin.getInstance().setState(true);
                 Thread.sleep(msDelay);
@@ -1028,17 +912,13 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 Thread.sleep(msDelay);
 
                 // ALWAYS remain 'present' unless we're explicitly configured not to
-                if (LynxConstants.isRevControlHub() && LynxConstants.disableDragonboard())
-                    {
+                if (LynxConstants.isRevControlHub() && LynxConstants.disableDragonboard()) {
                     DragonboardLynxDragonboardIsPresentPin.getInstance().setState(false);
                     Thread.sleep(msDelay);
-                    }
                 }
-            else
-                {
+            } else {
                 RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
-                if (deviceFtdi != null)
-                    {
+                if (deviceFtdi != null) {
                     // Initialize with both lines deasserted
                     deviceFtdi.cbus_setup(cbusMask, cbusNeitherAsserted);
                     Thread.sleep(msDelay);
@@ -1049,28 +929,24 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
 
                     // Deassert reset
                     deviceFtdi.cbus_write(cbusNeitherAsserted);
-                    }
                 }
+            }
 
             // give the board a chance to recover
             Thread.sleep(msResetRecovery); // totally a finger in the wind
-            }
-        catch (InterruptedException|RobotUsbException e)
-            {
+        } catch (InterruptedException | RobotUsbException e) {
             exceptionHandler.handleException(e);
-            }
         }
+    }
 
     /**
      * If we are a USB-attached Lynx, then cause us to enter firmware update mode
      */
-    public static void enterFirmwareUpdateModeUSB(RobotUsbDevice robotUsbDevice)
-        {
+    public static void enterFirmwareUpdateModeUSB(RobotUsbDevice robotUsbDevice) {
         RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeUSB() serial=%s", robotUsbDevice.getSerialNumber());
 
         RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
-        if (deviceFtdi != null)
-            {
+        if (deviceFtdi != null) {
             try {
                 int msDelay = msCbusWiggle;
 
@@ -1093,25 +969,21 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 // Deassert nProg
                 deviceFtdi.cbus_write(cbusNeitherAsserted);
                 Thread.sleep(msResetRecovery);
-                }
-            catch (InterruptedException|RobotUsbException e)
-                {
+            } catch (InterruptedException | RobotUsbException e) {
                 exceptionHandler.handleException(e);
-                }
             }
         }
+    }
 
     /**
      * If we are a Dragonboard/Lynx combo, then this causes the combo-Lynx to enter firmware update * mode.
      * We will be updating the firmware using the 'serial' connection, not the USB connection. So
      * after this function exits, the Dragonboad must be asserting its presence.
      */
-    public static void enterFirmwareUpdateModeDragonboardCombo()
-        {
+    public static void enterFirmwareUpdateModeDragonboardCombo() {
         RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeDragonboardCombo()");
 
-        if (LynxConstants.isRevControlHub())
-            {
+        if (LynxConstants.isRevControlHub()) {
             try {
                 int msDelay = msCbusWiggle;
 
@@ -1119,11 +991,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 RobotLog.vv(LynxModule.TAG, "fw update embedded usb device: isPresent: was=%s", prevState);
 
                 // Assert Dragonboard presence to ensure we can manipulate the programming and reset lines
-                if (!prevState)
-                    {
+                if (!prevState) {
                     DragonboardLynxDragonboardIsPresentPin.getInstance().setState(true);
                     Thread.sleep(msDelay);
-                    }
+                }
 
                 // Assert programming
                 DragonboardLynxProgrammingPin.getInstance().setState(true);
@@ -1140,15 +1011,11 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 // Deassert programming
                 DragonboardLynxProgrammingPin.getInstance().setState(false);
                 Thread.sleep(msDelay);
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                }
             }
-        else
-            {
+        } else {
             RobotLog.ee(TAG, "enterFirmwareUpdateModeDragonboardCombo() issued on non-combo; ignoring");
-            }
         }
     }
+}

@@ -37,7 +37,6 @@ package com.qualcomm.robotcore.hardware;
  * {@link IntegratingGyroscope} provides a means by which the integrated rotation
  * can be easily retrieved.
  */
-public interface IntegratingGyroscope extends Gyroscope, OrientationSensor
-    {
+public interface IntegratingGyroscope extends Gyroscope, OrientationSensor {
     // No additional methods beyond the two base interfaces
-    }
+}

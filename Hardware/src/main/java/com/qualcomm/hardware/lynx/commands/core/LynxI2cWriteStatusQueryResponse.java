@@ -40,8 +40,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-05-06.
  */
-public class LynxI2cWriteStatusQueryResponse extends LynxI2cResponse
-    {
+public class LynxI2cWriteStatusQueryResponse extends LynxI2cResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,29 +53,26 @@ public class LynxI2cWriteStatusQueryResponse extends LynxI2cResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cWriteStatusQueryResponse(LynxModuleIntf module)
-        {
+    public LynxI2cWriteStatusQueryResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cStatus);
         buffer.put(this.cbWritten);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cStatus = buffer.get();
         this.cbWritten = buffer.get();
-        }
     }
+}

@@ -35,8 +35,8 @@ package com.qualcomm.robotcore.hardware;
 /**
  * {@link RobotCoreLynxModule} is the view of a Lynx Module available at the RobotCore layer.
  */
-public interface RobotCoreLynxModule
-    {
+public interface RobotCoreLynxModule {
     int getModuleAddress();
+
     boolean isParent();
-    }
+}

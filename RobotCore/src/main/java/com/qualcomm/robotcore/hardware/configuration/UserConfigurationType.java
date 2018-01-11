@@ -50,104 +50,114 @@ import java.io.Serializable;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class UserConfigurationType implements ConfigurationType, Serializable // final because of serialization concerns
-    {
+{
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public enum Flavor { I2C, MOTOR }
+    public enum Flavor {I2C, MOTOR}
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected @Expose @NonNull final Flavor flavor;
-    protected @Expose @NonNull       String xmlTag;
-    protected @Expose @NonNull       String name = "";
-    protected @Expose                boolean isOnBotJava;
+    protected
+    @Expose
+    @NonNull
+    final Flavor flavor;
+    protected
+    @Expose
+    @NonNull
+    String xmlTag;
+    protected
+    @Expose
+    @NonNull
+    String name = "";
+    protected
+    @Expose
+    boolean isOnBotJava;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public UserConfigurationType(Class clazz, @NonNull Flavor flavor, @NonNull String xmlTag)
-        {
+    public UserConfigurationType(Class clazz, @NonNull Flavor flavor, @NonNull String xmlTag) {
         this.flavor = flavor;
         this.xmlTag = xmlTag;
         this.isOnBotJava = OnBotJavaClassLoader.isOnBotJava(clazz);
-        }
+    }
 
     // used by gson deserialization
-    protected UserConfigurationType(@NonNull Flavor flavor)
-        {
+    protected UserConfigurationType(@NonNull Flavor flavor) {
         this.flavor = flavor;
         this.xmlTag = "";
         this.isOnBotJava = false;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization (used in local marshalling during configuration editing)
     //----------------------------------------------------------------------------------------------
 
-    protected static class SerializationProxy implements Serializable
-        {
+    protected static class SerializationProxy implements Serializable {
         protected String xmlTag;
 
-        public SerializationProxy(UserConfigurationType userConfigurationType)
-            {
+        public SerializationProxy(UserConfigurationType userConfigurationType) {
             this.xmlTag = userConfigurationType.xmlTag;
-            }
-        private Object readResolve()
-            {
+        }
+
+        private Object readResolve() {
             return UserConfigurationTypeManager.getInstance().configurationTypeFromTag(xmlTag);
-            }
         }
+    }
 
-    private Object writeReplace()
-        {
+    private Object writeReplace() {
         return new SerializationProxy(this);
-        }
+    }
 
-    private void readObject(ObjectInputStream in) throws InvalidObjectException
-        {
+    private void readObject(ObjectInputStream in) throws InvalidObjectException {
         throw new InvalidObjectException("proxy required"); // attack threat paranoia
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public @NonNull Flavor getFlavor()
-        {
+    public
+    @NonNull
+    Flavor getFlavor() {
         return this.flavor;
-        }
+    }
 
-    public @NonNull String getName()
-        {
+    public
+    @NonNull
+    String getName() {
         return this.name;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // ConfigurationType
     //----------------------------------------------------------------------------------------------
 
-    @Override @NonNull public String getDisplayName(DisplayNameFlavor flavor, Context context)
-        {
+    @Override
+    @NonNull
+    public String getDisplayName(DisplayNameFlavor flavor, Context context) {
         return this.name;
-        }
-
-    @Override @NonNull public String getXmlTag()
-        {
-        return this.xmlTag;
-        }
-
-    @Override @NonNull public DeviceManager.DeviceType toUSBDeviceType()
-        {
-        return DeviceManager.DeviceType.FTDI_USB_UNKNOWN_DEVICE;
-        }
-
-    @Override public boolean isDeviceFlavor(UserConfigurationType.Flavor flavor)
-        {
-        return this.flavor == flavor;
-        }
     }
+
+    @Override
+    @NonNull
+    public String getXmlTag() {
+        return this.xmlTag;
+    }
+
+    @Override
+    @NonNull
+    public DeviceManager.DeviceType toUSBDeviceType() {
+        return DeviceManager.DeviceType.FTDI_USB_UNKNOWN_DEVICE;
+    }
+
+    @Override
+    public boolean isDeviceFlavor(UserConfigurationType.Flavor flavor) {
+        return this.flavor == flavor;
+    }
+}

@@ -57,8 +57,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * @author <a href="http://www.extreme.indiana.edu/~aslom/">Aleksander Slominski</a>
  */
 
-public class Dom2XmlPullBuilder
-    {
+public class Dom2XmlPullBuilder {
     protected final static boolean NAMESPACES_SUPPORTED = false;
 
     //protected XmlPullParser pp;
@@ -84,10 +83,10 @@ public class Dom2XmlPullBuilder
             return builder.newDocument();
         } catch (FactoryConfigurationError ex) {
             throw new XmlPullParserException(
-                "could not configure factory JAXP DocumentBuilderFactory: "+ex, null, ex);
+                    "could not configure factory JAXP DocumentBuilderFactory: " + ex, null, ex);
         } catch (ParserConfigurationException ex) {
             throw new XmlPullParserException(
-                "could not configure parser JAXP DocumentBuilderFactory: "+ex, null, ex);
+                    "could not configure parser JAXP DocumentBuilderFactory: " + ex, null, ex);
         }
     }
 
@@ -102,8 +101,7 @@ public class Dom2XmlPullBuilder
     }
 
     public Element parse(Reader reader, Document docFactory)
-        throws XmlPullParserException, IOException
-    {
+            throws XmlPullParserException, IOException {
         XmlPullParser pp = newParser();
         pp.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
         pp.setInput(reader);
@@ -112,8 +110,7 @@ public class Dom2XmlPullBuilder
     }
 
     public Element parse(XmlPullParser pp, Document docFactory)
-        throws XmlPullParserException, IOException
-    {
+            throws XmlPullParserException, IOException {
         Element root = parseSubTree(pp, docFactory);
         return root;
     }
@@ -125,8 +122,7 @@ public class Dom2XmlPullBuilder
     }
 
     public Element parseSubTree(XmlPullParser pp, Document docFactory)
-        throws XmlPullParserException, IOException
-    {
+            throws XmlPullParserException, IOException {
         BuildProcess process = new BuildProcess();
         return process.parseSubTree(pp, docFactory);
     }
@@ -140,16 +136,14 @@ public class Dom2XmlPullBuilder
         }
 
         public Element parseSubTree(XmlPullParser pp, Document docFactory)
-            throws XmlPullParserException, IOException
-        {
+                throws XmlPullParserException, IOException {
             this.pp = pp;
             this.docFactory = docFactory;
             return parseSubTree();
         }
 
         private Element parseSubTree()
-            throws XmlPullParserException, IOException
-        {
+                throws XmlPullParserException, IOException {
             // If we're at the start of the document, ignore that and go on to the root element
             if (pp.getEventType() == XmlPullParser.START_DOCUMENT) {
                 while (pp.getEventType() != XmlPullParser.START_TAG) {
@@ -172,7 +166,7 @@ public class Dom2XmlPullBuilder
                 prefix = pp.getPrefix();
             }
 
-            String qname = prefix != null ? prefix+":"+name : name;
+            String qname = prefix != null ? prefix + ":" + name : name;
             Element parent = docFactory.createElementNS(ns, qname);
 
             if (NAMESPACES_SUPPORTED) {
@@ -181,22 +175,21 @@ public class Dom2XmlPullBuilder
             }
 
             // process attributes
-            for (int i = 0; i < pp.getAttributeCount(); i++)
-            {
+            for (int i = 0; i < pp.getAttributeCount(); i++) {
                 String attrNs = pp.getAttributeNamespace(i);
                 String attrName = pp.getAttributeName(i);
                 String attrValue = pp.getAttributeValue(i);
-                if(attrNs == null || attrNs.length() == 0) {
+                if (attrNs == null || attrNs.length() == 0) {
                     parent.setAttribute(attrName, attrValue);
                 } else {
                     String attrPrefix = pp.getAttributePrefix(i);
-                    String attrQname = attrPrefix != null ? attrPrefix+":"+attrName : attrName;
+                    String attrQname = attrPrefix != null ? attrPrefix + ":" + attrName : attrName;
                     parent.setAttributeNS(attrNs, attrQname, attrValue);
                 }
             }
 
             // process children
-            while( pp.next() != XmlPullParser.END_TAG ) {
+            while (pp.next() != XmlPullParser.END_TAG) {
                 if (pp.getEventType() == XmlPullParser.START_TAG) {
                     Element el = parseSubTree(pp, docFactory);
                     parent.appendChild(el);
@@ -206,31 +199,27 @@ public class Dom2XmlPullBuilder
                     parent.appendChild(textEl);
                 } else {
                     throw new XmlPullParserException(
-                        "unexpected event "+XmlPullParser.TYPES[ pp.getEventType() ], pp, null);
+                            "unexpected event " + XmlPullParser.TYPES[pp.getEventType()], pp, null);
                 }
             }
-            pp.require( XmlPullParser.END_TAG, ns, name);
+            pp.require(XmlPullParser.END_TAG, ns, name);
             return parent;
         }
 
         private void declareNamespaces(XmlPullParser pp, Element parent)
-            throws DOMException, XmlPullParserException
-        {
+                throws DOMException, XmlPullParserException {
             if (scanNamespaces) {
                 scanNamespaces = false;
                 int top = pp.getNamespaceCount(pp.getDepth()) - 1;
                 // this loop computes list of all in-scope prefixes
                 LOOP:
-                for (int i = top; i >= pp.getNamespaceCount(0); --i)
-                {
+                for (int i = top; i >= pp.getNamespaceCount(0); --i) {
                     // make sure that no prefix is duplicated
                     String prefix = pp.getNamespacePrefix(i);
-                    for (int j = top; j > i; --j)
-                    {
+                    for (int j = top; j > i; --j) {
                         String prefixJ = pp.getNamespacePrefix(j);
-                        if((prefix != null && prefix.equals(prefixJ))
-                               || (prefix != null && prefix == prefixJ) )
-                        {
+                        if ((prefix != null && prefix.equals(prefixJ))
+                                || (prefix != null && prefix == prefixJ)) {
                             // prefix is already declared -- skip it
                             continue LOOP;
                         }
@@ -238,20 +227,19 @@ public class Dom2XmlPullBuilder
                     declareOneNamespace(pp, i, parent);
                 }
             } else {
-                for (int i = pp.getNamespaceCount(pp.getDepth()-1);
-                         i < pp.getNamespaceCount(pp.getDepth());
-                     ++i)
-                {
+                for (int i = pp.getNamespaceCount(pp.getDepth() - 1);
+                     i < pp.getNamespaceCount(pp.getDepth());
+                     ++i) {
                     declareOneNamespace(pp, i, parent);
                 }
             }
         }
 
         private void declareOneNamespace(XmlPullParser pp, int i, Element parent)
-            throws DOMException, XmlPullParserException {
+                throws DOMException, XmlPullParserException {
             String xmlnsPrefix = pp.getNamespacePrefix(i);
             String xmlnsUri = pp.getNamespaceUri(i);
-            String xmlnsDecl = (xmlnsPrefix != null) ? "xmlns:"+xmlnsPrefix : "xmlns";
+            String xmlnsDecl = (xmlnsPrefix != null) ? "xmlns:" + xmlnsPrefix : "xmlns";
             parent.setAttributeNS("http://www.w3.org/2000/xmlns/", xmlnsDecl, xmlnsUri);
         }
     }

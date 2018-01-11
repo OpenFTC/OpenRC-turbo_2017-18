@@ -35,28 +35,26 @@ package org.firstinspires.ftc.robotcore.external.matrices;
 /**
  * A {@link ColumnMatrixF} is a matrix that converts a VectorF into a 1xn matrix
  */
-public class RowMatrixF extends MatrixF
-    {
+public class RowMatrixF extends MatrixF {
     VectorF vector;
 
-    public RowMatrixF(VectorF vector)
-        {
+    public RowMatrixF(VectorF vector) {
         super(1, vector.length());
         this.vector = vector;
-        }
-
-    @Override public float get(int row, int col)
-        {
-        return this.vector.get(col);
-        }
-
-    @Override public void put(int row, int col, float value)
-        {
-        this.vector.put(col, value);
-        }
-
-    @Override public MatrixF emptyMatrix(int numRows, int numCols)
-        {
-        return new GeneralMatrixF(numRows, numCols);
-        }
     }
+
+    @Override
+    public float get(int row, int col) {
+        return this.vector.get(col);
+    }
+
+    @Override
+    public void put(int row, int col, float value) {
+        this.vector.put(col, value);
+    }
+
+    @Override
+    public MatrixF emptyMatrix(int numRows, int numCols) {
+        return new GeneralMatrixF(numRows, numCols);
+    }
+}

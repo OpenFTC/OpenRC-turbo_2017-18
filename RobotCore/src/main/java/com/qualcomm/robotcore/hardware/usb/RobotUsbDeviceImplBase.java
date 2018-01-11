@@ -47,8 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Code that is usefully common to various RobotUsbDevice implementations
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice
-    {
+public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,95 +58,93 @@ public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice
     protected static final ConcurrentHashMap<SerialNumber, RobotUsbDevice> extantDevices = new ConcurrentHashMap<SerialNumber, RobotUsbDevice>();
     protected static final ConcurrentHashMap<SerialNumber, DeviceManager.DeviceType> deviceTypes = new ConcurrentHashMap<SerialNumber, DeviceManager.DeviceType>();
 
-    protected final SerialNumber        serialNumber;
-    protected DeviceManager.DeviceType  deviceType;
-    protected FirmwareVersion           firmwareVersion = new FirmwareVersion();
+    protected final SerialNumber serialNumber;
+    protected DeviceManager.DeviceType deviceType;
+    protected FirmwareVersion firmwareVersion = new FirmwareVersion();
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected RobotUsbDeviceImplBase(SerialNumber serialNumber)
-        {
+    protected RobotUsbDeviceImplBase(SerialNumber serialNumber) {
         this.serialNumber = serialNumber;
 
         this.deviceType = deviceTypes.get(this.serialNumber);
-        if (this.deviceType == null) this.deviceType = DeviceManager.DeviceType.UNKNOWN_DEVICE;
+        if (this.deviceType == null) {
+            this.deviceType = DeviceManager.DeviceType.UNKNOWN_DEVICE;
+        }
 
         Assert.assertFalse(extantDevices.contains(serialNumber));
         extantDevices.put(serialNumber, this);
-        }
+    }
 
-    protected void removeFromExtantDevices()
-        {
+    protected void removeFromExtantDevices() {
         extantDevices.remove(this.serialNumber);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public static Collection<RobotUsbDevice> getExtantDevices()
-        {
+    public static Collection<RobotUsbDevice> getExtantDevices() {
         return extantDevices.values();
-        }
+    }
 
-    public static boolean isOpen(SerialNumber serialNumber)
-        {
+    public static boolean isOpen(SerialNumber serialNumber) {
         return extantDevices.containsKey(serialNumber);
-        }
+    }
 
-    public static @NonNull DeviceManager.DeviceType getDeviceType(SerialNumber serialNumber)
-        {
+    public static
+    @NonNull
+    DeviceManager.DeviceType getDeviceType(SerialNumber serialNumber) {
         DeviceManager.DeviceType result = deviceTypes.get(serialNumber);
         return result == null ? DeviceManager.DeviceType.UNKNOWN_DEVICE : result;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbDevice
     //----------------------------------------------------------------------------------------------
 
-    @Override public synchronized void setDeviceType(@NonNull DeviceManager.DeviceType deviceType)
-        {
+    @Override
+    public synchronized void setDeviceType(@NonNull DeviceManager.DeviceType deviceType) {
         // RobotLog.vv(getTag(), "setDeviceType(%s,%s)", serialNumber, deviceType);
         this.deviceType = deviceType;
         deviceTypes.put(this.serialNumber, deviceType);
-        }
+    }
 
-    @NonNull @Override public synchronized DeviceManager.DeviceType getDeviceType()
-        {
+    @NonNull
+    @Override
+    public synchronized DeviceManager.DeviceType getDeviceType() {
         return this.deviceType;
-        }
+    }
 
-    @NonNull @Override public SerialNumber getSerialNumber()
-        {
+    @NonNull
+    @Override
+    public SerialNumber getSerialNumber() {
         return this.serialNumber;
-        }
-
-    @Override @NonNull
-    public FirmwareVersion getFirmwareVersion()
-        {
-        return firmwareVersion;
-        }
+    }
 
     @Override
-    public void setFirmwareVersion(FirmwareVersion version)
-        {
+    @NonNull
+    public FirmwareVersion getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    @Override
+    public void setFirmwareVersion(FirmwareVersion version) {
         this.firmwareVersion = version;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected void dumpBytesReceived(byte[] data, int ibFirst, int cbRead)
-        {
+    protected void dumpBytesReceived(byte[] data, int ibFirst, int cbRead) {
         RobotLog.logBytes(getTag(), "received", data, ibFirst, cbRead);
-        }
-
-    protected void dumpBytesSent(byte[] data)
-        {
-        RobotLog.logBytes(getTag(), "sent", data, data.length);
-        }
-
     }
+
+    protected void dumpBytesSent(byte[] data) {
+        RobotLog.logBytes(getTag(), "sent", data, data.length);
+    }
+
+}

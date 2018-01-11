@@ -38,25 +38,20 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * thrown from FTDI layer reads when the underlying handle is closed on a different thread.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbFTDIException extends RobotUsbException
-    {
-    public RobotUsbFTDIException(String message)
-        {
+public class RobotUsbFTDIException extends RobotUsbException {
+    public RobotUsbFTDIException(String message) {
         super(message);
-        }
-
-    public RobotUsbFTDIException(String format, Object... args)
-        {
-        super(String.format(format, args));
-        }
-
-    protected RobotUsbFTDIException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
-
-    public static RobotUsbFTDIException createChained(Exception e, String format, Object... args)
-        {
-        return new RobotUsbFTDIException(String.format(format, args), e);
-        }
     }
+
+    public RobotUsbFTDIException(String format, Object... args) {
+        super(String.format(format, args));
+    }
+
+    protected RobotUsbFTDIException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public static RobotUsbFTDIException createChained(Exception e, String format, Object... args) {
+        return new RobotUsbFTDIException(String.format(format, args), e);
+    }
+}

@@ -61,8 +61,7 @@ import java.util.ArrayList;
  * more than just mere strings to be displayed as entries.
  */
 @SuppressWarnings("WeakerAccess")
-public class ColorListPreference extends ListPreference
-    {
+public class ColorListPreference extends ListPreference {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -74,53 +73,46 @@ public class ColorListPreference extends ListPreference
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ColorListPreference(Context context, AttributeSet attrs)
-        {
+    public ColorListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ColorListPreference, 0, 0);
         try {
             int colorArrayId = a.getResourceId(R.styleable.ColorListPreference_colors, 0);
             colors = context.getResources().getIntArray(colorArrayId);
-            }
-        finally
-            {
+        } finally {
             a.recycle();
-            }
         }
+    }
 
-    public ColorListPreference(Context context)
-        {
+    public ColorListPreference(Context context) {
         this(context, null);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    private int getValueIndex()
-        {
+    private int getValueIndex() {
         return findIndexOfValue(getValue());
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Dialog management
     //----------------------------------------------------------------------------------------------
 
-    @Override protected void onPrepareDialogBuilder(AlertDialog.Builder builder)
-        {
+    @Override
+    protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
         // do NOT call super: we're duplicating and enhancing that impl here
-        if (getEntries() == null || getEntryValues() == null || colors == null)
-            {
+        if (getEntries() == null || getEntryValues() == null || colors == null) {
             throw new IllegalStateException("ColorListPreference: entries, values, and colors required");
-            }
+        }
 
         // https://stackoverflow.com/questions/20880841/how-to-add-imageview-array-to-arrayadapter-for-a-listview
-        final ArrayList<Pair<CharSequence,Integer>> entryAndColors = new ArrayList<>();
-        for (int i = 0; i < getEntries().length; i++)
-            {
-            entryAndColors.add(new Pair<CharSequence, Integer>(getEntries()[i], (Integer)colors[i]));
-            }
+        final ArrayList<Pair<CharSequence, Integer>> entryAndColors = new ArrayList<>();
+        for (int i = 0; i < getEntries().length; i++) {
+            entryAndColors.add(new Pair<CharSequence, Integer>(getEntries()[i], (Integer) colors[i]));
+        }
 
         clickedDialogEntryIndex = getValueIndex();
 
@@ -128,56 +120,48 @@ public class ColorListPreference extends ListPreference
         final @IdRes int textViewRes = android.R.id.text1;
         final @IdRes int swatchRes = R.id.colorSwatch;
         final @LayoutRes int layoutRes = R.layout.color_list_preference_line_item;
-        ListAdapter adapter = new ArrayAdapter<Pair<CharSequence,Integer>>(getContext(), layoutRes, textViewRes, entryAndColors)
-            {
-            @NonNull @Override
-            public View getView(int position, @Nullable View view, @NonNull ViewGroup parent)
-                {
-                if (view == null)
-                    {
+        ListAdapter adapter = new ArrayAdapter<Pair<CharSequence, Integer>>(getContext(), layoutRes, textViewRes, entryAndColors) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
+                if (view == null) {
                     view = LayoutInflater.from(getContext()).inflate(layoutRes, parent, false);
-                    }
-                Pair<CharSequence,Integer> pair = getItem(position);
+                }
+                Pair<CharSequence, Integer> pair = getItem(position);
 
-                TextView textView = (TextView) (textViewRes==0 ? view : view.findViewById(textViewRes));
+                TextView textView = (TextView) (textViewRes == 0 ? view : view.findViewById(textViewRes));
                 textView.setText(pair.first);
-                if (swatchRes != 0)
-                    {
-                    ((ImageView)view.findViewById(swatchRes)).setImageDrawable(new ColorDrawable(pair.second));
-                    }
+                if (swatchRes != 0) {
+                    ((ImageView) view.findViewById(swatchRes)).setImageDrawable(new ColorDrawable(pair.second));
+                }
 
                 return view;
-                }
-            };
+            }
+        };
 
         //builder.setSingleChoiceItems(getEntries(), clickedDialogEntryIndex, new DialogClickListener()); for w/o adapter
         builder.setSingleChoiceItems(adapter, clickedDialogEntryIndex, new DialogClickListener());
 
         builder.setPositiveButton(null, null);
-        }
+    }
 
-    protected class DialogClickListener implements DialogInterface.OnClickListener
-        {
-        public void onClick(DialogInterface dialog, int which)
-            {
+    protected class DialogClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialog, int which) {
             // Clicking on an item simulates the positive button click and dismisses the dialog.
             clickedDialogEntryIndex = which;
             ColorListPreference.this.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
             dialog.dismiss();
-            }
         }
-
-    protected void onDialogClosed(boolean positiveResult)
-        {
-        // do NOT call super: we're duplicating and enhancing that impl here
-        if (positiveResult && clickedDialogEntryIndex >= 0 && getEntryValues() != null)
-            {
-            String value = getEntryValues()[clickedDialogEntryIndex].toString();
-            if (callChangeListener(value))
-                {
-                setValue(value);
-                }
-            }
-        }
-
     }
+
+    protected void onDialogClosed(boolean positiveResult) {
+        // do NOT call super: we're duplicating and enhancing that impl here
+        if (positiveResult && clickedDialogEntryIndex >= 0 && getEntryValues() != null) {
+            String value = getEntryValues()[clickedDialogEntryIndex].toString();
+            if (callChangeListener(value)) {
+                setValue(value);
+            }
+        }
+    }
+
+}

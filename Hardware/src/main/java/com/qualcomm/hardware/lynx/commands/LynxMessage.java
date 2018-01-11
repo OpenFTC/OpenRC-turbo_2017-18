@@ -47,170 +47,149 @@ import java.lang.reflect.Modifier;
  * classes derive.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class LynxMessage
-    {
+public abstract class LynxMessage {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected LynxModuleIntf module;
-    protected byte           messageNumber;
-    protected byte           referenceNumber;
-    protected LynxDatagram   serialization;
-    protected boolean        hasBeenTransmitted;
-    protected long           nanotimeLastTransmit;
-    protected TimeWindow     payloadTimeWindow;
+    protected byte messageNumber;
+    protected byte referenceNumber;
+    protected LynxDatagram serialization;
+    protected boolean hasBeenTransmitted;
+    protected long nanotimeLastTransmit;
+    protected TimeWindow payloadTimeWindow;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxMessage(LynxModuleIntf module)
-        {
-        this.module             = module;
-        this.messageNumber      = 0;
-        this.referenceNumber    = 0;
-        this.serialization      = null;
+    public LynxMessage(LynxModuleIntf module) {
+        this.module = module;
+        this.messageNumber = 0;
+        this.referenceNumber = 0;
+        this.serialization = null;
         this.hasBeenTransmitted = false;
         this.nanotimeLastTransmit = 0;
         this.setPayloadTimeWindow(null);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Metaprogramming
     //----------------------------------------------------------------------------------------------
 
-    public static Object invokeStaticNullaryMethod(Class clazz, String methodName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
-        {
+    public static Object invokeStaticNullaryMethod(Class clazz, String methodName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Method method = clazz.getDeclaredMethod(methodName);
-        int requiredModifiers   = Modifier.STATIC | Modifier.PUBLIC;
+        int requiredModifiers = Modifier.STATIC | Modifier.PUBLIC;
         int prohibitedModifiers = Modifier.ABSTRACT;
-        if (((method.getModifiers()&requiredModifiers)==requiredModifiers && (method.getModifiers()&prohibitedModifiers)==0))
-            {
+        if (((method.getModifiers() & requiredModifiers) == requiredModifiers && (method.getModifiers() & prohibitedModifiers) == 0)) {
             return method.invoke(null);
-            }
-        else
+        } else {
             throw new IllegalAccessException("incorrect modifiers");
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transmission
     //----------------------------------------------------------------------------------------------
 
-    public int getDestModuleAddress()
-        {
+    public int getDestModuleAddress() {
         return this.getModule().getModuleAddress();
-        }
+    }
 
-    public void noteHasBeenTransmitted()
-        {
+    public void noteHasBeenTransmitted() {
         this.hasBeenTransmitted = true;
-        }
-    public boolean hasBeenTransmitted()
-        {
+    }
+
+    public boolean hasBeenTransmitted() {
         return this.hasBeenTransmitted;
-        }
+    }
 
-    public long getNanotimeLastTransmit()
-        {
+    public long getNanotimeLastTransmit() {
         return this.nanotimeLastTransmit;
-        }
-    public void setNanotimeLastTransmit(long value)
-        {
+    }
+
+    public void setNanotimeLastTransmit(long value) {
         this.nanotimeLastTransmit = value;
-        }
+    }
 
 
-    public void noteRetransmission()
-        {
-        }
+    public void noteRetransmission() {
+    }
 
-    public void acquireNetworkLock() throws InterruptedException
-        {
+    public void acquireNetworkLock() throws InterruptedException {
         this.module.acquireNetworkTransmissionLock(this);
-        }
+    }
 
-    public void releaseNetworkLock() throws InterruptedException
-        {
+    public void releaseNetworkLock() throws InterruptedException {
         this.module.releaseNetworkTransmissionLock(this);
-        }
+    }
 
-    public void onPretendTransmit() throws InterruptedException
-        {
-        }
+    public void onPretendTransmit() throws InterruptedException {
+    }
 
-    public void resetModulePingTimer()
-        {
+    public void resetModulePingTimer() {
         this.module.resetPingTimer(this);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public LynxModuleIntf getModule()
-        {
+    public LynxModuleIntf getModule() {
         return this.module;
-        }
-    public void setModule(LynxModule module)
-        {
+    }
+
+    public void setModule(LynxModule module) {
         this.module = module;
-        }
+    }
 
-    public int getModuleAddress()
-        {
+    public int getModuleAddress() {
         return this.module.getModuleAddress();
-        }
+    }
 
-    public int getMessageNumber()
-        {
+    public int getMessageNumber() {
         return TypeConversion.unsignedByteToInt(this.messageNumber);
-        }
-    public void setMessageNumber(int value)
-        {
-        this.messageNumber = (byte)value;
-        }
+    }
 
-    public int getReferenceNumber()
-        {
+    public void setMessageNumber(int value) {
+        this.messageNumber = (byte) value;
+    }
+
+    public int getReferenceNumber() {
         return TypeConversion.unsignedByteToInt(this.referenceNumber);
-        }
-    public void setReferenceNumber(int value)
-        {
-        this.referenceNumber = (byte)value;
-        }
+    }
 
-    public TimeWindow getPayloadTimeWindow()
-        {
+    public void setReferenceNumber(int value) {
+        this.referenceNumber = (byte) value;
+    }
+
+    public TimeWindow getPayloadTimeWindow() {
         return payloadTimeWindow;
-        }
+    }
 
-    public void setPayloadTimeWindow(TimeWindow payloadTimeWindow)
-        {
+    public void setPayloadTimeWindow(TimeWindow payloadTimeWindow) {
         this.payloadTimeWindow = payloadTimeWindow;
-        }
+    }
 
-    public LynxDatagram getSerialization()
-        {
+    public LynxDatagram getSerialization() {
         return this.serialization;
-        }
+    }
 
-    public void forgetSerialization()
-        {
+    public void forgetSerialization() {
         setSerialization(null);
-        }
-    public void setSerialization(LynxDatagram datagram)
-        {
-        this.serialization = datagram;
-        }
+    }
 
-    public void loadFromSerialization()
-        {
+    public void setSerialization(LynxDatagram datagram) {
+        this.serialization = datagram;
+    }
+
+    public void loadFromSerialization() {
         this.setPayloadTimeWindow(this.serialization.getPayloadTimeWindow());
         this.fromPayloadByteArray(this.serialization.getPayloadData());
         this.setMessageNumber(this.serialization.getMessageNumber());
         this.setReferenceNumber(this.serialization.getReferenceNumber());
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Subclass responsibility
@@ -219,30 +198,30 @@ public abstract class LynxMessage
     public abstract int getCommandNumber();
 
     public abstract byte[] toPayloadByteArray();
+
     public abstract void fromPayloadByteArray(byte[] rgb);
 
-    public boolean isAckable()
-        {
+    public boolean isAckable() {
         return false;
-        }
-    public boolean isAck()
-        {
+    }
+
+    public boolean isAck() {
         return false;
-        }
-    public boolean isNack()
-        {
+    }
+
+    public boolean isNack() {
         return false;
-        }
+    }
+
     /**
      * Returns whether this message will generate a response message in return.
      * Ackables which do *not* generate a response will generate an ack instead.
      */
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
-    public boolean isResponse()
-        {
-        return false;
-        }
     }
+
+    public boolean isResponse() {
+        return false;
+    }
+}

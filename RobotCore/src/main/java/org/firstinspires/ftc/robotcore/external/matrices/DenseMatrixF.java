@@ -41,25 +41,24 @@ package org.firstinspires.ftc.robotcore.external.matrices;
  * @see ColumnMajorMatrixF
  * @see SliceMatrixF
  */
-public abstract class DenseMatrixF extends MatrixF
-    {
-    protected DenseMatrixF(int nRows, int nCols)
-        {
+public abstract class DenseMatrixF extends MatrixF {
+    protected DenseMatrixF(int nRows, int nCols) {
         super(nRows, nCols);
-        }
+    }
 
-    @Override public float get(int row, int col)
-        {
+    @Override
+    public float get(int row, int col) {
         return getData()[indexFromRowCol(row, col)];
-        }
+    }
 
-    @Override public void put(int row, int col, float value)
-        {
+    @Override
+    public void put(int row, int col, float value) {
         getData()[indexFromRowCol(row, col)] = value;
-        }
+    }
 
     /**
      * Returns the contiguous array of floats which is the storage for this matrix
+     *
      * @return the contiguous array of floats which is the storage for this matrix
      */
     public abstract float[] getData();
@@ -67,9 +66,10 @@ public abstract class DenseMatrixF extends MatrixF
     /**
      * Given a row and column index into the matrix, returns the corresponding index
      * into the underlying float[] array.
-     * @param row   the row whose index is desired
-     * @param col   the column whose index is desired
+     *
+     * @param row the row whose index is desired
+     * @param col the column whose index is desired
      * @return the index of (row,col) in the data returned by {@link #getData()}
      */
     protected abstract int indexFromRowCol(int row, int col);
-    }
+}

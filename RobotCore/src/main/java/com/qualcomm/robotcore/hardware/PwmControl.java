@@ -36,7 +36,7 @@ package com.qualcomm.robotcore.hardware;
  * For hardware devices which are manipulated using a pulse width modulation (PWM) signal,
  * the {@link PwmControl} interface provides control of the width of pulses used and whether
  * the PWM is enabled or disabled.
- *
+ * <p>
  * <p>PWM is commonly used to control servos. {@link PwmControl} is thus found as a second
  * interface on servo objects whose primary interface is {@link Servo} or {@link CRServo}
  * when the underlying servo controller hardware supports this fine-grained control (not all
@@ -47,10 +47,10 @@ package com.qualcomm.robotcore.hardware;
  * @see DcMotorEx
  * @see <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse-width modulation</a>
  */
-public interface PwmControl
-    {
+public interface PwmControl {
     /**
      * Sets the PWM range limits for the servo
+     *
      * @param range the new PWM range limits for the servo
      * @see #getPwmRange()
      */
@@ -58,6 +58,7 @@ public interface PwmControl
 
     /**
      * Returns the current PWM range limits for the servo
+     *
      * @return the current PWM range limits for the servo
      * @see #setPwmRange(PwmRange)
      */
@@ -65,6 +66,7 @@ public interface PwmControl
 
     /**
      * Individually energizes the PWM for this particular servo.
+     *
      * @see #setPwmDisable()
      * @see #isPwmEnabled()
      */
@@ -72,12 +74,14 @@ public interface PwmControl
 
     /**
      * Individually denergizes the PWM for this particular servo
+     *
      * @see #setPwmEnable()
      */
     void setPwmDisable();
 
     /**
      * Returns whether the PWM is energized for this particular servo
+     *
      * @see #setPwmEnable()
      */
     boolean isPwmEnabled();
@@ -89,65 +93,71 @@ public interface PwmControl
      * @see <a href="http://www.endurance-rc.com/ppmtut.php">Guide to PWM and PPM</a>
      * @see <a href="https://www.servocity.com/html/hs-485hb_servo.html">HS-485HB servo information</a>
      */
-    class PwmRange
-        {
-        /** usFrameDefault is the default frame rate used, in microseconds */
+    class PwmRange {
+        /**
+         * usFrameDefault is the default frame rate used, in microseconds
+         */
         public static final double usFrameDefault = 20000;
 
-        /** defaultRange is the default PWM range used */
+        /**
+         * defaultRange is the default PWM range used
+         */
         public final static PwmRange defaultRange = new PwmRange(600, 2400);
 
-        /** usPulseLower is the minimum PWM rate used, in microseconds. This corresponds to a servo position of 0.0. */
+        /**
+         * usPulseLower is the minimum PWM rate used, in microseconds. This corresponds to a servo position of 0.0.
+         */
         public final double usPulseLower;
-        /** usPulseLower is the maximum PWM rate used, in microseconds. This corresponds to a servo position of 1.0. */
+        /**
+         * usPulseLower is the maximum PWM rate used, in microseconds. This corresponds to a servo position of 1.0.
+         */
         public final double usPulseUpper;
-        /** usFrame is the rate, in microseconds, at which the PWM is transmitted. */
+        /**
+         * usFrame is the rate, in microseconds, at which the PWM is transmitted.
+         */
         public final double usFrame;
 
         /**
          * Creates a new PwmRange with the indicated lower and upper bounds and the default
          * framing rate.
+         *
          * @param usPulseLower the minimum PWM rate used, in microsecond
          * @param usPulseUpper the maximum PWM rate used, in microseconds
          */
-        public PwmRange(double usPulseLower, double usPulseUpper)
-            {
+        public PwmRange(double usPulseLower, double usPulseUpper) {
             this(usPulseLower, usPulseUpper, usFrameDefault);
-            }
+        }
 
         /**
          * Creates a new PwmRange with the indicated lower and upper bounds and the specified
          * framing rate.
+         *
          * @param usPulseLower the minimum PWM rate used, in microsecond
          * @param usPulseUpper the maximum PWM rate used, in microseconds
-         * @param usFrame the framing rate, in microseconds
+         * @param usFrame      the framing rate, in microseconds
          */
-        public PwmRange(double usPulseLower, double usPulseUpper, double usFrame)
-            {
+        public PwmRange(double usPulseLower, double usPulseUpper, double usFrame) {
             this.usPulseLower = usPulseLower;
             this.usPulseUpper = usPulseUpper;
             this.usFrame = usFrame;
-            }
+        }
 
         @Override
-        public boolean equals(Object o)
-            {
-            if (o instanceof PwmRange)
-                {
-                PwmRange him = (PwmRange)o;
-                return this.usPulseLower==him.usPulseLower
-                        && this.usPulseUpper==him.usPulseUpper
-                        && this.usFrame==him.usFrame;
-                }
+        public boolean equals(Object o) {
+            if (o instanceof PwmRange) {
+                PwmRange him = (PwmRange) o;
+                return this.usPulseLower == him.usPulseLower
+                        && this.usPulseUpper == him.usPulseUpper
+                        && this.usFrame == him.usFrame;
+            }
             return false;
-            }
+        }
 
         @Override
-        public int hashCode()
-            {
-            return ((Double)this.usPulseLower).hashCode()
-                ^ ((Double)this.usPulseUpper).hashCode()
-                ^ ((Double)this.usFrame).hashCode();
-            }
+        public int hashCode() {
+            return ((Double) this.usPulseLower).hashCode()
+                    ^ ((Double) this.usPulseUpper).hashCode()
+                    ^ ((Double) this.usFrame).hashCode();
         }
     }
+}

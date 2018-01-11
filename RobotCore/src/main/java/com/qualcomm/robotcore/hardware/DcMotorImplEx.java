@@ -44,99 +44,92 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * to simply {@link DcMotor}.
  */
 @SuppressWarnings("WeakerAccess")
-public class DcMotorImplEx extends DcMotorImpl implements DcMotorEx
-    {
+public class DcMotorImplEx extends DcMotorImpl implements DcMotorEx {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     DcMotorControllerEx controllerEx;
-    int                 targetPositionTolerance = LynxConstants.DEFAULT_TARGET_POSITION_TOLERANCE;
+    int targetPositionTolerance = LynxConstants.DEFAULT_TARGET_POSITION_TOLERANCE;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public DcMotorImplEx(DcMotorController controller, int portNumber)
-        {
+    public DcMotorImplEx(DcMotorController controller, int portNumber) {
         this(controller, portNumber, Direction.FORWARD);
-        }
+    }
 
-    public DcMotorImplEx(DcMotorController controller, int portNumber, Direction direction)
-        {
+    public DcMotorImplEx(DcMotorController controller, int portNumber, Direction direction) {
         this(controller, portNumber, direction, MotorConfigurationType.getUnspecifiedMotorType());
-        }
+    }
 
-    public DcMotorImplEx(DcMotorController controller, int portNumber, Direction direction, @NonNull MotorConfigurationType motorType)
-        {
+    public DcMotorImplEx(DcMotorController controller, int portNumber, Direction direction, @NonNull MotorConfigurationType motorType) {
         super(controller, portNumber, direction, motorType);
-        this.controllerEx = (DcMotorControllerEx)controller;
-        }
+        this.controllerEx = (DcMotorControllerEx) controller;
+    }
 
     //----------------------------------------------------------------------------------------------
     // DcMotorEx interface
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setMotorEnable()
-        {
+    public void setMotorEnable() {
         controllerEx.setMotorEnable(this.getPortNumber());
-        }
+    }
 
     @Override
-    public void setMotorDisable()
-        {
+    public void setMotorDisable() {
         controllerEx.setMotorDisable(this.getPortNumber());
-        }
+    }
 
     @Override
-    public boolean isMotorEnabled()
-        {
+    public boolean isMotorEnabled() {
         return controllerEx.isMotorEnabled(this.getPortNumber());
-        }
+    }
 
-    @Override public synchronized void setVelocity(double angularRate, AngleUnit unit)
-        {
+    @Override
+    public synchronized void setVelocity(double angularRate, AngleUnit unit) {
         angularRate = adjustAngularRate(angularRate);
         controllerEx.setMotorVelocity(getPortNumber(), angularRate, unit);
-        }
+    }
 
     @Override
-    public synchronized double getVelocity(AngleUnit unit)
-        {
+    public synchronized double getVelocity(AngleUnit unit) {
         double angularRate = controllerEx.getMotorVelocity(this.getPortNumber(), unit);
         angularRate = adjustAngularRate(angularRate);
         return angularRate;
-        }
-
-    protected double adjustAngularRate(double angularRate)
-        {
-        if (getOperationalDirection() == Direction.REVERSE) angularRate = -angularRate;
-        return angularRate;
-        }
-
-    @Override public void setPIDCoefficients(RunMode mode, PIDCoefficients pidCoefficients)
-        {
-        controllerEx.setPIDCoefficients(this.getPortNumber(), mode, pidCoefficients);
-        }
-
-    @Override public PIDCoefficients getPIDCoefficients(RunMode mode)
-        {
-        return controllerEx.getPIDCoefficients(this.getPortNumber(), mode);
-        }
-
-    @Override public int getTargetPositionTolerance()
-        {
-        return this.targetPositionTolerance;
-        }
-
-    @Override synchronized public void setTargetPositionTolerance(int tolerance)
-        {
-        this.targetPositionTolerance = tolerance;
-        }
-
-    @Override protected void internalSetTargetPosition(int position)
-        {
-        this.controllerEx.setMotorTargetPosition(portNumber, position, this.targetPositionTolerance);
-        }
     }
+
+    protected double adjustAngularRate(double angularRate) {
+        if (getOperationalDirection() == Direction.REVERSE) {
+            angularRate = -angularRate;
+        }
+        return angularRate;
+    }
+
+    @Override
+    public void setPIDCoefficients(RunMode mode, PIDCoefficients pidCoefficients) {
+        controllerEx.setPIDCoefficients(this.getPortNumber(), mode, pidCoefficients);
+    }
+
+    @Override
+    public PIDCoefficients getPIDCoefficients(RunMode mode) {
+        return controllerEx.getPIDCoefficients(this.getPortNumber(), mode);
+    }
+
+    @Override
+    public int getTargetPositionTolerance() {
+        return this.targetPositionTolerance;
+    }
+
+    @Override
+    synchronized public void setTargetPositionTolerance(int tolerance) {
+        this.targetPositionTolerance = tolerance;
+    }
+
+    @Override
+    protected void internalSetTargetPosition(int position) {
+        this.controllerEx.setMotorTargetPosition(portNumber, position, this.targetPositionTolerance);
+    }
+}

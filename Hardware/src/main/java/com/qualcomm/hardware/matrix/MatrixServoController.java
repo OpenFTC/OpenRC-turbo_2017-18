@@ -44,20 +44,19 @@ import java.util.Arrays;
  */
 public class MatrixServoController implements ServoController {
 
-    public  final static int  SERVO_POSITION_MAX = 0xf0; // some servos go to max power at values near 0xff
+    public final static int SERVO_POSITION_MAX = 0xf0; // some servos go to max power at values near 0xff
 
-    private final static byte MAX_SERVOS         = MatrixConstants.NUMBER_OF_SERVOS;
-    private final static byte SERVO_ENABLE_ALL   = 0x0F;
-    private final static byte SERVO_DISABLE_ALL  = 0x00;
-    private final static byte I2C_DATA_OFFSET    = 0x04;
+    private final static byte MAX_SERVOS = MatrixConstants.NUMBER_OF_SERVOS;
+    private final static byte SERVO_ENABLE_ALL = 0x0F;
+    private final static byte SERVO_DISABLE_ALL = 0x00;
+    private final static byte I2C_DATA_OFFSET = 0x04;
 
     private MatrixMasterController master;
 
     protected PwmStatus pwmStatus;
     protected double[] servoCache = new double[MAX_SERVOS];
 
-    public MatrixServoController(MatrixMasterController master)
-    {
+    public MatrixServoController(MatrixMasterController master) {
         this.master = master;
         this.pwmStatus = PwmStatus.DISABLED;
         Arrays.fill(servoCache, 0.0);
@@ -66,24 +65,21 @@ public class MatrixServoController implements ServoController {
     }
 
     @Override
-    public void pwmEnable()
-    {
-        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_SERVO_ENABLE, SERVO_ENABLE_ALL);
+    public void pwmEnable() {
+        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) 0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_SERVO_ENABLE, SERVO_ENABLE_ALL);
         master.queueTransaction(transaction);
         pwmStatus = PwmStatus.ENABLED;
     }
 
     @Override
-    public void pwmDisable()
-    {
-        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_SERVO_ENABLE, SERVO_DISABLE_ALL);
+    public void pwmDisable() {
+        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) 0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_SERVO_ENABLE, SERVO_DISABLE_ALL);
         master.queueTransaction(transaction);
         pwmStatus = PwmStatus.DISABLED;
     }
 
     @Override
-    public PwmStatus getPwmStatus()
-    {
+    public PwmStatus getPwmStatus() {
         return pwmStatus;
     }
 
@@ -91,14 +87,13 @@ public class MatrixServoController implements ServoController {
      * Sets a servo position at the maximum servo change rate.
      */
     @Override
-    public void setServoPosition(int channel, double position)
-    {
+    public void setServoPosition(int channel, double position) {
         throwIfChannelIsInvalid(channel);
         Range.throwIfRangeIsInvalid(position, 0.0, 1.0);
 
-        byte newPosition = (byte)(position * SERVO_POSITION_MAX);
+        byte newPosition = (byte) (position * SERVO_POSITION_MAX);
 
-        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)channel, newPosition, (byte)0);
+        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) channel, newPosition, (byte) 0);
         master.queueTransaction(transaction);
     }
 
@@ -109,61 +104,54 @@ public class MatrixServoController implements ServoController {
      * A speed of 0 implies maximum, otherwise changes occur at a rate
      * of 10*speed milliseconds per step.
      */
-    public void setServoPosition(int channel, double position, byte speed)
-    {
+    public void setServoPosition(int channel, double position, byte speed) {
         throwIfChannelIsInvalid(channel);
         Range.throwIfRangeIsInvalid(position, 0.0, 1.0);
 
-        byte newPosition = (byte)(position * SERVO_POSITION_MAX);
+        byte newPosition = (byte) (position * SERVO_POSITION_MAX);
 
-        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)channel, newPosition, speed);
+        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) channel, newPosition, speed);
         master.queueTransaction(transaction);
     }
 
     @Override
-    public double getServoPosition(int channel)
-    {
-        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte)channel, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_SERVO);
+    public double getServoPosition(int channel) {
+        MatrixI2cTransaction transaction = new MatrixI2cTransaction((byte) channel, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_SERVO);
 
         if (master.queueTransaction(transaction)) {
             master.waitOnRead();
         }
 
-        return ((double)servoCache[channel] / SERVO_POSITION_MAX);
+        return ((double) servoCache[channel] / SERVO_POSITION_MAX);
     }
 
-    @Override public Manufacturer getManufacturer()
-    {
+    @Override
+    public Manufacturer getManufacturer() {
         return Manufacturer.Matrix;
     }
 
     @Override
-    public String getDeviceName()
-    {
+    public String getDeviceName() {
         return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.displayNameMatrixServoController);
     }
 
     @Override
-    public String getConnectionInfo()
-    {
+    public String getConnectionInfo() {
         return master.getConnectionInfo();
     }
 
     @Override
-    public int getVersion()
-    {
+    public int getVersion() {
         return 1;
     }
 
     @Override
-    public void resetDeviceConfigurationForOpMode()
-    {
+    public void resetDeviceConfigurationForOpMode() {
         pwmDisable();
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         pwmDisable();
     }
 
@@ -180,8 +168,7 @@ public class MatrixServoController implements ServoController {
      *
      * These should not be documented, and teams should not be calling them.
      */
-    public void handleReadServo(MatrixI2cTransaction transaction, byte[] buffer)
-    {
+    public void handleReadServo(MatrixI2cTransaction transaction, byte[] buffer) {
         servoCache[transaction.servo] = TypeConversion.unsignedByteToInt(buffer[I2C_DATA_OFFSET]);
     }
 

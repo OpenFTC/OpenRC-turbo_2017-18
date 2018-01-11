@@ -43,141 +43,129 @@ import java.util.List;
 
 public class DeviceConfiguration implements Serializable, Comparable<DeviceConfiguration> {
 
-    public static final String            TAG = "DeviceConfiguration";
-    public static final String            XMLATTR_NAME = "name";
-    public static final String            XMLATTR_PORT = "port";
-    public static final String            DISABLED_DEVICE_NAME = "NO$DEVICE$ATTACHED"; // internal; never to be shown to users
+    public static final String TAG = "DeviceConfiguration";
+    public static final String XMLATTR_NAME = "name";
+    public static final String XMLATTR_PORT = "port";
+    public static final String DISABLED_DEVICE_NAME = "NO$DEVICE$ATTACHED"; // internal; never to be shown to users
 
-    protected           String            name;
-    private             ConfigurationType type = BuiltInConfigurationType.NOTHING;
-    private             int               port;
-    private             boolean           enabled = false;
+    protected String name;
+    private ConfigurationType type = BuiltInConfigurationType.NOTHING;
+    private int port;
+    private boolean enabled = false;
 
-    public DeviceConfiguration(int port, ConfigurationType type, String name, boolean enabled)
-        {
+    public DeviceConfiguration(int port, ConfigurationType type, String name, boolean enabled) {
         this.port = port;
         this.type = type;
         this.name = name;
         this.enabled = enabled;
-        }
+    }
 
-    public DeviceConfiguration()
-        {
+    public DeviceConfiguration() {
         this(0);
-        }
+    }
 
-    public DeviceConfiguration(int port)
-        {
+    public DeviceConfiguration(int port) {
         this(port, BuiltInConfigurationType.NOTHING, DISABLED_DEVICE_NAME, false);
-        }
+    }
 
-    public DeviceConfiguration(ConfigurationType type)
-        {
+    public DeviceConfiguration(ConfigurationType type) {
         this(0, type, "", false);
-        }
+    }
 
     // Devices know their port, and their type, and start out not enabled.
-    public DeviceConfiguration(int port, ConfigurationType type)
-        {
+    public DeviceConfiguration(int port, ConfigurationType type) {
         this(port, type, DISABLED_DEVICE_NAME, false);
-        }
+    }
 
-    public boolean isEnabled()
-        {
+    public boolean isEnabled() {
         return enabled;
-        }
+    }
 
-    public void setEnabled(boolean enabled)
-        {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        }
+    }
 
-    public String getName()
-        {
+    public String getName() {
         return this.name;
-        }
+    }
 
-    public void setName(String newName)
-        {
+    public void setName(String newName) {
         this.name = newName;
-        }
+    }
 
-    public void setConfigurationType(ConfigurationType type)
-        {
+    public void setConfigurationType(ConfigurationType type) {
         this.type = type;
-        }
+    }
 
-    public static void sortByName(List<? extends DeviceConfiguration> configurations)
-        {
-        Collections.sort(configurations, new Comparator<DeviceConfiguration>()
-            {
-            @Override public int compare(DeviceConfiguration lhs, DeviceConfiguration rhs)
-                {
+    public static void sortByName(List<? extends DeviceConfiguration> configurations) {
+        Collections.sort(configurations, new Comparator<DeviceConfiguration>() {
+            @Override
+            public int compare(DeviceConfiguration lhs, DeviceConfiguration rhs) {
                 return lhs.getName().compareToIgnoreCase(rhs.getName());
-                }
-            });
-        }
+            }
+        });
+    }
 
-    public ConfigurationType getConfigurationType()
-        {
+    public ConfigurationType getConfigurationType() {
         return this.type;
-        }
+    }
 
-    public ConfigurationType getSpinnerChoiceType()
-        {
+    public ConfigurationType getSpinnerChoiceType() {
         return this.getConfigurationType();
-        }
+    }
 
-    public int getPort()
-        {
+    public int getPort() {
         return port;
-        }
+    }
 
-    public void setPort(int port)
-        {
+    public void setPort(int port) {
         this.port = port;
-        }
+    }
 
-    /** This device is an I2c device. Returns information as to how to connect to same */
-    public I2cChannel getI2cChannel()
-        {
+    /**
+     * This device is an I2c device. Returns information as to how to connect to same
+     */
+    public I2cChannel getI2cChannel() {
         return new I2cChannel(getPort());
+    }
+
+    /**
+     * A separate class to allow the compiler to help us find all the place this should be used
+     */
+    public static class I2cChannel {
+        public final int channel;
+
+        public I2cChannel(int channel) {
+            this.channel = channel;
         }
 
-    /** A separate class to allow the compiler to help us find all the place this should be used */
-    public static class I2cChannel
-        {
-        public final int channel;
-        public I2cChannel(int channel) { this.channel = channel;}
-        @Override public String toString() { return "channel=" + channel; }
+        @Override
+        public String toString() {
+            return "channel=" + channel;
         }
+    }
 
     @Override
-    public int compareTo(DeviceConfiguration another)
-        {
+    public int compareTo(DeviceConfiguration another) {
         return this.getPort() - another.getPort();
-        }
+    }
 
-    public void serializeXmlAttributes(XmlSerializer serializer)
-        {
+    public void serializeXmlAttributes(XmlSerializer serializer) {
         try {
             serializer.attribute("", XMLATTR_NAME, this.getName());
             serializer.attribute("", XMLATTR_PORT, String.valueOf(this.getPort()));
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             RobotLog.ee(TAG, e, "exception serializing");
             throw new RuntimeException(e);
-            }
         }
+    }
 
-    public void deserializeAttributes(XmlPullParser parser)
-        {
+    public void deserializeAttributes(XmlPullParser parser) {
         this.setName(parser.getAttributeValue(null, XMLATTR_NAME));
         //
         String portAttr = parser.getAttributeValue(null, DeviceConfiguration.XMLATTR_PORT);
         int port = portAttr == null ? 0 : Integer.parseInt(portAttr);
         this.setPort(port);
-        }
+    }
 
 }

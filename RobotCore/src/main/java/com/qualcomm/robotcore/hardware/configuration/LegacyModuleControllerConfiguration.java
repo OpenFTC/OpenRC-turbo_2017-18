@@ -37,8 +37,8 @@ import java.util.List;
 
 public class LegacyModuleControllerConfiguration extends ControllerConfiguration<DeviceConfiguration> {
 
-  public LegacyModuleControllerConfiguration(String name, List<DeviceConfiguration> modules, SerialNumber serialNumber) {
-    super(name, modules, serialNumber, BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER);
-  }
+    public LegacyModuleControllerConfiguration(String name, List<DeviceConfiguration> modules, SerialNumber serialNumber) {
+        super(name, modules, serialNumber, BuiltInConfigurationType.LEGACY_MODULE_CONTROLLER);
+    }
 
 }

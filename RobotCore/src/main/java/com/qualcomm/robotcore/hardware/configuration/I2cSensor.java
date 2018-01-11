@@ -47,10 +47,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * in the hardware map in the uncategorized mapping. Classes on which this annotation is placed must
  * have a constructor with at least one of the following signatures:
  * <ol>
- *     <li>ctor(I2cDeviceSyncSimple i2cDeviceSynch)</li>
- *     <li>ctor(I2cDeviceSync i2cDeviceSynch)</li>
- *     <li>ctor(I2cDevice i2cDevice)</li>
- *     <li>ctor(I2cController i2cController, int port)</li>
+ * <li>ctor(I2cDeviceSyncSimple i2cDeviceSynch)</li>
+ * <li>ctor(I2cDeviceSync i2cDeviceSynch)</li>
+ * <li>ctor(I2cDevice i2cDevice)</li>
+ * <li>ctor(I2cController i2cController, int port)</li>
  * </ol>
  *
  * @see HardwareMap#put(String, HardwareDevice)
@@ -60,12 +60,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface I2cSensor
-    {
+public @interface I2cSensor {
     /**
      * Returns the XML tag to use to represent configured instances of the annotated
      * class as recorded in saved robot configurations. You should choose a tag that
      * is different than any other sensor type.
+     *
      * @return the XML tag to use for instances of the annotated sensor class
      */
     String xmlTag() default "";
@@ -73,13 +73,15 @@ public @interface I2cSensor
     /**
      * Returns the name of the annotated class to use when describing the class in
      * configuration user interfaces.
+     *
      * @return the name to use for this kind of sensor in user interfaces
      */
     String name() default "";
 
     /**
      * Returns a brief descriptive phrase that describes this kind of sensor.
+     *
      * @return a brief descriptive phrase that describes this kind of sensor.
      */
     String description() default "an I2c sensor";
-    }
+}

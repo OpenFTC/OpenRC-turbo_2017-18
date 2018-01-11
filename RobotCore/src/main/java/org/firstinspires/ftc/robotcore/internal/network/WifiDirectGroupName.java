@@ -50,52 +50,46 @@ import java.util.List;
  * names of remembered Wifi Direct groups.
  */
 @SuppressWarnings("WeakerAccess")
-public class WifiDirectGroupName implements Comparable<WifiDirectGroupName>
-    {
+public class WifiDirectGroupName implements Comparable<WifiDirectGroupName> {
     protected String name;
 
-    public WifiDirectGroupName(@NonNull WifiP2pGroup group)
-        {
+    public WifiDirectGroupName(@NonNull WifiP2pGroup group) {
         this.name = group.getNetworkName();
-        }
-    public WifiDirectGroupName(@NonNull String name)
-        {
-        this.name = name;
-        }
-
-    public static List<WifiDirectGroupName> namesFromGroups(Collection<WifiP2pGroup> groups)
-        {
-        List<WifiDirectGroupName> result = new ArrayList<WifiDirectGroupName>();
-        for (WifiP2pGroup group : groups)
-            {
-            result.add(new WifiDirectGroupName(group));
-            }
-        return result;
-        }
-
-    @Override public String toString()
-        {
-        return this.name;
-        }
-
-    @Override public int compareTo(WifiDirectGroupName another)
-        {
-        return this.toString().compareTo(another.toString());
-        }
-
-    public static String serializeNames(Collection<WifiP2pGroup> groups)
-        {
-        return serializeNames(namesFromGroups(groups));
-        }
-
-    public static String serializeNames(List<WifiDirectGroupName> names)
-        {
-        return SimpleGson.getInstance().toJson(names);
-        }
-
-    public static List<WifiDirectGroupName> deserializeNames(String string)
-        {
-        Type listType = new TypeToken<ArrayList<WifiDirectGroupName>>(){}.getType();
-        return SimpleGson.getInstance().fromJson(string, listType);
-        }
     }
+
+    public WifiDirectGroupName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public static List<WifiDirectGroupName> namesFromGroups(Collection<WifiP2pGroup> groups) {
+        List<WifiDirectGroupName> result = new ArrayList<WifiDirectGroupName>();
+        for (WifiP2pGroup group : groups) {
+            result.add(new WifiDirectGroupName(group));
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
+    @Override
+    public int compareTo(WifiDirectGroupName another) {
+        return this.toString().compareTo(another.toString());
+    }
+
+    public static String serializeNames(Collection<WifiP2pGroup> groups) {
+        return serializeNames(namesFromGroups(groups));
+    }
+
+    public static String serializeNames(List<WifiDirectGroupName> names) {
+        return SimpleGson.getInstance().toJson(names);
+    }
+
+    public static List<WifiDirectGroupName> deserializeNames(String string) {
+        Type listType = new TypeToken<ArrayList<WifiDirectGroupName>>() {
+        }.getType();
+        return SimpleGson.getInstance().fromJson(string, listType);
+    }
+}

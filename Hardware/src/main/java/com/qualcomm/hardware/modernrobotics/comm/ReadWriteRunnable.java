@@ -37,73 +37,77 @@ import java.util.concurrent.ExecutorService;
 @SuppressWarnings("unused")
 public interface ReadWriteRunnable extends Runnable, SyncdDevice {
 
-  enum BlockingState { BLOCKING, WAITING }
+    enum BlockingState {BLOCKING, WAITING}
 
-  int MAX_BUFFER_SIZE = 256;
+    int MAX_BUFFER_SIZE = 256;
 
-  void setCallback(Callback callback);
+    void setCallback(Callback callback);
 
-  boolean writeNeeded();
+    boolean writeNeeded();
 
-  void resetWriteNeeded();
+    void resetWriteNeeded();
 
-  void write(int address, byte[] data);
+    void write(int address, byte[] data);
 
-  void setAcceptingWrites(boolean acceptingWrites);
+    void setAcceptingWrites(boolean acceptingWrites);
 
-  boolean getAcceptingWrites();
+    boolean getAcceptingWrites();
 
-  void drainPendingWrites();
+    void drainPendingWrites();
 
-  void suppressReads(boolean suppress);
+    void suppressReads(boolean suppress);
 
-  byte[] readFromWriteCache(int address, int size);
+    byte[] readFromWriteCache(int address, int size);
 
-  byte[] read(int address, int size);
+    byte[] read(int address, int size);
 
-  void close();
+    void close();
 
-  ReadWriteRunnableSegment createSegment(int key, int address, int size);
+    ReadWriteRunnableSegment createSegment(int key, int address, int size);
 
-  void destroySegment(int key);
+    void destroySegment(int key);
 
-  ReadWriteRunnableSegment getSegment(int key);
+    ReadWriteRunnableSegment getSegment(int key);
 
-  void queueSegmentRead(int key);
-  void queueSegmentWrite(int key);
+    void queueSegmentRead(int key);
 
-  void executeUsing(ExecutorService service);
+    void queueSegmentWrite(int key);
 
-  @Override
-  void run();
-
-  interface Callback {
-    void startupComplete() throws InterruptedException;
-    void readComplete() throws InterruptedException;
-    void writeComplete() throws InterruptedException;
-    void shutdownComplete() throws  InterruptedException;
-  }
-
-  class EmptyCallback implements Callback {
+    void executeUsing(ExecutorService service);
 
     @Override
-    public void startupComplete() throws InterruptedException {
-      // take no action
-      }
+    void run();
 
-    @Override
-    public void readComplete() throws InterruptedException {
-      // take no action
+    interface Callback {
+        void startupComplete() throws InterruptedException;
+
+        void readComplete() throws InterruptedException;
+
+        void writeComplete() throws InterruptedException;
+
+        void shutdownComplete() throws InterruptedException;
     }
 
-    @Override
-    public void writeComplete() throws InterruptedException {
-      // take no action
-    }
+    class EmptyCallback implements Callback {
 
-    @Override
-    public void shutdownComplete() throws InterruptedException  {
-      // take no action
-      }
-  }
+        @Override
+        public void startupComplete() throws InterruptedException {
+            // take no action
+        }
+
+        @Override
+        public void readComplete() throws InterruptedException {
+            // take no action
+        }
+
+        @Override
+        public void writeComplete() throws InterruptedException {
+            // take no action
+        }
+
+        @Override
+        public void shutdownComplete() throws InterruptedException {
+            // take no action
+        }
+    }
 }

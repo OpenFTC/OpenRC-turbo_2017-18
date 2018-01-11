@@ -41,8 +41,7 @@ import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
  *
  * @see FtcEventLoop#setUsbModuleAttachmentHandler(UsbModuleAttachmentHandler)
  */
-public interface UsbModuleAttachmentHandler
-    {
+public interface UsbModuleAttachmentHandler {
     /**
      * One of the hardware modules in the current robot configuration (such as a Modern Robotics
      * DC Motor Controller, a Modern Robotics Legacy Module, etc) is now newly attached to the
@@ -66,4 +65,4 @@ public interface UsbModuleAttachmentHandler
      * @throws InterruptedException
      */
     void handleUsbModuleDetach(RobotUsbModule module) throws RobotCoreException, InterruptedException;
-    }
+}

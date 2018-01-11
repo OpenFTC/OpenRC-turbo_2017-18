@@ -51,13 +51,15 @@ import java.util.Map;
 /**
  * {@link EditUSBDeviceActivity} handles the swapping and fixing of USB device configurations
  */
-public class EditUSBDeviceActivity extends EditActivity
-    {
+public class EditUSBDeviceActivity extends EditActivity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-	@Override public String getTag() { return this.getClass().getSimpleName(); }
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
 
     protected ScannedDevices extraUSBDevices = new ScannedDevices();
 
@@ -65,54 +67,44 @@ public class EditUSBDeviceActivity extends EditActivity
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public EditUSBDeviceActivity()
-        {
-        }
+    public EditUSBDeviceActivity() {
+    }
 
-    protected void deserialize(EditParameters parameters)
-        {
+    protected void deserialize(EditParameters parameters) {
         super.deserialize(parameters);
         determineExtraUSBDevices();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Fixing and swapping
     //----------------------------------------------------------------------------------------------
 
-    protected void swapConfiguration()
-        {
-        if (getRobotConfigMap().isSwappable(controllerConfiguration, scannedDevices, this))
-            {
+    protected void swapConfiguration() {
+        if (getRobotConfigMap().isSwappable(controllerConfiguration, scannedDevices, this)) {
             EditParameters parameters = new EditParameters(this, controllerConfiguration);
             parameters.setRobotConfigMap(getRobotConfigMap());
             parameters.setScannedDevices(scannedDevices);
             handleLaunchEdit(EditSwapUsbDevices.requestCode, EditSwapUsbDevices.class, parameters);
-            }
         }
+    }
 
-    protected boolean completeSwapConfiguration(int requestCodeValue, int resultCode, Intent data)
-        {
-        if (resultCode == RESULT_OK)
-            {
+    protected boolean completeSwapConfiguration(int requestCodeValue, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
             RequestCode requestCode = RequestCode.fromValue(requestCodeValue);
-            if (requestCode == EditSwapUsbDevices.requestCode)
-                {
+            if (requestCode == EditSwapUsbDevices.requestCode) {
                 // Find out whom the user picked to swap with. Be careful about object identities
                 EditParameters returnedParameters = EditParameters.fromIntent(this, data);
-                SerialNumber swappeeSerialNumber = ((ControllerConfiguration)returnedParameters.getConfiguration()).getSerialNumber();
+                SerialNumber swappeeSerialNumber = ((ControllerConfiguration) returnedParameters.getConfiguration()).getSerialNumber();
 
                 ControllerConfiguration swappee = getRobotConfigMap().get(swappeeSerialNumber);
-                if (swappee != null)
-                    {
+                if (swappee != null) {
                     // He swapped with something already in the configuration
                     robotConfigMap.swapSerialNumbers(controllerConfiguration, swappee);
-                    }
-                else
-                    {
+                } else {
                     // He must have swapped with an extra device
                     robotConfigMap.setSerialNumber(controllerConfiguration, swappeeSerialNumber);
                     controllerConfiguration.setKnownToBeAttached(true);
-                    }
+                }
 
                 // Adjust 'extraDevices' to accommodate the swap
                 determineExtraUSBDevices();
@@ -121,144 +113,124 @@ public class EditUSBDeviceActivity extends EditActivity
                 refreshAfterSwap();
 
                 return true;
-                }
             }
-        return false;
         }
+        return false;
+    }
 
-    protected void fixConfiguration()
-        {
+    protected void fixConfiguration() {
         SerialNumber candidate = getFixableCandidate();
         boolean isFixable = candidate != null;
-        if (isFixable)
-            {
+        if (isFixable) {
             robotConfigMap.setSerialNumber(controllerConfiguration, candidate);
             controllerConfiguration.setKnownToBeAttached(true);
             determineExtraUSBDevices();
-            }
-        else
-            {
+        } else {
             String format = getString(R.string.fixFailNoneAvailable);
-            String name   = controllerConfiguration.getName();
-            String type   = displayNameOfConfigurationType(ConfigurationType.DisplayNameFlavor.Normal, controllerConfiguration.getConfigurationType());
+            String name = controllerConfiguration.getName();
+            String type = displayNameOfConfigurationType(ConfigurationType.DisplayNameFlavor.Normal, controllerConfiguration.getConfigurationType());
             appUtil.showToast(UILocation.ONLY_LOCAL, context, String.format(format, name, type));
-            }
-
-        refreshAfterFix();
         }
 
-    protected @Nullable SerialNumber getFixableCandidate()
-        {
+        refreshAfterFix();
+    }
+
+    protected
+    @Nullable
+    SerialNumber getFixableCandidate() {
         SerialNumber candidate = null;
 
         // If it's already attached, no fixing is needed
-        if (controllerConfiguration.isKnownToBeAttached())
-            {
+        if (controllerConfiguration.isKnownToBeAttached()) {
             return null;
-            }
+        }
 
         boolean isFixable = false;
         DeviceManager.DeviceType deviceType = controllerConfiguration.toUSBDeviceType();
 
         // Match up extraDevices by type
-        for (Map.Entry<SerialNumber,DeviceManager.DeviceType> pair : extraUSBDevices.entrySet())
-            {
-            if (pair.getValue() == deviceType)
-                {
-                if (candidate != null)
-                    {
+        for (Map.Entry<SerialNumber, DeviceManager.DeviceType> pair : extraUSBDevices.entrySet()) {
+            if (pair.getValue() == deviceType) {
+                if (candidate != null) {
                     // More than one candidate: ambiguous
                     isFixable = false;
                     break;
-                    }
+                }
                 // Found a first candidate: fixable
                 candidate = pair.getKey();
                 isFixable = true;
-                }
             }
-        return isFixable ? candidate : null;
         }
+        return isFixable ? candidate : null;
+    }
 
     // If we were to attempt to fix this configuration, would it work?
-    protected boolean isFixable()
-        {
+    protected boolean isFixable() {
         return getFixableCandidate() != null;
-        }
+    }
 
-    protected boolean isSwappable()
-        {
+    protected boolean isSwappable() {
         List<ControllerConfiguration> swapCandidates = getRobotConfigMap().getEligibleSwapTargets(controllerConfiguration, scannedDevices, this);
         SerialNumber fixCandidate = getFixableCandidate();
 
         // We need swap candidates, but not just the one that we'd automatically 'fix' to
         return !swapCandidates.isEmpty() &&
-                (fixCandidate==null
-                        || !(swapCandidates.size()==1
-                            && swapCandidates.get(0).getSerialNumber().equals(fixCandidate)));
-        }
+                (fixCandidate == null
+                        || !(swapCandidates.size() == 1
+                        && swapCandidates.get(0).getSerialNumber().equals(fixCandidate)));
+    }
 
     //----------------------------------------------------------------------------------------------
     // Fixing and swapping support
     //----------------------------------------------------------------------------------------------
 
-    protected void refreshSerialNumber()
-        {
+    protected void refreshSerialNumber() {
         // subclasses to override
-        }
+    }
 
-    protected void refreshAfterFix()
-        {
+    protected void refreshAfterFix() {
         showFixSwapButtons();
         currentCfgFile.markDirty();
         robotConfigFileManager.updateActiveConfigHeader(currentCfgFile);
-        }
+    }
 
-    protected void refreshAfterSwap()
-        {
+    protected void refreshAfterSwap() {
         showFixSwapButtons();
         currentCfgFile.markDirty();
         robotConfigFileManager.updateActiveConfigHeader(currentCfgFile);
-        }
+    }
 
-    protected void showFixSwapButtons()
-        {
+    protected void showFixSwapButtons() {
         showFixButton(isFixable());
         showSwapButton(isSwappable());
         refreshSerialNumber();
-        }
+    }
 
-    protected void showFixButton(boolean show)
-        {
+    protected void showFixButton(boolean show) {
         showButton(idFixButton, show);
-        }
+    }
 
-    protected void showSwapButton(boolean show)
-        {
+    protected void showSwapButton(boolean show) {
         showButton(idSwapButton, show);
-        }
+    }
 
-    protected void showButton(@IdRes int id, boolean show)
-        {
+    protected void showButton(@IdRes int id, boolean show) {
         View button = findViewById(id);
-        if (button != null)
-            {
-            button.setVisibility(show ? View.VISIBLE: View.GONE);
-            }
+        if (button != null) {
+            button.setVisibility(show ? View.VISIBLE : View.GONE);
         }
+    }
 
-    protected void determineExtraUSBDevices()
-        {
+    protected void determineExtraUSBDevices() {
         // The extra devices are the ones that are on the USB bus but aren't in the current config map
         extraUSBDevices = new ScannedDevices(scannedDevices);
-        for (SerialNumber serialNumber : getRobotConfigMap().serialNumbers())
-            {
+        for (SerialNumber serialNumber : getRobotConfigMap().serialNumbers()) {
             extraUSBDevices.remove(serialNumber);
-            }
-        for (ControllerConfiguration controllerConfiguration : getRobotConfigMap().controllerConfigurations())
-            {
-            controllerConfiguration.setKnownToBeAttached(scannedDevices.containsKey(controllerConfiguration.getSerialNumber()));
-            }
         }
-
-
+        for (ControllerConfiguration controllerConfiguration : getRobotConfigMap().controllerConfigurations()) {
+            controllerConfiguration.setKnownToBeAttached(scannedDevices.containsKey(controllerConfiguration.getSerialNumber()));
+        }
     }
+
+
+}

@@ -52,8 +52,7 @@ import java.util.Locale;
  * historical name that could perhaps have been chosen better) for raw, uncalibrated readings.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxI2cColorRangeSensor extends AMSColorSensorImpl implements DistanceSensor, OpticalDistanceSensor
-    {
+public class LynxI2cColorRangeSensor extends AMSColorSensorImpl implements DistanceSensor, OpticalDistanceSensor {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -72,10 +71,9 @@ public class LynxI2cColorRangeSensor extends AMSColorSensorImpl implements Dista
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cColorRangeSensor(I2cDeviceSynchSimple deviceClient)
-        {
+    public LynxI2cColorRangeSensor(I2cDeviceSynchSimple deviceClient) {
         super(AMSColorSensor.Parameters.createForTMD37821(), deviceClient, true);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // DistanceSensor
@@ -85,87 +83,83 @@ public class LynxI2cColorRangeSensor extends AMSColorSensorImpl implements Dista
      * Returns a calibrated, linear sense of distance as read by the infrared proximity
      * part of the sensor. Distance is measured to the plastic housing at the front of the
      * sensor.
-     *
+     * <p>
      * Natively, the raw optical signal follows an inverse square law. Here, parameters have
      * been fitted to turn that into a <em>linear</em> measure of distance. The function fitted
      * was of the form:
-     *
-     *      rawOptical = a + b * (cm + c)^(-2)
-     *
+     * <p>
+     * rawOptical = a + b * (cm + c)^(-2)
+     * <p>
      * This fitted linearity is fairly accurate over a wide range of target surfaces, but is ultimately
-     * affected by the infrared reflectivity of the surface. However, even on surfaces where there is 
+     * affected by the infrared reflectivity of the surface. However, even on surfaces where there is
      * significantly different reflectivity, the linearity calculated here tends to be preserved,
      * so distance accuracy can often be refined with a simple further multiplicative scaling.
-     *
+     * <p>
      * Note that readings are most accurate when perpendicular to the surface. For non-perpendicularity,
      * a cosine correction factor is usually appropriate.
      *
-     * @param unit  the unit of distance in which the result should be returned
-     * @return      the currently measured distance in the indicated units
+     * @param unit the unit of distance in which the result should be returned
+     * @return the currently measured distance in the indicated units
      */
-    @Override public double getDistance(DistanceUnit unit)
-        {
+    @Override
+    public double getDistance(DistanceUnit unit) {
         int rawOptical = rawOptical();
         double cmOptical = cmFromOptical(rawOptical);
         return unit.fromUnit(DistanceUnit.CM, cmOptical);
-        }
+    }
 
     /**
      * Converts a raw optical inverse-square reading into a fitted, calibrated linear reading in cm.
      */
-    protected double cmFromOptical(int rawOptical)
-        {
-        return (-aParam * cParam + cParam * rawOptical - Math.sqrt(-aParam * bParam + bParam * rawOptical))/(aParam - rawOptical);
-        }
+    protected double cmFromOptical(int rawOptical) {
+        return (-aParam * cParam + cParam * rawOptical - Math.sqrt(-aParam * bParam + bParam * rawOptical)) / (aParam - rawOptical);
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeLynxColorSensor);
-        }
+    }
 
     @Override
-    public HardwareDevice.Manufacturer getManufacturer()
-        {
+    public HardwareDevice.Manufacturer getManufacturer() {
         return Manufacturer.Lynx;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // OpticalDistanceSensor / LightSensor
     //----------------------------------------------------------------------------------------------
 
-    @Override public double getLightDetected()
-        {
+    @Override
+    public double getLightDetected() {
         return Range.clip(
                 Range.scale(getRawLightDetected(), 0, getRawLightDetectedMax(), apiLevelMin, apiLevelMax),
                 apiLevelMin, apiLevelMax);
-        }
+    }
 
-    @Override public double getRawLightDetected()
-        {
+    @Override
+    public double getRawLightDetected() {
         return rawOptical();
-        }
+    }
 
-    @Override public double getRawLightDetectedMax()
-        {
+    @Override
+    public double getRawLightDetectedMax() {
         return parameters.proximitySaturation;
-        }
+    }
 
-    @Override public String status()
-        {
+    @Override
+    public String status() {
         return String.format(Locale.getDefault(), "%s on %s", getDeviceName(), getConnectionInfo());
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Raw sensor data
     //----------------------------------------------------------------------------------------------
 
-    public int rawOptical()
-        {
+    public int rawOptical() {
         return readUnsignedShort(Register.PDATA, ByteOrder.LITTLE_ENDIAN);
-        }
     }
+}

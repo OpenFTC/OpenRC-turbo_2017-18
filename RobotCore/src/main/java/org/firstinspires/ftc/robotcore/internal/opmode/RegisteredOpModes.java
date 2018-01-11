@@ -55,8 +55,7 @@ import java.util.Map;
  * {@link RegisteredOpModes} is the owner of a set of currently-registered OpModes.
  */
 @SuppressWarnings("WeakerAccess")
-public class RegisteredOpModes implements OpModeManager
-    {
+public class RegisteredOpModes implements OpModeManager {
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -64,11 +63,13 @@ public class RegisteredOpModes implements OpModeManager
 
     public static final String TAG = "RegisteredOpModes";
 
-    protected static class InstanceHolder
-        {
+    protected static class InstanceHolder {
         public static final RegisteredOpModes theInstance = new RegisteredOpModes();
-        }
-    public static RegisteredOpModes getInstance() { return InstanceHolder.theInstance; }
+    }
+
+    public static RegisteredOpModes getInstance() {
+        return InstanceHolder.theInstance;
+    }
 
     protected final Object opModesLock = new Object();
     protected boolean opModesAreLocked = false;
@@ -84,10 +85,9 @@ public class RegisteredOpModes implements OpModeManager
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RegisteredOpModes()
-        {
-            //modified for turbo: removed file monitoring code for blocks and OnBot
-        }
+    public RegisteredOpModes() {
+        //modified for turbo: removed file monitoring code for blocks and OnBot
+    }
 
     // modified for turbo: removed "change management" section with public methods for monitoring new opmodes
 
@@ -95,21 +95,16 @@ public class RegisteredOpModes implements OpModeManager
     // OpMode management
     //----------------------------------------------------------------------------------------------
 
-    public void addInstanceOpModeRegistrar(InstanceOpModeRegistrar register)
-        {
-        synchronized (instanceOpModeRegistrars)
-            {
+    public void addInstanceOpModeRegistrar(InstanceOpModeRegistrar register) {
+        synchronized (instanceOpModeRegistrars) {
             instanceOpModeRegistrars.add(register);
-            }
         }
+    }
 
-    public void registerAllOpModes(final OpModeRegister userOpmodeRegister)
-        {
-        lockOpModesWhile(new Runnable()
-            {
+    public void registerAllOpModes(final OpModeRegister userOpmodeRegister) {
+        lockOpModesWhile(new Runnable() {
             @Override
-            public void run()
-                {
+            public void run() {
                 opModeClasses.clear();
                 opModeInstances.clear();
 
@@ -124,197 +119,149 @@ public class RegisteredOpModes implements OpModeManager
                 AnnotatedOpModeClassFilter.getInstance().registerAllClasses(RegisteredOpModes.this);
 
                 opmodesAreRegistered = true;
-                }
-            });
-        }
+            }
+        });
+    }
 
-    protected void callInstanceOpModeRegistrars()
-        {
-        synchronized (instanceOpModeRegistrars)
-            {
-            for (final InstanceOpModeRegistrar instanceOpModeRegistrar : instanceOpModeRegistrars)
-                {
-                instanceOpModeRegistrar.register(new InstanceOpModeManager()
-                    {
+    protected void callInstanceOpModeRegistrars() {
+        synchronized (instanceOpModeRegistrars) {
+            for (final InstanceOpModeRegistrar instanceOpModeRegistrar : instanceOpModeRegistrars) {
+                instanceOpModeRegistrar.register(new InstanceOpModeManager() {
                     @Override
-                    public void register(OpModeMeta meta, OpMode opModeInstance)
-                        {
+                    public void register(OpModeMeta meta, OpMode opModeInstance) {
                         RegisteredOpModes.this.register(meta, opModeInstance, instanceOpModeRegistrar);
-                        }
-                    });
-                }
+                    }
+                });
             }
         }
+    }
 
-    public void registerOnBotJavaOpModes()
-        {
-        lockOpModesWhile(new Runnable()
-            {
+    public void registerOnBotJavaOpModes() {
+        lockOpModesWhile(new Runnable() {
             @Override
-            public void run()
-                {
+            public void run() {
 
                 // Unregister any existing opmodes that were dynamically loaded
                 List<OpModeMetaAndClass> extant = new ArrayList<>(opModeClasses.values());
-                for (OpModeMetaAndClass opModeMetaAndClass : extant)
-                    {
-                    if (opModeMetaAndClass.isOnBotJava())
-                        {
+                for (OpModeMetaAndClass opModeMetaAndClass : extant) {
+                    if (opModeMetaAndClass.isOnBotJava()) {
                         Assert.assertTrue(opModeClasses.get(opModeMetaAndClass.meta.name) == opModeMetaAndClass);
                         unregister(opModeMetaAndClass.meta);
-                        }
                     }
+                }
 
                 // Add any new opmodes
                 ClassManager.getInstance().processOnBotJavaClasses();
                 AnnotatedOpModeClassFilter.getInstance().registerOnBotJavaClasses(RegisteredOpModes.this);
-                }
-            });
-        }
+            }
+        });
+    }
 
-    public void registerInstanceOpModes()
-        {
-        lockOpModesWhile(new Runnable()
-            {
+    public void registerInstanceOpModes() {
+        lockOpModesWhile(new Runnable() {
             @Override
-            public void run()
-                {
+            public void run() {
 
                 // Unregister existing instance opmodes
-                synchronized (instanceOpModeRegistrars)
-                    {
+                synchronized (instanceOpModeRegistrars) {
                     List<OpModeMetaAndInstance> extant = new ArrayList<OpModeMetaAndInstance>(opModeInstances.values());
-                    for (InstanceOpModeRegistrar instanceOpModeRegistrar : instanceOpModeRegistrars)
-                        {
-                        for (OpModeMetaAndInstance opModeMetaAndInstance : extant)
-                            {
-                            if (opModeMetaAndInstance.instanceOpModeRegistrar == instanceOpModeRegistrar)
-                                {
+                    for (InstanceOpModeRegistrar instanceOpModeRegistrar : instanceOpModeRegistrars) {
+                        for (OpModeMetaAndInstance opModeMetaAndInstance : extant) {
+                            if (opModeMetaAndInstance.instanceOpModeRegistrar == instanceOpModeRegistrar) {
                                 unregister(opModeMetaAndInstance.meta);
-                                }
                             }
                         }
                     }
+                }
 
                 // Register any new ones
                 callInstanceOpModeRegistrars();
-                }
-            });
-        }
+            }
+        });
+    }
 
-    public void waitOpModesRegistered()
-        {
-        while (!opmodesAreRegistered)
-            {
+    public void waitOpModesRegistered() {
+        while (!opmodesAreRegistered) {
             Thread.yield();
-            }
         }
+    }
 
-    public void lockOpModesWhile(Runnable runnable)
-        {
-        synchronized (opModesLock)
-            {
+    public void lockOpModesWhile(Runnable runnable) {
+        synchronized (opModesLock) {
             opModesAreLocked = true;
-            try
-                {
+            try {
                 runnable.run();
-                }
-            finally
-                {
+            } finally {
                 opModesAreLocked = false;
-                }
             }
         }
+    }
 
-    public <T> T lockOpModesWhile(Supplier<T> supplier)
-        {
-        synchronized (opModesLock)
-            {
+    public <T> T lockOpModesWhile(Supplier<T> supplier) {
+        synchronized (opModesLock) {
             opModesAreLocked = true;
-            try
-                {
+            try {
                 return supplier.get();
-                }
-            finally
-                {
+            } finally {
                 opModesAreLocked = false;
-                }
             }
         }
+    }
 
-    public List<OpModeMeta> getOpModes()
-        {
-        return lockOpModesWhile(new Supplier<List<OpModeMeta>>()
-            {
+    public List<OpModeMeta> getOpModes() {
+        return lockOpModesWhile(new Supplier<List<OpModeMeta>>() {
             @Override
-            public List<OpModeMeta> get()
-                {
+            public List<OpModeMeta> get() {
                 Assert.assertTrue(opmodesAreRegistered);
                 List<OpModeMeta> result = new LinkedList<OpModeMeta>();
-                for (OpModeMetaAndClass opModeMetaAndClassData : opModeClasses.values())
-                    {
-                    if (!opModeMetaAndClassData.meta.name.equals(OpModeManager.DEFAULT_OP_MODE_NAME))
-                        {
+                for (OpModeMetaAndClass opModeMetaAndClassData : opModeClasses.values()) {
+                    if (!opModeMetaAndClassData.meta.name.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) {
                         result.add(opModeMetaAndClassData.meta);
-                        }
                     }
-                for (OpModeMetaAndInstance opModeMetaAndInstance : opModeInstances.values())
-                    {
+                }
+                for (OpModeMetaAndInstance opModeMetaAndInstance : opModeInstances.values()) {
                     result.add(opModeMetaAndInstance.meta);
-                    }
+                }
                 return result;
-                }
-            });
-        }
+            }
+        });
+    }
 
-    public OpMode getOpMode(final String opModeName)
-        {
-        return lockOpModesWhile(new Supplier<OpMode>()
-            {
-            @Override public OpMode get()
-                {
-                try
-                    {
-                    if (opModeInstances.containsKey(opModeName))
-                        {
+    public OpMode getOpMode(final String opModeName) {
+        return lockOpModesWhile(new Supplier<OpMode>() {
+            @Override
+            public OpMode get() {
+                try {
+                    if (opModeInstances.containsKey(opModeName)) {
                         return opModeInstances.get(opModeName).instance;
-                        }
-                    else if (opModeClasses.containsKey(opModeName))
-                        {
+                    } else if (opModeClasses.containsKey(opModeName)) {
                         return opModeClasses.get(opModeName).clazz.newInstance();
-                        }
-                    else
-                        {
+                    } else {
                         return null;
-                        }
                     }
-                catch (InstantiationException|IllegalAccessException e)
-                    {
+                } catch (InstantiationException | IllegalAccessException e) {
                     return null;
-                    }
                 }
-            });
-        }
+            }
+        });
+    }
 
-    protected boolean reportIfOpModeAlreadyRegistered(OpModeMeta meta)
-        {
-        if (isOpmodeRegistered(meta))
-            {
+    protected boolean reportIfOpModeAlreadyRegistered(OpModeMeta meta) {
+        if (isOpmodeRegistered(meta)) {
             String message = String.format("An OpMode with the name '%s' is already registered; ignoring duplicate opmode", meta.name);
             // Show the message in the log
             RobotLog.ww(TAG, "configuration error: %s", message);
             // Make the message appear on the driver station (only the first one will actually appear)
             RobotLog.setGlobalErrorMsg(message);
             return false;
-            }
-        return true;
         }
+        return true;
+    }
 
-    protected boolean isOpmodeRegistered(OpModeMeta meta)
-        {
+    protected boolean isOpmodeRegistered(OpModeMeta meta) {
         Assert.assertTrue(opModesAreLocked);
         return opModeClasses.containsKey(meta.name) || opModeInstances.containsKey(meta.name);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Registration and unregistration
@@ -326,26 +273,21 @@ public class RegisteredOpModes implements OpModeManager
      * @param name   the name of the OpMode in the driver station
      * @param opMode the OpMode class to instantiate when that OpMode is selected
      */
-    public void register(String name, Class opMode)
-        {
+    public void register(String name, Class opMode) {
         register(new OpModeMeta(name), opMode);
-        }
+    }
 
-    public void register(final OpModeMeta meta, final Class opMode)
-        {
-        lockOpModesWhile(new Runnable()
-            {
+    public void register(final OpModeMeta meta, final Class opMode) {
+        lockOpModesWhile(new Runnable() {
             @Override
-            public void run()
-                {
-                if (reportIfOpModeAlreadyRegistered(meta))
-                    {
+            public void run() {
+                if (reportIfOpModeAlreadyRegistered(meta)) {
                     opModeClasses.put(meta.name, new OpModeMetaAndClass(meta, (Class<OpMode>) opMode));
                     RobotLog.vv(AnnotatedOpModeClassFilter.TAG, String.format("registered {%s} as {%s}", opMode.getSimpleName(), meta.name));
-                    }
                 }
-            });
-        }
+            }
+        });
+    }
 
     /**
      * Registers an OpMode <em>instance</em> with the name by which it should be known in the driver station.
@@ -355,45 +297,36 @@ public class RegisteredOpModes implements OpModeManager
      * @param name   the name of the OpMode in the driver station
      * @param opMode the OpMode instance to use when that OpMode is selected
      */
-    public void register(String name, OpMode opMode)
-        {
+    public void register(String name, OpMode opMode) {
         register(new OpModeMeta(name), opMode);
-        }
+    }
 
-    public void register(final OpModeMeta meta, final OpMode opModeInstance)
-        {
+    public void register(final OpModeMeta meta, final OpMode opModeInstance) {
         register(meta, opModeInstance, null);
-        }
+    }
 
-    public void register(final OpModeMeta meta, final OpMode opModeInstance, @Nullable final InstanceOpModeRegistrar instanceOpModeRegistrar)
-        {
-        lockOpModesWhile(new Runnable()
-            {
+    public void register(final OpModeMeta meta, final OpMode opModeInstance, @Nullable final InstanceOpModeRegistrar instanceOpModeRegistrar) {
+        lockOpModesWhile(new Runnable() {
             @Override
-            public void run()
-                {
-                if (reportIfOpModeAlreadyRegistered(meta))
-                    {
+            public void run() {
+                if (reportIfOpModeAlreadyRegistered(meta)) {
                     opModeInstances.put(meta.name, new OpModeMetaAndInstance(meta, opModeInstance, instanceOpModeRegistrar));
                     RobotLog.vv(AnnotatedOpModeClassFilter.TAG, String.format("registered instance as {%s}", meta));
-                    }
                 }
-            });
-        }
+            }
+        });
+    }
 
-    protected void unregister(final OpModeMeta meta)
-        {
-        lockOpModesWhile(new Runnable()
-            {
+    protected void unregister(final OpModeMeta meta) {
+        lockOpModesWhile(new Runnable() {
             @Override
-            public void run()
-                {
+            public void run() {
                 RobotLog.vv(AnnotatedOpModeClassFilter.TAG, "unregistered {%s}", meta.name);
                 opModeClasses.remove(meta.name);
                 opModeInstances.remove(meta.name);
                 Assert.assertFalse(isOpmodeRegistered(meta));
-                }
-            });
-        }
-
+            }
+        });
     }
+
+}

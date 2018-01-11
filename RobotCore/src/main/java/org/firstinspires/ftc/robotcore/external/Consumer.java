@@ -35,11 +35,11 @@ package org.firstinspires.ftc.robotcore.external;
 /**
  * Instances of {@link Consumer} are functions that act on an instance of a indicated type
  */
-public interface Consumer<T>
-    {
+public interface Consumer<T> {
     /**
      * Performs this operation on the given argument.
+     *
      * @param t the input argument
      */
     void accept(T t);
-    }
+}

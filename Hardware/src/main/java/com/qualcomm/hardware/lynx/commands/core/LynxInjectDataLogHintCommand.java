@@ -45,8 +45,7 @@ import java.nio.charset.Charset;
 /**
  * Created by bob on 2016-09-01.
  */
-public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,73 +54,67 @@ public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxA
     public final static int cbMaxText = 100;
     public final static Charset charset = Charset.forName("UTF-8");
 
-     private byte[] payload;
+    private byte[] payload;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxInjectDataLogHintCommand(LynxModuleIntf module)
-        {
+    public LynxInjectDataLogHintCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxInjectDataLogHintCommand(LynxModuleIntf module, @NonNull String hintText)
-        {
+    public LynxInjectDataLogHintCommand(LynxModuleIntf module, @NonNull String hintText) {
         this(module);
         setHintText(hintText);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public void setHintText(@NonNull String text)
-        {
+    public void setHintText(@NonNull String text) {
         // Each char encodes as AT LEAST one byte, so truncate if we need to
-        if (text.length() > cbMaxText)
-            {
+        if (text.length() > cbMaxText) {
             text = text.substring(0, cbMaxText);
-            }
+        }
 
         // Some characters encode as multi-byte, and that's hard to predict, so we brute force it
-        for (;;)
-            {
+        for (; ; ) {
             this.payload = text.getBytes(charset);
-            if (payload.length <= cbMaxText)
+            if (payload.length <= cbMaxText) {
                 break;
-            text = text.substring(0, text.length()-1);
             }
+            text = text.substring(0, text.length() - 1);
         }
+    }
 
-    public @NonNull String getHintText()
-        {
-        if (this.payload != null)
-            {
+    public
+    @NonNull
+    String getHintText() {
+        if (this.payload != null) {
             return new String(this.payload, charset);
-            }
-        return "";
         }
+        return "";
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbFixed + payload.length).order(LynxDatagram.LYNX_ENDIAN);
-        buffer.put((byte)payload.length);
+        buffer.put((byte) payload.length);
         buffer.put(this.payload);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         int cbPayload = TypeConversion.unsignedByteToInt(buffer.get());
         this.payload = new byte[cbPayload];
         buffer.get(this.payload);
-        }
     }
+}

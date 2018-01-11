@@ -43,8 +43,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-09.
  */
-public class LynxI2cReadSingleByteCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxI2cReadSingleByteCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -58,37 +57,33 @@ public class LynxI2cReadSingleByteCommand extends LynxDekaInterfaceCommand<LynxA
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cReadSingleByteCommand(LynxModuleIntf module)
-        {
+    public LynxI2cReadSingleByteCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxI2cReadSingleByteCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr)
-        {
+    public LynxI2cReadSingleByteCommand(LynxModuleIntf module, int busZ, I2cAddr i2cAddr) {
         this(module);
         LynxConstants.validateI2cBusZ(busZ);
-        this.i2cBus = (byte)busZ;
-        this.i2cAddr7Bit = (byte)i2cAddr.get7Bit();
-        }
+        this.i2cBus = (byte) busZ;
+        this.i2cAddr7Bit = (byte) i2cAddr.get7Bit();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.i2cBus);
         buffer.put(this.i2cAddr7Bit);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
         this.i2cAddr7Bit = buffer.get();
-        }
     }
+}

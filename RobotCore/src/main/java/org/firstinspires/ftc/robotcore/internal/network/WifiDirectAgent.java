@@ -69,60 +69,65 @@ import java.util.List;
  * importantly, this handles callback threading reasonably for us so we don't end up in
  * deadlock situations with the main app thread.
  */
-@SuppressWarnings("WeakerAccess") public class WifiDirectAgent extends WifiStartStoppable
-    {
+@SuppressWarnings("WeakerAccess")
+public class WifiDirectAgent extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_wifiDirectAgent";
 
-    public String getTag() { return TAG; }
+    public String getTag() {
+        return TAG;
+    }
 
-    @SuppressLint("StaticFieldLeak") protected static WifiDirectAgent theInstance;
+    @SuppressLint("StaticFieldLeak")
+    protected static WifiDirectAgent theInstance;
     protected static StartResult theInstanceStartResult = new StartResult();
-    public static WifiDirectAgent getInstance() { return theInstance; }
+
+    public static WifiDirectAgent getInstance() {
+        return theInstance;
+    }
+
     static {
         theInstance = new WifiDirectAgent();
         // Auto-start WifiDirectAgent(), as it's so fundamental. That way everybody and his dog
         // doesn't have to manually do same
         theInstance.start(theInstanceStartResult);
-        }
+    }
 
-    protected final Context                     context;
-    protected final CallbackLooper              looper;
-    protected final WifiP2pManager              wifiP2pManager;
-    protected final WifiP2pManager.Channel      wifiP2pChannel;
-    protected final ChannelListener             channelListener;
+    protected final Context context;
+    protected final CallbackLooper looper;
+    protected final WifiP2pManager wifiP2pManager;
+    protected final WifiP2pManager.Channel wifiP2pChannel;
+    protected final ChannelListener channelListener;
     protected final CallbackRegistrar<Callback> callbacks = new CallbackRegistrar<Callback>();
-    protected final WifiBroadcastReceiver       wifiBroadcastReceiver;
+    protected final WifiBroadcastReceiver wifiBroadcastReceiver;
 
-    protected boolean                           isWifiP2pEnabled = false;
-    protected WifiState                         wifiState = WifiState.UNKNOWN;
-    protected NetworkInfo.State                 wifiP2pState = NetworkInfo.State.UNKNOWN;
+    protected boolean isWifiP2pEnabled = false;
+    protected WifiState wifiState = WifiState.UNKNOWN;
+    protected NetworkInfo.State wifiP2pState = NetworkInfo.State.UNKNOWN;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public WifiDirectAgent()
-        {
+    public WifiDirectAgent() {
         super(0);
-        context                 = AppUtil.getInstance().getApplication();
-        looper                  = CallbackLooper.getDefault();
-        channelListener         = new ChannelListener();
-        wifiP2pManager          = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
-        wifiP2pChannel          = wifiP2pManager.initialize(context, looper.getLooper(), channelListener); // note threading
-        wifiBroadcastReceiver   = new WifiBroadcastReceiver();
-        }
+        context = AppUtil.getInstance().getApplication();
+        looper = CallbackLooper.getDefault();
+        channelListener = new ChannelListener();
+        wifiP2pManager = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
+        wifiP2pChannel = wifiP2pManager.initialize(context, looper.getLooper(), channelListener); // note threading
+        wifiBroadcastReceiver = new WifiBroadcastReceiver();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Start / stop
     //----------------------------------------------------------------------------------------------
 
     @Override
-    protected boolean doStart()
-        {
+    protected boolean doStart() {
         boolean localSuccess = true;
 
         IntentFilter intentFilter = new IntentFilter();
@@ -136,65 +141,55 @@ import java.util.List;
 
         context.registerReceiver(wifiBroadcastReceiver, intentFilter, null, looper.getHandler()); // note threading
 
-        new WifiDirectPersistentGroupManager(this).requestPersistentGroups(new WifiDirectPersistentGroupManager.PersistentGroupInfoListener()
-            {
-            @Override public void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups)
-                {
-                for (WifiP2pGroup group : groups)
-                    {
+        new WifiDirectPersistentGroupManager(this).requestPersistentGroups(new WifiDirectPersistentGroupManager.PersistentGroupInfoListener() {
+            @Override
+            public void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups) {
+                for (WifiP2pGroup group : groups) {
                     RobotLog.vv(TAG, "found persistent group: %s", group.getNetworkName());
-                    }
                 }
-            }); // TEMPORARY
+            }
+        }); // TEMPORARY
 
         return localSuccess;
-        }
+    }
 
     @Override
-    protected void doStop()
-        {
+    protected void doStop() {
         context.unregisterReceiver(wifiBroadcastReceiver);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Low level accessing
     //----------------------------------------------------------------------------------------------
 
-    public WifiP2pManager getWifiP2pManager()
-        {
+    public WifiP2pManager getWifiP2pManager() {
         return wifiP2pManager;
-        }
+    }
 
-    public WifiP2pManager.Channel getWifiP2pChannel()
-        {
+    public WifiP2pManager.Channel getWifiP2pChannel() {
         return wifiP2pChannel;
-        }
+    }
 
-    public CallbackLooper getLooper()
-        {
+    public CallbackLooper getLooper() {
         return looper;
-        }
+    }
 
-    public boolean isLooperThread()
-        {
+    public boolean isLooperThread() {
         Assert.assertNotNull(looper);
         return looper.isLooperThread();
-        }
+    }
 
-    public boolean isWifiDirectEnabled()
-        {
+    public boolean isWifiDirectEnabled() {
         return isWifiP2pEnabled;
-        }
+    }
 
-    public WifiState getWifiState()
-        {
+    public WifiState getWifiState() {
         return wifiState;
-        }
+    }
 
-    public NetworkInfo.State getWifiDirectState()
-        {
+    public NetworkInfo.State getWifiDirectState() {
         return wifiP2pState;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // General wifi-related queries & utilities
@@ -202,83 +197,71 @@ import java.util.List;
     // Not really wifi-*direct*-related, per se, but it's handy and convenient to locate there here
     //----------------------------------------------------------------------------------------------
 
-    public boolean isAirplaneModeOn()
-        {
+    public boolean isAirplaneModeOn() {
         return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
-        }
+    }
 
-    public boolean isBluetoothOn()
-        {
+    public boolean isBluetoothOn() {
         return BluetoothAdapter.getDefaultAdapter() != null && BluetoothAdapter.getDefaultAdapter().isEnabled();
-        }
+    }
 
-    public boolean isWifiEnabled()
-        {
+    public boolean isWifiEnabled() {
         return getWifiState().isEnabled();
-        }
+    }
 
-    public boolean isWifiConnected()
-        {
+    public boolean isWifiConnected() {
         WifiManager m = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         SupplicantState s = m.getConnectionInfo().getSupplicantState();
         NetworkInfo.DetailedState state = WifiInfo.getDetailedStateOf(s);
 
         return (state == NetworkInfo.DetailedState.CONNECTED ||
                 state == NetworkInfo.DetailedState.OBTAINING_IPADDR);
-        }
+    }
 
-    public boolean isWifiDirectConnected()
-        {
+    public boolean isWifiDirectConnected() {
         NetworkInfo.State state = getWifiDirectState();
-        return state== NetworkInfo.State.CONNECTED || state== NetworkInfo.State.CONNECTING;
-        }
+        return state == NetworkInfo.State.CONNECTED || state == NetworkInfo.State.CONNECTING;
+    }
 
-    /** synchronously disconnects from wifi direct. must not be called on the callback looper thread */
-    public boolean disconnectFromWifiDirect()
-        {
-        return lockCompletion(false, new Func<Boolean>()
-            {
-            @Override public Boolean value()
-                {
+    /**
+     * synchronously disconnects from wifi direct. must not be called on the callback looper thread
+     */
+    public boolean disconnectFromWifiDirect() {
+        return lockCompletion(false, new Func<Boolean>() {
+            @Override
+            public Boolean value() {
                 boolean success = resetCompletion();
-                if (success)
-                    {
+                if (success) {
                     try {
-                        wifiP2pManager.requestGroupInfo(wifiP2pChannel, new WifiP2pManager.GroupInfoListener()
-                            {
-                            @Override public void onGroupInfoAvailable(WifiP2pGroup group)
-                                {
-                                if (group != null && group.isGroupOwner())
-                                    {
-                                    wifiP2pManager.removeGroup(wifiP2pChannel, new WifiP2pManager.ActionListener()
-                                        {
-                                        @Override public void onSuccess()
-                                            {
+                        wifiP2pManager.requestGroupInfo(wifiP2pChannel, new WifiP2pManager.GroupInfoListener() {
+                            @Override
+                            public void onGroupInfoAvailable(WifiP2pGroup group) {
+                                if (group != null && group.isGroupOwner()) {
+                                    wifiP2pManager.removeGroup(wifiP2pChannel, new WifiP2pManager.ActionListener() {
+                                        @Override
+                                        public void onSuccess() {
                                             releaseCompletion(true);
-                                            }
-                                        @Override public void onFailure(int reason)
-                                            {
+                                        }
+
+                                        @Override
+                                        public void onFailure(int reason) {
                                             releaseCompletion(false);
-                                            }
-                                        });
-                                    }
-                                else
-                                    {
+                                        }
+                                    });
+                                } else {
                                     releaseCompletion(false);
-                                    }
                                 }
-                            });
+                            }
+                        });
                         success = waitForCompletion();
-                        }
-                    catch (InterruptedException e)
-                        {
+                    } catch (InterruptedException e) {
                         success = receivedCompletionInterrupt(e);
-                        }
                     }
-                return success;
                 }
-            });
-        }
+                return success;
+            }
+        });
+    }
 
     //----------------------------------------------------------------------------------------------
     // Changing Channels
@@ -287,80 +270,73 @@ import java.util.List;
     /**
      * setWifiP2pChannels is a hidden method that went in the AOSP tree on 2013.05.03, and so,
      * we believe is included even in Kitcat.
-     * @param lc        the channel to listen on. 0 = let supplicant pick (preferable)
-     * @param oc        operating channel. 0 = let platform pick, 1-14 - set per requirement and validity within regulatory domain
-     * @param listener  asynchronously receives results of setting
+     *
+     * @param lc       the channel to listen on. 0 = let supplicant pick (preferable)
+     * @param oc       operating channel. 0 = let platform pick, 1-14 - set per requirement and validity within regulatory domain
+     * @param listener asynchronously receives results of setting
      */
-    public void setWifiP2pChannels(int lc, int oc, WifiP2pManager.ActionListener listener)
-        {
+    public void setWifiP2pChannels(int lc, int oc, WifiP2pManager.ActionListener listener) {
         Method method = ClassUtil.getHiddenMethod(this.getWifiP2pManager(), "setWifiP2pChannels",
-                            WifiP2pManager.Channel.class,
-                            int.class,
-                            int.class,
-                            WifiP2pManager.ActionListener.class);
-        if (method != null)
-            {
+                WifiP2pManager.Channel.class,
+                int.class,
+                int.class,
+                WifiP2pManager.ActionListener.class);
+        if (method != null) {
             ClassUtil.invoke(this.getWifiP2pManager(), method, this.getWifiP2pChannel(), lc, oc, listener);
-            }
-        else
-            {
+        } else {
             throw new RuntimeException("setWifiP2pChannels() is not supported on this device");
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Types and Notifications
     //----------------------------------------------------------------------------------------------
 
-    public interface Callback
-        {
+    public interface Callback {
         void onReceive(Context context, Intent intent);
-        }
+    }
 
-    public void registerCallback(Callback callback)
-        {
+    public void registerCallback(Callback callback) {
         callbacks.registerCallback(callback);
-        }
-    public void unregisterCallback(Callback callback)
-        {
-        callbacks.unregisterCallback(callback);
-        }
+    }
 
-    protected class WifiBroadcastReceiver extends BroadcastReceiver
-        {
+    public void unregisterCallback(Callback callback) {
+        callbacks.unregisterCallback(callback);
+    }
+
+    protected class WifiBroadcastReceiver extends BroadcastReceiver {
         protected static final String TAG = WifiDirectAgent.TAG + "_bcast";
 
-        @Override public void onReceive(final Context context, final Intent intent)
-            {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
             //--------------------------------------------------------------------------------------
             // Log the broadcast, here, in one place. Also some small bookkeeping.
 
             String action = intent.getAction();
-            switch (action)
-                {
+            switch (action) {
                 case WifiManager.WIFI_STATE_CHANGED_ACTION: {
                     int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
                     wifiState = WifiState.from(state);
                     RobotLog.vv(TAG, "wifiState=%s", wifiState);
                     break;
-                    }
+                }
                 case WifiDirectPersistentGroupManager.WIFI_P2P_PERSISTENT_GROUPS_CHANGED_ACTION: {
                     RobotLog.vv(TAG, "wifi direct remembered groups cleared");
                     // Let our network peer know if he's connected and listening
                     NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_WIFI_DIRECT_REMEMBERED_GROUPS_CHANGED));
                     break;
-                    }
+                }
                 case WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION: {
                     int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, 0);
                     isWifiP2pEnabled = (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED);
                     RobotLog.vv(TAG, "wifiP2pEnabled=%s", isWifiP2pEnabled);
                     break;
-                    }
+                }
                 case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION: {
                     WifiP2pDeviceList wifiP2pDeviceList = intent.getParcelableExtra(WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
                     dump(wifiP2pDeviceList);
                     break;
-                    }
+                }
                 case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION: {
                     NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
                     WifiP2pInfo wifip2pinfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
@@ -374,84 +350,75 @@ import java.util.List;
                     dump(wifiP2pGroup);
 
                     break;
-                    }
+                }
                 case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION: {
                     WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
                     dump(wifiP2pDevice);
                     break;
-                    }
+                }
                 case WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION: {
                     int state = intent.getIntExtra(WifiP2pManager.EXTRA_DISCOVERY_STATE, 0);
                     boolean discovering = (state == WifiP2pManager.WIFI_P2P_DISCOVERY_STARTED);
                     RobotLog.vv(TAG, "p2p discoverPeers()=%s", discovering);
                     break;
-                    }
                 }
+            }
 
             //--------------------------------------------------------------------------------------
             // Send the broadcast on to anyone who's registered to hear it
 
-            callbacks.callbacksDo(new Consumer<Callback>()
-                {
-                @Override public void accept(Callback callback)
-                    {
+            callbacks.callbacksDo(new Consumer<Callback>() {
+                @Override
+                public void accept(Callback callback) {
                     callback.onReceive(context, intent);
-                    }
-                });
-            }
+                }
+            });
+        }
 
-        protected void dump(WifiP2pDevice wifiP2pDevice)
-            {
+        protected void dump(WifiP2pDevice wifiP2pDevice) {
             RobotLog.vv(TAG, "this device changed: %s", format(wifiP2pDevice));
-            }
+        }
 
-        protected void dump(WifiP2pDeviceList wifiP2pDeviceList)
-            {
+        protected void dump(WifiP2pDeviceList wifiP2pDeviceList) {
             List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>(wifiP2pDeviceList.getDeviceList());
             RobotLog.vv(TAG, "peers found: count=" + peers.size());
-            for (WifiP2pDevice peer : peers)
-                {
+            for (WifiP2pDevice peer : peers) {
                 // deviceAddress is the MAC address, deviceName is the human readable name
                 String s = "    peer: " + peer.deviceAddress + " " + peer.deviceName;
                 RobotLog.vv(TAG, s);
-                }
             }
+        }
 
-        protected void dump(NetworkInfo info)
-            {
+        protected void dump(NetworkInfo info) {
             Assert.assertNotNull(info);
             RobotLog.vv(TAG, "NetworkInfo: %s", info.toString());
-            }
+        }
 
-        protected void dump(WifiP2pInfo info)
-            {
+        protected void dump(WifiP2pInfo info) {
             Assert.assertNotNull(info);
             RobotLog.vv(TAG, "WifiP2pInfo: %s", info.toString());
-            }
+        }
 
-        protected void dump(WifiP2pGroup info)
-            {
+        protected void dump(WifiP2pGroup info) {
             Assert.assertNotNull(info);
             RobotLog.vv(TAG, "WifiP2pGroup: %s", (info.toString().replace("\n ", ", ")));
-            }
         }
+    }
 
-    protected static String format(WifiP2pDevice wifiP2pDevice)
-        {
-        return wifiP2pDevice.toString().replace(": ","=").replace("\n "," ");
-        }
+    protected static String format(WifiP2pDevice wifiP2pDevice) {
+        return wifiP2pDevice.toString().replace(": ", "=").replace("\n ", " ");
+    }
 
 
-    protected class ChannelListener implements WifiP2pManager.ChannelListener
-        {
-        @Override public void onChannelDisconnected()
-            {
+    protected class ChannelListener implements WifiP2pManager.ChannelListener {
+        @Override
+        public void onChannelDisconnected() {
             // Nothing to do, at the moment
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    }
+}

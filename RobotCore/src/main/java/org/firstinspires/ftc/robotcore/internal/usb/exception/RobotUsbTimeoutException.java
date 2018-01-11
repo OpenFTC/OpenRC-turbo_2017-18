@@ -37,38 +37,32 @@ package org.firstinspires.ftc.robotcore.internal.usb.exception;
  * communications over the USB layer unexpectedly timeout.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbTimeoutException extends RobotUsbException
-    {
+public class RobotUsbTimeoutException extends RobotUsbException {
     public long nsTimerStart;
     public long nsTimerExpire;
 
-    public RobotUsbTimeoutException(long nsTimerStart, String message)
-        {
+    public RobotUsbTimeoutException(long nsTimerStart, String message) {
         super(message);
         initialize(nsTimerStart);
-        }
+    }
 
-    public RobotUsbTimeoutException(long nsTimerStart, String format, Object... args)
-        {
+    public RobotUsbTimeoutException(long nsTimerStart, String format, Object... args) {
         super(String.format(format, args));
         initialize(nsTimerStart);
-        }
+    }
 
-    protected RobotUsbTimeoutException(long nsTimerStart, String message, Throwable cause)
-        {
+    protected RobotUsbTimeoutException(long nsTimerStart, String message, Throwable cause) {
         super(message, cause);
         initialize(nsTimerStart);
-        }
+    }
 
-    public static RobotUsbTimeoutException createChained(long nsStart, Exception e, String format, Object... args)
-        {
+    public static RobotUsbTimeoutException createChained(long nsStart, Exception e, String format, Object... args) {
         return new RobotUsbTimeoutException(nsStart, String.format(format, args), e);
-        }
+    }
 
-    protected void initialize(long nsTimerStart)
-        {
+    protected void initialize(long nsTimerStart) {
         this.nsTimerStart = nsTimerStart;
         this.nsTimerExpire = System.nanoTime();
-        }
-
     }
+
+}

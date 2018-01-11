@@ -41,75 +41,60 @@ import android.hardware.usb.UsbDevice;
  * A simple data structure pairing a USB vendor id and product id
  */
 @SuppressWarnings("WeakerAccess")
-public class VendorAndProductIds
-    {
+public class VendorAndProductIds {
     private int vendorId;
     private int productId;
 
-    public VendorAndProductIds(int vendor, int product)
-        {
+    public VendorAndProductIds(int vendor, int product) {
         this.vendorId = vendor;
         this.productId = product;
-        }
+    }
 
-    public VendorAndProductIds()
-        {
+    public VendorAndProductIds() {
         this.vendorId = 0;
         this.productId = 0;
-        }
+    }
 
-    public static VendorAndProductIds from(UsbDevice dev)
-        {
-        if (dev == null)
+    public static VendorAndProductIds from(UsbDevice dev) {
+        if (dev == null) {
             return new VendorAndProductIds();
-        else
+        } else {
             return new VendorAndProductIds(dev.getVendorId(), dev.getProductId());
         }
+    }
 
-    public void setVendorId(int vid)
-        {
+    public void setVendorId(int vid) {
         this.vendorId = vid;
-        }
+    }
 
-    public void setProductId(int pid)
-        {
+    public void setProductId(int pid) {
         this.productId = pid;
-        }
+    }
 
-    public int getVendorId()
-        {
+    public int getVendorId() {
         return this.vendorId;
-        }
+    }
 
-    public int getProductId()
-        {
+    public int getProductId() {
         return this.productId;
-        }
+    }
 
-    public String toString()
-        {
+    public String toString() {
         return String.format("vid=0x%04x pid=0x%04x", vendorId, productId);
-        }
+    }
 
-    public boolean equals(Object o)
-        {
-        if (this == o)
-            {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-            }
-        else if (!(o instanceof VendorAndProductIds))
-            {
+        } else if (!(o instanceof VendorAndProductIds)) {
             return false;
-            }
-        else
-            {
+        } else {
             VendorAndProductIds another = (VendorAndProductIds) o;
             return this.vendorId == another.vendorId && this.productId == another.productId;
-            }
-        }
-
-    public int hashCode()
-        {
-        return this.vendorId ^ this.productId;
         }
     }
+
+    public int hashCode() {
+        return this.vendorId ^ this.productId;
+    }
+}

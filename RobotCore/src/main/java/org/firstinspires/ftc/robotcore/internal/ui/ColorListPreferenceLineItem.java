@@ -41,8 +41,7 @@ import android.widget.LinearLayout;
 /**
  * A utility for use with {@link ColorListPreference}
  */
-public class ColorListPreferenceLineItem extends LinearLayout implements Checkable
-    {
+public class ColorListPreferenceLineItem extends LinearLayout implements Checkable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -51,46 +50,42 @@ public class ColorListPreferenceLineItem extends LinearLayout implements Checkab
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ColorListPreferenceLineItem(Context context, AttributeSet attrs, int defStyleAttr)
-        {
+    public ColorListPreferenceLineItem(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        }
+    }
 
-    public ColorListPreferenceLineItem(Context context, AttributeSet attrs)
-        {
+    public ColorListPreferenceLineItem(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        }
+    }
 
-    public ColorListPreferenceLineItem(Context context)
-        {
+    public ColorListPreferenceLineItem(Context context) {
         this(context, null);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    protected CheckedTextView getCheckedTextView()
-        {
-        return (CheckedTextView)findViewById(android.R.id.text1);
-        }
+    protected CheckedTextView getCheckedTextView() {
+        return (CheckedTextView) findViewById(android.R.id.text1);
+    }
 
     //----------------------------------------------------------------------------------------------
     // Checkable
     //----------------------------------------------------------------------------------------------
 
-    @Override public void setChecked(boolean checked)
-        {
+    @Override
+    public void setChecked(boolean checked) {
         getCheckedTextView().setChecked(checked);
-        }
-
-    @Override public boolean isChecked()
-        {
-        return getCheckedTextView().isChecked();
-        }
-
-    @Override public void toggle()
-        {
-        getCheckedTextView().toggle();
-        }
     }
+
+    @Override
+    public boolean isChecked() {
+        return getCheckedTextView().isChecked();
+    }
+
+    @Override
+    public void toggle() {
+        getCheckedTextView().toggle();
+    }
+}

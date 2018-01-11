@@ -42,8 +42,7 @@ import java.util.concurrent.locks.Lock;
  *
  * @see I2cDeviceSynch
  */
-public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
-    {
+public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice {
     //----------------------------------------------------------------------------------------------
     // Mode management
     //----------------------------------------------------------------------------------------------
@@ -52,9 +51,9 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * Enable read mode for this I2C device. This simply sets bytes in the header of the write-cache;
      * it does not enqueue or transmit any data.
      *
-     * @param i2cAddr   the address of the device on the I2c bus which should be read
-     * @param register      I2c register number within the device at which to start reading
-     * @param count         number of bytes to read
+     * @param i2cAddr  the address of the device on the I2c bus which should be read
+     * @param register I2c register number within the device at which to start reading
+     * @param count    number of bytes to read
      * @see #writeI2cCacheToController()
      */
     void enableI2cReadMode(I2cAddr i2cAddr, int register, int count);
@@ -63,23 +62,25 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * Enable write mode for this I2C device. This simply sets bytes in the header of the write-cache;
      * it does not enqueue or transmit any data.
      *
-     * @param i2cAddr   the address of the device on the I2c bus which should be written
-     * @param register      mem address at which to start writing
-     * @param count         number of bytes to write
+     * @param i2cAddr  the address of the device on the I2c bus which should be written
+     * @param register mem address at which to start writing
+     * @param count    number of bytes to write
      * @see #writeI2cCacheToController()
      */
     void enableI2cWriteMode(I2cAddr i2cAddr, int register, int count);
 
     /**
-    * Queries whether or not the controller has reported that it is in read mode.
-    * @return whether or not this port is in read mode
-    */
+     * Queries whether or not the controller has reported that it is in read mode.
+     *
+     * @return whether or not this port is in read mode
+     */
     boolean isI2cPortInReadMode();
 
     /**
-    * Queries whether or not the controller has reported that it is in write mode.
-    * @return whether or not this port is in write mode
-    */
+     * Queries whether or not the controller has reported that it is in write mode.
+     *
+     * @return whether or not this port is in write mode
+     */
     boolean isI2cPortInWriteMode();
 
     //----------------------------------------------------------------------------------------------
@@ -113,6 +114,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * to the controller an i2c transaction should take place. This will be either a read transaction
      * or a write transaction according to whether the {@link #enableI2cReadMode(I2cAddr, int, int)} or
      * {@link #enableI2cWriteMode(I2cAddr, int, int)} has most recently been called.
+     *
      * @see #clearI2cPortActionFlag()
      */
     void setI2cPortActionFlag();
@@ -120,6 +122,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
     /**
      * Returns whether the action flag is set in the read cache. This is rarely what is actually
      * desired by the {@link I2cDevice} client; it's use generally should be avoided.
+     *
      * @return the value of the action flag in the read cache.
      * @deprecated this method returns a value that is rarely that which is expected
      */
@@ -128,6 +131,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
 
     /**
      * Clears the flag that {@link #setI2cPortActionFlag()} sets
+     *
      * @see #setI2cPortActionFlag()
      */
     void clearI2cPortActionFlag();
@@ -145,7 +149,6 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * {@link #enableI2cReadMode(I2cAddr, int, int)} and {@link #enableI2cWriteMode(I2cAddr, int, int)}.
      *
      * @return the read-cache of this I2cDevice
-     *
      * @see #getI2cReadCacheLock()
      * @see #getCopyOfReadBuffer()
      */
@@ -153,6 +156,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
 
     /**
      * Returns the time window object into which time stamps are written when the read cache is updated
+     *
      * @return the time window object into which time stamps are written when the read cache is updated
      * @see #getI2cReadCache()
      */
@@ -161,6 +165,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
     /**
      * Returns access to the lock controlling the read-cache. This lock must be held a while
      * the data accessible from {@link #getI2cReadCache()} is accessed.
+     *
      * @return the lock gating access to the read cache
      */
     Lock getI2cReadCacheLock();
@@ -174,7 +179,6 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * {@link #enableI2cReadMode(I2cAddr, int, int)} and {@link #enableI2cWriteMode(I2cAddr, int, int)}.
      *
      * @return the write-cache of this I2cDevice
-     *
      * @see #getI2cWriteCacheLock()
      * @see #getCopyOfWriteBuffer()
      */
@@ -183,6 +187,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
     /**
      * Returns access to the lock controlling the write-cache. This lock must be held a while
      * the data accessible from {@link #getI2cWriteCache()} is accessed
+     *
      * @return the lock gating access to the write cache
      */
     Lock getI2cWriteCacheLock();
@@ -234,6 +239,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * Registers an object to get {@link I2cController.I2cPortReadyCallback#portIsReady(int) portIsReady()}
      * callbacks at regular intervals from the {@link I2cDevice}. Only one object may be registered for a callback
      * with an {@link I2cDevice} at any given time.
+     *
      * @param callback
      * @see #getI2cPortReadyCallback()
      * @see #deregisterForPortReadyCallback()
@@ -243,12 +249,14 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
     /**
      * Returns the callback previously registered with {@link #registerForI2cPortReadyCallback}, or
      * null if no callback is currently registered.
+     *
      * @return the currently registered callback
      */
     I2cController.I2cPortReadyCallback getI2cPortReadyCallback();
 
     /**
      * Unregisters any callback currently registered.
+     *
      * @see #registerForI2cPortReadyCallback(I2cController.I2cPortReadyCallback)
      */
     void deregisterForPortReadyCallback();
@@ -257,6 +265,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * Returns the number of callbacks ever experienced by this I2cDevice instance, whether or not
      * they were ever seen by a registered callback. This method is mostly useful for debugging and
      * gathering of statistics.
+     *
      * @return the number of port-is-ready callbacks ever experienced by this {@link I2cDevice} instance
      */
     int getCallbackCount();
@@ -278,6 +287,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
      * Register for notifications as to when {@link I2cController.I2cPortReadyCallback#portIsReady(int) portIsReady()}
      * begin and end. Only one object may be registered for such notifications with an I2cDevice at
      * any given time.
+     *
      * @param callback
      * @see #getPortReadyBeginEndCallback()
      * @see #deregisterForPortReadyBeginEndCallback()
@@ -286,6 +296,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
 
     /**
      * Returns the object, if any, currently registered for portIsReady() begin / end notifications
+     *
      * @return the currently registered notification receiver, or null if none exists
      * @see #registerForPortReadyBeginEndCallback(I2cController.I2cPortReadyBeginEndNotifications)
      */
@@ -293,6 +304,7 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
 
     /**
      * Unregisters any portIsReady() begin / end notifications object if any is present.
+     *
      * @see #registerForPortReadyBeginEndCallback(I2cController.I2cPortReadyBeginEndNotifications)
      */
     void deregisterForPortReadyBeginEndCallback();
@@ -314,15 +326,27 @@ public interface I2cDevice extends I2cControllerPortDevice, HardwareDevice
     // Deprecated
     //----------------------------------------------------------------------------------------------
 
-    /** @deprecated Use of {@link #getI2cController()} is suggested instead */
-    @Deprecated I2cController getController();
+    /**
+     * @deprecated Use of {@link #getI2cController()} is suggested instead
+     */
+    @Deprecated
+    I2cController getController();
 
-    /** @deprecated Use of {@link #readI2cCacheFromController()} is suggested instead */
-    @Deprecated void readI2cCacheFromModule();
+    /**
+     * @deprecated Use of {@link #readI2cCacheFromController()} is suggested instead
+     */
+    @Deprecated
+    void readI2cCacheFromModule();
 
-    /** @deprecated Use of {@link #writeI2cCacheToController()} is suggested instead */
-    @Deprecated void writeI2cCacheToModule();
+    /**
+     * @deprecated Use of {@link #writeI2cCacheToController()} is suggested instead
+     */
+    @Deprecated
+    void writeI2cCacheToModule();
 
-    /** @deprecated Use of {@link #writeI2cPortFlagOnlyToController()} is suggested instead */
-    @Deprecated void writeI2cPortFlagOnlyToModule();
-    }
+    /**
+     * @deprecated Use of {@link #writeI2cPortFlagOnlyToController()} is suggested instead
+     */
+    @Deprecated
+    void writeI2cPortFlagOnlyToModule();
+}

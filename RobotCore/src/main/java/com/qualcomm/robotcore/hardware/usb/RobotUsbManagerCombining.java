@@ -44,104 +44,94 @@ import java.util.concurrent.ConcurrentHashMap;
  * {@link RobotUsbManagerCombining} merges together result from zero or more other managers
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbManagerCombining implements RobotUsbManager
-    {
+public class RobotUsbManagerCombining implements RobotUsbManager {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected class ManagerInfo
-        {
-        public RobotUsbManager  manager;
-        public int              scanCount;
-        }
+    protected class ManagerInfo {
+        public RobotUsbManager manager;
+        public int scanCount;
+    }
 
-    protected List<ManagerInfo>                 managers;
-    protected Map<SerialNumber, ManagerInfo>    enumeratedSerialNumbers;
+    protected List<ManagerInfo> managers;
+    protected Map<SerialNumber, ManagerInfo> enumeratedSerialNumbers;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobotUsbManagerCombining()
-        {
+    public RobotUsbManagerCombining() {
         this.managers = new ArrayList<ManagerInfo>();
         this.enumeratedSerialNumbers = new ConcurrentHashMap<SerialNumber, ManagerInfo>();
-        }
+    }
 
-    public void addManager(RobotUsbManager manager)
-        {
+    public void addManager(RobotUsbManager manager) {
         ManagerInfo info = new ManagerInfo();
         info.manager = manager;
         info.scanCount = 0;
         this.managers.add(info);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbManager
     //----------------------------------------------------------------------------------------------
 
-    @Override public synchronized int scanForDevices() throws RobotCoreException
-        {
+    @Override
+    public synchronized int scanForDevices() throws RobotCoreException {
         int result = 0;
-        for (ManagerInfo info : managers)
-            {
+        for (ManagerInfo info : managers) {
             info.scanCount = info.manager.scanForDevices();
             result += info.scanCount;
-            }
-        return result;
         }
+        return result;
+    }
 
-    @Override public synchronized int getScanCount()
-        {
+    @Override
+    public synchronized int getScanCount() {
         int result = 0;
-        for (ManagerInfo info : managers)
-            {
+        for (ManagerInfo info : managers) {
             result += info.scanCount;
-            }
-        return result;
         }
+        return result;
+    }
 
-    @Override public synchronized SerialNumber getDeviceSerialNumberByIndex(final int initialIndex) throws RobotCoreException
-        {
+    @Override
+    public synchronized SerialNumber getDeviceSerialNumberByIndex(final int initialIndex) throws RobotCoreException {
         int index = initialIndex;
-        for (ManagerInfo info : managers)
-            {
-            if (index < info.scanCount)
-                {
+        for (ManagerInfo info : managers) {
+            if (index < info.scanCount) {
                 // Remember who served up which serial numbers so we know who to ask to open again later
                 SerialNumber serialNumber = info.manager.getDeviceSerialNumberByIndex(index);
                 enumeratedSerialNumbers.put(serialNumber, info);
                 return serialNumber;
-                }
-            index -= info.scanCount;
             }
-        throw new IndexOutOfBoundsException("index too large: " + initialIndex);
+            index -= info.scanCount;
         }
+        throw new IndexOutOfBoundsException("index too large: " + initialIndex);
+    }
 
-    @Override public String getDeviceDescriptionByIndex(final int initialIndex) throws RobotCoreException
-        {
+    @Override
+    public String getDeviceDescriptionByIndex(final int initialIndex) throws RobotCoreException {
         int index = initialIndex;
-        for (ManagerInfo info : managers)
-            {
-            if (index < info.scanCount)
-                {
+        for (ManagerInfo info : managers) {
+            if (index < info.scanCount) {
                 return info.manager.getDeviceDescriptionByIndex(index);
-                }
-            index -= info.scanCount;
             }
-        throw new IndexOutOfBoundsException("index too large: " + initialIndex);
+            index -= info.scanCount;
         }
+        throw new IndexOutOfBoundsException("index too large: " + initialIndex);
+    }
 
-    @Override public synchronized RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException
-        {
+    @Override
+    public synchronized RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
         ManagerInfo info = enumeratedSerialNumbers.get(serialNumber);
-        if (info != null)
-            {
+        if (info != null) {
             RobotUsbDevice device = info.manager.openBySerialNumber(serialNumber);
-            if (device != null)
+            if (device != null) {
                 return device;
             }
-        throw new RobotCoreException("Combiner unable to open device with serialNumber = " + serialNumber.toString());
         }
+        throw new RobotCoreException("Combiner unable to open device with serialNumber = " + serialNumber.toString());
     }
+}

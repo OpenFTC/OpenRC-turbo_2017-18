@@ -34,51 +34,54 @@ package com.qualcomm.robotcore.hardware;
 
 import com.qualcomm.robotcore.hardware.usb.RobotArmingStateNotifier;
 
-public abstract class I2cControllerPortDeviceImpl implements RobotArmingStateNotifier.Callback, I2cControllerPortDevice
-    {
+public abstract class I2cControllerPortDeviceImpl implements RobotArmingStateNotifier.Callback, I2cControllerPortDevice {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected final I2cController controller;
-    protected final int           physicalPort;
+    protected final int physicalPort;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected I2cControllerPortDeviceImpl(I2cController controller, int physicalPort)
-        {
+    protected I2cControllerPortDeviceImpl(I2cController controller, int physicalPort) {
         this.controller = controller;
         this.physicalPort = physicalPort;
-        }
+    }
 
-    protected void finishConstruction()
-        {
+    protected void finishConstruction() {
         controllerNowArmedOrPretending();
 
-        if (controller instanceof RobotArmingStateNotifier)
+        if (controller instanceof RobotArmingStateNotifier) {
             ((RobotArmingStateNotifier) controller).registerCallback((RobotArmingStateNotifier.Callback) this, false);
         }
+    }
 
-    /** intended as a subclass hook */
-    protected void controllerNowArmedOrPretending() { }
+    /**
+     * intended as a subclass hook
+     */
+    protected void controllerNowArmedOrPretending() {
+    }
 
-    /** intended as a subclass hook */
-    protected void controllerNowDisarmed() { }
+    /**
+     * intended as a subclass hook
+     */
+    protected void controllerNowDisarmed() {
+    }
 
     @Override
     public synchronized void onModuleStateChange(RobotArmingStateNotifier module, RobotArmingStateNotifier.ARMINGSTATE state) {
-    // Each time our module creates a new ReadWriteRunnable, we need to refresh our connection to same
-    switch (state)
-        {
-        case ARMED:
-        case PRETENDING:
-            controllerNowArmedOrPretending();
-            break;
-        case DISARMED:
-            controllerNowDisarmed();
-            break;
+        // Each time our module creates a new ReadWriteRunnable, we need to refresh our connection to same
+        switch (state) {
+            case ARMED:
+            case PRETENDING:
+                controllerNowArmedOrPretending();
+                break;
+            case DISARMED:
+                controllerNowDisarmed();
+                break;
         }
     }
 
@@ -86,13 +89,11 @@ public abstract class I2cControllerPortDeviceImpl implements RobotArmingStateNot
     // I2cControllerPortDevice
     //----------------------------------------------------------------------------------------------
 
-    public I2cController getI2cController()
-        {
+    public I2cController getI2cController() {
         return this.controller;
-        }
-
-    public int getPort()
-        {
-        return this.physicalPort;
-        }
     }
+
+    public int getPort() {
+        return this.physicalPort;
+    }
+}

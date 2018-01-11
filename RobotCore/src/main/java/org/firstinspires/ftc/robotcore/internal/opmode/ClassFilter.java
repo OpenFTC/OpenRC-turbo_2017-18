@@ -41,6 +41,7 @@ public interface ClassFilter {
      * Clears the result of any previous filtering in preparation for further filtering
      */
     void filterAllClassesStart();
+
     void filterOnBotJavaClassesStart();
 
     /**
@@ -49,11 +50,13 @@ public interface ClassFilter {
      * @param clazz Look me in the mirror.
      */
     void filterClass(Class clazz);
+
     void filterOnBotJavaClass(Class clazz);
 
     /**
      * Called when a filtering cycle is complete
      */
     void filterAllClassesComplete();
+
     void filterOnBotJavaClassesComplete();
 }
