@@ -7,7 +7,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 19
         versionCode 3
-        versionName "2.0SS"
+        versionName "2.0b1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
