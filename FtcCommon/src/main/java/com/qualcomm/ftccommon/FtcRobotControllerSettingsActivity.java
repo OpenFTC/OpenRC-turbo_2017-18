@@ -59,7 +59,7 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
             // Load the settings from an XML resource
             addPreferencesFromResource(R.xml.app_settings);
 
-            // Modified for OpenFTC: Add a preference for Line Wrap
+            // Modified for OpenRC: Add a preference for Line Wrap
             addLineWrapPref();
 
             Preference prefViewLogs = findPreference(getString(R.string.pref_launch_viewlogs));

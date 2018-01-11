@@ -109,8 +109,8 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.firstinspires.inspection.RcInspectionActivity;
-import org.openftc.UiUtils;
-import org.openftc.Utils;
+import org.openftc.rc.UiUtils;
+import org.openftc.rc.Utils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -149,7 +149,7 @@ public class FtcRobotControllerActivity extends Activity {
     protected TextView textErrorMessage;
     protected ImmersiveMode immersion;
 
-    protected TextView textOpenFTCVersion;
+    protected TextView textOpenRCVersion;
 
     protected UpdateUI updateUI;
     protected Dimmer dimmer;
@@ -226,13 +226,13 @@ public class FtcRobotControllerActivity extends Activity {
         RobotLog.onApplicationStart();  // robustify against onCreate() following onDestroy() but using the same app instance, which apparently does happen
         RobotLog.vv(TAG, "onCreate()");
 
-    /* // Modified for OpenFTC
+    /* // Modified for OpenRC
      * Check to see if the DS app is also installed.
      * If it is, then show the user a dialog explaining
      * the situation and offer them the option to uninstall
      * either the DS app or the RC app
      */
-        if (BuildConfig.IS_OPENFTC && Utils.isFtcDriverStationInstalled(getPackageManager())) {
+        if (BuildConfig.IS_OPENRC && Utils.isFtcDriverStationInstalled(getPackageManager())) {
             UiUtils.showDsAppInstalledDialog(this);
         }
 
@@ -299,9 +299,9 @@ public class FtcRobotControllerActivity extends Activity {
         textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
         textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
 
-        if(BuildConfig.IS_OPENFTC) {
-            textOpenFTCVersion = (TextView) findViewById(R.id.openftc_version);
-            textOpenFTCVersion.setText(org.openftc.BuildConfig.VERSION_COMPLETE);
+        if(BuildConfig.IS_OPENRC) {
+            textOpenRCVersion = (TextView) findViewById(R.id.openrc_version);
+            textOpenRCVersion.setText(org.openftc.rc.BuildConfig.VERSION_COMPLETE);
         }
 
         immersion = new ImmersiveMode(getWindow().getDecorView());
@@ -425,11 +425,11 @@ public class FtcRobotControllerActivity extends Activity {
     }
 
     protected void logPackageVersions() {
-        if (BuildConfig.IS_OPENFTC) {
-            RobotLog.v("THIS APP WAS MADE FROM OpenFTC, A MODIFIED VERSION OF THE SDK.");
+        if (BuildConfig.IS_OPENRC) {
+            RobotLog.v("THIS APP WAS MADE FROM OpenRC, A MODIFIED VERSION OF THE SDK created by the OpenFTC team.");
             RobotLog.v("You can find more information at http://OpenFTC.org or the About screen.");
-            RobotLog.v("OpenFTC Version: " + org.openftc.BuildConfig.VERSION_COMPLETE);
-            RobotLog.logBuildConfig(org.openftc.BuildConfig.class);
+            RobotLog.v("OpenRC Version: " + org.openftc.rc.BuildConfig.VERSION_COMPLETE);
+            RobotLog.logBuildConfig(org.openftc.rc.BuildConfig.class);
         }
         RobotLog.logBuildConfig(com.qualcomm.ftcrobotcontroller.BuildConfig.class);
         RobotLog.logBuildConfig(com.qualcomm.robotcore.BuildConfig.class);

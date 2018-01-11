@@ -105,12 +105,12 @@ android {
 
     flavorDimensions 'type'
     productFlavors {
-        openftc { dimension 'type' }
+        openrc { dimension 'type' }
         stock { dimension 'type' }
     }
 
     // Selecting a release variant will prompt teams to set up a signing key. Now that there's
-    // a reason to select other variants (the stock feature of OpenFTC), it's better to filter out
+    // a reason to select other variants (the stock feature of OpenRC), it's better to filter out
     // the ones that will confuse teams.
     variantFilter { variant ->
         if (variant.buildType.name == "release") {
@@ -135,6 +135,6 @@ repositories {
     }
 }
 
-apply from: "$rootProject.projectDir/OpenFTC/openftc-tasks.gradle"
+apply from: "$rootProject.projectDir/OpenRC/openrc-tasks.gradle"
 
 apply from: 'build.release.gradle'

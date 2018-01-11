@@ -414,11 +414,11 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textOpenFTCWarning"
+                android:id="@+id/textOpenRCWarning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:text="OpenFTC is a modified version of the SDK. For more information, see the About screen."
+                android:text="OpenRC is a modified version of the SDK. For more information, see the About screen."
                 android:textStyle="bold"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -431,15 +431,15 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textOpenFTCVersionLabel"
+                    android:id="@+id/textOpenRCVersionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="OpenFTC Version:"
+                    android:text="OpenRC Version:"
                     android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <TextView
-                    android:id="@+id/txtOpenFTCVersion"
+                    android:id="@+id/txtOpenRCVersion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>

@@ -56,7 +56,7 @@ Explain the problem and include additional details to help maintainers reproduce
 ### Pull requests
 
 1. Before you start coding a new feature, create an issue to ask if it's something that the maintainers would want to
-   have as a part of the OpenFTC app. If there is an existing issue tracking a similar feature request, comment on it to
+   have as a part of the OpenRC app. If there is an existing issue tracking a similar feature request, comment on it to
    say that you're going to work on it, so that we don't have duplicated efforts.
 
 2. Create a new branch based off the current OpenRC `develop` branch. That way, anything you can change things on
@@ -80,7 +80,7 @@ should allow teams to move from the official SDK to OpenRC with no code changes 
 
 To request a new feature, you can open an issue on this repository. You may want to discuss your ideas on the OpenFTC
 Discord server or the FTC forums, and they may even be added to the official SDK. If there's a large enough call for the
-feature, it's very likely to be added to the list for a future release of OpenFTC.
+feature, it's very likely to be added to the list for a future release of OpenRC.
 
 Don't be afraid to build out a feature yourself! To merge it into OpenRC, follow the pull request guidelines above.
 We'll help you work through the process of getting it ready for prime time.

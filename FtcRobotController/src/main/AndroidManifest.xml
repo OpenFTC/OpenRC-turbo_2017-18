@@ -13,9 +13,9 @@
         android:largeHeap="true"
         android:theme="@style/AppThemeRedRC">
 
-        <!-- Splash screen activity (only launched in the openftc build flavor) -->
+        <!-- Splash screen activity (only launched in the openrc build flavor) -->
         <activity
-            android:name="org.openftc.robotcontroller.SplashActivity"
+            android:name="org.openftc.rc.SplashActivity"
             android:theme="@style/SplashTheme">
 
             <intent-filter>

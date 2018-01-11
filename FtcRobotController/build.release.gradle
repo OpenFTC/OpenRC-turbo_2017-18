@@ -2,14 +2,14 @@ dependencies {
     implementation(name: 'Analytics-release', ext: 'aar')
     implementation(name: 'WirelessP2p-release', ext: 'aar')
 
-    // In FtcRobotControllerActivity, we access OpenFTC stuff behind checks
-    openftcImplementation project(':RobotCore')
+    // In FtcRobotControllerActivity, we access OpenRC stuff behind checks
+    openrcImplementation project(':RobotCore')
 
-    implementation project(':OpenFTC')
-    openftcImplementation project(':Inspection')
-    openftcImplementation project(':Blocks')
-    openftcImplementation project(':Hardware')
-    openftcImplementation project(':FtcCommon')
+    implementation project(':OpenRC')
+    openrcImplementation project(':Inspection')
+    openrcImplementation project(':Blocks')
+    openrcImplementation project(':Hardware')
+    openrcImplementation project(':FtcCommon')
 
     stockImplementation(name: 'Inspection-release', ext: 'aar')
     stockImplementation(name: 'Blocks-release', ext: 'aar')

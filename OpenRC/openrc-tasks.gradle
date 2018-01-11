@@ -61,7 +61,7 @@ task pushVuforiaIfNecessary(type: Exec) {
 tasks.whenTaskAdded { task ->
     // I chose this task because it is never shown as "UP-TO-DATE" when you run Gradle without changing anything.
     // We should verify that that hasn't changed whenever we update the Android Gradle plugin.
-    if (task.name == 'validateSigningOpenftcDebug') {
+    if (task.name == 'validateSigningOpenrcDebug') {
         task.dependsOn(pushVuforiaIfNecessary)
     }
 }

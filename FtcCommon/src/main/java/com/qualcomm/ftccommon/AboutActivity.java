@@ -81,7 +81,7 @@ import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
-import org.openftc.*;
+import org.openftc.rc.UiUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -108,14 +108,14 @@ public class AboutActivity extends ThemedActivity {
 
     /*
      * Setup the button that will show the AlertDialog which
-     * contains a summary of OpenFTC
+     * contains a summary of OpenRC
      */
-        Button aboutOpenFTCBtn;
-        aboutOpenFTCBtn = (Button) findViewById(R.id.aboutOpenFTC);
-        aboutOpenFTCBtn.setOnClickListener(new View.OnClickListener() {
+        Button aboutOpenRCBtn;
+        aboutOpenRCBtn = (Button) findViewById(R.id.aboutOpenRC);
+        aboutOpenRCBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UiUtils.showOpenFtcSummary(AboutActivity.this);
+                UiUtils.showOpenRcSummary(AboutActivity.this);
             }
         });
 
@@ -152,7 +152,7 @@ public class AboutActivity extends ThemedActivity {
 
             @Override
             public int getCount() {
-                return 6; // Modified for OpenFTC: added 1 entry
+                return 6; // Modified for OpenRC: added 1 entry
             }
 
             @Override
@@ -169,7 +169,7 @@ public class AboutActivity extends ThemedActivity {
                     case 4:
                         return getBuildTimeInfo();
                     case 5:
-                        return getOpenFtcVersion();
+                        return getOpenRcVersion();
                 }
                 return new Item();
             }
@@ -214,10 +214,10 @@ public class AboutActivity extends ThemedActivity {
                 return i;
             }
 
-            private Item getOpenFtcVersion() {
+            private Item getOpenRcVersion() {
                 Item i = new Item();
-                i.title = getString(R.string.about_openftc_version);
-                i.info = org.openftc.BuildConfig.VERSION_COMPLETE;
+                i.title = getString(R.string.about_openrc_version);
+                i.info = org.openftc.rc.BuildConfig.VERSION_COMPLETE;
                 return i;
             }
         };

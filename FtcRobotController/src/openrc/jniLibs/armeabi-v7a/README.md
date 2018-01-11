@@ -1,4 +1,4 @@
-# OpenFTC native libraries
+# OpenRC native libraries
 
 ### libVuforia.so
 
