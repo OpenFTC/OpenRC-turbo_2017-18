@@ -41,8 +41,7 @@ import java.util.Set;
  * preferences value to or from the robot controller.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotControllerPreference
-    {
+public class RobotControllerPreference {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -52,60 +51,74 @@ public class RobotControllerPreference
     // There are only a fixed set of supported preference types. We just enumerate them
     // here in the interests of keeping our serialization logic simple.
 
-    private String      stringValue = null;
+    private String stringValue = null;
     private Set<String> stringSetValue = null;
-    private Integer     intValue = null;
-    private Long        longValue = null;
-    private Float       floatValue = null;
-    private Boolean     booleanValue = null;
+    private Integer intValue = null;
+    private Long longValue = null;
+    private Float floatValue = null;
+    private Boolean booleanValue = null;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobotControllerPreference(String prefName, Object value)
-        {
+    public RobotControllerPreference(String prefName, Object value) {
         this.prefName = prefName;
 
-        if (value instanceof String)            stringValue = (String)value;
-        else if (value instanceof Boolean)      booleanValue = (Boolean)value;
-        else if (value instanceof Integer)      intValue = (Integer)value;
-        else if (value instanceof Long)         longValue = (Long)value;
-        else if (value instanceof Float)        floatValue = (Float)value;
-        else if (value instanceof Set)          stringSetValue = (Set<String>)value;
+        if (value instanceof String) {
+            stringValue = (String) value;
+        } else if (value instanceof Boolean) {
+            booleanValue = (Boolean) value;
+        } else if (value instanceof Integer) {
+            intValue = (Integer) value;
+        } else if (value instanceof Long) {
+            longValue = (Long) value;
+        } else if (value instanceof Float) {
+            floatValue = (Float) value;
+        } else if (value instanceof Set) {
+            stringSetValue = (Set<String>) value;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Serialization
     //----------------------------------------------------------------------------------------------
 
-    public static RobotControllerPreference deserialize(String string)
-        {
+    public static RobotControllerPreference deserialize(String string) {
         return SimpleGson.getInstance().fromJson(string, RobotControllerPreference.class);
-        }
+    }
 
-    public String serialize()
-        {
+    public String serialize() {
         return SimpleGson.getInstance().toJson(this);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public String getPrefName()
-        {
+    public String getPrefName() {
         return prefName;
-        }
-
-    public Object getValue()
-        {
-        if (stringValue != null) return stringValue;
-        if (booleanValue != null) return booleanValue;
-        if (intValue != null) return intValue;
-        if (longValue != null) return longValue;
-        if (floatValue != null) return floatValue;
-        if (stringSetValue != null) return stringSetValue;
-        return null;
-        }
     }
+
+    public Object getValue() {
+        if (stringValue != null) {
+            return stringValue;
+        }
+        if (booleanValue != null) {
+            return booleanValue;
+        }
+        if (intValue != null) {
+            return intValue;
+        }
+        if (longValue != null) {
+            return longValue;
+        }
+        if (floatValue != null) {
+            return floatValue;
+        }
+        if (stringSetValue != null) {
+            return stringSetValue;
+        }
+        return null;
+    }
+}

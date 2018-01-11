@@ -42,133 +42,150 @@ import java.io.InputStream;
  */
 public class RunShellCommand {
 
-  private final static int BUFFER_SIZE = 512 * 1024;
+    private final static int BUFFER_SIZE = 512 * 1024;
 
-  boolean logging = false;
+    boolean logging = false;
 
-  /**
-   * Constructor
-   */
-  public RunShellCommand() {
-    // empty constructor
-  }
-
-  /**
-   * If logging is enabled, all command will be logged
-   * @param enable true to enable
-   */
-  public void enableLogging(boolean enable) {
-    logging = enable;
-  }
-
-  /**
-   * Run the given command
-   * @param cmd command to run
-   * @return the commands output
-   */
-  public String run(String cmd) {
-    if (logging) RobotLog.v("running command: " + cmd);
-    String output = runCommand(cmd, false);
-    if (logging) RobotLog.v("         output: " + output);
-    return output;
-  }
-
-  /**
-   * Run the given command, as root
-   * @param cmd command to run
-   * @return the commands output
-   */
-  public String runAsRoot(String cmd) {
-    if (logging) RobotLog.v("running command: " + cmd);
-    String output = runCommand(cmd, true);
-    if (logging) RobotLog.v("         output: " + output);
-    return output;
-  }
-
-  private String runCommand(String cmd, boolean asRoot) {
-
-    byte[] buffer = new byte[BUFFER_SIZE];
-    int length = 0;
-    String output = "";
-    ProcessBuilder processBuilder = new ProcessBuilder();
-    Process process = null;
-
-    try {
-      if (asRoot) {
-        processBuilder.command("su", "-c", cmd).redirectErrorStream(true);
-      } else {
-        processBuilder.command("sh", "-c", cmd).redirectErrorStream(true);
-      }
-      process = processBuilder.start();
-      process.waitFor();
-
-      InputStream in = process.getInputStream();
-      //OutputStreamWriter out = new OutputStreamWriter(process.getOutputStream());
-
-      length = in.read(buffer);
-      if (length > 0) output = new String(buffer, 0, length);
-
-    } catch (IOException e) {
-      RobotLog.logStacktrace(e);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    } finally {
-      if (process != null) process.destroy();
-    }
-    return output;
-  }
-
-  /**
-   * Kill any spawn processes matching a given process name
-   * @param processName name of process to kill
-   * @param packageName name of this package
-   * @param shell an instance of RunShellCommand
-   * @throws RobotCoreException if unable to kill process
-   */
-  public static void killSpawnedProcess(String processName, String packageName, RunShellCommand shell) throws RobotCoreException {
-    try {
-      int pid = getSpawnedProcessPid(processName, packageName, shell);
-      while (pid != -1) {
-        RobotLog.v("Killing PID " + pid);
-        shell.run(String.format("kill %d", pid));
-        pid = getSpawnedProcessPid(processName, packageName, shell);
-      }
-    } catch (Exception e) {
-      throw new RobotCoreException(String.format("Failed to kill %s instances started by this app", processName));
-    }
-  }
-
-  /**
-   * return the PID of a given process name started a given package name
-   * @param processName name of process to search for
-   * @param packageName name of this package
-   * @param shell an instance of RunShellCommand
-   * @return PID, or -1 if none found
-   */
-  public static int getSpawnedProcessPid(String processName, String packageName, RunShellCommand shell) {
-    // This method has a heavy dependency on the Android version of 'ps'.
-
-    // run ps
-    String psOutput = shell.run("ps");
-    String username = "invalid";
-
-    // determine the username of this app
-    for (String line : psOutput.split("\n")) {
-      if (line.contains(packageName)) {
-        String[] tokens = line.split("\\s+");
-        username = tokens[0];
-        break;
-      }
+    /**
+     * Constructor
+     */
+    public RunShellCommand() {
+        // empty constructor
     }
 
-    // find an instance of logcat started by this app, if any
-    for (String line : psOutput.split("\n")) {
-      if (line.contains(processName) && line.contains(username)) {
-        String[] tokens = line.split("\\s+");
-        return Integer.parseInt(tokens[1]); // if 'ps' changes format this call will fail
-      }
+    /**
+     * If logging is enabled, all command will be logged
+     *
+     * @param enable true to enable
+     */
+    public void enableLogging(boolean enable) {
+        logging = enable;
     }
 
-    return -1;
-  }
+    /**
+     * Run the given command
+     *
+     * @param cmd command to run
+     * @return the commands output
+     */
+    public String run(String cmd) {
+        if (logging) {
+            RobotLog.v("running command: " + cmd);
+        }
+        String output = runCommand(cmd, false);
+        if (logging) {
+            RobotLog.v("         output: " + output);
+        }
+        return output;
+    }
+
+    /**
+     * Run the given command, as root
+     *
+     * @param cmd command to run
+     * @return the commands output
+     */
+    public String runAsRoot(String cmd) {
+        if (logging) {
+            RobotLog.v("running command: " + cmd);
+        }
+        String output = runCommand(cmd, true);
+        if (logging) {
+            RobotLog.v("         output: " + output);
+        }
+        return output;
+    }
+
+    private String runCommand(String cmd, boolean asRoot) {
+
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int length = 0;
+        String output = "";
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        Process process = null;
+
+        try {
+            if (asRoot) {
+                processBuilder.command("su", "-c", cmd).redirectErrorStream(true);
+            } else {
+                processBuilder.command("sh", "-c", cmd).redirectErrorStream(true);
+            }
+            process = processBuilder.start();
+            process.waitFor();
+
+            InputStream in = process.getInputStream();
+            //OutputStreamWriter out = new OutputStreamWriter(process.getOutputStream());
+
+            length = in.read(buffer);
+            if (length > 0) {
+                output = new String(buffer, 0, length);
+            }
+
+        } catch (IOException e) {
+            RobotLog.logStacktrace(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Kill any spawn processes matching a given process name
+     *
+     * @param processName name of process to kill
+     * @param packageName name of this package
+     * @param shell       an instance of RunShellCommand
+     * @throws RobotCoreException if unable to kill process
+     */
+    public static void killSpawnedProcess(String processName, String packageName, RunShellCommand shell) throws RobotCoreException {
+        try {
+            int pid = getSpawnedProcessPid(processName, packageName, shell);
+            while (pid != -1) {
+                RobotLog.v("Killing PID " + pid);
+                shell.run(String.format("kill %d", pid));
+                pid = getSpawnedProcessPid(processName, packageName, shell);
+            }
+        } catch (Exception e) {
+            throw new RobotCoreException(String.format("Failed to kill %s instances started by this app", processName));
+        }
+    }
+
+    /**
+     * return the PID of a given process name started a given package name
+     *
+     * @param processName name of process to search for
+     * @param packageName name of this package
+     * @param shell       an instance of RunShellCommand
+     * @return PID, or -1 if none found
+     */
+    public static int getSpawnedProcessPid(String processName, String packageName, RunShellCommand shell) {
+        // This method has a heavy dependency on the Android version of 'ps'.
+
+        // run ps
+        String psOutput = shell.run("ps");
+        String username = "invalid";
+
+        // determine the username of this app
+        for (String line : psOutput.split("\n")) {
+            if (line.contains(packageName)) {
+                String[] tokens = line.split("\\s+");
+                username = tokens[0];
+                break;
+            }
+        }
+
+        // find an instance of logcat started by this app, if any
+        for (String line : psOutput.split("\n")) {
+            if (line.contains(processName) && line.contains(username)) {
+                String[] tokens = line.split("\\s+");
+                return Integer.parseInt(tokens[1]); // if 'ps' changes format this call will fail
+            }
+        }
+
+        return -1;
+    }
 }

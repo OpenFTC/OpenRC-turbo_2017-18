@@ -35,52 +35,55 @@ package com.qualcomm.robotcore.hardware;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
 import com.qualcomm.robotcore.hardware.usb.RobotArmingStateNotifier;
 
-public abstract class LegacyModulePortDeviceImpl implements RobotArmingStateNotifier.Callback, LegacyModulePortDevice
-    {
+public abstract class LegacyModulePortDeviceImpl implements RobotArmingStateNotifier.Callback, LegacyModulePortDevice {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected final LegacyModule module;
-    protected final int          physicalPort;
+    protected final int physicalPort;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected LegacyModulePortDeviceImpl(LegacyModule module, int physicalPort)
-        {
+    protected LegacyModulePortDeviceImpl(LegacyModule module, int physicalPort) {
         this.module = module;
         this.physicalPort = physicalPort;
-        }
+    }
 
-    protected void finishConstruction()
-        {
+    protected void finishConstruction() {
         moduleNowArmedOrPretending();
-        
-        if (module instanceof RobotUsbModule)
+
+        if (module instanceof RobotUsbModule) {
             ((RobotUsbModule) module).registerCallback((RobotArmingStateNotifier.Callback) this, false);
         }
+    }
 
-    /** intended as a subclass hook */
-    protected void moduleNowArmedOrPretending() { }
+    /**
+     * intended as a subclass hook
+     */
+    protected void moduleNowArmedOrPretending() {
+    }
 
-    /** intended as a subclass hook */
-    protected void moduleNowDisarmed() { }
+    /**
+     * intended as a subclass hook
+     */
+    protected void moduleNowDisarmed() {
+    }
 
 
     @Override
     public synchronized void onModuleStateChange(RobotArmingStateNotifier module, RobotUsbModule.ARMINGSTATE state) {
-    // Each time our module creates a new ReadWriteRunnable, we need to refresh our connection to same
-    switch (state)
-        {
-        case ARMED:
-        case PRETENDING:
-            moduleNowArmedOrPretending();
-            break;
-        case DISARMED:
-            moduleNowDisarmed();
-            break;
+        // Each time our module creates a new ReadWriteRunnable, we need to refresh our connection to same
+        switch (state) {
+            case ARMED:
+            case PRETENDING:
+                moduleNowArmedOrPretending();
+                break;
+            case DISARMED:
+                moduleNowDisarmed();
+                break;
         }
     }
 
@@ -88,13 +91,11 @@ public abstract class LegacyModulePortDeviceImpl implements RobotArmingStateNoti
     // LegacyModulePortDevice
     //----------------------------------------------------------------------------------------------
 
-    public LegacyModule getLegacyModule()
-        {
+    public LegacyModule getLegacyModule() {
         return this.module;
-        }
-
-    public int getPort()
-        {
-        return this.physicalPort;
-        }
     }
+
+    public int getPort() {
+        return this.physicalPort;
+    }
+}

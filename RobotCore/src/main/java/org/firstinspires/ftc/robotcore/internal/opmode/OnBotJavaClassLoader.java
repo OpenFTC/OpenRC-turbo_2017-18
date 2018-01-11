@@ -50,75 +50,64 @@ import dalvik.system.DexFile;
 
 /**
  * Created by bob on 2017-04-08.
- *
- *  http://stackoverflow.com/questions/1771679/difference-between-threads-context-class-loader-and-normal-classloader
- *  https://i.stack.imgur.com/i32nZ.png
- *  https://developer.android.com/reference/java/lang/ClassLoader.html
- *  https://android-developers.googleblog.com/2011/07/custom-class-loading-in-dalvik.html
- *  http://stackoverflow.com/questions/16159473/dynamic-class-reloading-in-dalvik-on-android
- *  http://www.netmite.com/android/mydroid/2.0/dalvik/tests/071-dexfile/src/Main.java
- *  http://stackoverflow.com/questions/2903260/android-using-dexclassloader-to-load-apk-file
+ * <p>
+ * http://stackoverflow.com/questions/1771679/difference-between-threads-context-class-loader-and-normal-classloader
+ * https://i.stack.imgur.com/i32nZ.png
+ * https://developer.android.com/reference/java/lang/ClassLoader.html
+ * https://android-developers.googleblog.com/2011/07/custom-class-loading-in-dalvik.html
+ * http://stackoverflow.com/questions/16159473/dynamic-class-reloading-in-dalvik-on-android
+ * http://www.netmite.com/android/mydroid/2.0/dalvik/tests/071-dexfile/src/Main.java
+ * http://stackoverflow.com/questions/2903260/android-using-dexclassloader-to-load-apk-file
  */
 @SuppressWarnings("WeakerAccess")
-public class OnBotJavaClassLoader extends ClassLoader implements Closeable
-    {
+public class OnBotJavaClassLoader extends ClassLoader implements Closeable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "OnBotJava:ClassLoader"; //modified for turbo: referenced a tag from a deleted class
 
-    protected List<File>    jarFiles;
+    protected List<File> jarFiles;
     protected List<DexFile> dexFiles;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public OnBotJavaClassLoader()
-        {
+    public OnBotJavaClassLoader() {
         this(OnBotJavaClassLoader.class.getClassLoader(), new ArrayList<File>()); //modified for turbo: we don't have any OnBot classes to pass in
-        }
+    }
 
-    public OnBotJavaClassLoader(ClassLoader parentClassLoader, List<File> jarFiles)
-        {
+    public OnBotJavaClassLoader(ClassLoader parentClassLoader, List<File> jarFiles) {
         super(parentClassLoader);
 
         this.jarFiles = new ArrayList<File>();
         this.dexFiles = new ArrayList<DexFile>();
         this.jarFiles.addAll(jarFiles);
-        for (File jarFile : this.jarFiles)
-        {
+        for (File jarFile : this.jarFiles) {
             if (jarFile.canRead())  // make sure it really exists
             {
                 try {
                     this.dexFiles.add(openDexFile(jarFile));
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     // One reason for the exception is the jar file that results from compiling
                     // zero .java files is (apparently) unopenable
                     RobotLog.ee(TAG, e, "unable to open \"%s\"; ignoring", jarFile.getAbsolutePath());
                 }
-            }
-            else
-            {
+            } else {
                 RobotLog.ww(TAG, "unable to read \"%s\"; ignoring", jarFile.getAbsolutePath());
             }
         }
     }
 
-    public void close()
-    {
-        for (DexFile dexFile : dexFiles)
-        {
+    public void close() {
+        for (DexFile dexFile : dexFiles) {
             closeDexFile(dexFile);
         }
         dexFiles.clear();   // make idempotent
     }
 
-    protected static File getDexCacheDir()
-        {
+    protected static File getDexCacheDir() {
         File dexCache = null;
         // Using getCodeCacheDir() is logically ideal, but we can't use it everywhere since
         // it doesn't exist on KitKat. Having variation increases our test matrix, for relatively
@@ -127,101 +116,85 @@ public class OnBotJavaClassLoader extends ClassLoader implements Closeable
             {
             dexCache = AppUtil.getDefContext().getCodeCacheDir();
             }*/
-            dexCache = AppUtil.getDefContext().getDir("dexopt", Context.MODE_PRIVATE);
-            return dexCache;
-        }
+        dexCache = AppUtil.getDefContext().getDir("dexopt", Context.MODE_PRIVATE);
+        return dexCache;
+    }
 
-    protected File getDexCache(File jarFile)
-        {
+    protected File getDexCache(File jarFile) {
         // Note: the jar file needs to be uniquely *named* to its contents
         return new File(getDexCacheDir(), jarFile.getAbsolutePath().replace(File.separatorChar, '@') + "@classes.dex");
-        }
+    }
 
-    public static void fullClean()
-        {
-        for (File child : AppUtil.getInstance().filesUnder(getDexCacheDir()))
-            {
+    public static void fullClean() {
+        for (File child : AppUtil.getInstance().filesUnder(getDexCacheDir())) {
             // RobotLog.vv(TAG, "cleaning up dex file: %s", child);
             AppUtil.getInstance().delete(child);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations & accessing
     //----------------------------------------------------------------------------------------------
 
-    public static boolean isOnBotJava(Class clazz)
-        {
+    public static boolean isOnBotJava(Class clazz) {
         return false; // modified for turbo: It can't be an OnBotJava class, so just return false
-        }
+    }
 
-    public List<File> getJarFiles()
-        {
+    public List<File> getJarFiles() {
         return jarFiles;
-        }
+    }
 
-    public List<DexFile> getDexFiles()
-        {
+    public List<DexFile> getDexFiles() {
         return dexFiles;
-        }
+    }
 
-    public DexFile openDexFile(File jarFile) throws IOException
-        {
+    public DexFile openDexFile(File jarFile) throws IOException {
         RobotLog.vv(TAG, "opening DexFile %s", jarFile.getAbsolutePath());
 
         return DexFile.loadDex(jarFile.getAbsolutePath(), getDexCache(jarFile).getAbsolutePath(), 0);
-        }
+    }
 
-    public void closeDexFile(DexFile dexFile)
-        {
+    public void closeDexFile(DexFile dexFile) {
         try {
             dexFile.close();
-            }
-        catch (IOException e)
-            {
+        } catch (IOException e) {
             RobotLog.ww(TAG, e, "exception closing DexFile");
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // ClassLoader interface
     //----------------------------------------------------------------------------------------------
 
-        @Override
-        protected Class<?> loadClass(String className, boolean resolveIgnoredOnAndroid) throws ClassNotFoundException
-        {
-            final Class<?> onBotJavaClass = loadClassFromOnBotJavaJars(className);
-            if (onBotJavaClass != null)
-            {
-                return onBotJavaClass;
-            }
-            return super.loadClass(className, resolveIgnoredOnAndroid);
-        }
-
-        @Override
-        @NonNull
-        protected Class<?> findClass(String className) throws ClassNotFoundException
-        {
-            final Class<?> onBotJavaClass = loadClassFromOnBotJavaJars(className);
-            if (onBotJavaClass == null)
-            {
-                throw new ClassNotFoundException(className);
-            }
+    @Override
+    protected Class<?> loadClass(String className, boolean resolveIgnoredOnAndroid) throws ClassNotFoundException {
+        final Class<?> onBotJavaClass = loadClassFromOnBotJavaJars(className);
+        if (onBotJavaClass != null) {
             return onBotJavaClass;
         }
-
-        protected @Nullable Class<?> loadClassFromOnBotJavaJars(String className) throws ClassNotFoundException
-        {
-            for (DexFile dexFile : dexFiles)
-            {
-                Class clazz = dexFile.loadClass(className, this);
-                if (clazz != null)
-                {
-                    RobotLog.vv(TAG, "loaded %s from %s", clazz.getName(), dexFile.getName());
-                    return clazz;
-                }
-            }
-
-            return null;
-        }
+        return super.loadClass(className, resolveIgnoredOnAndroid);
     }
+
+    @Override
+    @NonNull
+    protected Class<?> findClass(String className) throws ClassNotFoundException {
+        final Class<?> onBotJavaClass = loadClassFromOnBotJavaJars(className);
+        if (onBotJavaClass == null) {
+            throw new ClassNotFoundException(className);
+        }
+        return onBotJavaClass;
+    }
+
+    protected @Nullable
+    Class<?> loadClassFromOnBotJavaJars(String className) throws ClassNotFoundException {
+        for (DexFile dexFile : dexFiles) {
+            Class clazz = dexFile.loadClass(className, this);
+            if (clazz != null) {
+                RobotLog.vv(TAG, "loaded %s from %s", clazz.getName(), dexFile.getName());
+                return clazz;
+            }
+        }
+
+        return null;
+    }
+}

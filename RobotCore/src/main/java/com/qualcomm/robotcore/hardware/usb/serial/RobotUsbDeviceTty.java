@@ -57,259 +57,248 @@ import java.util.Queue;
  * a (fake) USB device.
  */
 @SuppressWarnings("WeakerAccess")
-public class RobotUsbDeviceTty extends RobotUsbDeviceImplBase implements RobotUsbDevice
-    {
+public class RobotUsbDeviceTty extends RobotUsbDeviceImplBase implements RobotUsbDevice {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "RobotUsbDeviceTTY";
     public static boolean DEBUG = false;
-    @Override public String getTag() { return TAG; }
 
-    protected final File                file;
-    protected SerialPort                serialPort;
-    protected int                       baudRate;
-    protected int                       msDefaultTimeout = 100;
-    protected USBIdentifiers            usbIdentifiers   = new USBIdentifiers();
-    protected final Object              startStopLock    = new Object();
-    protected final Object              readLock         = new Object();
-    protected final Object              writeLock        = new Object();
-    protected Queue<Byte>               readAhead        = new ArrayDeque<Byte>();
-    protected boolean                   debugRetainBuffers = false;
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
+    protected final File file;
+    protected SerialPort serialPort;
+    protected int baudRate;
+    protected int msDefaultTimeout = 100;
+    protected USBIdentifiers usbIdentifiers = new USBIdentifiers();
+    protected final Object startStopLock = new Object();
+    protected final Object readLock = new Object();
+    protected final Object writeLock = new Object();
+    protected Queue<Byte> readAhead = new ArrayDeque<Byte>();
+    protected boolean debugRetainBuffers = false;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobotUsbDeviceTty(SerialPort serialPort, SerialNumber serialNumber, File file)
-        {
+    public RobotUsbDeviceTty(SerialPort serialPort, SerialNumber serialNumber, File file) {
         super(serialNumber);
         RobotLog.vv(TAG, "opening serial=%s file=%s", serialNumber, file.getPath());
         this.file = file;
         this.serialPort = serialPort;
         this.baudRate = serialPort.getBaudRate();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbDevice - construction
     //----------------------------------------------------------------------------------------------
 
-    @Override public void close()
-        {
-        synchronized (this.startStopLock)
-            {
-            if (this.serialPort != null)
-                {
+    @Override
+    public void close() {
+        synchronized (this.startStopLock) {
+            if (this.serialPort != null) {
                 RobotLog.vv(TAG, "closing serial=%s file=%s", serialNumber, file.getPath());
                 this.serialPort.close();
                 this.serialPort = null;
                 //
                 removeFromExtantDevices();
-                }
             }
         }
+    }
 
-    @Override public boolean isOpen()
-        {
-        synchronized (this.startStopLock)
-            {
+    @Override
+    public boolean isOpen() {
+        synchronized (this.startStopLock) {
             return this.serialPort != null;
-            }
         }
+    }
 
-    @Override public boolean isAttached()
-        {
+    @Override
+    public boolean isAttached() {
         return true;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbDevice - core read & write
     //----------------------------------------------------------------------------------------------
 
-    @Override public void resetAndFlushBuffers()
-        {
+    @Override
+    public void resetAndFlushBuffers() {
         // TODO: Nothing we know how to do here, at the moment, but perhaps we can revisit this in future
-        }
-
-    @Override public void write(byte[] data) throws RobotUsbException
-        {
-        // Only one writer at a time: we're not *certain* the output stream is thread-safe
-        synchronized (this.writeLock)
-            {
-            try {
-                this.serialPort.getOutputStream().write(data);
-                if (DEBUG)
-                    {
-                    dumpBytesSent(data);
-                    }
-                }
-            catch (IOException e)
-                {
-                throw RobotUsbUnspecifiedException.createChained(e, "exception in %s.write()", TAG);
-                }
-            }
-        }
+    }
 
     @Override
-    public int read(byte[] data, final int ibFirst, final int cbToRead, final long msTimeout, @Nullable TimeWindow timeWindow) throws RobotUsbException, InterruptedException
-        {
+    public void write(byte[] data) throws RobotUsbException {
+        // Only one writer at a time: we're not *certain* the output stream is thread-safe
+        synchronized (this.writeLock) {
+            try {
+                this.serialPort.getOutputStream().write(data);
+                if (DEBUG) {
+                    dumpBytesSent(data);
+                }
+            } catch (IOException e) {
+                throw RobotUsbUnspecifiedException.createChained(e, "exception in %s.write()", TAG);
+            }
+        }
+    }
+
+    @Override
+    public int read(byte[] data, final int ibFirst, final int cbToRead, final long msTimeout, @Nullable TimeWindow timeWindow) throws RobotUsbException, InterruptedException {
         // Only one reader at a time, thank you very much
-        synchronized (this.readLock)
-            {
+        synchronized (this.readLock) {
             try {
                 ElapsedTime timer = new ElapsedTime();
                 int cbRead = 0;
 
                 // Use up any readahead that we have from when we might have timed out previously
-                while (cbRead < cbToRead && this.readAhead.size() > 0)
-                    {
+                while (cbRead < cbToRead && this.readAhead.size() > 0) {
                     data[cbRead++] = this.readAhead.remove();
-                    }
+                }
 
                 // Get the remainder by actually reading
                 while (isOpen() && cbRead < cbToRead)   // isOpen() call may not actually be needed: read() call might (?) prematurely return
-                    {
+                {
                     // Attempt to read all that we still need
                     int cbReadOnce = this.serialPort.getInputStream().read(data, ibFirst + cbRead, cbToRead - cbRead);
 
                     // Adjust for Java's odd EOF behavior
-                    if (cbReadOnce == -1) cbReadOnce = 0;
+                    if (cbReadOnce == -1) {
+                        cbReadOnce = 0;
+                    }
 
                     // Do our bookkeeping based on what we've got; return if we're done
                     Assert.assertTrue(cbReadOnce >= 0);
                     cbRead += cbReadOnce;
-                    if (cbRead == cbToRead) break;
-
-                    // Did we hit the timeout?
-                    if (timer.milliseconds() > msTimeout) break;
-
-                    // Behave ourselves, then go around the loop again
-                    if (Thread.interrupted()) throw new InterruptedException();
-                    Thread.yield();
+                    if (cbRead == cbToRead) {
+                        break;
                     }
 
-                if (cbRead==cbToRead)
-                    {
+                    // Did we hit the timeout?
+                    if (timer.milliseconds() > msTimeout) {
+                        break;
+                    }
+
+                    // Behave ourselves, then go around the loop again
+                    if (Thread.interrupted()) {
+                        throw new InterruptedException();
+                    }
+                    Thread.yield();
+                }
+
+                if (cbRead == cbToRead) {
                     // All is well: we got what we came for
-                    if (DEBUG)
-                        {
+                    if (DEBUG) {
                         dumpBytesReceived(data, ibFirst, cbRead);
-                        }
+                    }
 
                     // We don't support timestamps (we wish we could)!
-                    if (timeWindow != null)
-                        {
+                    if (timeWindow != null) {
                         timeWindow.clear();
-                        }
+                    }
 
                     // Return data to our caller
                     return cbRead;
-                    }
-                else
-                    {
+                } else {
                     // Timeout or close case. Push back data for next time.
-                    for (int i = 0; i < cbRead; i++)
-                        {
+                    for (int i = 0; i < cbRead; i++) {
                         this.readAhead.add(data[i]);
-                        }
+                    }
                     RobotLog.ee(TAG, "didn't read enough data cbToRead=%d cbRead=%d", cbToRead, cbRead);
                     return 0;   // maybe an odd semantic to indicate timeout, but that's what we've got
-                    }
                 }
-            catch (InterruptedIOException e)
-                {
+            } catch (InterruptedIOException e) {
                 // Our callers don't know about the IO flavor of InterruptedException well, so turn it into what they're expecting
                 throw (e.getCause() instanceof InterruptedException)
-                    ? (InterruptedException)e.getCause()
-                    : new InterruptedException(e.getMessage());
-                }
-            catch (IOException e)
-                {
+                        ? (InterruptedException) e.getCause()
+                        : new InterruptedException(e.getMessage());
+            } catch (IOException e) {
                 // Wrap anything else in what they're expecting
                 throw RobotUsbUnspecifiedException.createChained(e, "exception in %s.read()", TAG);
-                }
             }
         }
+    }
 
-    @Override public boolean mightBeAtUsbPacketStart()
-        {
+    @Override
+    public boolean mightBeAtUsbPacketStart() {
         return true;
-        }
+    }
 
-    @Override public void skipToLikelyUsbPacketStart()
-        {
+    @Override
+    public void skipToLikelyUsbPacketStart() {
         // Nothing we can do here of use
-        }
+    }
 
-    @Override public void requestReadInterrupt(boolean interruptRequested)
-        {
+    @Override
+    public void requestReadInterrupt(boolean interruptRequested) {
         // We don't need to do anything here, since the actual threads on which IO occurs (never
         // this current thread) will also be interrupted, and the IO we do here will honor that
         // interrupt correctly, unlike the FTDI layer.
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbDevice - io configuration
     //----------------------------------------------------------------------------------------------
 
-    @Override public void setDebugRetainBuffers(boolean retain)
-        {
+    @Override
+    public void setDebugRetainBuffers(boolean retain) {
         this.debugRetainBuffers = retain;
-        }
-    @Override public boolean getDebugRetainBuffers()
-        {
+    }
+
+    @Override
+    public boolean getDebugRetainBuffers() {
         return this.debugRetainBuffers;
-        }
-    @Override public void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object...args)
-        {
+    }
+
+    @Override
+    public void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object... args) {
         RobotLog.ee(tag, format, args);
-        }
-    @Override public void setBaudRate(int baudRate) throws RobotUsbException
-        {
+    }
+
+    @Override
+    public void setBaudRate(int baudRate) throws RobotUsbException {
         // Ignored: we are passed in our open device, with baud rate already configured.
         // If we wanted to update it on the fly, we'd need to do more work in SerialPort.cpp.
         // We could do that in theory, but it's not worth it right at the moment.
-        }
+    }
 
     @Override
-    public void setDataCharacteristics(byte dataBits, byte stopBits, byte parity) throws RobotUsbException
-        {
+    public void setDataCharacteristics(byte dataBits, byte stopBits, byte parity) throws RobotUsbException {
         // ignored
-        }
+    }
 
-    @Override public void setLatencyTimer(int latencyTimer) throws RobotUsbException
-        {
+    @Override
+    public void setLatencyTimer(int latencyTimer) throws RobotUsbException {
         // ignored
-        }
+    }
 
-    @Override public void setBreak(boolean enable) throws RobotUsbException
-        {
+    @Override
+    public void setBreak(boolean enable) throws RobotUsbException {
         // ignored // TODO fix later
-        }
+    }
 
-    public void setMsDefaultTimeout(int msDefaultTimeout)
-        {
+    public void setMsDefaultTimeout(int msDefaultTimeout) {
         this.msDefaultTimeout = msDefaultTimeout;
-        }
+    }
 
-    public int getMsDefaultTimeout()
-        {
+    public int getMsDefaultTimeout() {
         return msDefaultTimeout;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbDevice - meta data
     //----------------------------------------------------------------------------------------------
 
-    @Override public USBIdentifiers getUsbIdentifiers()
-        {
+    @Override
+    public USBIdentifiers getUsbIdentifiers() {
         return this.usbIdentifiers;
-        }
-
-    public void setUsbIdentifiers(USBIdentifiers usbIdentifiers)
-        {
-        this.usbIdentifiers = usbIdentifiers;
-        }
-
     }
+
+    public void setUsbIdentifiers(USBIdentifiers usbIdentifiers) {
+        this.usbIdentifiers = usbIdentifiers;
+    }
+
+}

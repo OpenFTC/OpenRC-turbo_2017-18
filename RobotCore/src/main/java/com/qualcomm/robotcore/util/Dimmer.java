@@ -39,73 +39,73 @@ import android.view.WindowManager;
  */
 public class Dimmer {
 
-  public static final int DEFAULT_DIM_TIME = 30*1000; // milliseconds
-  public static final int LONG_BRIGHT_TIME = 60*1000; // milliseconds
-  public static final float MAXIMUM_BRIGHTNESS = 1.0f;
-  public static final float MINIMUM_BRIGHTNESS = 0.05f;
+    public static final int DEFAULT_DIM_TIME = 30 * 1000; // milliseconds
+    public static final int LONG_BRIGHT_TIME = 60 * 1000; // milliseconds
+    public static final float MAXIMUM_BRIGHTNESS = 1.0f;
+    public static final float MINIMUM_BRIGHTNESS = 0.05f;
 
-  Handler handler = new Handler();
+    Handler handler = new Handler();
 
-  Activity activity;
-  final WindowManager.LayoutParams layoutParams;
-  long waitTime; // milliseconds
-  float userBrightness = MAXIMUM_BRIGHTNESS;
+    Activity activity;
+    final WindowManager.LayoutParams layoutParams;
+    long waitTime; // milliseconds
+    float userBrightness = MAXIMUM_BRIGHTNESS;
 
-  public Dimmer(Activity activity) {
-    this(DEFAULT_DIM_TIME, activity);
-  }
-
-  public Dimmer(long waitTime, Activity activity) {
-    this.waitTime = waitTime;
-    this.activity = activity;
-    this.layoutParams = activity.getWindow().getAttributes();
-    this.userBrightness = layoutParams.screenBrightness;
-  }
-
-  private float percentageDim() {
-    float newBrightness = MINIMUM_BRIGHTNESS * userBrightness;
-    if (newBrightness < MINIMUM_BRIGHTNESS) {
-      return MINIMUM_BRIGHTNESS;
+    public Dimmer(Activity activity) {
+        this(DEFAULT_DIM_TIME, activity);
     }
-    return newBrightness;
-  }
 
-  public void handleDimTimer() {
-    sendToUIThread(userBrightness);
-    handler.removeCallbacks(null);
-    handler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        sendToUIThread(percentageDim());
-      }
-    }, waitTime);
-  }
+    public Dimmer(long waitTime, Activity activity) {
+        this.waitTime = waitTime;
+        this.activity = activity;
+        this.layoutParams = activity.getWindow().getAttributes();
+        this.userBrightness = layoutParams.screenBrightness;
+    }
 
-  private void sendToUIThread(float brightness) {
-    layoutParams.screenBrightness = brightness;
-    activity.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        activity.getWindow().setAttributes(layoutParams);
-      }
-    });
-  }
+    private float percentageDim() {
+        float newBrightness = MINIMUM_BRIGHTNESS * userBrightness;
+        if (newBrightness < MINIMUM_BRIGHTNESS) {
+            return MINIMUM_BRIGHTNESS;
+        }
+        return newBrightness;
+    }
 
-  /**
-   * Cancels all existing handler calls that are not already running, and sets up a new handler
-   * that will post in x milliseconds.
-   *
-   * I.e., leaves the screen bright for one full minute.
-   */
-  public void longBright(){
-    sendToUIThread(userBrightness);
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        sendToUIThread(percentageDim());
-      }
-    };
-    handler.removeCallbacksAndMessages(null);
-    handler.postDelayed(runnable, LONG_BRIGHT_TIME); // milliseconds
-  }
+    public void handleDimTimer() {
+        sendToUIThread(userBrightness);
+        handler.removeCallbacks(null);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendToUIThread(percentageDim());
+            }
+        }, waitTime);
+    }
+
+    private void sendToUIThread(float brightness) {
+        layoutParams.screenBrightness = brightness;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.getWindow().setAttributes(layoutParams);
+            }
+        });
+    }
+
+    /**
+     * Cancels all existing handler calls that are not already running, and sets up a new handler
+     * that will post in x milliseconds.
+     * <p>
+     * I.e., leaves the screen bright for one full minute.
+     */
+    public void longBright() {
+        sendToUIThread(userBrightness);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                sendToUIThread(percentageDim());
+            }
+        };
+        handler.removeCallbacksAndMessages(null);
+        handler.postDelayed(runnable, LONG_BRIGHT_TIME); // milliseconds
+    }
 }

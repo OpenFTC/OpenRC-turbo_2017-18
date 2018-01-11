@@ -41,119 +41,107 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-06.
  */
-public class LynxGetBulkInputDataResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetBulkInputDataResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final int cbPayload = 32;
 
-    byte        digitalInputs   = 0;
-    int[]       encoders        = new int[LynxConstants.NUMBER_OF_MOTORS];
-    byte        motorStatus     = 0;
-    short[]     velocities      = new short[LynxConstants.NUMBER_OF_MOTORS];
-    short[]     analogInputs    = new short[LynxConstants.NUMBER_OF_ANALOG_INPUTS];
+    byte digitalInputs = 0;
+    int[] encoders = new int[LynxConstants.NUMBER_OF_MOTORS];
+    byte motorStatus = 0;
+    short[] velocities = new short[LynxConstants.NUMBER_OF_MOTORS];
+    short[] analogInputs = new short[LynxConstants.NUMBER_OF_ANALOG_INPUTS];
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetBulkInputDataResponse(LynxModuleIntf module)
-        {
+    public LynxGetBulkInputDataResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean getDigitalInput(int digitalInputZ)
-        {
+    public boolean getDigitalInput(int digitalInputZ) {
         LynxConstants.validateDigitalIOZ(digitalInputZ);
-        int bit = 1<<digitalInputZ;
-        return (this.digitalInputs&bit) != 0;
-        }
+        int bit = 1 << digitalInputZ;
+        return (this.digitalInputs & bit) != 0;
+    }
 
-    public int getEncoder(int motorZ)
-        {
+    public int getEncoder(int motorZ) {
         LynxConstants.validateMotorZ(motorZ);
         return this.encoders[motorZ];
-        }
+    }
 
-    /** Returns (signed) motor velocity in encoder counts per second */
-    public int getVelocity(int motorZ)
-        {
+    /**
+     * Returns (signed) motor velocity in encoder counts per second
+     */
+    public int getVelocity(int motorZ) {
         LynxConstants.validateMotorZ(motorZ);
         return this.velocities[motorZ];
-        }
+    }
 
-    public boolean isAtTarget(int motorZ)
-        {
+    public boolean isAtTarget(int motorZ) {
         LynxConstants.validateMotorZ(motorZ);
-        int bit = (1<<(motorZ+4));
-        return (this.motorStatus&bit) != 0;
-        }
+        int bit = (1 << (motorZ + 4));
+        return (this.motorStatus & bit) != 0;
+    }
 
-    public boolean isOverCurrent(int motorZ)
-        {
+    public boolean isOverCurrent(int motorZ) {
         LynxConstants.validateMotorZ(motorZ);
-        int bit = (1<<motorZ);
-        return (this.motorStatus&bit) != 0;
-        }
+        int bit = (1 << motorZ);
+        return (this.motorStatus & bit) != 0;
+    }
 
-    /** Returns the analog input in mV */
-    public int getAnalogInput(int inputZ)
-        {
+    /**
+     * Returns the analog input in mV
+     */
+    public int getAnalogInput(int inputZ) {
         LynxConstants.validateAnalogInputZ(inputZ);
         return this.analogInputs[inputZ];
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
 
         buffer.put(this.digitalInputs);
-        for (int i = 0; i < this.encoders.length; i++)
-            {
+        for (int i = 0; i < this.encoders.length; i++) {
             buffer.putInt(this.encoders[i]);
-            }
+        }
         buffer.put(this.motorStatus);
-        for (int i = 0; i < this.velocities.length; i++)
-            {
+        for (int i = 0; i < this.velocities.length; i++) {
             buffer.putShort(this.velocities[i]);
-            }
-        for (int i = 0; i < this.analogInputs.length; i++)
-            {
+        }
+        for (int i = 0; i < this.analogInputs.length; i++) {
             buffer.putShort(this.analogInputs[i]);
-            }
-
-        return buffer.array();
         }
 
+        return buffer.array();
+    }
+
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
 
         this.digitalInputs = buffer.get();
-        for (int i = 0; i < this.encoders.length; i++)
-            {
+        for (int i = 0; i < this.encoders.length; i++) {
             this.encoders[i] = buffer.getInt();
-            }
+        }
         this.motorStatus = buffer.get();
-        for (int i = 0; i < this.velocities.length; i++)
-            {
+        for (int i = 0; i < this.velocities.length; i++) {
             this.velocities[i] = buffer.getShort();
-            }
-        for (int i = 0; i < this.analogInputs.length; i++)
-            {
+        }
+        for (int i = 0; i < this.analogInputs.length; i++) {
             this.analogInputs[i] = buffer.getShort();
-            }
         }
     }
+}

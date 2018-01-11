@@ -45,8 +45,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxSetMotorChannelModeCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetMotorChannelModeCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -61,73 +60,74 @@ public class LynxSetMotorChannelModeCommand extends LynxDekaInterfaceCommand<Lyn
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetMotorChannelModeCommand(LynxModuleIntf module)
-        {
+    public LynxSetMotorChannelModeCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetMotorChannelModeCommand(LynxModuleIntf module, int motorZ, DcMotor.RunMode mode, DcMotor.ZeroPowerBehavior floatOrBrake)
-        {
+    public LynxSetMotorChannelModeCommand(LynxModuleIntf module, int motorZ, DcMotor.RunMode mode, DcMotor.ZeroPowerBehavior floatOrBrake) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        this.motor = (byte)motorZ;
-        switch (mode)
-            {
-            case RUN_WITHOUT_ENCODER:  this.mode = 0; break;
-            case RUN_USING_ENCODER:    this.mode = 1; break;
-            case RUN_TO_POSITION:      this.mode = 2; break;
-            default: throw new IllegalArgumentException(String.format("illegal mode %s", mode.toString()));
-            }
-        this.floatAtZero = floatOrBrake== DcMotor.ZeroPowerBehavior.BRAKE ? (byte)0 : (byte)1;
+        this.motor = (byte) motorZ;
+        switch (mode) {
+            case RUN_WITHOUT_ENCODER:
+                this.mode = 0;
+                break;
+            case RUN_USING_ENCODER:
+                this.mode = 1;
+                break;
+            case RUN_TO_POSITION:
+                this.mode = 2;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("illegal mode %s", mode.toString()));
         }
+        this.floatAtZero = floatOrBrake == DcMotor.ZeroPowerBehavior.BRAKE ? (byte) 0 : (byte) 1;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public DcMotor.RunMode getMode()
-        {
-        switch (mode)
-            {
+    public DcMotor.RunMode getMode() {
+        switch (mode) {
             default:
-            case 0: return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-            case 1: return DcMotor.RunMode.RUN_USING_ENCODER;
-            case 2: return DcMotor.RunMode.RUN_TO_POSITION;
-            }
+            case 0:
+                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+            case 1:
+                return DcMotor.RunMode.RUN_USING_ENCODER;
+            case 2:
+                return DcMotor.RunMode.RUN_TO_POSITION;
         }
+    }
 
-    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior()
-        {
-        return floatAtZero==0 ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT;
-        }
+    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior() {
+        return floatAtZero == 0 ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.put(this.mode);
         buffer.put(this.floatAtZero);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
         this.mode = buffer.get();
         this.floatAtZero = buffer.get();
-        }
-
     }
+
+}

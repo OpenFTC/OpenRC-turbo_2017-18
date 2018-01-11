@@ -42,88 +42,78 @@ import com.qualcomm.robotcore.util.TypeConversion;
  *
  * @see LynxDiscoveryCommand
  */
-public class LynxDiscoveryResponse extends LynxStandardResponse
-    {
+public class LynxDiscoveryResponse extends LynxStandardResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    /** 1 = my discovery packet arrived via USB; 0 = via EIA485 */
+    /**
+     * 1 = my discovery packet arrived via USB; 0 = via EIA485
+     */
     byte parentIndicator;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxDiscoveryResponse()
-        {
+    public LynxDiscoveryResponse() {
         super(null);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean isParent()
-        {
+    public boolean isParent() {
         return !isChild();
-        }
+    }
 
-    public boolean isChild()
-        {
+    public boolean isChild() {
         return getParentIndicator() == 0;
-        }
+    }
 
-    public int getParentIndicator()
-        {
+    public int getParentIndicator() {
         return TypeConversion.unsignedByteToInt(this.parentIndicator);
-        }
+    }
 
-    public int getDiscoveredModuleAddress()
-        {
+    public int getDiscoveredModuleAddress() {
         return this.serialization.getSourceModuleAddress();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Transmission
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isAckable()
-        {
+    public boolean isAckable() {
         return false;
-        }
+    }
 
     @Override
-    public boolean isRetransmittable()
-        {
+    public boolean isRetransmittable() {
         return false;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return LynxDiscoveryCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { this.parentIndicator};
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.parentIndicator = rgb[0];
-        }
     }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{this.parentIndicator};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.parentIndicator = rgb[0];
+    }
+}

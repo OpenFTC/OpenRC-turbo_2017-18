@@ -49,51 +49,51 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 @Disabled
 public class SensorLEGOLight extends LinearOpMode {
 
-  LightSensor lightSensor;  // Hardware Device Object
+    LightSensor lightSensor;  // Hardware Device Object
 
-  @Override
-  public void runOpMode() {
+    @Override
+    public void runOpMode() {
 
-    // bPrevState and bCurrState represent the previous and current state of the button.
-    boolean bPrevState = false;
-    boolean bCurrState = false;
+        // bPrevState and bCurrState represent the previous and current state of the button.
+        boolean bPrevState = false;
+        boolean bCurrState = false;
 
-    // bLedOn represents the state of the LED.
-    boolean bLedOn = true;
+        // bLedOn represents the state of the LED.
+        boolean bLedOn = true;
 
-    // get a reference to our Light Sensor object.
-    lightSensor = hardwareMap.get(LightSensor.class, "sensor_light");
+        // get a reference to our Light Sensor object.
+        lightSensor = hardwareMap.get(LightSensor.class, "sensor_light");
 
-    // Set the LED state in the beginning.
-    lightSensor.enableLed(bLedOn);
-
-    // wait for the start button to be pressed.
-    waitForStart();
-
-    // while the op mode is active, loop and read the light levels.
-    // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-    while (opModeIsActive()) {
-
-      // check the status of the x button .
-      bCurrState = gamepad1.x;
-
-      // check for button state transitions.
-      if ((bCurrState == true) && (bCurrState != bPrevState))  {
-
-        // button is transitioning to a pressed state.  Toggle LED
-        bLedOn = !bLedOn;
+        // Set the LED state in the beginning.
         lightSensor.enableLed(bLedOn);
-      }
 
-      // update previous state variable.
-      bPrevState = bCurrState;
+        // wait for the start button to be pressed.
+        waitForStart();
 
-      // send the info back to driver station using telemetry function.
-      telemetry.addData("LED", bLedOn ? "On" : "Off");
-      telemetry.addData("Raw", lightSensor.getRawLightDetected());
-      telemetry.addData("Normal", lightSensor.getLightDetected());
+        // while the op mode is active, loop and read the light levels.
+        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+        while (opModeIsActive()) {
 
-      telemetry.update();
+            // check the status of the x button .
+            bCurrState = gamepad1.x;
+
+            // check for button state transitions.
+            if ((bCurrState == true) && (bCurrState != bPrevState)) {
+
+                // button is transitioning to a pressed state.  Toggle LED
+                bLedOn = !bLedOn;
+                lightSensor.enableLed(bLedOn);
+            }
+
+            // update previous state variable.
+            bPrevState = bCurrState;
+
+            // send the info back to driver station using telemetry function.
+            telemetry.addData("LED", bLedOn ? "On" : "Off");
+            telemetry.addData("Raw", lightSensor.getRawLightDetected());
+            telemetry.addData("Normal", lightSensor.getLightDetected());
+
+            telemetry.update();
+        }
     }
-  }
 }

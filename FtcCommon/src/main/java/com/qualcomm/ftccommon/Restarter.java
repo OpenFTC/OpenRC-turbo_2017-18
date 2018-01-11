@@ -33,5 +33,5 @@ package com.qualcomm.ftccommon;
 
 public interface Restarter {
 
-  public void requestRestart();
+    public void requestRestart();
 }

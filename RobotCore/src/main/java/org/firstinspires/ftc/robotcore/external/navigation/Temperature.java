@@ -35,8 +35,7 @@ package org.firstinspires.ftc.robotcore.external.navigation;
 /**
  * Instances of {@link Temperature} represent a temperature in a particular temperature scale.
  */
-public class Temperature
-    {
+public class Temperature {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -55,28 +54,24 @@ public class Temperature
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public Temperature()
-        {
+    public Temperature() {
         this(TempUnit.CELSIUS, 0, 0);
-        }
+    }
 
-    public Temperature(TempUnit unit, double temperature, long acquisitionTime)
-        {
+    public Temperature(TempUnit unit, double temperature, long acquisitionTime) {
         this.unit = unit;
         this.temperature = temperature;
         this.acquisitionTime = acquisitionTime;
-        }
+    }
 
-    public Temperature toUnit(TempUnit tempUnit)
-        {
-        if (tempUnit != this.unit)
-            {
+    public Temperature toUnit(TempUnit tempUnit) {
+        if (tempUnit != this.unit) {
             return new Temperature(tempUnit,
                     tempUnit.fromUnit(this.unit, temperature),
                     this.acquisitionTime);
-            }
-        else
+        } else {
             return this;
         }
-
     }
+
+}

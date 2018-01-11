@@ -46,11 +46,10 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DistributorInfo
-    {
+public @interface DistributorInfo {
     String distributor() default "";
 
     String model() default "";
 
     String url() default "";
-    }
+}

@@ -42,8 +42,7 @@ import java.util.Set;
  * number of enables is greater than zero.
  */
 @SuppressWarnings("WeakerAccess")
-public class LightMultiplexor implements SwitchableLight
-    {
+public class LightMultiplexor implements SwitchableLight {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -51,57 +50,48 @@ public class LightMultiplexor implements SwitchableLight
     protected static final Set<LightMultiplexor> extantMultiplexors = new WeakReferenceSet<LightMultiplexor>();
 
     protected final SwitchableLight target;
-    protected       int             enableCount;
+    protected int enableCount;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public synchronized static LightMultiplexor forLight(SwitchableLight target)
-        {
-        for (LightMultiplexor multiplexor : extantMultiplexors)
-            {
-            if (multiplexor.target.equals(target))
-                {
+    public synchronized static LightMultiplexor forLight(SwitchableLight target) {
+        for (LightMultiplexor multiplexor : extantMultiplexors) {
+            if (multiplexor.target.equals(target)) {
                 return multiplexor;
-                }
             }
+        }
 
         LightMultiplexor result = new LightMultiplexor(target);
         extantMultiplexors.add(result);
         return result;
-        }
+    }
 
-    protected LightMultiplexor(SwitchableLight target)
-        {
+    protected LightMultiplexor(SwitchableLight target) {
         this.target = target;
         this.enableCount = 0;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override public boolean isLightOn()
-        {
+    @Override
+    public boolean isLightOn() {
         return target.isLightOn();
-        }
+    }
 
-    @Override public synchronized void enableLight(boolean enable)
-        {
-        if (enable)
-            {
-            if (enableCount++ == 0)
-                {
+    @Override
+    public synchronized void enableLight(boolean enable) {
+        if (enable) {
+            if (enableCount++ == 0) {
                 target.enableLight(true);
-                }
             }
-        else
-            {
-            if (enableCount > 0 && --enableCount==0)
-                {
+        } else {
+            if (enableCount > 0 && --enableCount == 0) {
                 target.enableLight(false);
-                }
             }
         }
     }
+}

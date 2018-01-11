@@ -44,10 +44,10 @@ import static android.opengl.GLES20.GL_FLOAT;
 
 /**
  * A simple utility that draws a line in OpenGl
+ *
  * @see <a href="http://stackoverflow.com/questions/16027455/what-is-the-easiest-way-to-draw-line-using-opengl-es-android">Drawing a line in OpenGL-ES</a>
  */
-public class SimpleOpenGLLine
-    {
+public class SimpleOpenGLLine {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -57,11 +57,11 @@ public class SimpleOpenGLLine
     protected static final int coordinatesPerVertex = 3;
     protected static final float defaultCoordinates[] =
             {
-            0.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f
+                    0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f
             };
 
-    protected final int vertexCount  = defaultCoordinates.length / coordinatesPerVertex;
+    protected final int vertexCount = defaultCoordinates.length / coordinatesPerVertex;
     protected final int vertexStride = coordinatesPerVertex * 4; // 4 bytes per float
 
     // Set color with red, green, blue and alpha (opacity) values
@@ -71,8 +71,7 @@ public class SimpleOpenGLLine
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public SimpleOpenGLLine()
-        {
+    public SimpleOpenGLLine() {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(vertexCount * vertexStride);
 
@@ -82,14 +81,13 @@ public class SimpleOpenGLLine
 
         vertexBuffer.put(defaultCoordinates);
         vertexBuffer.position(0);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public void setVerts(float v0, float v1, float v2, float v3, float v4, float v5)
-        {
+    public void setVerts(float v0, float v1, float v2, float v3, float v4, float v5) {
         float coords[] = new float[vertexCount * coordinatesPerVertex];
 
         coords[0] = v0;
@@ -101,18 +99,16 @@ public class SimpleOpenGLLine
 
         vertexBuffer.put(coords);
         vertexBuffer.position(0);
-        }
+    }
 
-    public void setColor(float red, float green, float blue, float alpha)
-        {
+    public void setColor(float red, float green, float blue, float alpha) {
         color[0] = red;
         color[1] = green;
         color[2] = blue;
         color[3] = alpha;
-        }
+    }
 
-    public void draw(float[] modelViewProjectionMatrix, SimpleColorProgram program)
-        {
+    public void draw(float[] modelViewProjectionMatrix, SimpleColorProgram program) {
         program.useProgram();
         program.fragment.setColor(color[0], color[1], color[2], color[3]);
 
@@ -124,8 +120,8 @@ public class SimpleOpenGLLine
         program.vertex.setModelViewProjectionMatrix(modelViewProjectionMatrix);
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, vertexCount);
         program.vertex.disableAttributes();
-        }
     }
+}
 
 
 

@@ -48,18 +48,15 @@ import java.nio.ByteOrder;
  * are valid for the device running the flash loader.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderDownloadCommand extends FlashLoaderCommand
-    {
-    public FlashLoaderDownloadCommand(int address, int length)
-        {
+public class FlashLoaderDownloadCommand extends FlashLoaderCommand {
+    public FlashLoaderDownloadCommand(int address, int length) {
         super(0x21, makePayload(address, length));
-        }
+    }
 
-    protected static byte[] makePayload(int address, int length)
-        {
+    protected static byte[] makePayload(int address, int length) {
         ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
         return Util.concatenateByteArrays(
                 TypeConversion.intToByteArray(address, byteOrder),
                 TypeConversion.intToByteArray(length, byteOrder));
-        }
     }
+}

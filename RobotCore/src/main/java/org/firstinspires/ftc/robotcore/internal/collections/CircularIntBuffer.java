@@ -40,106 +40,99 @@ import java.nio.IntBuffer;
  * Not thread safe.
  */
 @SuppressWarnings("WeakerAccess")
-public class CircularIntBuffer
-    {
+public class CircularIntBuffer {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected       int[]   buffer;
-    protected       int     readIndex;
-    protected       int     size;
-    protected final int     capacity;
+    protected int[] buffer;
+    protected int readIndex;
+    protected int size;
+    protected final int capacity;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public CircularIntBuffer(int initialAllocation)
-        {
+    public CircularIntBuffer(int initialAllocation) {
         this(initialAllocation, Integer.MAX_VALUE);
-        }
+    }
 
-    public CircularIntBuffer(int initialAllocation, int capacity)
-        {
-        this.buffer   = new int[initialAllocation];
+    public CircularIntBuffer(int initialAllocation, int capacity) {
+        this.buffer = new int[initialAllocation];
         this.capacity = capacity;
         clear();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public int size()
-        {
+    public int size() {
         return size;
-        }
+    }
 
-    public boolean isEmpty()
-        {
-        return size==0;
-        }
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-    public int capacity()
-        {
+    public int capacity() {
         return capacity;
-        }
+    }
 
-    public int remainingCapacity()
-        {
+    public int remainingCapacity() {
         return capacity - size;
-        }
+    }
 
-    protected int allocated()
-        {
+    protected int allocated() {
         return buffer.length;
-        }
+    }
 
-    public int get(int index)
-        {
-        if (index >= size || index < 0) throw new IndexOutOfBoundsException("get(" + index + ")");
+    public int get(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("get(" + index + ")");
+        }
         return buffer[mod(readIndex + index)];
-        }
+    }
 
-    public int getFirst()
-        {
+    public int getFirst() {
         return get(0);
-        }
+    }
 
-    public int getLast()
-        {
-        return get(size-1);
-        }
+    public int getLast() {
+        return get(size - 1);
+    }
 
-    public void put(int index, int value)
-        {
-        if (index >= size || index < 0) throw new IndexOutOfBoundsException("put(" + index + ")");
+    public void put(int index, int value) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("put(" + index + ")");
+        }
         buffer[mod(readIndex + index)] = value;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Reading
     //----------------------------------------------------------------------------------------------
 
-    public int removeFirst()
-        {
-        if (isEmpty()) throw new IndexOutOfBoundsException("removeFirst");
+    public int removeFirst() {
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException("removeFirst");
+        }
 
         int result = buffer[readIndex];
         readIndex = mod(readIndex + 1);
         size -= 1;
         return result;
-        }
+    }
 
-    public int read(int[] output)
-        {
+    public int read(int[] output) {
         return read(output, 0, output.length);
-        }
+    }
 
-    public int read(int[] output, int index, int countToRead)
-        {
-        if (countToRead < 0) throw new IllegalArgumentException("count must be non-negative: " + countToRead);
+    public int read(int[] output, int index, int countToRead) {
+        if (countToRead < 0) {
+            throw new IllegalArgumentException("count must be non-negative: " + countToRead);
+        }
 
         // Read the first stretch from what's remaining in the trailing part of the buffer
         int countFirst = min(countToRead, size, allocated() - readIndex);
@@ -150,21 +143,20 @@ public class CircularIntBuffer
         readTo(output, index + countFirst, countSecond);
 
         return countFirst + countSecond;
-        }
+    }
 
-    protected void readTo(int[] output, int index, int count)
-        {
-        if (count > 0)
-            {
+    protected void readTo(int[] output, int index, int count) {
+        if (count > 0) {
             System.arraycopy(buffer, readIndex, output, index, count);
             readIndex = mod(readIndex + count);
             size -= count;
-            }
         }
+    }
 
-    public int skip(int countToSkip)
-        {
-        if (countToSkip < 0) throw new IllegalArgumentException("count must be non-negative: " + countToSkip);
+    public int skip(int countToSkip) {
+        if (countToSkip < 0) {
+            throw new IllegalArgumentException("count must be non-negative: " + countToSkip);
+        }
 
         // Read the first stretch from what's remaining in the trailing part of the buffer
         int countFirst = min(countToSkip, size, allocated() - readIndex);
@@ -175,100 +167,88 @@ public class CircularIntBuffer
         skipBy(countSecond);
 
         return countFirst + countSecond;
-        }
+    }
 
-    protected void skipBy(int count)
-        {
-        if (count > 0)
-            {
+    protected void skipBy(int count) {
+        if (count > 0) {
             readIndex = mod(readIndex + count);
             size -= count;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Writing
     //----------------------------------------------------------------------------------------------
 
-    public void addLast(int value)
-        {
+    public void addLast(int value) {
         int sizeNeeded = size + 1;
-        if (sizeNeeded > capacity)
-            {
+        if (sizeNeeded > capacity) {
             throw new IllegalStateException("full");
-            }
-        if (sizeNeeded > allocated())
-            {
+        }
+        if (sizeNeeded > allocated()) {
             grow(sizeNeeded);
-            }
+        }
         int indexWrite = mod(readIndex + size);
         buffer[indexWrite] = value;
         size += 1;
-        }
+    }
 
-    public int write(IntBuffer fromBuffer)
-        {
+    public int write(IntBuffer fromBuffer) {
         int[] array = fromBuffer.array();
-        int   index = fromBuffer.arrayOffset() + fromBuffer.position();
-        int   count = fromBuffer.remaining();
+        int index = fromBuffer.arrayOffset() + fromBuffer.position();
+        int count = fromBuffer.remaining();
         return write(array, index, count);
-        }
+    }
 
-    public int write(int[] buf)
-        {
+    public int write(int[] buf) {
         return write(buf, 0, buf.length);
-        }
+    }
 
-    public int write(int[] input, int indexFrom, int countToWrite)
-        {
-        if (countToWrite < 0) throw new IllegalArgumentException("count must be non-negative: " + countToWrite);
+    public int write(int[] input, int indexFrom, int countToWrite) {
+        if (countToWrite < 0) {
+            throw new IllegalArgumentException("count must be non-negative: " + countToWrite);
+        }
 
         int sizeNeeded = size + countToWrite;
-        if (sizeNeeded > capacity)
-            {
+        if (sizeNeeded > capacity) {
             sizeNeeded = capacity;
             countToWrite = Math.max(0, sizeNeeded - size);
-            }
-        if (sizeNeeded > allocated())
-            {
+        }
+        if (sizeNeeded > allocated()) {
             grow(sizeNeeded);
-            }
+        }
 
         // Small perf optimization; useful in the case where we commonly drain the buffer fully
-        if (size == 0) readIndex = 0;
+        if (size == 0) {
+            readIndex = 0;
+        }
 
         // Find first free byte
         int indexWrite = readIndex + size;
-        if (indexWrite < allocated())
-            {
+        if (indexWrite < allocated()) {
             // Unused space is in two fragments
             int countFirst = min(countToWrite, allocated() - indexWrite);
             writeFrom(input, indexFrom, countFirst);
             int countSecond = min(countToWrite - countFirst, readIndex);
             writeFrom(input, indexFrom + countFirst, countSecond);
             return countFirst + countSecond;
-            }
-        else
-            {
+        } else {
             // Unused space is in one fragment
             int count = min(countToWrite, allocated() - size);
             writeFrom(input, indexFrom, count);
             return count;
-            }
         }
+    }
 
-    protected void writeFrom(int[] input, int indexFrom, int count)
-        {
-        if (count > 0)
-            {
+    protected void writeFrom(int[] input, int indexFrom, int count) {
+        if (count > 0) {
             int indexTo = mod(readIndex + size);
             System.arraycopy(input, indexFrom, buffer, indexTo, count);
             size += count;
-            }
         }
+    }
 
-    protected void grow(int newSize)
-        {
+    protected void grow(int newSize) {
         // Read all the data to a new buffer.
         int[] bufferNew = new int[newSize];
         int countRead = read(bufferNew, 0, size);
@@ -276,7 +256,7 @@ public class CircularIntBuffer
         buffer = bufferNew;
         readIndex = 0;
         size = countRead;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Miscellaneous
@@ -285,28 +265,24 @@ public class CircularIntBuffer
     /**
      * Discards all the bytes currently readable in the buffer
      */
-    public void clear()
-        {
+    public void clear() {
         readIndex = 0;
         size = 0;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected int mod(int p)
-        {
+    protected int mod(int p) {
         return (p < allocated()) ? p : (p - allocated());
-        }
-
-    protected int min(int a, int b)
-        {
-        return Math.min(a, b);
-        }
-
-    protected int min(int a, int b, int c)
-        {
-        return Math.min(a, Math.min(b,c));
-        }
     }
+
+    protected int min(int a, int b) {
+        return Math.min(a, b);
+    }
+
+    protected int min(int a, int b, int c) {
+        return Math.min(a, Math.min(b, c));
+    }
+}

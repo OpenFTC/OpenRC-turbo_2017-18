@@ -44,8 +44,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxSetMotorChannelCurrentAlertLevelCommand extends LynxDekaInterfaceCommand<LynxAck>
-    {
+public class LynxSetMotorChannelCurrentAlertLevelCommand extends LynxDekaInterfaceCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -59,46 +58,42 @@ public class LynxSetMotorChannelCurrentAlertLevelCommand extends LynxDekaInterfa
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetMotorChannelCurrentAlertLevelCommand(LynxModuleIntf module)
-        {
+    public LynxSetMotorChannelCurrentAlertLevelCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxSetMotorChannelCurrentAlertLevelCommand(LynxModuleIntf module, int motorZ, int mACurrentLimit)
-        {
+    public LynxSetMotorChannelCurrentAlertLevelCommand(LynxModuleIntf module, int motorZ, int mACurrentLimit) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        this.motor = (byte)motorZ;
-        this.mACurrentLimit = (short)mACurrentLimit;
-        if (TypeConversion.unsignedShortToInt(this.mACurrentLimit) != mACurrentLimit)
+        this.motor = (byte) motorZ;
+        this.mACurrentLimit = (short) mACurrentLimit;
+        if (TypeConversion.unsignedShortToInt(this.mACurrentLimit) != mACurrentLimit) {
             throw new IllegalArgumentException(String.format("illegal current limit: %d mA", mACurrentLimit));
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         buffer.putShort(this.mACurrentLimit);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
         this.mACurrentLimit = buffer.getShort();
-        }
-
     }
+
+}

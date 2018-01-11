@@ -47,30 +47,27 @@ import com.qualcomm.robotcore.hardware.TimestampedI2cData;
 /*
  * Supporting firmware version 1.6
  */
-public class LynxI2cDeviceSynchV1 extends LynxI2cDeviceSynch
-{
+public class LynxI2cDeviceSynchV1 extends LynxI2cDeviceSynch {
     public LynxI2cDeviceSynchV1(Context context, LynxModule module, int bus) {
         super(context, module, bus);
     }
 
     @Override
-    public synchronized TimestampedData readTimeStamped(final int ireg, final int creg)
-    {
+    public synchronized TimestampedData readTimeStamped(final int ireg, final int creg) {
         LynxI2cDeviceSynchV1 deviceHavingProblems = null;
 
         try {
             final LynxI2cWriteSingleByteCommand writeTx = new LynxI2cWriteSingleByteCommand(this.getModule(), this.bus, this.i2cAddr, ireg);
-            return acquireI2cLockWhile(new Supplier<TimestampedData>()
-            {
-                @Override public TimestampedData get() throws InterruptedException, RobotCoreException, LynxNackException
-                {
+            return acquireI2cLockWhile(new Supplier<TimestampedData>() {
+                @Override
+                public TimestampedData get() throws InterruptedException, RobotCoreException, LynxNackException {
                     sendI2cWriteTx(writeTx);
                     internalWaitForWriteCompletions(I2cWaitControl.ATOMIC);
                     /*
                      * LynxI2cReadMultipleBytesCommand does not support a
                      * byte count of one, so we manually differentiate here.
                      */
-                    LynxCommand<?> readTx = creg==1
+                    LynxCommand<?> readTx = creg == 1
                             ? new LynxI2cReadSingleByteCommand(getModule(), bus, i2cAddr)
                             : new LynxI2cReadMultipleBytesCommand(getModule(), bus, i2cAddr, creg);
                     readTx.send();
@@ -79,7 +76,7 @@ public class LynxI2cDeviceSynchV1 extends LynxI2cDeviceSynch
                     return pollForReadResult(i2cAddr, ireg, creg);
                 }
             });
-        } catch (InterruptedException|RobotCoreException|RuntimeException e) {
+        } catch (InterruptedException | RobotCoreException | RuntimeException e) {
             handleException(e);
         } catch (LynxNackException e) {
             /*

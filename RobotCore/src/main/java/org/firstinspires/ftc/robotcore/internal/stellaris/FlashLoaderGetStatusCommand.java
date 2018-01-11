@@ -40,14 +40,12 @@ package org.firstinspires.ftc.robotcore.internal.stellaris;
  * to ACK or NAK the received data so the flash loader knows that the data has been read.
  */
 @SuppressWarnings("WeakerAccess")
-public class FlashLoaderGetStatusCommand extends FlashLoaderCommand
-    {
+public class FlashLoaderGetStatusCommand extends FlashLoaderCommand {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public FlashLoaderGetStatusCommand()
-        {
+    public FlashLoaderGetStatusCommand() {
         super(0x23);
-        }
     }
+}

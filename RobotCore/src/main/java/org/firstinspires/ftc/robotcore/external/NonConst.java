@@ -44,11 +44,11 @@ import java.lang.annotation.Target;
  * which methods examine the object and return results based on that examination but don't
  * change the internal object state and which methods, by contrast, perform their function
  * but updating or changing internal object state.
+ *
  * @see Const
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface NonConst
-    {
-    }
+public @interface NonConst {
+}

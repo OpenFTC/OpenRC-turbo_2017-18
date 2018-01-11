@@ -20,88 +20,77 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link FtcEventLoopIdle} is an eventloop that runs whenever a full {@link FtcEventLoop}
  * is inappropriate.
- *
+ * <p>
  * This event loop should be robust in the face of errors and exceptions, staying up until
  * it's explicitly shut down.
  */
-public class FtcEventLoopIdle extends FtcEventLoopBase
-    {
+public class FtcEventLoopIdle extends FtcEventLoopBase {
     public static final String TAG = "FtcEventLoopIdle";
 
-    public FtcEventLoopIdle(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext) //modified for turbo: remmove programming mode controller parameter
+    public FtcEventLoopIdle(HardwareFactory hardwareFactory, OpModeRegister userOpmodeRegister, UpdateUI.Callback callback, Activity activityContext, ProgrammingModeController programmingModeController)
     {
-        super(hardwareFactory, userOpmodeRegister, callback, activityContext);
-        }
+        super(hardwareFactory, userOpmodeRegister, callback, activityContext, programmingModeController);
+    }
 
     @Override
-    public void init(EventLoopManager eventLoopManager) throws RobotCoreException, InterruptedException
-        {
+    public void init(EventLoopManager eventLoopManager) throws RobotCoreException, InterruptedException {
         RobotLog.ii(TAG, "------- idle init --------");
         try {
             super.init(eventLoopManager);
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             RobotLog.vv(TAG, e, "exception in idle event loop init; ignored");
-            }
         }
+    }
 
-    @Override public void loop() throws RobotCoreException, InterruptedException
-        {
+    @Override
+    public void loop() throws RobotCoreException, InterruptedException {
         try {
             //checkForChangedOpModes(); modified for turbo
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             RobotLog.vv(TAG, e, "exception in idle event loop loop; ignored");
-            }
         }
+    }
 
-    @Override public void refreshUserTelemetry(TelemetryMessage telemetry, double sInterval)
-        {
-        }
+    @Override
+    public void refreshUserTelemetry(TelemetryMessage telemetry, double sInterval) {
+    }
 
-    @Override public void teardown() throws RobotCoreException, InterruptedException
-        {
+    @Override
+    public void teardown() throws RobotCoreException, InterruptedException {
         RobotLog.ii(TAG, "------- idle teardown ----");
         try {
             super.teardown();
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             RobotLog.vv(TAG, e, "exception in idle event loop teardown; ignored");
-            }
-        }
-
-    @Override public void pendUsbDeviceAttachment(SerialNumber serialNumber, long time, TimeUnit unit)
-        {
-        }
-
-    @Override public void onUsbDeviceAttached(UsbDevice usbDevice)
-        {
-        }
-
-    @Override
-    public void processedRecentlyAttachedUsbDevices() throws RobotCoreException, InterruptedException
-        {
-        }
-
-    @Override
-    public void handleUsbModuleDetach(RobotUsbModule module) throws RobotCoreException, InterruptedException
-        {
-        }
-
-    @Override
-    public void handleUsbModuleAttach(RobotUsbModule module) throws RobotCoreException, InterruptedException
-        {
-        }
-
-    @Override public OpModeManagerImpl getOpModeManager()
-        {
-        return null;
-        }
-
-    @Override public void requestOpModeStop(OpMode opModeToStopIfActive)
-        {
         }
     }
+
+    @Override
+    public void pendUsbDeviceAttachment(SerialNumber serialNumber, long time, TimeUnit unit) {
+    }
+
+    @Override
+    public void onUsbDeviceAttached(UsbDevice usbDevice) {
+    }
+
+    @Override
+    public void processedRecentlyAttachedUsbDevices() throws RobotCoreException, InterruptedException {
+    }
+
+    @Override
+    public void handleUsbModuleDetach(RobotUsbModule module) throws RobotCoreException, InterruptedException {
+    }
+
+    @Override
+    public void handleUsbModuleAttach(RobotUsbModule module) throws RobotCoreException, InterruptedException {
+    }
+
+    @Override
+    public OpModeManagerImpl getOpModeManager() {
+        return null;
+    }
+
+    @Override
+    public void requestOpModeStop(OpMode opModeToStopIfActive) {
+    }
+}

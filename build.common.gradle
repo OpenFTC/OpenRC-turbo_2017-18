@@ -19,10 +19,25 @@ import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
 
+// This variable can be accessed from within TeamCode classes by using BuildConfig.VUFORIA_KEY
+String vuforiaKey
+
+try {
+    def vuforiaPropertiesFileStream = new FileInputStream(file('./vuforia.properties').absolutePath)
+    def vuforiaProperties = new Properties()
+    vuforiaProperties.load(vuforiaPropertiesFileStream)
+    vuforiaKey = vuforiaProperties['VUFORIA_KEY']
+} catch (FileNotFoundException) {
+    println "vuforia.properties not found"
+} finally {
+    if (vuforiaKey == null) {
+        vuforiaKey = '""'
+    }
+}
+
 android {
 
     compileSdkVersion 23
-    buildToolsVersion "25.0.3"
 
     signingConfigs {
         debug {
@@ -31,6 +46,10 @@ android {
             storeFile rootProject.file('libs/ftc.debug.keystore')
             storePassword 'android'
         }
+    }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'VUFORIA_KEY', vuforiaKey
     }
 
     defaultConfig {
@@ -84,6 +103,21 @@ android {
         }
     }
 
+    flavorDimensions 'type'
+    productFlavors {
+        openrc { dimension 'type' }
+        stock { dimension 'type' }
+    }
+
+    // Selecting a release variant will prompt teams to set up a signing key. Now that there's
+    // a reason to select other variants (the stock feature of OpenRC), it's better to filter out
+    // the ones that will confuse teams.
+    variantFilter { variant ->
+        if (variant.buildType.name == "release") {
+            setIgnore(true)
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -100,4 +134,7 @@ repositories {
         dirs rootProject.file('libs')
     }
 }
+
+apply from: "$rootProject.projectDir/OpenRC/openrc-tasks.gradle"
+
 apply from: 'build.release.gradle'

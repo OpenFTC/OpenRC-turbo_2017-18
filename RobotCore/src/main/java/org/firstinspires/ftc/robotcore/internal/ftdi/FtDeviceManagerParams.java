@@ -39,67 +39,55 @@ package org.firstinspires.ftc.robotcore.internal.ftdi;
  * Parameters with which {@link FtDeviceManager} is configured
  */
 @SuppressWarnings("WeakerAccess")
-public class FtDeviceManagerParams
-    {
+public class FtDeviceManagerParams {
     public static final String TAG = "FtDeviceManagerParams";
 
-    private int cbReadBufferMax         = 16384;
-    private int packetBufferCacheSize   = 16;
-    private int msBulkInReadTimeout     = 5000;
-    private int retainedBufferCapacity  = 5;    // pretty arbitrary
-    private boolean debugRetainBuffers  = true; // could reconsider, but is cheap and usefl
+    private int cbReadBufferMax = 16384;
+    private int packetBufferCacheSize = 16;
+    private int msBulkInReadTimeout = 5000;
+    private int retainedBufferCapacity = 5;    // pretty arbitrary
+    private boolean debugRetainBuffers = true; // could reconsider, but is cheap and usefl
 
-    public FtDeviceManagerParams()
-        {
-        }
-
-    public void setMaxReadBufferSize(int cbReadBufferMax)
-        {
-        this.cbReadBufferMax = cbReadBufferMax;
-        }
-
-    public int getMaxReadBufferSize()
-        {
-        return this.cbReadBufferMax;
-        }
-
-    public void setPacketBufferCacheSize(int bufferCount)
-        {
-        this.packetBufferCacheSize = bufferCount;
-        }
-
-    public int getPacketBufferCacheSize()
-        {
-        return this.packetBufferCacheSize;
-        }
-
-    public void setBuildInReadTimeout(int msTimeout)
-        {
-        this.msBulkInReadTimeout = msTimeout;
-        }
-
-    public int getBulkInReadTimeout()
-        {
-        return this.msBulkInReadTimeout;
-        }
-
-    public int getRetainedBufferCapacity()
-        {
-        return retainedBufferCapacity;
-        }
-
-    public void setRetainedBufferCapacity(int retainedBufferCapacity)
-        {
-        this.retainedBufferCapacity = retainedBufferCapacity;
-        }
-
-    public boolean isDebugRetainBuffers()
-        {
-        return debugRetainBuffers;
-        }
-
-    public void setDebugRetainBuffers(boolean debugRetainBuffers)
-        {
-        this.debugRetainBuffers = debugRetainBuffers;
-        }
+    public FtDeviceManagerParams() {
     }
+
+    public void setMaxReadBufferSize(int cbReadBufferMax) {
+        this.cbReadBufferMax = cbReadBufferMax;
+    }
+
+    public int getMaxReadBufferSize() {
+        return this.cbReadBufferMax;
+    }
+
+    public void setPacketBufferCacheSize(int bufferCount) {
+        this.packetBufferCacheSize = bufferCount;
+    }
+
+    public int getPacketBufferCacheSize() {
+        return this.packetBufferCacheSize;
+    }
+
+    public void setBuildInReadTimeout(int msTimeout) {
+        this.msBulkInReadTimeout = msTimeout;
+    }
+
+    public int getBulkInReadTimeout() {
+        return this.msBulkInReadTimeout;
+    }
+
+    public int getRetainedBufferCapacity() {
+        return retainedBufferCapacity;
+    }
+
+    public void setRetainedBufferCapacity(int retainedBufferCapacity) {
+        this.retainedBufferCapacity = retainedBufferCapacity;
+    }
+
+    public boolean isDebugRetainBuffers() {
+        return debugRetainBuffers;
+    }
+
+    public void setDebugRetainBuffers(boolean debugRetainBuffers) {
+        this.debugRetainBuffers = debugRetainBuffers;
+    }
+}

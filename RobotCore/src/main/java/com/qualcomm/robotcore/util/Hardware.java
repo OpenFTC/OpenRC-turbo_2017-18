@@ -40,73 +40,70 @@ import java.util.Set;
  */
 public class Hardware {
 
-  private static boolean mIsIFC = CheckIfIFC();
-    
-  /**
-   * Get a list of all game controller ID's connected to this device
-   * 
-   * @return a set of all game controller ID's
-   */
-  public static Set<Integer> getGameControllerIds() {
-    final Set<Integer> gameControllerDeviceIds = new HashSet<Integer>();
-    final int[] deviceIds = InputDevice.getDeviceIds();
-    for (final int deviceId : deviceIds) {
-      final int sources = InputDevice.getDevice(deviceId).getSources();
+    private static boolean mIsIFC = CheckIfIFC();
 
-      if (((sources & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD)
-          || ((sources & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK)) {
-        gameControllerDeviceIds.add(deviceId);
-      }
-    }
-    return gameControllerDeviceIds;
-  }
+    /**
+     * Get a list of all game controller ID's connected to this device
+     *
+     * @return a set of all game controller ID's
+     */
+    public static Set<Integer> getGameControllerIds() {
+        final Set<Integer> gameControllerDeviceIds = new HashSet<Integer>();
+        final int[] deviceIds = InputDevice.getDeviceIds();
+        for (final int deviceId : deviceIds) {
+            final int sources = InputDevice.getDevice(deviceId).getSources();
 
-  /**
-   * Function that returns a pre-computed flag indicating whether or not the platform is an IFC 
-   * board.
-   * 
-   * @return true if IFC board, false if not
-   * 
-   */
-  public static boolean IsIFC()
-  {
-     return mIsIFC;
-  }
-    
-  /**
-   * Function that actually checks whether or not the platform is an IFC board.
-   * 
-   * @return true if IFC board, false if not (could be a different board or smartphone.
-   * 
-   */
-  public static boolean CheckIfIFC() {
-    boolean ifcBoard = false;
-
-    final String board = android.os.Build.BOARD;
-    final String brand = android.os.Build.BRAND;
-    final String device = android.os.Build.DEVICE;
-    final String hardware = android.os.Build.HARDWARE;
-    final String manufacturer = android.os.Build.MANUFACTURER;
-    final String model = android.os.Build.MODEL;
-    final String product = android.os.Build.PRODUCT;
-
-    // Check what platform this is
-    // See http://developer.android.com/reference/android/os/Build.html#BOARD
-
-    RobotLog.d("Platform information: board = " + board + " brand = " + brand + " device = "
-        + device + " hardware = " + hardware + " manufacturer = " + manufacturer + " model = "
-        + model + " product = " + product);
-
-    if ((board.equals("MSM8960") == true) && (brand.equals("qcom") == true)
-        && (device.equals("msm8960") == true) && (hardware.equals("qcom") == true)
-        && (manufacturer.equals("unknown") == true) && (model.equals("msm8960") == true)
-        && (product.equals("msm8960") == true)) {
-      RobotLog.d("Detected IFC6410 Device!");
-      ifcBoard = true;
-    } else {
-      RobotLog.d("Detected regular SmartPhone Device!");
+            if (((sources & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD)
+                    || ((sources & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK)) {
+                gameControllerDeviceIds.add(deviceId);
+            }
+        }
+        return gameControllerDeviceIds;
     }
 
-    return ifcBoard;
-  }
+    /**
+     * Function that returns a pre-computed flag indicating whether or not the platform is an IFC
+     * board.
+     *
+     * @return true if IFC board, false if not
+     */
+    public static boolean IsIFC() {
+        return mIsIFC;
+    }
+
+    /**
+     * Function that actually checks whether or not the platform is an IFC board.
+     *
+     * @return true if IFC board, false if not (could be a different board or smartphone.
+     */
+    public static boolean CheckIfIFC() {
+        boolean ifcBoard = false;
+
+        final String board = android.os.Build.BOARD;
+        final String brand = android.os.Build.BRAND;
+        final String device = android.os.Build.DEVICE;
+        final String hardware = android.os.Build.HARDWARE;
+        final String manufacturer = android.os.Build.MANUFACTURER;
+        final String model = android.os.Build.MODEL;
+        final String product = android.os.Build.PRODUCT;
+
+        // Check what platform this is
+        // See http://developer.android.com/reference/android/os/Build.html#BOARD
+
+        RobotLog.d("Platform information: board = " + board + " brand = " + brand + " device = "
+                + device + " hardware = " + hardware + " manufacturer = " + manufacturer + " model = "
+                + model + " product = " + product);
+
+        if ((board.equals("MSM8960") == true) && (brand.equals("qcom") == true)
+                && (device.equals("msm8960") == true) && (hardware.equals("qcom") == true)
+                && (manufacturer.equals("unknown") == true) && (model.equals("msm8960") == true)
+                && (product.equals("msm8960") == true)) {
+            RobotLog.d("Detected IFC6410 Device!");
+            ifcBoard = true;
+        } else {
+            RobotLog.d("Detected regular SmartPhone Device!");
+        }
+
+        return ifcBoard;
+    }
 }

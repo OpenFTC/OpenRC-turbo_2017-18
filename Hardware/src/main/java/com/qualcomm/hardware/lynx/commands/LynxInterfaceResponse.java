@@ -37,16 +37,14 @@ import com.qualcomm.hardware.lynx.LynxModuleIntf;
 /**
  * Created by bob on 2016-03-06.
  */
-public abstract class LynxInterfaceResponse extends LynxResponse
-    {
+public abstract class LynxInterfaceResponse extends LynxResponse {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxInterfaceResponse(LynxModuleIntf module)
-        {
+    public LynxInterfaceResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
@@ -54,26 +52,25 @@ public abstract class LynxInterfaceResponse extends LynxResponse
 
     public abstract LynxInterface getInterface();
 
-    public int getInterfaceResponseIndex()
-        {
-        if (null == this.getInterface())
+    public int getInterfaceResponseIndex() {
+        if (null == this.getInterface()) {
             return LynxInterface.ERRONEOUS_INDEX;   // should never happen in working system, but might if pretending
+        }
 
         return getInterface().getResponseIndex(this.getClass());
-        }
+    }
 
-    public int getBaseCommandNumber()
-        {
-        if (null == this.getInterface())
+    public int getBaseCommandNumber() {
+        if (null == this.getInterface()) {
             return LynxInterface.ERRONEOUS_COMMAND_NUMBER;   // should never happen in working system, but might if pretending
+        }
 
         return this.module.getInterfaceBaseCommandNumber(this.getInterface().getInterfaceName());
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return (getBaseCommandNumber() + getInterfaceResponseIndex()) | LynxResponse.RESPONSE_BIT;
-        }
-
     }
+
+}

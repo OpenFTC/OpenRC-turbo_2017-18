@@ -49,147 +49,151 @@ import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
  */
 public class ConfigWifiDirectActivity extends ThemedActivity {
 
-  public static final String TAG = "ConfigWifiDirectActivity";
-  @Override public String getTag() { return TAG; }
+    public static final String TAG = "ConfigWifiDirectActivity";
 
-  public enum Flag {
-    NONE,
-    WIFI_DIRECT_FIX_CONFIG,
-    WIFI_DIRECT_DEVICE_NAME_INVALID
-  }
-
-  private static Flag flag = Flag.NONE;
-
-  private WifiManager wifiManager;
-  private ProgressDialog progressDialog;
-  private Context context;
-
-  private TextView textPleaseWait;
-  private TextView textBadDeviceName;
-
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_config_wifi_direct);
-
-    textPleaseWait = (TextView) findViewById(R.id.textPleaseWait);
-    textBadDeviceName = (TextView) findViewById(R.id.textBadDeviceName);
-
-    context = this;
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    textPleaseWait.setVisibility(View.VISIBLE);
-
-    wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-    RobotLog.ii(TAG, "Processing flag " + flag.toString());
-
-    switch (flag) {
-      case WIFI_DIRECT_DEVICE_NAME_INVALID:
-        new Thread(new DisableWifiAndWarnBadDeviceName()).start();
-        break;
-      case  WIFI_DIRECT_FIX_CONFIG:
-        new Thread(new ToggleWifiRunnable()).start();
-        break;
-    }
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-    flag = Flag.NONE;
-    textBadDeviceName.setVisibility(View.INVISIBLE);
-  }
-
-  /*
-   * This runnable toggles wifi off and on, which is the only reliable way to fix a misconfigured
-   * wifi direct connection.
-   */
-  private class ToggleWifiRunnable implements Runnable {
     @Override
-    public void run() {
-      RobotLog.ii(TAG, "attempting to reconfigure Wifi Direct");
-      showProgressDialog();
-      try {
-        try {
-          FixWifiDirectSetup.fixWifiDirectSetup(wifiManager);
-        } catch (InterruptedException e) {
-          RobotLog.ee(TAG, "Cannot fix wifi setup - interrupted");
+    public String getTag() {
+        return TAG;
+    }
+
+    public enum Flag {
+        NONE,
+        WIFI_DIRECT_FIX_CONFIG,
+        WIFI_DIRECT_DEVICE_NAME_INVALID
+    }
+
+    private static Flag flag = Flag.NONE;
+
+    private WifiManager wifiManager;
+    private ProgressDialog progressDialog;
+    private Context context;
+
+    private TextView textPleaseWait;
+    private TextView textBadDeviceName;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_config_wifi_direct);
+
+        textPleaseWait = (TextView) findViewById(R.id.textPleaseWait);
+        textBadDeviceName = (TextView) findViewById(R.id.textBadDeviceName);
+
+        context = this;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        textPleaseWait.setVisibility(View.VISIBLE);
+
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        RobotLog.ii(TAG, "Processing flag " + flag.toString());
+
+        switch (flag) {
+            case WIFI_DIRECT_DEVICE_NAME_INVALID:
+                new Thread(new DisableWifiAndWarnBadDeviceName()).start();
+                break;
+            case WIFI_DIRECT_FIX_CONFIG:
+                new Thread(new ToggleWifiRunnable()).start();
+                break;
         }
-      } finally {
-        dismissProgressDialog();
-      }
-      RobotLog.ii(TAG, "reconfigure Wifi Direct complete");
-      runOnUiThread(new Runnable() {
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        flag = Flag.NONE;
+        textBadDeviceName.setVisibility(View.INVISIBLE);
+    }
+
+    /*
+     * This runnable toggles wifi off and on, which is the only reliable way to fix a misconfigured
+     * wifi direct connection.
+     */
+    private class ToggleWifiRunnable implements Runnable {
         @Override
         public void run() {
-          finish();
+            RobotLog.ii(TAG, "attempting to reconfigure Wifi Direct");
+            showProgressDialog();
+            try {
+                try {
+                    FixWifiDirectSetup.fixWifiDirectSetup(wifiManager);
+                } catch (InterruptedException e) {
+                    RobotLog.ee(TAG, "Cannot fix wifi setup - interrupted");
+                }
+            } finally {
+                dismissProgressDialog();
+            }
+            RobotLog.ii(TAG, "reconfigure Wifi Direct complete");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            });
         }
-      });
     }
-  }
 
-  private class DisableWifiAndWarnBadDeviceName implements Runnable {
-    @Override
-    public void run() {
-      RobotLog.ii(TAG, "attempting to disable Wifi due to bad wifi direct device name");
-      showProgressDialog();
-      try {
-        try {
-          FixWifiDirectSetup.disableWifiDirect(wifiManager);
-        } catch (InterruptedException e) {
-          RobotLog.ee(TAG, "Cannot fix wifi setup - interrupted");
+    private class DisableWifiAndWarnBadDeviceName implements Runnable {
+        @Override
+        public void run() {
+            RobotLog.ii(TAG, "attempting to disable Wifi due to bad wifi direct device name");
+            showProgressDialog();
+            try {
+                try {
+                    FixWifiDirectSetup.disableWifiDirect(wifiManager);
+                } catch (InterruptedException e) {
+                    RobotLog.ee(TAG, "Cannot fix wifi setup - interrupted");
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textPleaseWait.setVisibility(View.INVISIBLE);
+                        textBadDeviceName.setVisibility(View.VISIBLE);
+                    }
+                });
+
+            } finally {
+                dismissProgressDialog();
+            }
         }
+    }
+
+    private void showProgressDialog() {
         runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            textPleaseWait.setVisibility(View.INVISIBLE);
-            textBadDeviceName.setVisibility(View.VISIBLE);
-          }
+            @Override
+            public void run() {
+                progressDialog = new ProgressDialog(context, R.style.ConfigWifiDirectDialog);
+                progressDialog.setMessage(getString(R.string.progressPleaseWait));
+                progressDialog.setTitle("Configuring Wifi Direct");
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+            }
         });
-
-      } finally {
-        dismissProgressDialog();
-      }
     }
-  }
 
-  private void showProgressDialog() {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        progressDialog = new ProgressDialog(context, R.style.ConfigWifiDirectDialog);
-        progressDialog.setMessage(getString(R.string.progressPleaseWait));
-        progressDialog.setTitle("Configuring Wifi Direct");
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
-      }
-    });
-  }
+    private void dismissProgressDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.dismiss();
+            }
+        });
+    }
 
-  private void dismissProgressDialog() {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        progressDialog.dismiss();
-      }
-    });
-  }
+    public static void launch(Context context) {
+        launch(context, Flag.WIFI_DIRECT_FIX_CONFIG);
+    }
 
-  public static void launch(Context context) {
-    launch(context, Flag.WIFI_DIRECT_FIX_CONFIG);
-  }
+    public static void launch(Context context, Flag flag) {
+        Intent configWifiDirectIntent = new Intent(context, ConfigWifiDirectActivity.class);
+        configWifiDirectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        context.startActivity(configWifiDirectIntent);
 
-  public static void launch(Context context, Flag flag) {
-    Intent configWifiDirectIntent = new Intent(context, ConfigWifiDirectActivity.class);
-    configWifiDirectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
-    context.startActivity(configWifiDirectIntent);
-
-    ConfigWifiDirectActivity.flag = flag;
-  }
+        ConfigWifiDirectActivity.flag = flag;
+    }
 }

@@ -15,22 +15,19 @@ import android.content.Context;
 import org.firstinspires.ftc.robotcore.internal.opengl.TextResourceReader;
 import org.firstinspires.ftc.robotcore.internal.opengl.shaders.ShaderHelper;
 
-public abstract class ShaderProgram
-    {
+public abstract class ShaderProgram {
     // Shader program
     protected final int program;
 
-    protected ShaderProgram(Context context, int vertexShaderResourceId, int fragmentShaderResourceId)
-        {
+    protected ShaderProgram(Context context, int vertexShaderResourceId, int fragmentShaderResourceId) {
         // Compile the shaders and link the program.
         program = ShaderHelper.buildProgram(
                 TextResourceReader.readTextFileFromResource(context, vertexShaderResourceId),
                 TextResourceReader.readTextFileFromResource(context, fragmentShaderResourceId));
-        }
+    }
 
-    public void useProgram()
-        {
+    public void useProgram() {
         // Set the current OpenGL shader program to this program.
         glUseProgram(program);
-        }
     }
+}

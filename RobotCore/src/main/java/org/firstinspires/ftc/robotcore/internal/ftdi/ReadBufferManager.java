@@ -59,85 +59,78 @@ import java.util.concurrent.TimeUnit;
  * Manager of bulk data received from USB
  */
 @SuppressWarnings("WeakerAccess")
-public class ReadBufferManager extends FtConstants
-    {
+public class ReadBufferManager extends FtConstants {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "ReadBufferManager";
 
-    private final    FtDeviceManagerParams               mParams;
-    private          Deadline                            mReadDeadline;
-    private final    int                                 mAvailableInBuffersCapacity;
-    private final    int                                 mAvailableOutBuffersCapacity;
-    private final    ArrayList<BulkPacketBufferIn>       mAvailableInBuffers;   // finite capacity
-    private final    ArrayList<BulkPacketBufferOut>      mAvailableOutBuffers;  // finite capacity
-    private final    ArrayList<BulkPacketBufferIn>       mReadableBuffers;      // infinite capacity
-    private final    EvictingBlockingQueue<BulkPacketBuffer> mRetainedBuffers;
-    private final    int                                 mEndpointMaxPacketSize;
-    private final    FtDevice                            mDevice;
-    private final    CircularByteBuffer                  mCircularBuffer;
-    private final    MarkedItemQueue                     mMarkedItemQueue;
-    private final    ArrayRunQueueLong                   mTimestamps;
-    private          boolean                             mReadBulkInDataInterruptRequested;
-    private volatile Thread                              mReadBulkInDataThread;
-    private volatile boolean                             mProcessBulkInDataCallInFlight;
-    private          boolean                             mIsOpen;
-    private          boolean                             mDebugRetainBuffers;
+    private final FtDeviceManagerParams mParams;
+    private Deadline mReadDeadline;
+    private final int mAvailableInBuffersCapacity;
+    private final int mAvailableOutBuffersCapacity;
+    private final ArrayList<BulkPacketBufferIn> mAvailableInBuffers;   // finite capacity
+    private final ArrayList<BulkPacketBufferOut> mAvailableOutBuffers;  // finite capacity
+    private final ArrayList<BulkPacketBufferIn> mReadableBuffers;      // infinite capacity
+    private final EvictingBlockingQueue<BulkPacketBuffer> mRetainedBuffers;
+    private final int mEndpointMaxPacketSize;
+    private final FtDevice mDevice;
+    private final CircularByteBuffer mCircularBuffer;
+    private final MarkedItemQueue mMarkedItemQueue;
+    private final ArrayRunQueueLong mTimestamps;
+    private boolean mReadBulkInDataInterruptRequested;
+    private volatile Thread mReadBulkInDataThread;
+    private volatile boolean mProcessBulkInDataCallInFlight;
+    private boolean mIsOpen;
+    private boolean mDebugRetainBuffers;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ReadBufferManager(FtDevice dev, boolean debugRetainBuffers) throws IOException, InterruptedException
-        {
-        this.mIsOpen                    = true;
-        this.mDevice                    = dev;
-        this.mParams                    = this.mDevice.getDriverParameters();
-        this.mReadDeadline              = new Deadline(this.mParams.getBulkInReadTimeout(), TimeUnit.MILLISECONDS);
-        this.mEndpointMaxPacketSize     = this.mDevice.getEndpointMaxPacketSize();
-        this.mCircularBuffer            = new CircularByteBuffer(this.mEndpointMaxPacketSize * 5 /* a guess */, this.mParams.getMaxReadBufferSize());
-        this.mMarkedItemQueue           = new MarkedItemQueue();
-        this.mTimestamps                = new ArrayRunQueueLong();
-        this.mAvailableInBuffersCapacity  = this.mParams.getPacketBufferCacheSize();
-        this.mAvailableOutBuffersCapacity = Math.min(this.mAvailableInBuffersCapacity,mParams.getRetainedBufferCapacity());
-        this.mAvailableInBuffers        = new ArrayList<BulkPacketBufferIn>();
-        this.mAvailableOutBuffers       = new ArrayList<BulkPacketBufferOut>();
-        this.mReadableBuffers           = new ArrayList<BulkPacketBufferIn>(); // need effectively infinite capacity to be able to keep servicing USB w/o losing data
-        this.mRetainedBuffers           = new EvictingBlockingQueue<BulkPacketBuffer>(new ArrayBlockingQueue<BulkPacketBuffer>(mParams.getRetainedBufferCapacity())); // don't need the blocking, but do need the eviction action
+    public ReadBufferManager(FtDevice dev, boolean debugRetainBuffers) throws IOException, InterruptedException {
+        this.mIsOpen = true;
+        this.mDevice = dev;
+        this.mParams = this.mDevice.getDriverParameters();
+        this.mReadDeadline = new Deadline(this.mParams.getBulkInReadTimeout(), TimeUnit.MILLISECONDS);
+        this.mEndpointMaxPacketSize = this.mDevice.getEndpointMaxPacketSize();
+        this.mCircularBuffer = new CircularByteBuffer(this.mEndpointMaxPacketSize * 5 /* a guess */, this.mParams.getMaxReadBufferSize());
+        this.mMarkedItemQueue = new MarkedItemQueue();
+        this.mTimestamps = new ArrayRunQueueLong();
+        this.mAvailableInBuffersCapacity = this.mParams.getPacketBufferCacheSize();
+        this.mAvailableOutBuffersCapacity = Math.min(this.mAvailableInBuffersCapacity, mParams.getRetainedBufferCapacity());
+        this.mAvailableInBuffers = new ArrayList<BulkPacketBufferIn>();
+        this.mAvailableOutBuffers = new ArrayList<BulkPacketBufferOut>();
+        this.mReadableBuffers = new ArrayList<BulkPacketBufferIn>(); // need effectively infinite capacity to be able to keep servicing USB w/o losing data
+        this.mRetainedBuffers = new EvictingBlockingQueue<BulkPacketBuffer>(new ArrayBlockingQueue<BulkPacketBuffer>(mParams.getRetainedBufferCapacity())); // don't need the blocking, but do need the eviction action
         this.mRetainedBuffers.setEvictAction(new RecentPacketEvicted());
-        this.mReadBulkInDataThread             = null;
+        this.mReadBulkInDataThread = null;
         this.mReadBulkInDataInterruptRequested = false;
-        this.mProcessBulkInDataCallInFlight    = false;
-        this.mDebugRetainBuffers               = debugRetainBuffers;
+        this.mProcessBulkInDataCallInFlight = false;
+        this.mDebugRetainBuffers = debugRetainBuffers;
         verifyInvariants("ctor");
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public boolean isReadBufferFull()
-        {
-        synchronized (mCircularBuffer)
-            {
+    public boolean isReadBufferFull() {
+        synchronized (mCircularBuffer) {
             return mCircularBuffer.remainingCapacity() == 0;
-            }
         }
+    }
 
-    public int getReadBufferSize()
-        {
-        synchronized (mCircularBuffer)
-            {
+    public int getReadBufferSize() {
+        synchronized (mCircularBuffer) {
             return mCircularBuffer.size();
-            }
         }
+    }
 
-    public FtDeviceManagerParams getParams()
-        {
+    public FtDeviceManagerParams getParams() {
         return this.mParams;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Buffer management
@@ -145,60 +138,47 @@ public class ReadBufferManager extends FtConstants
 
     // For sufficiently small buffers, we use a fixed allocation size so as to facilitate
     // instance reuse and reduce pressure on the GC
-    public BulkPacketBufferOut newOutputBuffer(byte[] data, int ibFirst, int cbToWrite)
-        {
+    public BulkPacketBufferOut newOutputBuffer(byte[] data, int ibFirst, int cbToWrite) {
         BulkPacketBufferOut result = null;
         //
-        if (cbToWrite <= mEndpointMaxPacketSize)
-            {
-            synchronized (mAvailableOutBuffers)
-                {
-                if (!mAvailableOutBuffers.isEmpty())
-                    {
-                    result = mAvailableOutBuffers.remove(mAvailableOutBuffers.size()-1); // nit: LIFO for better cache locality
-                    }
-                }
-            if (result == null)
-                {
-                result = new BulkPacketBufferOut(mEndpointMaxPacketSize);
+        if (cbToWrite <= mEndpointMaxPacketSize) {
+            synchronized (mAvailableOutBuffers) {
+                if (!mAvailableOutBuffers.isEmpty()) {
+                    result = mAvailableOutBuffers.remove(mAvailableOutBuffers.size() - 1); // nit: LIFO for better cache locality
                 }
             }
-        else
+            if (result == null) {
+                result = new BulkPacketBufferOut(mEndpointMaxPacketSize);
+            }
+        } else {
             result = new BulkPacketBufferOut(cbToWrite);
+        }
         //
         result.copyFrom(data, ibFirst, cbToWrite);
         return result;
-        }
+    }
 
-    private void offerAvailableBufferOut(BulkPacketBufferOut packetBuffer)
-        {
-        if (packetBuffer.capacity() == mEndpointMaxPacketSize)
-            {
-            synchronized (mAvailableOutBuffers)
-                {
+    private void offerAvailableBufferOut(BulkPacketBufferOut packetBuffer) {
+        if (packetBuffer.capacity() == mEndpointMaxPacketSize) {
+            synchronized (mAvailableOutBuffers) {
                 // keep a few around around so as to reduce GC pressure
-                if (mAvailableOutBuffers.size() < mAvailableOutBuffersCapacity)
-                    {
+                if (mAvailableOutBuffers.size() < mAvailableOutBuffersCapacity) {
                     mAvailableOutBuffers.add(packetBuffer);
-                    }
                 }
             }
         }
+    }
 
     //--------------
 
-    public BulkPacketBufferIn acquireWritableInputBuffer()
-        {
+    public BulkPacketBufferIn acquireWritableInputBuffer() {
         BulkPacketBufferIn result = null;
-        synchronized (mAvailableInBuffers)
-            {
-            if (!mAvailableInBuffers.isEmpty())
-                {
-                result = mAvailableInBuffers.remove(mAvailableInBuffers.size()-1); // nit: LIFO for better cache locality
-                }
+        synchronized (mAvailableInBuffers) {
+            if (!mAvailableInBuffers.isEmpty()) {
+                result = mAvailableInBuffers.remove(mAvailableInBuffers.size() - 1); // nit: LIFO for better cache locality
             }
-        if (result == null)
-            {
+        }
+        if (result == null) {
             /**
              * The issue of how big of packet buffer to use is surprisingly complicated. The best
              * treatise on this so far located is the FTDI application note entitled:
@@ -216,192 +196,163 @@ public class ReadBufferManager extends FtConstants
              * depending on the model.
              */
             result = new BulkPacketBufferIn(mEndpointMaxPacketSize);
-            }
-        return result;
         }
+        return result;
+    }
 
-    public void releaseReadableBuffer(BulkPacketBufferIn packetBuffer)
-        {
-        synchronized (mReadableBuffers)
-            {
+    public void releaseReadableBuffer(BulkPacketBufferIn packetBuffer) {
+        synchronized (mReadableBuffers) {
             mReadableBuffers.add(packetBuffer); // adds at end
             mReadableBuffers.notifyAll();
-            }
         }
+    }
 
-    public BulkPacketBufferIn acquireReadableInputBuffer() throws InterruptedException
-        {
-        for (;;)
-            {
-            synchronized (mReadableBuffers)
-                {
-                if (!mReadableBuffers.isEmpty())
-                    {
+    public BulkPacketBufferIn acquireReadableInputBuffer() throws InterruptedException {
+        for (; ; ) {
+            synchronized (mReadableBuffers) {
+                if (!mReadableBuffers.isEmpty()) {
                     return mReadableBuffers.remove(0);
-                    }
+                }
                 mReadableBuffers.wait();
-                }
             }
         }
+    }
 
-    public void releaseWritableInputBuffer(BulkPacketBufferIn packetBuffer)
-        {
+    public void releaseWritableInputBuffer(BulkPacketBufferIn packetBuffer) {
         // Don't retain buffers that have no user data at all
-        if (packetBuffer.getCurrentLength() <= MODEM_STATUS_SIZE || !retainRecentBuffer(packetBuffer))
-            {
+        if (packetBuffer.getCurrentLength() <= MODEM_STATUS_SIZE || !retainRecentBuffer(packetBuffer)) {
             offerAvailableBufferIn(packetBuffer);
-            }
         }
+    }
 
-    private void offerAvailableBufferIn(BulkPacketBufferIn packetBuffer)
-        {
-        synchronized (mAvailableInBuffers)
-            {
+    private void offerAvailableBufferIn(BulkPacketBufferIn packetBuffer) {
+        synchronized (mAvailableInBuffers) {
             // keep a few around around so as to reduce GC pressure
-            if (mAvailableInBuffers.size() < mAvailableInBuffersCapacity)
-                {
+            if (mAvailableInBuffers.size() < mAvailableInBuffersCapacity) {
                 mAvailableInBuffers.add(packetBuffer);
-                }
             }
         }
+    }
 
-    private class RecentPacketEvicted implements Consumer<BulkPacketBuffer>
-        {
-        @Override public void accept(BulkPacketBuffer bulkPacketBuffer)
-            {
-            if (bulkPacketBuffer instanceof BulkPacketBufferIn)
-                {
-                offerAvailableBufferIn((BulkPacketBufferIn)bulkPacketBuffer);
-                }
-            else
-                {
-                offerAvailableBufferOut((BulkPacketBufferOut)bulkPacketBuffer);
-                }
+    private class RecentPacketEvicted implements Consumer<BulkPacketBuffer> {
+        @Override
+        public void accept(BulkPacketBuffer bulkPacketBuffer) {
+            if (bulkPacketBuffer instanceof BulkPacketBufferIn) {
+                offerAvailableBufferIn((BulkPacketBufferIn) bulkPacketBuffer);
+            } else {
+                offerAvailableBufferOut((BulkPacketBufferOut) bulkPacketBuffer);
             }
         }
+    }
 
-    public void setDebugRetainBuffers(boolean retainRecentBuffers)
-        {
-        synchronized (mRetainedBuffers)
-            {
+    public void setDebugRetainBuffers(boolean retainRecentBuffers) {
+        synchronized (mRetainedBuffers) {
             mDebugRetainBuffers = retainRecentBuffers;
-            if (!mDebugRetainBuffers)
-                {
+            if (!mDebugRetainBuffers) {
                 mRetainedBuffers.clear();
-                }
             }
         }
+    }
 
-    public boolean getDebugRetainBuffers()
-        {
+    public boolean getDebugRetainBuffers() {
         return mDebugRetainBuffers;
-        }
+    }
 
-    public boolean retainRecentBuffer(BulkPacketBuffer buffer)
-        {
-        synchronized (mRetainedBuffers)
-            {
-            if (mDebugRetainBuffers)
-                {
+    public boolean retainRecentBuffer(BulkPacketBuffer buffer) {
+        synchronized (mRetainedBuffers) {
+            if (mDebugRetainBuffers) {
                 mRetainedBuffers.add(buffer);
                 // RobotLog.logBytes(TAG, "retained", buffer.arrayOffset(), buffer.getCurrentLength(), buffer.array());
                 return true;
-                }
             }
-        return false;
         }
+        return false;
+    }
 
-    public void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object...args)
-        {
-        synchronized (mRetainedBuffers)
-            {
+    public void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object... args) {
+        synchronized (mRetainedBuffers) {
             RobotLog.vv(tag, format, args);
             //
             BulkPacketBuffer firstBuffer = null;
             TimeUnit timeUnitReport = TimeUnit.NANOSECONDS;
             double timeUnitScale = 1.0 / ElapsedTime.MILLIS_IN_NANO;
-            for (;;)
-                {
+            for (; ; ) {
                 BulkPacketBuffer buffer = mRetainedBuffers.poll();
-                if (buffer == null)
+                if (buffer == null) {
                     break;
-                if (firstBuffer == null)
-                    {
+                }
+                if (firstBuffer == null) {
                     firstBuffer = buffer;
-                    if (nsOrigin == 0)
-                        {
+                    if (nsOrigin == 0) {
                         nsOrigin = firstBuffer.getTimestamp(TimeUnit.NANOSECONDS);
-                        }
                     }
+                }
 
                 double ns = buffer.getTimestamp(timeUnitReport) - timeUnitReport.convert(nsOrigin, TimeUnit.NANOSECONDS);
                 String bufferCaption = String.format("%s (ts=%.3f)", buffer instanceof BulkPacketBufferIn ? "read " : "write", ns * timeUnitScale);
                 RobotLog.logBytes(tag, bufferCaption, buffer.array(), buffer.arrayOffset(), buffer.getCurrentLength());
-                }
+            }
 
-            if (nsTimerExpire > 0)
-                {
+            if (nsTimerExpire > 0) {
                 RobotLog.vv(tag, "timer expired (ts=%.3f)", timeUnitReport.convert(nsTimerExpire - nsOrigin, TimeUnit.NANOSECONDS) * timeUnitScale);
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // I/O
     //----------------------------------------------------------------------------------------------
 
-    /** Called on {@link ReadBufferWorker} thread */
-    public void processBulkInData(BulkPacketBufferIn packetBuffer) throws FtDeviceIOException, InterruptedException
-        {
-        if (isOpen() && packetBuffer.getCurrentLength() > 0)
-            {
+    /**
+     * Called on {@link ReadBufferWorker} thread
+     */
+    public void processBulkInData(BulkPacketBufferIn packetBuffer) throws FtDeviceIOException, InterruptedException {
+        if (isOpen() && packetBuffer.getCurrentLength() > 0) {
             mProcessBulkInDataCallInFlight = true;
 
             try {
                 final int cbBuffer = packetBuffer.getCurrentLength();
-                if (cbBuffer < MODEM_STATUS_SIZE)
-                    {
+                if (cbBuffer < MODEM_STATUS_SIZE) {
                     return;
-                    }
+                }
 
                 // Wait until we have enough room in the buffer to write the incoming data
                 // TODO: reexamine policy about when to toss data: where does the back pressure go?
-                synchronized (mCircularBuffer)
-                    {
-                    for (;;)
-                        {
-                        int cbFree   = mCircularBuffer.remainingCapacity();
+                synchronized (mCircularBuffer) {
+                    for (; ; ) {
+                        int cbFree = mCircularBuffer.remainingCapacity();
                         int cbNeeded = cbBuffer - MODEM_STATUS_SIZE;
-                        if (cbNeeded <= cbFree)
+                        if (cbNeeded <= cbFree) {
                             break;
+                        }
 
                         // Wait until the state of the buffer changes
                         mCircularBuffer.wait();
 
                         // Get out of Dodge if things have closed while we were waiting
-                        if (!isOpen()) return;
+                        if (!isOpen()) {
+                            return;
                         }
                     }
+                }
 
                 this.extractReadData(packetBuffer);
-                }
-            finally
-                {
+            } finally {
                 mProcessBulkInDataCallInFlight = false;
-                }
             }
         }
+    }
 
-    /** called on {@link ReadBufferWorker} thread */
-    private void extractReadData(BulkPacketBufferIn packetBuffer) throws InterruptedException
-        {
+    /**
+     * called on {@link ReadBufferWorker} thread
+     */
+    private void extractReadData(BulkPacketBufferIn packetBuffer) throws InterruptedException {
         final int cbBuffer = packetBuffer.getCurrentLength();
-        if (cbBuffer > 0)
-            {
+        if (cbBuffer > 0) {
             verifyInvariants("->extractReadData");
             try {
-                short   signalEvents = 0;
-                short   signalLineEvents = 0;
+                short signalEvents = 0;
+                short signalLineEvents = 0;
                 boolean signalRxChar = false;
 
                 final int packetCount = cbBuffer / this.mEndpointMaxPacketSize + (cbBuffer % this.mEndpointMaxPacketSize > 0 ? 1 : 0);
@@ -409,12 +360,10 @@ public class ReadBufferManager extends FtConstants
 
                 ByteBuffer byteBuffer = packetBuffer.getByteBuffer();
                 int cbExtracted = 0;
-                for (int iPacket = 0; iPacket < packetCount; ++iPacket)
-                    {
+                for (int iPacket = 0; iPacket < packetCount; ++iPacket) {
                     int ibFirst;
                     int ibMax;
-                    if (iPacket == packetCount - 1)
-                        {
+                    if (iPacket == packetCount - 1) {
                         // Last packet : use modem status at start of packet
                         ibFirst = iPacket * this.mEndpointMaxPacketSize;
                         ibMax = cbBuffer;
@@ -429,68 +378,56 @@ public class ReadBufferManager extends FtConstants
                         //
                         ibFirst += MODEM_STATUS_SIZE;
                         //
-                        if (byteBuffer.hasRemaining())
-                            {
+                        if (byteBuffer.hasRemaining()) {
                             signalLineEvents = (short) (this.mDevice.mDeviceInfo.lineStatus & 0x1E);
-                            }
-                        else
-                            {
+                        } else {
                             signalLineEvents = 0;
-                            }
                         }
-                    else
-                        {
+                    } else {
                         // Not the last packet : ignore modem status at start of packet
                         ibFirst = iPacket * this.mEndpointMaxPacketSize + MODEM_STATUS_SIZE;
                         ibMax = (iPacket + 1) * this.mEndpointMaxPacketSize;
                         setBufferBounds(byteBuffer, ibFirst, ibMax);
-                        }
+                    }
 
                     Assert.assertTrue(byteBuffer.remaining() == ibMax - ibFirst);
                     int cbPacket = ibMax - ibFirst;
-                    if (cbPacket > 0)
-                        {
-                        synchronized (mCircularBuffer)
-                            {
+                    if (cbPacket > 0) {
+                        synchronized (mCircularBuffer) {
                             // Remember the bytes in our linear array of bytes
                             cbExtracted += mCircularBuffer.write(byteBuffer);
 
                             // The first of those was at the start a packet (ie: followed modem status
                             // bytes) while the remainder were not
                             mMarkedItemQueue.addMarkedItem();
-                            mMarkedItemQueue.addUnmarkedItems(cbPacket-1);
+                            mMarkedItemQueue.addUnmarkedItems(cbPacket - 1);
 
                             // Remember when these packets came in
                             mTimestamps.addLast(packetBuffer.getTimestamp(TimeUnit.NANOSECONDS), cbPacket);
-                            }
                         }
                     }
+                }
 
-                if (cbExtracted > 0)
-                    {
+                if (cbExtracted > 0) {
                     signalRxChar = true;
                     wakeReadBulkInData();
-                    }
+                }
 
                 byteBuffer.clear();
                 this.processEventChars(signalRxChar, signalEvents, signalLineEvents);
-                }
-            finally
-                {
+            } finally {
                 verifyInvariants("<-extractReadData");
-                }
             }
         }
+    }
 
-    private void setBufferBounds(ByteBuffer buffer, int ibFirst, int ibMax)
-        {
+    private void setBufferBounds(ByteBuffer buffer, int ibFirst, int ibMax) {
         buffer.clear();             // don't assume positions: position <- 0, limit <- capacity
         buffer.position(ibFirst);
         buffer.limit(ibMax);
-        }
+    }
 
-    private void verifyInvariants(String context)
-        {
+    private void verifyInvariants(String context) {
         /*synchronized (mCircularBuffer)
             {
             int cbData = mCircularBuffer.size();
@@ -499,200 +436,161 @@ public class ReadBufferManager extends FtConstants
             Assert.assertTrue(cbData == cMarked);
             Assert.assertTrue(cbData == cTimestamp);
             }*/
-        }
+    }
 
     /**
      * Attempt to read cbToRead bytes from the device, subject to a timeout
      *
-     * @param data          the buffer into which the data is to be placed, starting at the beginning
-     * @param cbToRead      the number of bytes to read
-     * @param msTimeout     the number of milliseconds to wait for the result
-     * @param timeWindow    optional place into which to record the timestamps that cover the duration of the read data
-     * @return              the number of bytes read (zero means the timeout is reached w/o returning the data
-     *                      unless the number of bytes to read was itself zero)
-     *                      FT_Device.RC_DEVICE_CLOSED : the device was closed
+     * @param data       the buffer into which the data is to be placed, starting at the beginning
+     * @param cbToRead   the number of bytes to read
+     * @param msTimeout  the number of milliseconds to wait for the result
+     * @param timeWindow optional place into which to record the timestamps that cover the duration of the read data
+     * @return the number of bytes read (zero means the timeout is reached w/o returning the data
+     * unless the number of bytes to read was itself zero)
+     * FT_Device.RC_DEVICE_CLOSED : the device was closed
      * @throws InterruptedException
      */
-    public int readBulkInData(final byte[] data, final int ibFirst, final int cbToRead, long msTimeout, @Nullable TimeWindow timeWindow) throws InterruptedException
-        {
-        if (mReadBulkInDataInterruptRequested)
-            {
+    public int readBulkInData(final byte[] data, final int ibFirst, final int cbToRead, long msTimeout, @Nullable TimeWindow timeWindow) throws InterruptedException {
+        if (mReadBulkInDataInterruptRequested) {
             throw new InterruptedException("interrupted in readBulkInData()");
-            }
-        else if (cbToRead > 0 && isOpen())
-            {
+        } else if (cbToRead > 0 && isOpen()) {
             mReadBulkInDataThread = Thread.currentThread();
             try {
                 verifyInvariants("->readBulkInData");
                 final Deadline readDeadline = getReadDeadline(msTimeout);
 
                 // Loop until we get the amount of data we came for
-                while (isOpen())
-                    {
+                while (isOpen()) {
                     // Stop if we've timed out
-                    if (readDeadline.hasExpired())
-                        {
+                    if (readDeadline.hasExpired()) {
                         return 0;
-                        }
+                    }
 
                     // If we've been poked, then poke our callers
-                    if (Thread.interrupted())
-                        {
+                    if (Thread.interrupted()) {
                         throw new InterruptedException("interrupted reading USB data");
-                        }
+                    }
 
                     // Is there enough data there for us to read?
-                    synchronized (mCircularBuffer)
-                        {
-                        if (mCircularBuffer.size() >= cbToRead)
-                            {
+                    synchronized (mCircularBuffer) {
+                        if (mCircularBuffer.size() >= cbToRead) {
                             // Yes, read it
                             int cbRead = mCircularBuffer.read(data, ibFirst, cbToRead);
-                            if (cbRead > 0)
-                                {
+                            if (cbRead > 0) {
                                 mMarkedItemQueue.removeItems(cbRead);
                                 //
-                                if (timeWindow != null)
-                                    {
+                                if (timeWindow != null) {
                                     timeWindow.setNanosecondsFirst(mTimestamps.getFirst());
                                     timeWindow.setNanosecondsLast(mTimestamps.removeFirstCount(cbRead));
-                                    }
-                                else
-                                    {
+                                } else {
                                     mTimestamps.removeFirstCount(cbRead);    // just discard
-                                    }
+                                }
                                 //
                                 mCircularBuffer.notifyAll();
-                                }
-                            return cbRead;
                             }
+                            return cbRead;
+                        }
 
                         // Not enough data. Wait for more data to come in. In art, the wait system
                         // complains to the log if you use a non-integer wait interval, so we cap.
                         long msRemaining = Math.min(readDeadline.timeRemaining(TimeUnit.MILLISECONDS), Integer.MAX_VALUE);
-                        if (msRemaining > 0)
-                            {
+                        if (msRemaining > 0) {
                             mCircularBuffer.wait(msRemaining);
-                            }
                         }
                     }
+                }
 
                 // The device was closed while we were waiting
                 return FtDevice.RC_DEVICE_CLOSED;
-                }
-            finally
-                {
+            } finally {
                 verifyInvariants("<-readBulkInData");
                 mReadBulkInDataThread = null;
-                }
             }
-        else
-            {
+        } else {
             return 0;
-            }
         }
+    }
 
-    /** We cache in member variable to as to avoid creating oodles of short-lived objects */
-    protected Deadline getReadDeadline(long msTimeout)
-        {
-        if (msTimeout == 0)
-            {
+    /**
+     * We cache in member variable to as to avoid creating oodles of short-lived objects
+     */
+    protected Deadline getReadDeadline(long msTimeout) {
+        if (msTimeout == 0) {
             msTimeout = this.mParams.getBulkInReadTimeout();
-            }
-        if (mReadDeadline.getDuration(TimeUnit.MILLISECONDS) == msTimeout)
-            {
-            mReadDeadline.reset();
-            }
-        else
-            {
-            mReadDeadline = new Deadline(msTimeout, TimeUnit.MILLISECONDS);
-            }
-        return mReadDeadline;
         }
+        if (mReadDeadline.getDuration(TimeUnit.MILLISECONDS) == msTimeout) {
+            mReadDeadline.reset();
+        } else {
+            mReadDeadline = new Deadline(msTimeout, TimeUnit.MILLISECONDS);
+        }
+        return mReadDeadline;
+    }
 
-    public boolean mightBeAtUsbPacketStart()
-        {
+    public boolean mightBeAtUsbPacketStart() {
         // If it's empty, then the next data will be the start of a packet, by definition
         return mMarkedItemQueue.isAtMarkedItem() || mMarkedItemQueue.isEmpty();
-        }
+    }
 
-    public void skipToLikelyUsbPacketStart()
-        {
-        synchronized (mCircularBuffer)
-            {
+    public void skipToLikelyUsbPacketStart() {
+        synchronized (mCircularBuffer) {
             int cbSkip = mMarkedItemQueue.removeUpToNextMarkedItemOrEnd();
-            if (cbSkip > 0)
-                {
+            if (cbSkip > 0) {
                 mTimestamps.removeFirstCount(cbSkip);
                 mCircularBuffer.skip(cbSkip);
                 mCircularBuffer.notifyAll();
-                }
             }
         }
+    }
 
-    private boolean isOpen()
-        {
+    private boolean isOpen() {
         return mIsOpen && FtDevice.isOpen(this.mDevice);
-        }
+    }
 
-    private void wakeReadBulkInData()
-        {
-        synchronized (this.mCircularBuffer)
-            {
+    private void wakeReadBulkInData() {
+        synchronized (this.mCircularBuffer) {
             this.mCircularBuffer.notifyAll();
-            }
         }
+    }
 
-    private boolean extantReadBulkInDataCall()
-        {
+    private boolean extantReadBulkInDataCall() {
         return mReadBulkInDataThread != null;
-        }
+    }
 
-    public void requestReadInterrupt(boolean requested)
-        {
-        if (requested)
-            {
+    public void requestReadInterrupt(boolean requested) {
+        if (requested) {
             mReadBulkInDataInterruptRequested = true;
             Thread thread = mReadBulkInDataThread;
-            if (thread != null)
-                {
+            if (thread != null) {
                 thread.interrupt();
-                }
             }
-        else
+        } else {
             mReadBulkInDataInterruptRequested = false;
         }
+    }
 
-    private void spinWaitNoReadBulkInData()
-        {
-        for (;;)
-            {
-            if (!extantReadBulkInDataCall())
-                {
+    private void spinWaitNoReadBulkInData() {
+        for (; ; ) {
+            if (!extantReadBulkInDataCall()) {
                 return;
-                }
-            Thread.yield();
             }
+            Thread.yield();
         }
+    }
 
-    private boolean extantProcessBulkInData()
-        {
+    private boolean extantProcessBulkInData() {
         return mProcessBulkInDataCallInFlight;
-        }
+    }
 
-    public void purgeInputData()
-        {
-        synchronized (mCircularBuffer)
-            {
-            synchronized (mReadableBuffers)
-                {
+    public void purgeInputData() {
+        synchronized (mCircularBuffer) {
+            synchronized (mReadableBuffers) {
                 mReadableBuffers.clear();
-                }
+            }
             mCircularBuffer.clear();
             mMarkedItemQueue.clear();
             mTimestamps.clear();
-            }
         }
+    }
 
     /**
      * The original implementation of processEventChars used an in-process broadcast as notification
@@ -700,27 +598,24 @@ public class ReadBufferManager extends FtConstants
      * which we'd very much not like to have to link in here. And since we presently don't need such
      * a notification mechanism, we'll do without it for now. Recommendation: if we ever DO need
      * such a thing, use a better mechanism :-).
-     *
+     * <p>
      * From the FTDI D2XX Programmer's Guide:
-     *
+     * <p>
      * "The least significant byte of the lpdwModemStatus value holds the modem status. On Windows and
      * Windows CE, the line status is held in the second least significant byte of the lpdwModemStatus value.
-     *
+     * <p>
      * The modem status is bit-mapped as follows: Clear To Send (CTS) = 0x10, Data Set Ready (DSR) = 0x20,
      * Ring Indicator (RI) = 0x40, Data Carrier Detect (DCD) = 0x80.
-     *
+     * <p>
      * The line status is bit-mapped as follows: Overrun Error (OE) = 0x02, Parity Error (PE) = 0x04,
      * Framing Error (FE) = 0x08, Break Interrupt (BI) = 0x10."
      */
-    public int processEventChars(boolean fRxChar, short sEvents, short slEvents) throws InterruptedException
-        {
+    public int processEventChars(boolean fRxChar, short sEvents, short slEvents) throws InterruptedException {
         return 0;
-        }
+    }
 
-    void close()
-        {
-        if (mIsOpen)
-            {
+    void close() {
+        if (mIsOpen) {
             // Set a flag so that anyone who notices will get out of the way
             mIsOpen = false;
 
@@ -730,6 +625,6 @@ public class ReadBufferManager extends FtConstants
             // If there's any reader out there, wake them up and wait until they leave
             wakeReadBulkInData();
             spinWaitNoReadBulkInData();
-            }
         }
     }
+}

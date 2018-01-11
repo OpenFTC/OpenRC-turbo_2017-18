@@ -49,50 +49,50 @@ import java.util.Map;
 
 public class DeviceInfoAdapter extends BaseAdapter implements ListAdapter {
 
-  private List<ControllerConfiguration> deviceControllers = new LinkedList<ControllerConfiguration>();
-  private EditActivity editActivity;
-  private int list_id;
+    private List<ControllerConfiguration> deviceControllers = new LinkedList<ControllerConfiguration>();
+    private EditActivity editActivity;
+    private int list_id;
 
-  public DeviceInfoAdapter(EditActivity editActivity, int list_id, List<ControllerConfiguration> deviceControllers) {
-    super();
-    this.editActivity = editActivity;
-    this.deviceControllers = deviceControllers;
-    this.list_id = list_id;
-  }
-
-  @Override
-  public int getCount() {
-    return deviceControllers.size();
-  }
-
-  @Override
-  public Object getItem(int arg0) {
-    return deviceControllers.get(arg0);
-  }
-
-  @Override
-  public long getItemId(int arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public View getView(int pos, View convertView, ViewGroup parent) {
-    View row = convertView;
-    if (row == null){
-      LayoutInflater inflater = editActivity.getLayoutInflater();
-      row = inflater.inflate(list_id, parent, false);
+    public DeviceInfoAdapter(EditActivity editActivity, int list_id, List<ControllerConfiguration> deviceControllers) {
+        super();
+        this.editActivity = editActivity;
+        this.deviceControllers = deviceControllers;
+        this.list_id = list_id;
     }
 
-    ControllerConfiguration controllerConfiguration = deviceControllers.get(pos);
-    String serialNum = editActivity.formatSerialNumber(editActivity, controllerConfiguration);
-    TextView displayNum = (TextView)row.findViewById(android.R.id.text2);
-    displayNum.setText(serialNum);
+    @Override
+    public int getCount() {
+        return deviceControllers.size();
+    }
 
-    String name = deviceControllers.get(pos).getName();
-    TextView text = (TextView)row.findViewById(android.R.id.text1);
-    text.setText(name);
-    return row;
+    @Override
+    public Object getItem(int arg0) {
+        return deviceControllers.get(arg0);
+    }
 
-  }
+    @Override
+    public long getItemId(int arg0) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public View getView(int pos, View convertView, ViewGroup parent) {
+        View row = convertView;
+        if (row == null) {
+            LayoutInflater inflater = editActivity.getLayoutInflater();
+            row = inflater.inflate(list_id, parent, false);
+        }
+
+        ControllerConfiguration controllerConfiguration = deviceControllers.get(pos);
+        String serialNum = editActivity.formatSerialNumber(editActivity, controllerConfiguration);
+        TextView displayNum = (TextView) row.findViewById(android.R.id.text2);
+        displayNum.setText(serialNum);
+
+        String name = deviceControllers.get(pos).getName();
+        TextView text = (TextView) row.findViewById(android.R.id.text1);
+        text.setText(name);
+        return row;
+
+    }
 }

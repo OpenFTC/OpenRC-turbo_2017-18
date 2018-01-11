@@ -1,0 +1,29 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 19
+        versionCode 3
+        versionName "2.0b1"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        def openRCVariant = "OpenRC-turbo"
+
+        buildConfigField "String", "OPENRC_VARIANT", "\"${openRCVariant}\""
+        buildConfigField "String", "VERSION_COMPLETE", "\"${openRCVariant} ${versionName}\""
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}

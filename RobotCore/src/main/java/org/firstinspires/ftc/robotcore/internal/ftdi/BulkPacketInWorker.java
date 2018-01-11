@@ -49,102 +49,83 @@ import java.util.concurrent.TimeUnit;
  * Thread implementation for receiving bulk data from Usb. Runs at elevated priority.
  */
 @SuppressWarnings("WeakerAccess")
-public class BulkPacketInWorker extends FtConstants implements Runnable
-    {
+public class BulkPacketInWorker extends FtConstants implements Runnable {
     public static final String TAG = "BulkPacketInWorker";
 
-    final MonitoredUsbDeviceConnection   usbDeviceConnection;
-    final UsbEndpoint                    endpoint;
-    final ReadBufferManager              readBufferManager;
-    final FtDevice                       ftDevice;
-    final int                            msReadTimeout;
+    final MonitoredUsbDeviceConnection usbDeviceConnection;
+    final UsbEndpoint endpoint;
+    final ReadBufferManager readBufferManager;
+    final FtDevice ftDevice;
+    final int msReadTimeout;
     final FrequentErrorReporter<Integer> errorReporter;
-    final Object                         trivialInput;
+    final Object trivialInput;
 
-    BulkPacketInWorker(FtDevice ftDevice, ReadBufferManager readBufferManager, MonitoredUsbDeviceConnection usbDeviceConnection, UsbEndpoint endpoint)
-        {
-        this.ftDevice            = ftDevice;
-        this.endpoint            = endpoint;
+    BulkPacketInWorker(FtDevice ftDevice, ReadBufferManager readBufferManager, MonitoredUsbDeviceConnection usbDeviceConnection, UsbEndpoint endpoint) {
+        this.ftDevice = ftDevice;
+        this.endpoint = endpoint;
         this.usbDeviceConnection = usbDeviceConnection;
-        this.readBufferManager   = readBufferManager;
-        this.msReadTimeout       = this.ftDevice.getDriverParameters().getBulkInReadTimeout();
-        this.errorReporter       = new FrequentErrorReporter<Integer>();
-        this.trivialInput        = new Object();
-        }
+        this.readBufferManager = readBufferManager;
+        this.msReadTimeout = this.ftDevice.getDriverParameters().getBulkInReadTimeout();
+        this.errorReporter = new FrequentErrorReporter<Integer>();
+        this.trivialInput = new Object();
+    }
 
-    public void awaitTrivialInput(long time, @NonNull TimeUnit unit)
-        {
+    public void awaitTrivialInput(long time, @NonNull TimeUnit unit) {
         long ms = unit.toMillis(time);
-        synchronized (trivialInput)
-            {
+        synchronized (trivialInput) {
             try {
                 trivialInput.wait(ms);
-                }
-            catch (InterruptedException e)
-                {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                }
             }
         }
+    }
 
-    protected void noteTrivialInput()
-        {
-        synchronized (trivialInput)
-            {
+    protected void noteTrivialInput() {
+        synchronized (trivialInput) {
             trivialInput.notifyAll();
-            }
         }
+    }
 
-    public void run()
-        {
-        try
-            {
-            do  {
+    public void run() {
+        try {
+            do {
                 // Get a buffer into which to receive some data
                 BulkPacketBufferIn packetBuffer = this.readBufferManager.acquireWritableInputBuffer();
 
                 // Try to read some incoming data
                 // TODO: this call is NOT interruptable ??!?
                 int cbRead = this.usbDeviceConnection.bulkTransfer(this.endpoint, packetBuffer.array(), 0, packetBuffer.capacity(), this.msReadTimeout);
-                if (cbRead > 0)
-                    {
+                if (cbRead > 0) {
                     // Got some data : pass it along to our (lower-priority) processor
                     packetBuffer.setCurrentLength(cbRead);
                     this.readBufferManager.releaseReadableBuffer(packetBuffer);
-                    if (cbRead <= MODEM_STATUS_SIZE)
-                        {
+                    if (cbRead <= MODEM_STATUS_SIZE) {
                         noteTrivialInput();
-                        }
                     }
-                else
-                    {
+                } else {
                     // No data received, so put buffer back into the pool
                     packetBuffer.setCurrentLength(0);       // be consistent, helps debugging
                     this.readBufferManager.releaseWritableInputBuffer(packetBuffer);
 
                     // Log any errors
-                    if (cbRead < 0)
-                        {
+                    if (cbRead < 0) {
                         this.errorReporter.ee(cbRead, TAG, "%s: bulkTransfer() error: %d", ftDevice.getSerialNumber(), cbRead);
-                        }
-                    else
+                    } else {
                         this.errorReporter.reset();
                     }
                 }
+            }
             while (!Thread.interrupted());
 
             throw new InterruptedException();
-            }
-        catch (InterruptedException interrupt)
-            {
+        } catch (InterruptedException interrupt) {
             this.readBufferManager.purgeInputData();
             Thread.currentThread().interrupt();
-            }
-        catch (RuntimeException|RobotUsbException e)
-            {
+        } catch (RuntimeException | RobotUsbException e) {
             // RuntimeExceptions are bugs
             // RobotUsbExceptions shouldn't be thrown on reads, as we are doing here
             RobotLog.ee(TAG, e, "unexpected exception");
-            }
         }
     }
+}

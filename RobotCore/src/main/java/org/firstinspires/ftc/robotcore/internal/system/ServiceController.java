@@ -50,8 +50,7 @@ import java.util.List;
  * {@link ServiceController} provides control of and auto-starting for services
  */
 @SuppressWarnings("WeakerAccess")
-public class ServiceController
-    {
+public class ServiceController {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -64,24 +63,21 @@ public class ServiceController
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static void onApplicationStart()
-        {
+    public static void onApplicationStart() {
         autoStartServices();
-        }
+    }
 
-    protected static class AutoStartableService
-        {
-        public String   className;
-        public int      launchOrder;
-        public AutoStartableService(String className, int launchOrder)
-            {
+    protected static class AutoStartableService {
+        public String className;
+        public int launchOrder;
+
+        public AutoStartableService(String className, int launchOrder) {
             this.className = className;
             this.launchOrder = launchOrder;
-            }
         }
+    }
 
-    protected static List<AutoStartableService> getAutoStartableServices()
-        {
+    protected static List<AutoStartableService> getAutoStartableServices() {
         List<AutoStartableService> result = new ArrayList<AutoStartableService>();
 
         // Enumerate the metdata looking for autostart instructions
@@ -89,107 +85,84 @@ public class ServiceController
             PackageManager packageManager = AppUtil.getDefContext().getPackageManager();
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(AppUtil.getInstance().getApplication().getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = applicationInfo.metaData;
-            for (String key : bundle.keySet())
-                {
-                if (key.startsWith(metaDataAutoStartPrefix))
-                    {
+            for (String key : bundle.keySet()) {
+                if (key.startsWith(metaDataAutoStartPrefix)) {
                     String value = bundle.getString(key);
                     String[] splits = value.split("\\|");
-                    if (splits.length == 2)
-                        {
+                    if (splits.length == 2) {
                         if ("RC".equalsIgnoreCase(splits[0]) && AppUtil.getInstance().isRobotController()
-                         || "DS".equalsIgnoreCase(splits[0]) && AppUtil.getInstance().isDriverStation()
-                         || "BOTH".equalsIgnoreCase(splits[0]))
-                            {
+                                || "DS".equalsIgnoreCase(splits[0]) && AppUtil.getInstance().isDriverStation()
+                                || "BOTH".equalsIgnoreCase(splits[0])) {
                             String serviceClassName = key.substring(metaDataAutoStartPrefix.length());
                             result.add(new AutoStartableService(serviceClassName, Integer.parseInt(splits[1])));
-                            }
-
                         }
-                    else
+
+                    } else {
                         throw AppUtil.getInstance().failFast(TAG, "incorrect manifest construction");
                     }
                 }
             }
-        catch (PackageManager.NameNotFoundException e)   // we shouldn't configure classes we can't find
-            {
+        } catch (PackageManager.NameNotFoundException e)   // we shouldn't configure classes we can't find
+        {
             throw AppUtil.getInstance().unreachable(TAG, e);
-            }
+        }
 
         // Sort the list according to priority. Smaller launch order starts sooner, so
         // sort in increasing order by that.
-        Collections.sort(result, new Comparator<AutoStartableService>()
-            {
+        Collections.sort(result, new Comparator<AutoStartableService>() {
             @Override
-            public int compare(AutoStartableService lhs, AutoStartableService rhs)
-                {
+            public int compare(AutoStartableService lhs, AutoStartableService rhs) {
                 int result = lhs.launchOrder - rhs.launchOrder;
-                if (result==0)
-                    {
+                if (result == 0) {
                     result = lhs.className.compareTo(rhs.className);
-                    }
-                return result;
                 }
-            });
+                return result;
+            }
+        });
         return result;
-        }
+    }
 
-    protected static void autoStartServices()
-        {
+    protected static void autoStartServices() {
         List<AutoStartableService> autoStartableServices = getAutoStartableServices();
-        for (AutoStartableService service : autoStartableServices)
-            {
+        for (AutoStartableService service : autoStartableServices) {
             try {
                 startService(Class.forName(service.className));
-                }
-            catch (ClassNotFoundException e)
-                {
+            } catch (ClassNotFoundException e) {
                 throw AppUtil.getInstance().failFast(TAG, e, "configured service not found");
-                }
             }
         }
+    }
 
-    public static boolean startService(Class serviceClass)
-        {
+    public static boolean startService(Class serviceClass) {
         RobotLog.vv(TAG, "attempting to start service %s", serviceClass.getSimpleName());
 
         Context context = AppUtil.getDefContext();
         Intent intent = new Intent(context, serviceClass);
-        try
-            {
+        try {
             ComponentName componentName = context.startService(intent);
-            if (componentName == null)
-                {
+            if (componentName == null) {
                 RobotLog.ee(TAG, "unable to start service %s", serviceClass.getSimpleName());
-                }
-            else
-                {
+            } else {
                 RobotLog.vv(TAG, "started service %s", serviceClass.getSimpleName());
                 return true;
-                }
             }
-        catch (SecurityException e)
-            {
+        } catch (SecurityException e) {
             RobotLog.ee(TAG, e, "unable to start service %s", serviceClass.getSimpleName());
-            }
-        return false;
         }
+        return false;
+    }
 
-    public static boolean stopService(Class serviceClass)
-        {
+    public static boolean stopService(Class serviceClass) {
         RobotLog.vv(TAG, "attempting to stop service %s", serviceClass.getSimpleName());
 
         Context context = AppUtil.getDefContext();
         Intent intent = new Intent(context, serviceClass);
-        try
-            {
+        try {
             context.stopService(intent);
             return true;
-            }
-        catch (SecurityException e)
-            {
+        } catch (SecurityException e) {
             RobotLog.ee(TAG, e, "unable to stop service %s", serviceClass.getSimpleName());
-            }
-        return false;
         }
+        return false;
     }
+}

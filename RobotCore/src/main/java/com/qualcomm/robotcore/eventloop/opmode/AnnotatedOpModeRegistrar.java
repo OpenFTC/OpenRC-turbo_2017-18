@@ -37,19 +37,17 @@ package com.qualcomm.robotcore.eventloop.opmode;
  * in order to automatically register OpMode classes that you have annotated with @Autonomous
  * or @TeleOp.
  *
- * @deprecated The function formerly performed by this class is now automatically executed by the system
  * @see Autonomous
  * @see TeleOp
+ * @deprecated The function formerly performed by this class is now automatically executed by the system
  */
 @SuppressWarnings("WeakerAccess")
 @Deprecated
-public class AnnotatedOpModeRegistrar
-    {
+public class AnnotatedOpModeRegistrar {
     /**
      * @deprecated functionality now automatically called by the system
      */
     @Deprecated
-    public static void register(final OpModeManager manager)
-        {
-        }
+    public static void register(final OpModeManager manager) {
     }
+}

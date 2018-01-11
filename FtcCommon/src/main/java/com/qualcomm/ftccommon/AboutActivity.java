@@ -81,7 +81,7 @@ import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
-import org.openftc.UiUtils;
+import org.openftc.rc.UiUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -93,181 +93,191 @@ import java.util.zip.ZipFile;
 
 public class AboutActivity extends ThemedActivity {
 
-  @Override public String getTag() { return this.getClass().getSimpleName(); }
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
 
-  NetworkConnection networkConnection = null;
-  NetworkType networkType;
+    NetworkConnection networkConnection = null;
+    NetworkType networkType;
 
-  @Override
-  protected void onStart() {
-    super.onStart();
-    setContentView(R.layout.activity_about);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setContentView(R.layout.activity_about);
 
     /*
      * Setup the button that will show the AlertDialog which
-     * contains a summary of OpenFTC
+     * contains a summary of OpenRC
      */
-    Button aboutOpenFTCBtn;
-    aboutOpenFTCBtn = (Button) findViewById(R.id.aboutOpenFTC);
-    aboutOpenFTCBtn.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View view)
-      {
-        UiUtils.showOpenFtcSummary(AboutActivity.this);
-      }
-    });
+        Button aboutOpenRCBtn;
+        aboutOpenRCBtn = (Button) findViewById(R.id.aboutOpenRC);
+        aboutOpenRCBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UiUtils.showOpenRcSummary(AboutActivity.this);
+            }
+        });
 
-    Intent intent = getIntent();
-    Serializable extra = intent.getSerializableExtra(LaunchActivityConstantsList.ABOUT_ACTIVITY_CONNECTION_TYPE);
-    if(extra != null) {
-      networkType = (NetworkType) extra;
-    }
-
-
-    ListView aboutList = (ListView)findViewById(R.id.aboutList);
-
-    try {
-      networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, null);
-      networkConnection.enable();
-    } catch (NullPointerException e) {
-      RobotLog.e("Cannot start Network Connection of type: " + networkType);
-      networkConnection = null;
-    }
-
-    ArrayAdapter<Item> adapter =  new ArrayAdapter<Item>(this, android.R.layout.simple_list_item_2, android.R.id.text1) {
-      @Override
-      public View getView(int position, View convertView, ViewGroup parent) {
-        View view = super.getView(position, convertView, parent);
-        TextView topLine = (TextView) view.findViewById(android.R.id.text1);
-        TextView bottomLine = (TextView) view.findViewById(android.R.id.text2);
-
-        Item item = getItem(position);
-        topLine.setText(item.title);
-        bottomLine.setText(item.info);
-
-        return view;
-      }
-
-      @Override
-      public int getCount()
-      {
-        return 6;
-      }
-
-      @Override
-      public Item getItem(int pos) {
-        switch (pos) {
-          case 0: return getAppVersion();
-          case 1: return getLibVersion();
-          case 2: return getNetworkProtocolVersion();
-          case 3: return getConnectionInfo();
-          case 4: return getBuildTimeInfo();
-          case 5: return getTurboVersion();
+        Intent intent = getIntent();
+        Serializable extra = intent.getSerializableExtra(LaunchActivityConstantsList.ABOUT_ACTIVITY_CONNECTION_TYPE);
+        if (extra != null) {
+            networkType = (NetworkType) extra;
         }
-        return new Item();
-      }
 
-      private Item getAppVersion() {
-        Item i = new Item();
-        i.title = getString(R.string.about_app_version);
+
+        ListView aboutList = (ListView) findViewById(R.id.aboutList);
+
         try {
-          i.info = AboutActivity.this.getPackageManager().getPackageInfo(AboutActivity.this.getPackageName(), 0).versionName;
-        } catch (android.content.pm.PackageManager.NameNotFoundException e) {
-          i.info = e.getMessage();
+            networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, null);
+            networkConnection.enable();
+        } catch (NullPointerException e) {
+            RobotLog.e("Cannot start Network Connection of type: " + networkType);
+            networkConnection = null;
         }
-        return i;
-      }
 
-      private Item getLibVersion() {
-        Item i = new Item();
-        i.title = getString(R.string.about_library_version);
-        i.info = Version.getLibraryVersion();
-        return i;
-      }
+        ArrayAdapter<Item> adapter = new ArrayAdapter<Item>(this, android.R.layout.simple_list_item_2, android.R.id.text1) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView topLine = (TextView) view.findViewById(android.R.id.text1);
+                TextView bottomLine = (TextView) view.findViewById(android.R.id.text2);
 
-      private Item getNetworkProtocolVersion() {
-        Item i = new Item();
-        i.title = getString(R.string.about_network_protocol_version);
-        i.info = String.format("v%d", RobocolConfig.ROBOCOL_VERSION);
-        return i;
-      }
+                Item item = getItem(position);
+                topLine.setText(item.title);
+                bottomLine.setText(item.info);
 
-      private Item getConnectionInfo() {
-        Item i = new Item();
-        i.title = getString(R.string.about_network_connection_info);
-        i.info = networkConnection.getInfo();
+                return view;
+            }
 
-        return i;
-      }
+            @Override
+            public int getCount() {
+                return 6; // Modified for OpenRC: added 1 entry
+            }
 
-      private Item getBuildTimeInfo() {
-        Item i = new Item();
-        i.title = getString(R.string.about_build_time);
-        i.info = getBuildTime();
-        return i;
-      }
+            @Override
+            public Item getItem(int pos) {
+                switch (pos) {
+                    case 0:
+                        return getAppVersion();
+                    case 1:
+                        return getLibVersion();
+                    case 2:
+                        return getNetworkProtocolVersion();
+                    case 3:
+                        return getConnectionInfo();
+                    case 4:
+                        return getBuildTimeInfo();
+                    case 5:
+                        return getOpenRcVersion();
+                }
+                return new Item();
+            }
 
-      private Item getTurboVersion() {
-        Item i = new Item();
-        i.title = getString(R.string.about_turbo_version_title);
-        i.info = getString(R.string.about_turbo_version);
-        return i;
-      }
-    };
+            private Item getAppVersion() {
+                Item i = new Item();
+                i.title = getString(R.string.about_app_version);
+                try {
+                    i.info = AboutActivity.this.getPackageManager().getPackageInfo(AboutActivity.this.getPackageName(), 0).versionName;
+                } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+                    i.info = e.getMessage();
+                }
+                return i;
+            }
 
-    aboutList.setAdapter(adapter);
-  }
+            private Item getLibVersion() {
+                Item i = new Item();
+                i.title = getString(R.string.about_library_version);
+                i.info = Version.getLibraryVersion();
+                return i;
+            }
 
-  protected void onStop() {
-    super.onStop();
+            private Item getNetworkProtocolVersion() {
+                Item i = new Item();
+                i.title = getString(R.string.about_network_protocol_version);
+                i.info = String.format("v%d", RobocolConfig.ROBOCOL_VERSION);
+                return i;
+            }
 
-    if (networkConnection != null) {
-      networkConnection.disable();
+            private Item getConnectionInfo() {
+                Item i = new Item();
+                i.title = getString(R.string.about_network_connection_info);
+                i.info = networkConnection.getInfo();
+
+                return i;
+            }
+
+            private Item getBuildTimeInfo() {
+                Item i = new Item();
+                i.title = getString(R.string.about_build_time);
+                i.info = getBuildTime();
+                return i;
+            }
+
+            private Item getOpenRcVersion() {
+                Item i = new Item();
+                i.title = getString(R.string.about_openrc_version);
+                i.info = org.openftc.rc.BuildConfig.VERSION_COMPLETE;
+                return i;
+            }
+        };
+
+        aboutList.setAdapter(adapter);
     }
-  }
 
-  protected String getLocalIpAddressesAsString() {
-    ArrayList<InetAddress> addrs;
+    protected void onStop() {
+        super.onStop();
 
-    addrs = Network.getLocalIpAddresses();
-    addrs = Network.removeLoopbackAddresses(addrs);
-    addrs = Network.removeIPv6Addresses(addrs);
-
-    if (addrs.size() < 1) return "unavailable";
-
-    StringBuilder sb = new StringBuilder();
-    sb.append(addrs.get(0).getHostAddress());
-    for (int i = 1; i < addrs.size(); i++) {
-      sb.append(", ").append(addrs.get(i).getHostAddress());
+        if (networkConnection != null) {
+            networkConnection.disable();
+        }
     }
-    return sb.toString();
-  }
 
-  /** https://code.google.com/p/android/issues/detail?id=220039 */
-  protected String getBuildTime() {
+    protected String getLocalIpAddressesAsString() {
+        ArrayList<InetAddress> addrs;
 
-    String buildTime = "unavailable";
-    try {
-      ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), 0);
+        addrs = Network.getLocalIpAddresses();
+        addrs = Network.removeLoopbackAddresses(addrs);
+        addrs = Network.removeIPv6Addresses(addrs);
 
-      ZipFile zf = new ZipFile(ai.sourceDir);
-      ZipEntry ze = zf.getEntry("classes.dex");
-      zf.close();
+        if (addrs.size() < 1) {
+            return "unavailable";
+        }
 
-      long time = ze.getTime();
-      buildTime = SimpleDateFormat.getInstance().format(new java.util.Date(time));
-    } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+        StringBuilder sb = new StringBuilder();
+        sb.append(addrs.get(0).getHostAddress());
+        for (int i = 1; i < addrs.size(); i++) {
+            sb.append(", ").append(addrs.get(i).getHostAddress());
+        }
+        return sb.toString();
     }
-    return buildTime;
-  }
 
-  public static class Item {
-    public String title = "";
-    public String info = "";
-  }
+    /**
+     * https://code.google.com/p/android/issues/detail?id=220039
+     */
+    protected String getBuildTime() {
+
+        String buildTime = "unavailable";
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), 0);
+
+            ZipFile zf = new ZipFile(ai.sourceDir);
+            ZipEntry ze = zf.getEntry("classes.dex");
+            zf.close();
+
+            long time = ze.getTime();
+            buildTime = SimpleDateFormat.getInstance().format(new java.util.Date(time));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buildTime;
+    }
+
+    public static class Item {
+        public String title = "";
+        public String info = "";
+    }
 }
 

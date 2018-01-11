@@ -40,12 +40,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * whose primary interface is DcMotor. To access it, cast your DcMotor object
  * to DcMotorEx. However, it is perhaps prudent to first test whether the cast will succeed by
  * testing using 'instanceof'.
+ *
  * @see PwmControl
  */
-public interface DcMotorEx extends DcMotor
-    {
+public interface DcMotorEx extends DcMotor {
     /**
      * Individually energizes this particular motor
+     *
      * @see #setMotorDisable()
      * @see #isMotorEnabled()
      */
@@ -53,6 +54,7 @@ public interface DcMotorEx extends DcMotor
 
     /**
      * Individually de-energizes this particular motor
+     *
      * @see #setMotorEnable()
      * @see #isMotorEnabled()
      */
@@ -60,6 +62,7 @@ public interface DcMotorEx extends DcMotor
 
     /**
      * Returns whether this motor is energized
+     *
      * @see #setMotorEnable()
      * @see #setMotorDisable()
      */
@@ -67,18 +70,18 @@ public interface DcMotorEx extends DcMotor
 
     /**
      * Sets the velocity of the motor
-     * @param angularRate   the desired angular rate, in units per second
-     * @param unit          the units in which angularRate is expressed
      *
+     * @param angularRate the desired angular rate, in units per second
+     * @param unit        the units in which angularRate is expressed
      * @see #getVelocity(AngleUnit)
      */
     void setVelocity(double angularRate, AngleUnit unit);
 
     /**
      * Returns the current velocity of the motor, in angular units per second
-     * @param unit          the units in which the angular rate is desired
-     * @return              the current velocity of the motor
      *
+     * @param unit the units in which the angular rate is desired
+     * @return the current velocity of the motor
      * @see #setVelocity(double, AngleUnit)
      */
     double getVelocity(AngleUnit unit);
@@ -89,16 +92,16 @@ public interface DcMotorEx extends DcMotor
      * mode on a motor might affect other modes on that motor, or might affect the PID
      * coefficients used by other motors on the same controller.
      *
-     * @param mode either {@link RunMode#RUN_USING_ENCODER} or {@link RunMode#RUN_TO_POSITION}
+     * @param mode            either {@link RunMode#RUN_USING_ENCODER} or {@link RunMode#RUN_TO_POSITION}
      * @param pidCoefficients the new coefficients to use when in that mode on this motor
-     *
      * @see #getPIDCoefficients(RunMode)
      */
-    void setPIDCoefficients(RunMode mode,  PIDCoefficients pidCoefficients);
+    void setPIDCoefficients(RunMode mode, PIDCoefficients pidCoefficients);
 
     /**
      * Returns the PID control coefficients used when running in the indicated mode
      * on this motor.
+     *
      * @param mode either {@link RunMode#RUN_USING_ENCODER} or {@link RunMode#RUN_TO_POSITION}
      * @return the PID control coefficients used when running in the indicated mode on this motor
      */
@@ -106,6 +109,7 @@ public interface DcMotorEx extends DcMotor
 
     /**
      * Sets the target positioning tolerance of this motor
+     *
      * @param tolerance the desired tolerance, in encoder ticks
      * @see DcMotor#setTargetPosition(int)
      */
@@ -113,7 +117,8 @@ public interface DcMotorEx extends DcMotor
 
     /**
      * Returns the current target positioning tolerance of this motor
+     *
      * @return the current target positioning tolerance of this motor
      */
     int getTargetPositionTolerance();
-    }
+}

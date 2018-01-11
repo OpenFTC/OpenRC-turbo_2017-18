@@ -72,91 +72,90 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 @SuppressWarnings("WeakerAccess")
-public class ModernRoboticsUsbUtil
-    {
+public class ModernRoboticsUsbUtil {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    /** Modern Robotics USB Manufacturer Code */
+    /**
+     * Modern Robotics USB Manufacturer Code
+     */
     public static final int MFG_CODE_MODERN_ROBOTICS = 0x4d;
 
-    /** Modern Robotics DC Motor Controller USB Device ID */
+    /**
+     * Modern Robotics DC Motor Controller USB Device ID
+     */
     public static final int DEVICE_ID_DC_MOTOR_CONTROLLER = 0x4d;
 
-    /** Modern Robotics Servo Controller USB Device ID */
+    /**
+     * Modern Robotics Servo Controller USB Device ID
+     */
     public static final int DEVICE_ID_SERVO_CONTROLLER = 0x53;
 
-    /** Modern Robotics Legacy Module USB Device ID */
+    /**
+     * Modern Robotics Legacy Module USB Device ID
+     */
     public static final int DEVICE_ID_LEGACY_MODULE = 0x49;
 
-    /** Modern Robotics Device Interface Module USB Device ID */
+    /**
+     * Modern Robotics Device Interface Module USB Device ID
+     */
     public static final int DEVICE_ID_DEVICE_INTERFACE_MODULE = 0x41;
 
     /* Memory addresses used by Modern Robotics devices */
-    public static final int ADDRESS_VERSION_NUMBER    = 0x00;
+    public static final int ADDRESS_VERSION_NUMBER = 0x00;
     public static final int ADDRESS_MANUFACTURER_CODE = 0x01;
-    public static final int ADDRESS_DEVICE_ID         = 0x02;
+    public static final int ADDRESS_DEVICE_ID = 0x02;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsUsbUtil()
-        {
-        }
+    public ModernRoboticsUsbUtil() {
+    }
 
     //----------------------------------------------------------------------------------------------
     // Device management
     //----------------------------------------------------------------------------------------------
 
-    /** Note: when doScan is false, several openUsbDevice() calls (for different serial numbers) can execute concurrently. */
-    public static RobotUsbDevice openUsbDevice(boolean doScan, RobotUsbManager robotUsbManager, SerialNumber serialNumber) throws RobotCoreException
-        {
+    /**
+     * Note: when doScan is false, several openUsbDevice() calls (for different serial numbers) can execute concurrently.
+     */
+    public static RobotUsbDevice openUsbDevice(boolean doScan, RobotUsbManager robotUsbManager, SerialNumber serialNumber) throws RobotCoreException {
         String description = "";
         boolean found = false;
         int deviceCount = doScan ? robotUsbManager.scanForDevices() : robotUsbManager.getScanCount();
 
-        for (int index = 0; index < deviceCount; ++index)
-            {
-            if (serialNumber.equals(robotUsbManager.getDeviceSerialNumberByIndex(index)))
-                {
+        for (int index = 0; index < deviceCount; ++index) {
+            if (serialNumber.equals(robotUsbManager.getDeviceSerialNumberByIndex(index))) {
                 found = true;
                 description = robotUsbManager.getDeviceDescriptionByIndex(index) + " [" + serialNumber.toString() + "]";
                 break;
-                }
             }
+        }
 
-        if (!found)
-            {
+        if (!found) {
             RobotLog.logAndThrow("Unable to find USB device with serial number " + serialNumber.toString());
-            }
+        }
 
         RobotUsbDevice robotUsbDevice = null;
 
-        try
-            {
+        try {
             robotUsbDevice = robotUsbManager.openBySerialNumber(serialNumber);
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             throw RobotCoreException.createChained(e, "Unable to open USB device " + serialNumber + " - " + description + ": " + e.getMessage());
-            }
+        }
 
-        try
-            {
+        try {
             robotUsbDevice.setBaudRate(ModernRoboticsConstants.USB_BAUD_RATE);
             robotUsbDevice.setDataCharacteristics((byte) 8, (byte) 0, (byte) 0);
             robotUsbDevice.setLatencyTimer(ModernRoboticsConstants.LATENCY_TIMER);
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             robotUsbDevice.close();
             throw RobotCoreException.createChained(e, "Unable to parameterize USB device " + serialNumber + " - " + description + ": " + e.getMessage());
-            }
+        }
 
-        try
-            {
+        try {
             /**
              * TODO: This timeout of 400ms can almost assuredly be reduced with some further analysis.
              *
@@ -169,17 +168,14 @@ public class ModernRoboticsUsbUtil
              * etc. (This was long before MR was even considering making a USB hub.)"
              */
             Thread.sleep(400L);
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
-
-        return robotUsbDevice;
         }
 
-    public static byte[] getUsbDeviceHeader(RobotUsbDevice robotUsbDevice) throws RobotUsbException
-        {
+        return robotUsbDevice;
+    }
+
+    public static byte[] getUsbDeviceHeader(RobotUsbDevice robotUsbDevice) throws RobotUsbException {
         byte[] deviceHeaderData = new byte[3];
         //      0 == firmware revision
         //      1 == manufacturer code
@@ -188,31 +184,29 @@ public class ModernRoboticsUsbUtil
         try {
             ModernRoboticsReaderWriter readerWriter = new ModernRoboticsReaderWriter(robotUsbDevice);
             readerWriter.read(true, 0, deviceHeaderData, null);
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
-
-        return deviceHeaderData;
         }
 
-    public static DeviceType getDeviceType(byte[] deviceHeader)
-        {
-        if (deviceHeader[ADDRESS_MANUFACTURER_CODE] != MFG_CODE_MODERN_ROBOTICS)
-            {
+        return deviceHeaderData;
+    }
+
+    public static DeviceType getDeviceType(byte[] deviceHeader) {
+        if (deviceHeader[ADDRESS_MANUFACTURER_CODE] != MFG_CODE_MODERN_ROBOTICS) {
             return DeviceType.FTDI_USB_UNKNOWN_DEVICE;
-            }
-        else
-            {
-            switch (deviceHeader[ADDRESS_DEVICE_ID])
-                {
-                case DEVICE_ID_DEVICE_INTERFACE_MODULE: return DeviceType.MODERN_ROBOTICS_USB_DEVICE_INTERFACE_MODULE;
-                case DEVICE_ID_LEGACY_MODULE:           return DeviceType.MODERN_ROBOTICS_USB_LEGACY_MODULE;
-                case DEVICE_ID_DC_MOTOR_CONTROLLER:     return DeviceType.MODERN_ROBOTICS_USB_DC_MOTOR_CONTROLLER;
-                case DEVICE_ID_SERVO_CONTROLLER:        return DeviceType.MODERN_ROBOTICS_USB_SERVO_CONTROLLER;
-                default:                                return DeviceType.MODERN_ROBOTICS_USB_UNKNOWN_DEVICE;
-                }
+        } else {
+            switch (deviceHeader[ADDRESS_DEVICE_ID]) {
+                case DEVICE_ID_DEVICE_INTERFACE_MODULE:
+                    return DeviceType.MODERN_ROBOTICS_USB_DEVICE_INTERFACE_MODULE;
+                case DEVICE_ID_LEGACY_MODULE:
+                    return DeviceType.MODERN_ROBOTICS_USB_LEGACY_MODULE;
+                case DEVICE_ID_DC_MOTOR_CONTROLLER:
+                    return DeviceType.MODERN_ROBOTICS_USB_DC_MOTOR_CONTROLLER;
+                case DEVICE_ID_SERVO_CONTROLLER:
+                    return DeviceType.MODERN_ROBOTICS_USB_SERVO_CONTROLLER;
+                default:
+                    return DeviceType.MODERN_ROBOTICS_USB_UNKNOWN_DEVICE;
             }
         }
     }
+}

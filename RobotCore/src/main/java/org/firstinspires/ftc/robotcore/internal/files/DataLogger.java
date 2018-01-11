@@ -46,108 +46,89 @@ import java.util.Locale;
  * {@link DataLogger} is a simple utility class for recording tab-separated data values to a file.
  */
 @SuppressWarnings("WeakerAccess")
-public class DataLogger
-    {
+public class DataLogger {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected File           file;
+    protected File file;
     protected BufferedWriter writer;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public static String createFileName(String root)
-        {
+    public static String createFileName(String root) {
         Date dateUTC = new Date(System.currentTimeMillis());
         SimpleDateFormat formatter = AppUtil.getInstance().getIso8601DateFormat();
         String uniquifier = formatter.format(dateUTC);
         return String.format(Locale.US, "%s-%s.txt", root, uniquifier);
-        }
+    }
 
-    public DataLogger(String fileName) throws IOException
-        {
+    public DataLogger(String fileName) throws IOException {
         file = new File(fileName);
-        if (!file.isAbsolute())
-            {
+        if (!file.isAbsolute()) {
             file = new File(AppUtil.ROBOT_DATA_DIR, fileName);
-            }
+        }
 
         File directory = file.getParentFile();
         AppUtil.getInstance().ensureDirectoryExists(directory);
 
         writer = new BufferedWriter(new FileWriter(file));
-        }
+    }
 
-    public void close()
-        {
+    public void close() {
         try {
             writer.close();
-            }
-        catch (IOException ignored)
-            {
-            }
+        } catch (IOException ignored) {
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public void addHeaderLine(String... headers) throws IOException
-        {
+    public void addHeaderLine(String... headers) throws IOException {
         boolean first = true;
-        for (String header : headers)
-            {
-            if (!first)
-                {
+        for (String header : headers) {
+            if (!first) {
                 writer.append('\t');
-                }
+            }
             writer.append(header);
             first = false;
-            }
-        newLine();
         }
+        newLine();
+    }
 
-    public void addDataLine(Object... data) throws IOException
-        {
+    public void addDataLine(Object... data) throws IOException {
         boolean first = true;
-        for (Object datum : data)
-            {
-            if (!first)
-                {
+        for (Object datum : data) {
+            if (!first) {
                 writer.append('\t');
-                }
-            if (datum instanceof String)
-                {
+            }
+            if (datum instanceof String) {
                 // Write something that parses reliably in Excel
                 writer.append('"');
-                for (char ch : ((String) datum).toCharArray())
-                    {
-                    if (ch == '"')
-                        {
+                for (char ch : ((String) datum).toCharArray()) {
+                    if (ch == '"') {
                         writer.append('"');
                         writer.append('"');
-                        }
-                    else
+                    } else {
                         writer.append(ch);
                     }
+                }
                 writer.append('"');
-                }
-            else
-                {
+            } else {
                 writer.append(datum.toString());
-                }
+            }
 
             first = false;
-            }
+        }
         newLine();
-        }
-
-    void newLine() throws IOException
-        {
-        writer.append("\r\n");
-        }
-
     }
+
+    void newLine() throws IOException {
+        writer.append("\r\n");
+    }
+
+}

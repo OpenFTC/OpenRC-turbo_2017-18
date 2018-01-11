@@ -79,15 +79,19 @@ public class RobotConfigFileManager {
     public static final String ROBOT_CONFIG_TAXONOMY_XML = "RobotConfigTaxonomy.xml";
     public static final String FILE_LIST_COMMAND_DELIMITER = ";";
     public static final String FILE_EXT = ".xml";
-    public        final String noConfig;
+    public final String noConfig;
 
     private Context context;
     private Activity activity;
     private Resources resources;
     private WriteXMLFileHandler writer;
     private SharedPreferences preferences;
-    private final @IdRes int idActiveConfigName = R.id.idActiveConfigName;
-    private final @IdRes int idActiveConfigHeader = R.id.idActiveConfigHeader;
+    private final
+    @IdRes
+    int idActiveConfigName = R.id.idActiveConfigName;
+    private final
+    @IdRes
+    int idActiveConfigHeader = R.id.idActiveConfigHeader;
     private NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     private AppUtil appUtil = AppUtil.getInstance();
 
@@ -98,8 +102,7 @@ public class RobotConfigFileManager {
     private static Supplier<Collection<Integer>> xmlResourceIdSupplier = null;
     private static Supplier<Collection<Integer>> xmlResourceTemplateIdsSupplier = null;
 
-    public RobotConfigFileManager(Activity activity)
-    {
+    public RobotConfigFileManager(Activity activity) {
         this.activity = activity;
         this.context = appUtil.getApplication();
         this.resources = context.getResources();
@@ -111,8 +114,7 @@ public class RobotConfigFileManager {
     /*
      * Use only when no UI interaction feedback / colorization is required
      */
-    public RobotConfigFileManager()
-    {
+    public RobotConfigFileManager() {
         this(null);
     }
 
@@ -120,66 +122,70 @@ public class RobotConfigFileManager {
      * Builds the Folder on the sdcard that holds all of the configuration files
      * if it doesn't exist. If this fails, a toast will pop up.
      */
-    public void createConfigFolder()
-    {
+    public void createConfigFolder() {
         File robotDir = AppUtil.CONFIG_FILES_DIR;
         boolean createdDir = true;
 
-        if (!robotDir.exists()){
+        if (!robotDir.exists()) {
             createdDir = robotDir.mkdir();
         }
 
-        if (!createdDir){
+        if (!createdDir) {
             RobotLog.ee(TAG, "Can't create the Robot Config Files directory!");
             appUtil.showToast(UILocation.BOTH, context, context.getString(R.string.toastCantCreateRobotConfigFilesDir));
         }
     }
 
-    /** Returns the value of the Robot@type attribute of the XML resources that we are interested in */
-    public static String getRobotConfigTypeAttribute()
-    {
+    /**
+     * Returns the value of the Robot@type attribute of the XML resources that we are interested in
+     */
+    public static String getRobotConfigTypeAttribute() {
         return "FirstInspires-FTC";
     }
 
-    public static String getRobotConfigTemplateAttribute()
-    {
+    public static String getRobotConfigTemplateAttribute() {
         return "FirstInspires-FTC-template";
     }
 
-    /** Sets the collection into which our class filter will insert the resource ids of
+    /**
+     * Sets the collection into which our class filter will insert the resource ids of
      * the resource-based robot XML configurations.
-     * @see RobotConfigResFilter */
-    public static void setXmlResourceIdSupplier(Supplier<Collection<Integer>> supplier)
-    {
+     *
+     * @see RobotConfigResFilter
+     */
+    public static void setXmlResourceIdSupplier(Supplier<Collection<Integer>> supplier) {
         xmlResourceIdSupplier = supplier;
     }
-    public static void setXmlResourceTemplateIdSupplier(Supplier<Collection<Integer>> supplier)
-    {
+
+    public static void setXmlResourceTemplateIdSupplier(Supplier<Collection<Integer>> supplier) {
         xmlResourceTemplateIdsSupplier = supplier;
     }
-    private Collection<Integer> getXmlResourceIds()
-    {
+
+    private Collection<Integer> getXmlResourceIds() {
         return xmlResourceIdSupplier != null ? xmlResourceIdSupplier.get() : new ArrayList<Integer>();
     }
-    private Collection<Integer> getXmlResourceTemplateIds()
-    {
+
+    private Collection<Integer> getXmlResourceTemplateIds() {
         return xmlResourceTemplateIdsSupplier != null ? xmlResourceTemplateIdsSupplier.get() : new ArrayList<Integer>();
     }
 
-    public @NonNull RobotConfigFile getConfigFromString(String objSerialized)
-    {
+    public
+    @NonNull
+    RobotConfigFile getConfigFromString(String objSerialized) {
         return RobotConfigFile.fromString(this, objSerialized);
     }
 
-    public @NonNull RobotConfigFile getActiveConfigAndUpdateUI()
-    {
+    public
+    @NonNull
+    RobotConfigFile getActiveConfigAndUpdateUI() {
         final RobotConfigFile file = getActiveConfig();
         this.updateActiveConfigHeader(file);
         return file;
     }
 
-    public @NonNull RobotConfigFile getActiveConfig()
-    {
+    public
+    @NonNull
+    RobotConfigFile getActiveConfig() {
         String key = context.getString(R.string.pref_hardware_config_filename);
         String objSerialized;
         RobotConfigFile file;
@@ -191,32 +197,30 @@ public class RobotConfigFileManager {
             file = getConfigFromString(objSerialized);
         }
 
-        if (DEBUG) RobotLog.vv(TAG, "getActiveConfig()='%s'", file.getName());
+        if (DEBUG) {
+            RobotLog.vv(TAG, "getActiveConfig()='%s'", file.getName());
+        }
         return file;
     }
 
-    public void sendActiveConfigToDriverStation()
-    {
+    public void sendActiveConfigToDriverStation() {
         RobotConfigFile configFile = this.getActiveConfig();
         String serialized = configFile.toString();
         // RobotLog.vv(TAG, "reporting active config: %s", configFile.getName());
         networkConnectionHandler.sendCommand(new Command(CommandList.CMD_NOTIFY_ACTIVE_CONFIGURATION, serialized));
     }
 
-    public void setActiveConfigAndUpdateUI(boolean runningOnDriverStation, @NonNull RobotConfigFile configFile)
-    {
+    public void setActiveConfigAndUpdateUI(boolean runningOnDriverStation, @NonNull RobotConfigFile configFile) {
         setActiveConfig(runningOnDriverStation, configFile);
         this.updateActiveConfigHeader(configFile);
     }
 
-    public void setActiveConfigAndUpdateUI(@NonNull RobotConfigFile config)
-    {
+    public void setActiveConfigAndUpdateUI(@NonNull RobotConfigFile config) {
         setActiveConfig(config);
         this.updateActiveConfigHeader(config);
     }
 
-    public void setActiveConfig(boolean runningOnDriverStation, @NonNull RobotConfigFile config)
-    {
+    public void setActiveConfig(boolean runningOnDriverStation, @NonNull RobotConfigFile config) {
         if (runningOnDriverStation) {
             sendRobotControllerActiveConfigAndUpdateUI(config);
         } else {
@@ -225,9 +229,10 @@ public class RobotConfigFileManager {
         }
     }
 
-    public void setActiveConfig(@NonNull RobotConfigFile cfgFile)
-    {
-        if (DEBUG) RobotLog.vv(TAG, "setActiveConfig('%s')", cfgFile.getName());
+    public void setActiveConfig(@NonNull RobotConfigFile cfgFile) {
+        if (DEBUG) {
+            RobotLog.vv(TAG, "setActiveConfig('%s')", cfgFile.getName());
+        }
         String objSerialized = SimpleGson.getInstance().toJson(cfgFile);
         SharedPreferences.Editor edit = preferences.edit();
         String key = context.getString(R.string.pref_hardware_config_filename);
@@ -236,23 +241,19 @@ public class RobotConfigFileManager {
         edit.apply();
     }
 
-    public void sendRobotControllerActiveConfigAndUpdateUI(@NonNull RobotConfigFile config)
-    {
+    public void sendRobotControllerActiveConfigAndUpdateUI(@NonNull RobotConfigFile config) {
         networkConnectionHandler.sendCommand(new Command(CommandList.CMD_ACTIVATE_CONFIGURATION, config.toString()));
     }
 
-    public void updateActiveConfigHeader(RobotConfigFile robotConfigFile)
-    {
+    public void updateActiveConfigHeader(RobotConfigFile robotConfigFile) {
         updateActiveConfigHeader(robotConfigFile.getName(), robotConfigFile.isDirty());
     }
 
-    public void updateActiveConfigHeader(final String fileNameIn, final boolean dirty)
-    {
+    public void updateActiveConfigHeader(final String fileNameIn, final boolean dirty) {
         if (activity != null) {
-            appUtil.runOnUiThread(new Runnable()
-            {
-                @Override public void run()
-                {
+            appUtil.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                     String fileName = stripFileNameExtension(fileNameIn).trim();
                     if (fileName.isEmpty()) {
                         fileName = noConfig;
@@ -282,8 +283,7 @@ public class RobotConfigFileManager {
         }
     }
 
-    public void changeHeaderBackground(@IdRes int idColorHolder)
-    {
+    public void changeHeaderBackground(@IdRes int idColorHolder) {
         if (activity != null) {
             View colorHolder = activity.findViewById(idColorHolder);
             View view = activity.findViewById(R.id.idActiveConfigHeader);
@@ -296,16 +296,15 @@ public class RobotConfigFileManager {
         }
     }
 
-    public static class ConfigNameCheckResult
-    {
+    public static class ConfigNameCheckResult {
         public boolean success = true;
-        public String  errorFormat = null;
-        public ConfigNameCheckResult(boolean success)
-        {
+        public String errorFormat = null;
+
+        public ConfigNameCheckResult(boolean success) {
             this.success = success;
         }
-        public ConfigNameCheckResult(@NonNull String errorFormat)
-        {
+
+        public ConfigNameCheckResult(@NonNull String errorFormat) {
             this.success = false;
             this.errorFormat = errorFormat;
         }
@@ -315,21 +314,26 @@ public class RobotConfigFileManager {
      * Answers as to whether the candidate config name is a plausible one to use as the name
      * of a new robot configuration.
      *
-     * @param candidate   the new name to test
-     * @param extantConfigurations  the list of the currently existing robot configurations
+     * @param candidate            the new name to test
+     * @param extantConfigurations the list of the currently existing robot configurations
      * @return whether the candidate config name is a plausible one
      */
-    public ConfigNameCheckResult isPlausibleConfigName(RobotConfigFile existingConfig, String candidate, List<RobotConfigFile> extantConfigurations)
-    {
+    public ConfigNameCheckResult isPlausibleConfigName(RobotConfigFile existingConfig, String candidate, List<RobotConfigFile> extantConfigurations) {
         // We disallow whitespace at front and back to reduce user confusion
-        if (!candidate.equals(candidate.trim())) return new ConfigNameCheckResult(context.getString(R.string.configNameWhitespace));
+        if (!candidate.equals(candidate.trim())) {
+            return new ConfigNameCheckResult(context.getString(R.string.configNameWhitespace));
+        }
 
         // Empty names aren't allowed
-        if (candidate.length()==0) return new ConfigNameCheckResult(context.getString(R.string.configNameEmpty));
+        if (candidate.length() == 0) {
+            return new ConfigNameCheckResult(context.getString(R.string.configNameEmpty));
+        }
 
         // Names that contain path components aren't allowed as they'd end up in the wrong folder
         File file = new File(candidate);
-        if (!file.getName().equals(candidate)) return new ConfigNameCheckResult(context.getString(R.string.configNameIllegalCharacters));
+        if (!file.getName().equals(candidate)) {
+            return new ConfigNameCheckResult(context.getString(R.string.configNameIllegalCharacters));
+        }
 
         // Certain characters can't be used in the Android SDCARD file system (which is, we believe, FAT32)
         // This may not be definititive, but will catch a lot of bad file names before they're attempted
@@ -341,7 +345,9 @@ public class RobotConfigFileManager {
         }
 
         // Can't mirror the 'nothing here' guy
-        if (candidate.equalsIgnoreCase(noConfig)) return new ConfigNameCheckResult(context.getString(R.string.configNameReserved));
+        if (candidate.equalsIgnoreCase(noConfig)) {
+            return new ConfigNameCheckResult(context.getString(R.string.configNameReserved));
+        }
 
         // Always ok to save on top of existing, unless it's read-only
         if (candidate.equalsIgnoreCase(existingConfig.getName())) {
@@ -360,27 +366,23 @@ public class RobotConfigFileManager {
         return new ConfigNameCheckResult(true);
     }
 
-    public static String stripFileNameExtension(String fileName)
-    {
+    public static String stripFileNameExtension(String fileName) {
         fileName = fileName.replaceFirst("[.][^.]+$", "");
         return fileName;
     }
 
-    public static File stripFileNameExtension(File path)
-    {
+    public static File stripFileNameExtension(File path) {
         File folder = path.getParentFile();
         String file = path.getName();
         file = stripFileNameExtension(file);
         return new File(folder, file);
     }
 
-    public static String withExtension(String fileName)
-    {
+    public static String withExtension(String fileName) {
         return stripFileNameExtension(fileName) + FILE_EXT;
     }
 
-    public static File getFullPath(String fileNameWithoutExtension)
-    {
+    public static File getFullPath(String fileNameWithoutExtension) {
         fileNameWithoutExtension = withExtension(fileNameWithoutExtension);
         return new File(AppUtil.CONFIG_FILES_DIR, fileNameWithoutExtension);
     }
@@ -390,14 +392,13 @@ public class RobotConfigFileManager {
      * used by the fileSpinner. Note that this should only ever be executed on the robot controller,
      * not the driver station, as the robot controller is the authoritative source of configurations.
      */
-    public ArrayList<RobotConfigFile> getXMLFiles()
-    {
+    public ArrayList<RobotConfigFile> getXMLFiles() {
         File robotDir = AppUtil.CONFIG_FILES_DIR;
         File[] configFiles = robotDir.listFiles();
 
         ArrayList<RobotConfigFile> fileList = new ArrayList<RobotConfigFile>();
 
-        for (File f: configFiles) {
+        for (File f : configFiles) {
             if (f.isFile()) {
                 String name = f.getName();
                 Pattern pattern = Pattern.compile("(?i).xml");
@@ -434,8 +435,7 @@ public class RobotConfigFileManager {
         return fileList;
     }
 
-    public ArrayList<RobotConfigFile> getXMLTemplates()
-    {
+    public ArrayList<RobotConfigFile> getXMLTemplates() {
         ArrayList<RobotConfigFile> templateList = new ArrayList<RobotConfigFile>();
         for (@XmlRes int id : getXmlResourceTemplateIds()) {
             /**  @see #getXMLFiles() */
@@ -455,8 +455,8 @@ public class RobotConfigFileManager {
      * Returns a high-level human-readable description of an XML robot configuration
      * or configuration template.
      */
-    @NonNull public String getRobotConfigDescription(@NonNull XmlPullParser xpp)
-    {
+    @NonNull
+    public String getRobotConfigDescription(@NonNull XmlPullParser xpp) {
         try {
             /**
              * It's surprisingly difficult to get at the simple underlying file stream of an XML file
@@ -482,7 +482,7 @@ public class RobotConfigFileManager {
 
             return output.toString().trim();  // trim to eliminate any trailing newline at end
 
-        } catch (IOException|TransformerException|XmlPullParserException e) {
+        } catch (IOException | TransformerException | XmlPullParserException e) {
             RobotLog.logStackTrace(e);
         }
         return context.getString(R.string.templateConfigureNoDescriptionAvailable);
@@ -492,8 +492,8 @@ public class RobotConfigFileManager {
      * Returns a {@link Source} to the XSLT transformation that will transform robot config
      * templates/configurations into human-readable descriptions.
      */
-    @NonNull protected Source getRobotConfigDescriptionTransform() throws XmlPullParserException, IOException, TransformerConfigurationException,TransformerException
-    {
+    @NonNull
+    protected Source getRobotConfigDescriptionTransform() throws XmlPullParserException, IOException, TransformerConfigurationException, TransformerException {
         // Load RobotConfigTaxonomy as a DOM
         Reader xmlConfigTaxonomyReader = new InputStreamReader(context.getAssets().open(ROBOT_CONFIG_TAXONOMY_XML));
         XmlPullParser xmlConfigTaxonomyParser = ReadXMLFileHandler.xmlPullParserFromReader(xmlConfigTaxonomyReader);
@@ -512,7 +512,7 @@ public class RobotConfigFileManager {
             addChild(document, sensor, "BusDefault", context.getString(R.string.userSensorTypeBusDefault));
             //
             rootElement.appendChild(sensor);
-            }
+        }
 
         // Turn that augmented taxonomy into a source
         Source sourceConfigTaxonomy = new DOMSource(rootElement);
@@ -534,41 +534,36 @@ public class RobotConfigFileManager {
         return result;
     }
 
-    protected void addChild(Document document, Element parent, String tag, String contents)
-    {
+    protected void addChild(Document document, Element parent, String tag, String contents) {
         Element child = document.createElement(tag);
         child.setTextContent(contents);
         parent.appendChild(child);
     }
 
-    protected Source getSourceFromPullParser(@NonNull XmlPullParser xpp) throws XmlPullParserException, IOException
-    {
+    protected Source getSourceFromPullParser(@NonNull XmlPullParser xpp) throws XmlPullParserException, IOException {
         Dom2XmlPullBuilder builder = new Dom2XmlPullBuilder();
         Element rootElement = builder.parseSubTree(xpp);
         return new DOMSource(rootElement);
     }
 
-    public static String serializeXMLConfigList(List<RobotConfigFile> configList)
-    {
+    public static String serializeXMLConfigList(List<RobotConfigFile> configList) {
         String objsSerialized = SimpleGson.getInstance().toJson(configList);
         return objsSerialized;
     }
 
-    public static String serializeConfig(RobotConfigFile configFile)
-    {
+    public static String serializeConfig(RobotConfigFile configFile) {
         String serialized = SimpleGson.getInstance().toJson(configFile);
         return serialized;
     }
 
-    public static List<RobotConfigFile> deserializeXMLConfigList(String objsSerialized)
-    {
-        Type collectionType = new TypeToken<Collection<RobotConfigFile>>(){}.getType();
+    public static List<RobotConfigFile> deserializeXMLConfigList(String objsSerialized) {
+        Type collectionType = new TypeToken<Collection<RobotConfigFile>>() {
+        }.getType();
         List<RobotConfigFile> configList = SimpleGson.getInstance().fromJson(objsSerialized, collectionType);
         return configList;
     }
 
-    public static RobotConfigFile deserializeConfig(String serialized)
-    {
+    public static RobotConfigFile deserializeConfig(String serialized) {
         Type type = RobotConfigFile.class;
         RobotConfigFile config = SimpleGson.getInstance().fromJson(serialized, type);
         return config;
@@ -603,30 +598,28 @@ public class RobotConfigFileManager {
     }
 
 
-    void writeXMLToFile(String filenameWithExt, String data) throws RobotCoreException, IOException
-    {
+    void writeXMLToFile(String filenameWithExt, String data) throws RobotCoreException, IOException {
         writer.writeToFile(data, AppUtil.CONFIG_FILES_DIR, filenameWithExt);
     }
 
-    void writeToRobotController(RobotConfigFile cfgFile, String data)
-    {
+    void writeToRobotController(RobotConfigFile cfgFile, String data) {
         networkConnectionHandler.sendCommand(new Command(CommandList.CMD_SAVE_CONFIGURATION, cfgFile.toString() + FILE_LIST_COMMAND_DELIMITER + data));
     }
 
-    public void writeToFile(RobotConfigFile cfgFile, boolean runningOnDriverStation, @NonNull String data) throws RobotCoreException, IOException
-    {
+    public void writeToFile(RobotConfigFile cfgFile, boolean runningOnDriverStation, @NonNull String data) throws RobotCoreException, IOException {
         // If we successfully save, then cfgFile is clean clean. And only then is cfgFile clean.
         boolean wasDirty = cfgFile.isDirty();
         cfgFile.markClean();
         try {
             if (runningOnDriverStation) {
                 this.writeToRobotController(cfgFile, data);
-            }
-            else {
+            } else {
                 this.writeXMLToFile(RobotConfigFileManager.withExtension(cfgFile.getName()), data);
             }
-        } catch (RobotCoreException|IOException|RuntimeException e) {
-            if (wasDirty) cfgFile.markDirty();
+        } catch (RobotCoreException | IOException | RuntimeException e) {
+            if (wasDirty) {
+                cfgFile.markDirty();
+            }
             throw e;
         }
     }

@@ -34,7 +34,7 @@ public class ReadWriteFile {
 
     public static String readFile(File file) {
         try {
-          return readFileOrThrow(file);
+            return readFileOrThrow(file);
         } catch (IOException e) {
             RobotLog.ee(TAG, e, "error reading file: %s", file.getPath());
         }
@@ -76,14 +76,14 @@ public class ReadWriteFile {
 
     public static byte[] readFileBytesOrThrow(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
-        return readBytesOrThrow((int)file.length(), inputStream);
+        return readBytesOrThrow((int) file.length(), inputStream);
     }
 
     protected static byte[] readBytesOrThrow(int cbSizeHint, InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(cbSizeHint);
         byte[] buffer = new byte[1000];     // size is arbitrary
         try {
-            for (;;) {
+            for (; ; ) {
                 int cbRead = inputStream.read(buffer);
                 if (cbRead == -1) {
                     break;  // end of stream hit
@@ -121,8 +121,7 @@ public class ReadWriteFile {
     public static void writeFile(File directory, String fileName, String fileContents) {
         try {
             writeFileOrThrow(directory, fileName, fileContents);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             RobotLog.ee(TAG, e, "error writing file: %s", (new File(directory, fileName)).getPath());
         }
     }

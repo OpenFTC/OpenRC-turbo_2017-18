@@ -43,8 +43,7 @@ import com.qualcomm.robotcore.hardware.TimestampedI2cData;
 /*
  * Compatible with firmware revisions 1.7 and up
  */
-public class LynxI2cDeviceSynchV2 extends LynxI2cDeviceSynch
-{
+public class LynxI2cDeviceSynchV2 extends LynxI2cDeviceSynch {
     public LynxI2cDeviceSynchV2(Context context, LynxModule module, int bus) {
         super(context, module, bus);
     }
@@ -53,17 +52,15 @@ public class LynxI2cDeviceSynchV2 extends LynxI2cDeviceSynch
      * Supporting firmware version XX.XX.XX
      */
     @Override
-    public synchronized TimestampedData readTimeStamped(final int ireg, final int creg)
-    {
+    public synchronized TimestampedData readTimeStamped(final int ireg, final int creg) {
         LynxI2cDeviceSynchV2 deviceHavingProblems = null;
 
         boolean reportUnhealthy;
 
         try {
-            return acquireI2cLockWhile(new Supplier<TimestampedData>()
-            {
-                @Override public TimestampedData get() throws InterruptedException, RobotCoreException, LynxNackException
-                {
+            return acquireI2cLockWhile(new Supplier<TimestampedData>() {
+                @Override
+                public TimestampedData get() throws InterruptedException, RobotCoreException, LynxNackException {
                     LynxCommand<?> tx = new LynxI2cWriteReadMultipleBytesCommand(getModule(), bus, i2cAddr, ireg, creg);
                     tx.send();
 
@@ -71,7 +68,7 @@ public class LynxI2cDeviceSynchV2 extends LynxI2cDeviceSynch
                     return pollForReadResult(i2cAddr, ireg, creg);
                 }
             });
-        } catch (InterruptedException|RobotCoreException|RuntimeException e) {
+        } catch (InterruptedException | RobotCoreException | RuntimeException e) {
             handleException(e);
         } catch (LynxNackException e) {
             /*

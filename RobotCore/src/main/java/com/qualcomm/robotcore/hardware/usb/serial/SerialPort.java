@@ -46,100 +46,89 @@ import java.io.OutputStream;
  * {@link SerialPort} is a simple wrapper around some native code that give us access to serial ports.
  */
 @SuppressWarnings("WeakerAccess")
-public class SerialPort
-    {
+public class SerialPort {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected static final String TAG = "SerialPort";
 
-    protected File              file;
-    protected FileDescriptor    fileDescriptor;
-    protected FileInputStream   fileInputStream;
-    protected FileOutputStream  fileOutputStream;
-    protected int               baudRate;
+    protected File file;
+    protected FileDescriptor fileDescriptor;
+    protected FileInputStream fileInputStream;
+    protected FileOutputStream fileOutputStream;
+    protected int baudRate;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public SerialPort(File file, int baudRate) throws IOException
-        {
+    public SerialPort(File file, int baudRate) throws IOException {
         this.file = file;
         ensureReadWriteable(file);
 
         this.baudRate = baudRate;
         this.fileDescriptor = open(file.getAbsolutePath(), baudRate);
-        if (this.fileDescriptor==null)
+        if (this.fileDescriptor == null) {
             throw new IOException(String.format("SerialPort.SerialPort: failed: path=%s", file.getAbsolutePath()));
+        }
 
         this.fileInputStream = new FileInputStream(this.fileDescriptor);
         this.fileOutputStream = new FileOutputStream(this.fileDescriptor);
-        }
+    }
 
-    @Override protected void finalize() throws Throwable
-        {
+    @Override
+    protected void finalize() throws Throwable {
         this.close();
         super.finalize();
-        }
+    }
 
-    public synchronized void close()
-        {
-        if (this.fileDescriptor != null)
-            {
+    public synchronized void close() {
+        if (this.fileDescriptor != null) {
             close(this.fileDescriptor);
             this.fileDescriptor = null;
-            }
         }
+    }
 
     /**
      * Attempts to ensure that the indicated file is read-write.
-     * @param  file                 the file who's properties we're interested in
-     * @throws SecurityException    if the file cannot be made read-write
+     *
+     * @param file the file who's properties we're interested in
+     * @throws SecurityException if the file cannot be made read-write
      */
-    protected static void ensureReadWriteable(File file) throws SecurityException
-        {
-        if (!file.canRead() || !file.canWrite())
-            {
+    protected static void ensureReadWriteable(File file) throws SecurityException {
+        if (!file.canRead() || !file.canWrite()) {
             RobotLog.vv(TAG, "making RW: %s", file.getAbsolutePath());
-            try
-                {
+            try {
                 // Setting up permissions correctly should be taken care of statically
                 // inside of FTCAndroid itself.
                 throw new RuntimeException("incorrect perms on " + file.getAbsolutePath());
-                }
-            catch (Exception e)
-                {
+            } catch (Exception e) {
                 RobotLog.logStacktrace(e);
                 throw new SecurityException(String.format("SerialPort.ensureReadWriteFile: exception: path=%s", file.getAbsolutePath()), e);
-                }
             }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public String getName()
-        {
+    public String getName() {
         return this.file.getAbsolutePath();
-        }
+    }
 
-    public InputStream getInputStream()
-        {
+    public InputStream getInputStream() {
         return this.fileInputStream;
-        }
+    }
 
-    public OutputStream getOutputStream()
-        {
+    public OutputStream getOutputStream() {
         return this.fileOutputStream;
-        }
+    }
 
-    public int getBaudRate()
-        {
+    public int getBaudRate() {
         return baudRate;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Native methods
@@ -149,8 +138,7 @@ public class SerialPort
 
     public native static void close(FileDescriptor fileDescriptor);
 
-    static
-        {
+    static {
         System.loadLibrary("RobotCore");
-        }
     }
+}

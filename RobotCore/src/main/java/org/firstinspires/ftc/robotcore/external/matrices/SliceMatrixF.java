@@ -35,15 +35,14 @@ package org.firstinspires.ftc.robotcore.external.matrices;
 /**
  * A {@link SliceMatrixF} is a matrix whose implementation is a submatrix of some other matrix.
  */
-public class SliceMatrixF extends MatrixF
-    {
+public class SliceMatrixF extends MatrixF {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     protected MatrixF matrix;
-    protected int     row;
-    protected int     col;
+    protected int row;
+    protected int col;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -52,39 +51,43 @@ public class SliceMatrixF extends MatrixF
     /**
      * Creates a {@link SliceMatrixF} based on the indicated matrix whose upper left corner is at
      * (row, col) of that matrix and whose size is numRows x numCols.
-     * @param matrix    the matrix we are to take a slice of
-     * @param row       the row in matrix in which the slice is to begin
-     * @param col       the column in matrix in which the slice is to begin
-     * @param numRows   the number of rows that the slice should be
-     * @param numCols   the number of columns that the slice should be
+     *
+     * @param matrix  the matrix we are to take a slice of
+     * @param row     the row in matrix in which the slice is to begin
+     * @param col     the column in matrix in which the slice is to begin
+     * @param numRows the number of rows that the slice should be
+     * @param numCols the number of columns that the slice should be
      */
-    public SliceMatrixF(MatrixF matrix, int row, int col, int numRows, int numCols)
-        {
+    public SliceMatrixF(MatrixF matrix, int row, int col, int numRows, int numCols) {
         super(numRows, numCols);
         this.matrix = matrix;
         this.row = row;
         this.col = col;
 
-        if (row + numRows >= matrix.numRows) throw dimensionsError();
-        if (col + numCols >= matrix.numCols) throw dimensionsError();
+        if (row + numRows >= matrix.numRows) {
+            throw dimensionsError();
         }
+        if (col + numCols >= matrix.numCols) {
+            throw dimensionsError();
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    @Override public float get(int row, int col)
-        {
+    @Override
+    public float get(int row, int col) {
         return this.matrix.get(this.row + row, this.col + col);
-        }
-
-    @Override public void put(int row, int col, float value)
-        {
-        this.matrix.put(this.row + row, this.col + col, value);
-        }
-
-    @Override public MatrixF emptyMatrix(int numRows, int numCols)
-        {
-        return this.matrix.emptyMatrix(numRows, numCols);
-        }
     }
+
+    @Override
+    public void put(int row, int col, float value) {
+        this.matrix.put(this.row + row, this.col + col, value);
+    }
+
+    @Override
+    public MatrixF emptyMatrix(int numRows, int numCols) {
+        return this.matrix.emptyMatrix(numRows, numCols);
+    }
+}

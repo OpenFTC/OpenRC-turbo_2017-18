@@ -78,47 +78,48 @@ import java.util.Comparator;
  * {@link EditI2cDevicesActivityAbstract} manages a possibly-growable list of I2c devices. The set of
  * legal devices is passed in as the id of a string array in EditParameters.getResourceId().
  */
-public abstract class EditI2cDevicesActivityAbstract<ITEM_T extends DeviceConfiguration> extends EditPortListSpinnerActivity<ITEM_T>
-    {
+public abstract class EditI2cDevicesActivityAbstract<ITEM_T extends DeviceConfiguration> extends EditPortListSpinnerActivity<ITEM_T> {
     ConfigurationType[] configurationTypes = new ConfigurationType[0];
 
-    public EditI2cDevicesActivityAbstract()
-        {
-        this.layoutMain             = R.layout.i2cs;
-        this.idListParentLayout     = R.id.item_list_parent;
-        this.layoutItem             = R.layout.i2c_device;
-        this.idItemRowPort          = R.id.row_port_i2c;
-        this.idItemSpinner          = R.id.choiceSpinner;
-        this.idItemEditTextResult   = R.id.editTextResult;
-        this.idItemPortNumber       = R.id.port_number;
-        }
-
-    @Override protected void deserialize(EditParameters parameters)
-        {
-        super.deserialize(parameters);
-        if (parameters.getConfigurationTypes() != null)
-            {
-            this.configurationTypes = parameters.getConfigurationTypes();
-            }
-        }
+    public EditI2cDevicesActivityAbstract() {
+        this.layoutMain = R.layout.i2cs;
+        this.idListParentLayout = R.id.item_list_parent;
+        this.layoutItem = R.layout.i2c_device;
+        this.idItemRowPort = R.id.row_port_i2c;
+        this.idItemSpinner = R.id.choiceSpinner;
+        this.idItemEditTextResult = R.id.editTextResult;
+        this.idItemPortNumber = R.id.port_number;
+    }
 
     @Override
-    protected void localizeSpinner(View itemView)
-        {
-        Spinner spinner = (Spinner) itemView.findViewById(this.idItemSpinner);
-
-        Comparator<ConfigurationType> comparator = new Comparator<ConfigurationType>()
-            {
-            @Override public int compare(ConfigurationType lhs, ConfigurationType rhs)
-                {
-                // Make sure 'nothing' is first
-                if (lhs==rhs) return 0;
-                if (lhs== BuiltInConfigurationType.NOTHING) return -1;
-                if (rhs==BuiltInConfigurationType.NOTHING) return 1;
-                return 0;   // they'll be distinguished using an outer level comparator
-                }
-            };
-
-        localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor.Normal, spinner, Arrays.asList(this.configurationTypes), comparator);
+    protected void deserialize(EditParameters parameters) {
+        super.deserialize(parameters);
+        if (parameters.getConfigurationTypes() != null) {
+            this.configurationTypes = parameters.getConfigurationTypes();
         }
     }
+
+    @Override
+    protected void localizeSpinner(View itemView) {
+        Spinner spinner = (Spinner) itemView.findViewById(this.idItemSpinner);
+
+        Comparator<ConfigurationType> comparator = new Comparator<ConfigurationType>() {
+            @Override
+            public int compare(ConfigurationType lhs, ConfigurationType rhs) {
+                // Make sure 'nothing' is first
+                if (lhs == rhs) {
+                    return 0;
+                }
+                if (lhs == BuiltInConfigurationType.NOTHING) {
+                    return -1;
+                }
+                if (rhs == BuiltInConfigurationType.NOTHING) {
+                    return 1;
+                }
+                return 0;   // they'll be distinguished using an outer level comparator
+            }
+        };
+
+        localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor.Normal, spinner, Arrays.asList(this.configurationTypes), comparator);
+    }
+}

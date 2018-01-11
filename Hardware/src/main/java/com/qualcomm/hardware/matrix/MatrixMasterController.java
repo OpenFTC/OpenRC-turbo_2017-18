@@ -48,18 +48,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MatrixMasterController implements I2cController.I2cPortReadyCallback {
 
-    private final static byte WASTED_BYTE                = 0x00;
+    private final static byte WASTED_BYTE = 0x00;
     private final static byte MATRIX_CONTROLLER_I2C_ADDR = 0x10;
-    private final static byte TIMEOUT_OFFSET             = 0x42;
-    private final static byte BATTERY_OFFSET             = 0x43;
-    private final static byte START_FLAG_OFFSET          = 0x44;
-    private final static byte SERVO_ENABLE_OFFSET        = 0x45;
+    private final static byte TIMEOUT_OFFSET = 0x42;
+    private final static byte BATTERY_OFFSET = 0x43;
+    private final static byte START_FLAG_OFFSET = 0x44;
+    private final static byte SERVO_ENABLE_OFFSET = 0x45;
 
-    private final static byte[] servoSpeedOffset    = { WASTED_BYTE, 0x46, 0x48, 0x4A, 0x4C };
-    private final static byte[] motorPositionOffset = { WASTED_BYTE, 0x4E, 0x58, 0x62, 0x6C };
-    private final static byte[] motorTargetOffset   = { WASTED_BYTE, 0x52, 0x5C, 0x66, 0x70 };
-    private final static byte[] motorSpeedOffset    = { WASTED_BYTE, 0x56, 0x60, 0x6A, 0x74 };
-    private final static byte[] motorModeOffset     = { WASTED_BYTE, 0x57, 0x61, 0x6B, 0x75 };
+    private final static byte[] servoSpeedOffset = {WASTED_BYTE, 0x46, 0x48, 0x4A, 0x4C};
+    private final static byte[] motorPositionOffset = {WASTED_BYTE, 0x4E, 0x58, 0x62, 0x6C};
+    private final static byte[] motorTargetOffset = {WASTED_BYTE, 0x52, 0x5C, 0x66, 0x70};
+    private final static byte[] motorSpeedOffset = {WASTED_BYTE, 0x56, 0x60, 0x6A, 0x74};
+    private final static byte[] motorModeOffset = {WASTED_BYTE, 0x57, 0x61, 0x6B, 0x75};
 
     protected ConcurrentLinkedQueue<MatrixI2cTransaction> transactionQueue;
     protected ModernRoboticsUsbLegacyModule legacyModule;
@@ -71,10 +71,9 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
 
     private final ElapsedTime lastTransaction = new ElapsedTime(0);
     private static final double MIN_TRANSACTION_RATE = 2.0; // in seconds;
-    private static final int DEFAULT_TIMEOUT         = 3;   // in seconds;
+    private static final int DEFAULT_TIMEOUT = 3;   // in seconds;
 
-    public MatrixMasterController(ModernRoboticsUsbLegacyModule legacyModule, int physicalPort)
-    {
+    public MatrixMasterController(ModernRoboticsUsbLegacyModule legacyModule, int physicalPort) {
         this.legacyModule = legacyModule;
         this.physicalPort = physicalPort;
 
@@ -83,28 +82,23 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         legacyModule.registerForI2cPortReadyCallback(this, physicalPort);
     }
 
-    public void registerMotorController(MatrixDcMotorController mc)
-    {
+    public void registerMotorController(MatrixDcMotorController mc) {
         this.motorController = mc;
     }
 
-    public void registerServoController(MatrixServoController sc)
-    {
+    public void registerServoController(MatrixServoController sc) {
         this.servoController = sc;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return physicalPort;
     }
 
-    public String getConnectionInfo()
-    {
+    public String getConnectionInfo() {
         return legacyModule.getConnectionInfo() + "; port " + physicalPort;
     }
 
-    public boolean queueTransaction(MatrixI2cTransaction transaction, boolean force)
-    {
+    public boolean queueTransaction(MatrixI2cTransaction transaction, boolean force) {
         /*
          * Yes, inefficient, but if the queue is more than a few transactions
          * deep we have other problems.  The force parameter allows a controller
@@ -114,7 +108,7 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         if (!force) {
             Iterator<MatrixI2cTransaction> it = transactionQueue.iterator();
             while (it.hasNext()) {
-                MatrixI2cTransaction t = (MatrixI2cTransaction)it.next();
+                MatrixI2cTransaction t = (MatrixI2cTransaction) it.next();
                 if (t.isEqual(transaction)) {
                     buginf("NO Queue transaction " + transaction.toString());
                     return false;
@@ -135,14 +129,12 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         return true;
     }
 
-    public boolean queueTransaction(MatrixI2cTransaction transaction)
-    {
+    public boolean queueTransaction(MatrixI2cTransaction transaction) {
         return queueTransaction(transaction, false);
     }
 
-    public void waitOnRead()
-    {
-        synchronized(this) {
+    public void waitOnRead() {
+        synchronized (this) {
             waitingForGodot = true;
             try {
                 while (waitingForGodot) {
@@ -154,30 +146,29 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         }
     }
 
-    protected void handleReadDone(MatrixI2cTransaction transaction)
-    {
+    protected void handleReadDone(MatrixI2cTransaction transaction) {
         byte[] readBuffer;
         readBuffer = legacyModule.getI2cReadCache(physicalPort);
 
         switch (transaction.property) {
-        case PROPERTY_BATTERY:
-            motorController.handleReadBattery(readBuffer);
-            break;
-        case PROPERTY_POSITION:
-            motorController.handleReadPosition(transaction, readBuffer);
-            break;
-        case PROPERTY_TARGET:
-            motorController.handleReadPosition(transaction, readBuffer);
-            break;
-        case PROPERTY_MODE:
-            motorController.handleReadMode(transaction, readBuffer);
-            break;
-        case PROPERTY_SERVO:
-            servoController.handleReadServo(transaction, readBuffer);
-            break;
-        default:
-            RobotLog.e("Transaction not a read " + transaction.property);
-            break;
+            case PROPERTY_BATTERY:
+                motorController.handleReadBattery(readBuffer);
+                break;
+            case PROPERTY_POSITION:
+                motorController.handleReadPosition(transaction, readBuffer);
+                break;
+            case PROPERTY_TARGET:
+                motorController.handleReadPosition(transaction, readBuffer);
+                break;
+            case PROPERTY_MODE:
+                motorController.handleReadMode(transaction, readBuffer);
+                break;
+            case PROPERTY_SERVO:
+                servoController.handleReadServo(transaction, readBuffer);
+                break;
+            default:
+                RobotLog.e("Transaction not a read " + transaction.property);
+                break;
         }
         synchronized (this) {
             if (waitingForGodot) {
@@ -187,19 +178,17 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         }
     }
 
-    protected void sendHeartbeat()
-    {
+    protected void sendHeartbeat() {
         /*
          * Any transaction suffices for a heartbeat, so
          * we'll just continually send the timeout value
          */
         MatrixI2cTransaction transaction
-                = new MatrixI2cTransaction((byte)0,  MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_TIMEOUT, DEFAULT_TIMEOUT);
+                = new MatrixI2cTransaction((byte) 0, MatrixI2cTransaction.I2cTransactionProperty.PROPERTY_TIMEOUT, DEFAULT_TIMEOUT);
         queueTransaction(transaction);
     }
 
-    public void portIsReady(int port)
-    {
+    public void portIsReady(int port) {
         byte[] buffer;
         byte offset;
         byte len;
@@ -258,81 +247,81 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         }
 
         switch (transaction.property) {
-        case PROPERTY_POSITION:
-            offset = motorPositionOffset[transaction.motor];
-            len = 4;
+            case PROPERTY_POSITION:
+                offset = motorPositionOffset[transaction.motor];
+                len = 4;
             /*
              * Unused for reads, but Android Studio complains so...
              */
-            buffer = new byte[1];
-            buffer[0] = 0x0;
-            break;
-        case PROPERTY_BATTERY:
-            offset = BATTERY_OFFSET;
-            buffer = new byte[1];
-            buffer[0] = 0x0;
-            len = 1;
-            break;
-        case PROPERTY_TIMEOUT:
-            offset = TIMEOUT_OFFSET;
-            buffer = new byte[1];
-            buffer[0] = (byte)transaction.value;
-            len = 1;
-            break;
-        case PROPERTY_START:
-            offset = START_FLAG_OFFSET;
-            buffer = new byte[1];
-            buffer[0] = (byte)transaction.value;
-            len = 1;
-            break;
-        case PROPERTY_SPEED:
-            offset = motorSpeedOffset[transaction.motor];
-            buffer = new byte[1];
-            buffer[0] = (byte)transaction.value;
-            len = 1;
-            break;
-        case PROPERTY_TARGET:
-            offset = motorTargetOffset[transaction.motor];
-            buffer = TypeConversion.intToByteArray(transaction.value);
-            len = 4;
-            break;
-        case PROPERTY_MODE:
-            offset = motorModeOffset[transaction.motor];
-            buffer = new byte[1];
-            buffer[0] = (byte)transaction.value;
-            len = 1;
-            break;
-        case PROPERTY_MOTOR_BATCH:
-            offset = motorPositionOffset[transaction.motor];
-            ByteBuffer bb = ByteBuffer.allocate(10);
+                buffer = new byte[1];
+                buffer[0] = 0x0;
+                break;
+            case PROPERTY_BATTERY:
+                offset = BATTERY_OFFSET;
+                buffer = new byte[1];
+                buffer[0] = 0x0;
+                len = 1;
+                break;
+            case PROPERTY_TIMEOUT:
+                offset = TIMEOUT_OFFSET;
+                buffer = new byte[1];
+                buffer[0] = (byte) transaction.value;
+                len = 1;
+                break;
+            case PROPERTY_START:
+                offset = START_FLAG_OFFSET;
+                buffer = new byte[1];
+                buffer[0] = (byte) transaction.value;
+                len = 1;
+                break;
+            case PROPERTY_SPEED:
+                offset = motorSpeedOffset[transaction.motor];
+                buffer = new byte[1];
+                buffer[0] = (byte) transaction.value;
+                len = 1;
+                break;
+            case PROPERTY_TARGET:
+                offset = motorTargetOffset[transaction.motor];
+                buffer = TypeConversion.intToByteArray(transaction.value);
+                len = 4;
+                break;
+            case PROPERTY_MODE:
+                offset = motorModeOffset[transaction.motor];
+                buffer = new byte[1];
+                buffer[0] = (byte) transaction.value;
+                len = 1;
+                break;
+            case PROPERTY_MOTOR_BATCH:
+                offset = motorPositionOffset[transaction.motor];
+                ByteBuffer bb = ByteBuffer.allocate(10);
             /*
              * TODO: Do we really need to write position? (Probably not)
              */
-            bb.put(TypeConversion.intToByteArray(0));
-            bb.put(TypeConversion.intToByteArray(transaction.target));
-            bb.put(transaction.speed);
-            bb.put(transaction.mode);
-            buffer = bb.array();
-            len = 10;
-            break;
-        case PROPERTY_SERVO:
-            offset = servoSpeedOffset[transaction.servo];
-            buffer = new byte[2];
-            buffer[0] = transaction.speed;
-            buffer[1] = (byte)transaction.target;
-            len = 2;
-            break;
-        case PROPERTY_SERVO_ENABLE:
-            offset = SERVO_ENABLE_OFFSET;
-            buffer = new byte[1];
-            buffer[0] = (byte)transaction.value;
-            len = 1;
-            break;
-        default:
-            offset = 0x00;
-            buffer = new byte[1];
-            buffer[0] = (byte)transaction.value;
-            len = 1;
+                bb.put(TypeConversion.intToByteArray(0));
+                bb.put(TypeConversion.intToByteArray(transaction.target));
+                bb.put(transaction.speed);
+                bb.put(transaction.mode);
+                buffer = bb.array();
+                len = 10;
+                break;
+            case PROPERTY_SERVO:
+                offset = servoSpeedOffset[transaction.servo];
+                buffer = new byte[2];
+                buffer[0] = transaction.speed;
+                buffer[1] = (byte) transaction.target;
+                len = 2;
+                break;
+            case PROPERTY_SERVO_ENABLE:
+                offset = SERVO_ENABLE_OFFSET;
+                buffer = new byte[1];
+                buffer[0] = (byte) transaction.value;
+                len = 1;
+                break;
+            default:
+                offset = 0x00;
+                buffer = new byte[1];
+                buffer[0] = (byte) transaction.value;
+                len = 1;
         }
 
         try {
@@ -358,8 +347,7 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
     /*
      * A convenience function for turning off/on local debugs.
      */
-    protected void buginf(String s)
-    {
+    protected void buginf(String s) {
         if (debug) {
             RobotLog.i(s);
         }

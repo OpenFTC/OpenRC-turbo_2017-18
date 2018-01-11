@@ -49,70 +49,65 @@ import java.util.Map;
  * from one device to the other
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class PreferenceRemoter extends WifiStartStoppable
-    {
+public abstract class PreferenceRemoter extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected Context                   context;
-    private   SharedPreferences         sharedPreferences;
-    protected PreferencesHelper         preferencesHelper;
+    protected Context context;
+    private SharedPreferences sharedPreferences;
+    protected PreferencesHelper preferencesHelper;
     protected SharedPreferences.OnSharedPreferenceChangeListener sharedPreferencesListener;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public PreferenceRemoter()
-        {
+    public PreferenceRemoter() {
         super(WifiDirectAgent.getInstance());
 
-        context                   = AppUtil.getInstance().getApplication();
-        sharedPreferences         = PreferenceManager.getDefaultSharedPreferences(context);
-        preferencesHelper         = new PreferencesHelper(getTag(), sharedPreferences);
+        context = AppUtil.getInstance().getApplication();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferencesHelper = new PreferencesHelper(getTag(), sharedPreferences);
         sharedPreferencesListener = makeSharedPrefListener();
 
         dumpAllPrefs();
-        }
+    }
 
     protected abstract SharedPreferences.OnSharedPreferenceChangeListener makeSharedPrefListener();
 
-    protected void dumpAllPrefs()
-        {
+    protected void dumpAllPrefs() {
         RobotLog.vv(getTag(), "----- all preferences -----");
-        for (Map.Entry<String, ?> pair : sharedPreferences.getAll().entrySet())
-            {
+        for (Map.Entry<String, ?> pair : sharedPreferences.getAll().entrySet()) {
             RobotLog.vv(getTag(), "name='%s' value=%s", pair.getKey(), pair.getValue());
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Starting and stopping
     //----------------------------------------------------------------------------------------------
 
-    @Override protected boolean doStart() throws InterruptedException
-        {
+    @Override
+    protected boolean doStart() throws InterruptedException {
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesListener);
         return true;
-        }
+    }
 
-    @Override protected void doStop() throws InterruptedException
-        {
+    @Override
+    protected void doStop() throws InterruptedException {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Remoting
     //----------------------------------------------------------------------------------------------
 
-    protected void sendPreference(RobotControllerPreference pair)
-        {
+    protected void sendPreference(RobotControllerPreference pair) {
         RobotLog.vv(getTag(), "sending RC pref name=%s value=%s", pair.getPrefName(), pair.getValue());
         Command command = new Command(RobotCoreCommandList.CMD_ROBOT_CONTROLLER_PREFERENCE, pair.serialize());
         NetworkConnectionHandler.getInstance().sendCommand(command);
-        }
+    }
 
     public abstract CallbackResult handleCommandRobotControllerPreference(String extra);
 
-    }
+}

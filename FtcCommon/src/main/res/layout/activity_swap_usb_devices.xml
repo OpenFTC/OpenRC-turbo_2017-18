@@ -5,7 +5,8 @@
               tools:context=".configuration.EditSwapUsbDevices"
               android:orientation="vertical">
 
-    <include layout="@layout/header"
+    <include
+        layout="@layout/header"
         android:id="@+id/included_header"/>
 
     <LinearLayout
@@ -67,9 +68,9 @@
 
             <!-- the ListView is intrinsically scrollable; we need not wrap it in a ScrollView -->
             <ListView
-              android:id="@+id/controllersList"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"/>
+                android:id="@+id/controllersList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <!-- also used for orange text placement -->
             <LinearLayout

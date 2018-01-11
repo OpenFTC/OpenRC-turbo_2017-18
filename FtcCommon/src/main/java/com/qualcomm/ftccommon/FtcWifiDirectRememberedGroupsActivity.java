@@ -63,192 +63,164 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("WeakerAccess")
-public class FtcWifiDirectRememberedGroupsActivity extends ThemedActivity
-    {
+public class FtcWifiDirectRememberedGroupsActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcWifiDirectRememberedGroupsActivity";
-    @Override public String getTag() { return TAG; }
 
-    private final boolean                       remoteConfigure = AppUtil.getInstance().isDriverStation();
-    private final NetworkConnectionHandler      networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    private final RecvLoopCallback              recvLoopCallback = new RecvLoopCallback();
-    private final Object                        requestGroupsFutureLock = new Object();
-    private Future                              requestGroupsFuture = null;
-    private WifiDirectPersistentGroupManager    persistentGroupManager;
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
+    private final boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
+    private final NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
+    private final RecvLoopCallback recvLoopCallback = new RecvLoopCallback();
+    private final Object requestGroupsFutureLock = new Object();
+    private Future requestGroupsFuture = null;
+    private WifiDirectPersistentGroupManager persistentGroupManager;
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-        {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftc_wifi_remembered_groups);
 
-        if (!remoteConfigure)
-            {
+        if (!remoteConfigure) {
             persistentGroupManager = new WifiDirectPersistentGroupManager(WifiDirectAgent.getInstance());
-            }
-        else
-            {
+        } else {
             networkConnectionHandler.pushReceiveLoopCallback(recvLoopCallback);
-            }
         }
+    }
 
-    @Override protected void onStart()
-        {
+    @Override
+    protected void onStart() {
         super.onStart();
 
-        if (!remoteConfigure)
-            {
+        if (!remoteConfigure) {
             loadLocalGroups();
-            }
-        else
-            {
+        } else {
             requestRememberedGroups();
-            }
         }
+    }
 
-    @Override protected void onDestroy()
-        {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        if (remoteConfigure)
-            {
+        if (remoteConfigure) {
             networkConnectionHandler.removeReceiveLoopCallback(recvLoopCallback);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // List Management
     //----------------------------------------------------------------------------------------------
 
-    protected void loadLocalGroups()
-        {
+    protected void loadLocalGroups() {
         loadGroupList(getLocalGroupList());
-        }
+    }
 
-    protected void requestRememberedGroups()
-        {
+    protected void requestRememberedGroups() {
         RobotLog.vv(TAG, "requestRememberedGroups()");
         networkConnectionHandler.sendCommand(new Command(CommandList.CMD_REQUEST_REMEMBERED_GROUPS));
-        }
+    }
 
     // RC has informed DS of the list of list of remembered groups
-    protected CallbackResult handleCommandRequestRememberedGroupsResp(String extra) throws RobotCoreException
-        {
+    protected CallbackResult handleCommandRequestRememberedGroupsResp(String extra) throws RobotCoreException {
         RobotLog.vv(TAG, "handleCommandRequestRememberedGroupsResp()");
         List<WifiDirectGroupName> names = WifiDirectGroupName.deserializeNames(extra);
         loadGroupList(names);
         return CallbackResult.HANDLED;
-        }
+    }
 
-    protected CallbackResult handleRememberedGroupsChanged()
-        {
+    protected CallbackResult handleRememberedGroupsChanged() {
         // We may get a flurry of these. So wait a touch before we request the now-current list
-        synchronized (requestGroupsFutureLock)
-            {
-            if (requestGroupsFuture != null)
-                {
+        synchronized (requestGroupsFutureLock) {
+            if (requestGroupsFuture != null) {
                 requestGroupsFuture.cancel(false);
                 requestGroupsFuture = null;
-                }
-            requestGroupsFuture = ThreadPool.getDefaultScheduler().schedule(new Callable()
-                {
-                @Override public Object call() throws Exception
-                    {
-                    synchronized (requestGroupsFutureLock)
-                        {
+            }
+            requestGroupsFuture = ThreadPool.getDefaultScheduler().schedule(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    synchronized (requestGroupsFutureLock) {
                         requestRememberedGroups();
                         requestGroupsFuture = null;
-                        }
-                    return null;
                     }
-                }, 250, TimeUnit.MILLISECONDS);
-            }
+                    return null;
+                }
+            }, 250, TimeUnit.MILLISECONDS);
+        }
 
         return CallbackResult.HANDLED_CONTINUE; // others may want to know
-        }
+    }
 
-    protected List<WifiDirectGroupName> getLocalGroupList()
-        {
+    protected List<WifiDirectGroupName> getLocalGroupList() {
         return WifiDirectGroupName.namesFromGroups(persistentGroupManager.getPersistentGroups());
-        }
+    }
 
-    protected void loadGroupList(final List<WifiDirectGroupName> names)
-        {
-        AppUtil.getInstance().runOnUiThread(new Runnable()
-            {
-            @Override public void run()
-                {
+    protected void loadGroupList(final List<WifiDirectGroupName> names) {
+        AppUtil.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 ListView groupList = (ListView) findViewById(R.id.groupList);
                 Collections.sort(names);
-                if (names.isEmpty())
-                    {
+                if (names.isEmpty()) {
                     names.add(new WifiDirectGroupName(getString(R.string.noRememberedGroupsFound)));
-                    }
+                }
                 ArrayAdapter<WifiDirectGroupName> adapter = new WifiP2pGroupItemAdapter(AppUtil.getInstance().getActivity(), android.R.layout.simple_spinner_dropdown_item, names);
                 groupList.setAdapter(adapter);
-                }
-            });
-        }
-
-    protected class WifiP2pGroupItemAdapter extends ArrayAdapter<WifiDirectGroupName>
-        {
-        public WifiP2pGroupItemAdapter(Context context, @LayoutRes int resource, @NonNull List<WifiDirectGroupName> objects)
-            {
-            super(context, resource, objects);
             }
+        });
+    }
+
+    protected class WifiP2pGroupItemAdapter extends ArrayAdapter<WifiDirectGroupName> {
+        public WifiP2pGroupItemAdapter(Context context, @LayoutRes int resource, @NonNull List<WifiDirectGroupName> objects) {
+            super(context, resource, objects);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Actions
     //----------------------------------------------------------------------------------------------
 
-    public void onClearRememberedGroupsClicked(View view)
-        {
+    public void onClearRememberedGroupsClicked(View view) {
         RobotLog.vv(TAG, "onClearRememberedGroupsClicked()");
-        if (!remoteConfigure)
-            {
+        if (!remoteConfigure) {
             persistentGroupManager.deleteAllPersistentGroups();
             AppUtil.getInstance().showToast(UILocation.BOTH, getString(R.string.toastWifiP2pRememberedGroupsCleared));
             loadLocalGroups();
-            }
-        else
-            {
+        } else {
             networkConnectionHandler.sendCommand(new Command(CommandList.CMD_CLEAR_REMEMBERED_GROUPS));
-            }
         }
+    }
 
     //------------------------------------------------------------------------------------------------
     // Remote handling
     //------------------------------------------------------------------------------------------------
 
-    protected class RecvLoopCallback extends RecvLoopRunnable.DegenerateCallback
-        {
-        @Override public CallbackResult commandEvent(Command command)
-            {
+    protected class RecvLoopCallback extends RecvLoopRunnable.DegenerateCallback {
+        @Override
+        public CallbackResult commandEvent(Command command) {
             CallbackResult result = CallbackResult.NOT_HANDLED;
-            try
-                {
-                switch (command.getName())
-                    {
+            try {
+                switch (command.getName()) {
                     case CommandList.CMD_REQUEST_REMEMBERED_GROUPS_RESP:
                         result = handleCommandRequestRememberedGroupsResp(command.getExtra());
                         break;
                     case CommandList.CMD_NOTIFY_WIFI_DIRECT_REMEMBERED_GROUPS_CHANGED:
                         handleRememberedGroupsChanged();
                         break;
-                    }
                 }
-            catch (RobotCoreException e)
-                {
+            } catch (RobotCoreException e) {
                 RobotLog.logStacktrace(e);
-                }
-            return result;
             }
+            return result;
         }
     }
+}

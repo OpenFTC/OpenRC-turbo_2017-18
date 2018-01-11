@@ -39,8 +39,7 @@ import android.support.annotation.Nullable;
  * within a robot configuration
  */
 
-public interface RobotConfigNameable extends HardwareDevice
-    {
+public interface RobotConfigNameable extends HardwareDevice {
     /**
      * Informs the device of a name by which it would be recognized by the user. Note that
      * the provided name may be null, in which case no such user-recognizable name is provided
@@ -49,7 +48,9 @@ public interface RobotConfigNameable extends HardwareDevice
 
     /**
      * Returns the human-recognizable name of this device, if same has been set.
+     *
      * @see #setUserConfiguredName(String)
      */
-    @Nullable String getUserConfiguredName();
-    }
+    @Nullable
+    String getUserConfiguredName();
+}

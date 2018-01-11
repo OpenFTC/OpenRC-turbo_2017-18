@@ -36,16 +36,16 @@ import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 
 /**
  * OpModeManager instances are used to register opmodes for use.
+ *
  * @see AnnotatedOpModeManager
  */
-public interface OpModeManager
-    {
+public interface OpModeManager {
     /**
      * Registers a class for display on the driver station and availability for game play.
      * New instances of this class will be created as needed.
      *
-     * @param name          the name to show on the driver station menu
-     * @param opModeClass   the class of the OpMode to create
+     * @param name        the name to show on the driver station menu
+     * @param opModeClass the class of the OpMode to create
      */
     void register(String name, Class<? extends OpMode> opModeClass);
 
@@ -53,8 +53,8 @@ public interface OpModeManager
      * Registers a class for display on the driver station and availability for game play.
      * New instances of this class will be created as needed.
      *
-     * @param name          metadata regarding the class, including the name to show on the DS menu
-     * @param opModeClass   the class of the OpMode to create
+     * @param name        metadata regarding the class, including the name to show on the DS menu
+     * @param opModeClass the class of the OpMode to create
      */
     void register(OpModeMeta name, Class<? extends OpMode> opModeClass);
 
@@ -62,8 +62,8 @@ public interface OpModeManager
      * Register an *instance* of a class for display on the driver station and availability
      * for game play. You won't likely use this method very often.
      *
-     * @param name              the name to show on the driver station menu
-     * @param opModeInstance    the object instance to use for that menu item
+     * @param name           the name to show on the driver station menu
+     * @param opModeInstance the object instance to use for that menu item
      */
     void register(String name, OpMode opModeInstance);
 
@@ -71,8 +71,8 @@ public interface OpModeManager
      * Register an *instance* of a class for display on the driver station and availability
      * for game play. You won't likely use this method very often.
      *
-     * @param name              metadata regarding the opmode, including the name to show on the driver station menu
-     * @param opModeInstance    the object instance to use for that menu item
+     * @param name           metadata regarding the opmode, including the name to show on the driver station menu
+     * @param opModeInstance the object instance to use for that menu item
      */
     void register(OpModeMeta name, OpMode opModeInstance);
 
@@ -81,4 +81,4 @@ public interface OpModeManager
      * automatically runs whenever no user opmode is running.
      */
     String DEFAULT_OP_MODE_NAME = "$Stop$Robot$";
-    }
+}

@@ -38,7 +38,6 @@ package org.firstinspires.ftc.robotcore.external;
  * @see Runnable
  * @see java.util.concurrent.Callable
  */
-public interface ThrowingCallable<VALUE, EXCEPTION extends Throwable>
-    {
+public interface ThrowingCallable<VALUE, EXCEPTION extends Throwable> {
     VALUE call() throws EXCEPTION;
-    }
+}

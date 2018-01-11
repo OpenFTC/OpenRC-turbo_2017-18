@@ -33,13 +33,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.qualcomm.robotcore.hardware;
 
-/** TimestampedData pairs together data which has been read with the timestamp at which
- * the read occurred, as best that can be determined */
-public class TimestampedData
-    {
-    /** the data in question */
-    public byte[]   data;
+/**
+ * TimestampedData pairs together data which has been read with the timestamp at which
+ * the read occurred, as best that can be determined
+ */
+public class TimestampedData {
+    /**
+     * the data in question
+     */
+    public byte[] data;
 
-    /** the timestamp on the System.nanoTime() clock associated with that data */
-    public long     nanoTime;
-    }
+    /**
+     * the timestamp on the System.nanoTime() clock associated with that data
+     */
+    public long nanoTime;
+}

@@ -47,113 +47,103 @@ import java.util.List;
  * interface.
  */
 @SuppressWarnings("WeakerAccess")
-public class VuforiaTrackablesImpl extends AbstractList<VuforiaTrackable> implements VuforiaTrackables
-    {
+public class VuforiaTrackablesImpl extends AbstractList<VuforiaTrackable> implements VuforiaTrackables {
     //------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------
 
     VuforiaLocalizerImpl vuforiaLocalizer;
-    DataSet              dataSet;
-    String               name;
-    boolean              isActive;
+    DataSet dataSet;
+    String name;
+    boolean isActive;
     List<VuforiaTrackableImpl> trackables;
 
     //------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------
 
-    public VuforiaTrackablesImpl(VuforiaLocalizerImpl vuforiaLocalizer, DataSet dataSet, Class<? extends VuforiaTrackable.Listener> listenerClass)
-        {
+    public VuforiaTrackablesImpl(VuforiaLocalizerImpl vuforiaLocalizer, DataSet dataSet, Class<? extends VuforiaTrackable.Listener> listenerClass) {
         this.vuforiaLocalizer = vuforiaLocalizer;
         this.dataSet = dataSet;
         this.isActive = false;
         this.trackables = new ArrayList<>(this.dataSet.getNumTrackables());
-        for (int i = 0; i < this.dataSet.getNumTrackables(); i++)
-            {
+        for (int i = 0; i < this.dataSet.getNumTrackables(); i++) {
             VuforiaTrackableImpl trackableImpl = new VuforiaTrackableImpl(this, i, listenerClass);
             this.trackables.add(trackableImpl);
-            }
         }
+    }
 
-    @Override public synchronized void setName(String name)
-        {
+    @Override
+    public synchronized void setName(String name) {
         this.name = name;
-        for (VuforiaTrackableImpl trackable : this.trackables)
-            {
-            if (trackable.getName() == null)
-                {
+        for (VuforiaTrackableImpl trackable : this.trackables) {
+            if (trackable.getName() == null) {
                 trackable.setName(name);
-                }
             }
         }
+    }
 
-    @Override public synchronized String getName()
-        {
+    @Override
+    public synchronized String getName() {
         return this.name;
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Accessing
     //------------------------------------------------------------------------------------------
 
-    @Override public int size()
-        {
+    @Override
+    public int size() {
         return this.trackables.size();
-        }
+    }
 
-    @Override public VuforiaTrackable get(int index)
-        {
+    @Override
+    public VuforiaTrackable get(int index) {
         return this.trackables.get(index);
-        }
+    }
 
-    @Override public VuforiaLocalizer getLocalizer()
-        {
+    @Override
+    public VuforiaLocalizer getLocalizer() {
         return this.vuforiaLocalizer;
-        }
+    }
 
     //------------------------------------------------------------------------------------------
     // Life-cycle
     //------------------------------------------------------------------------------------------
 
-    @Override synchronized public void activate()
-        {
-        if (!isActive)
-            {
+    @Override
+    synchronized public void activate() {
+        if (!isActive) {
             VuforiaLocalizerImpl.throwIfFail(VuforiaLocalizerImpl.getObjectTracker().activateDataSet(this.dataSet));
             isActive = true;
 
             adjustExtendedTracking(vuforiaLocalizer.isExtendedTrackingActive);
-            }
         }
+    }
 
-    @Override synchronized public void deactivate()
-        {
-        if (isActive)
-            {
+    @Override
+    synchronized public void deactivate() {
+        if (isActive) {
             VuforiaLocalizerImpl.throwIfFail(VuforiaLocalizerImpl.getObjectTracker().deactivateDataSet(this.dataSet));
             isActive = false;
-            }
         }
+    }
 
-    public void adjustExtendedTracking(boolean isExtendedTrackingActive)
-        {
-        if (isActive)
-            {
-            for (VuforiaTrackableImpl trackable : this.trackables)
-                {
-                if (isExtendedTrackingActive)
+    public void adjustExtendedTracking(boolean isExtendedTrackingActive) {
+        if (isActive) {
+            for (VuforiaTrackableImpl trackable : this.trackables) {
+                if (isExtendedTrackingActive) {
                     trackable.getTrackable().startExtendedTracking();
-                else
+                } else {
                     trackable.getTrackable().stopExtendedTracking();
                 }
             }
         }
+    }
 
-    public void destroy()
-        {
+    public void destroy() {
         deactivate();
         VuforiaLocalizerImpl.getObjectTracker().destroyDataSet(this.dataSet);
         this.dataSet = null;
-        }
     }
+}

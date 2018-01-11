@@ -40,27 +40,27 @@ import java.util.Queue;
  * removing old samples as the size of the data exceeds a fixed capacity. This class is *not*
  * thread-safe.
  */
-public class MovingStatistics
-    {
+public class MovingStatistics {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    final Statistics      statistics;
-    final int             capacity;
-    final Queue<Double>   samples;
+    final Statistics statistics;
+    final int capacity;
+    final Queue<Double> samples;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public MovingStatistics(int capacity)
-        {
-        if (capacity <= 0) throw new IllegalArgumentException("MovingStatistics capacity must be positive");
-        this.statistics = new Statistics();
-        this.capacity   = capacity;
-        this.samples    = new LinkedList<Double>();
+    public MovingStatistics(int capacity) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("MovingStatistics capacity must be positive");
         }
+        this.statistics = new Statistics();
+        this.capacity = capacity;
+        this.samples = new LinkedList<Double>();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
@@ -68,39 +68,39 @@ public class MovingStatistics
 
     /**
      * Returns the current number of samples
+     *
      * @return the number of samples
      */
-    public int getCount()
-        {
+    public int getCount() {
         return this.statistics.getCount();
-        }
+    }
 
     /**
      * Returns the mean of the current set of samples
+     *
      * @return the mean of the samples
      */
-    public double getMean()
-        {
+    public double getMean() {
         return this.statistics.getMean();
-        }
+    }
 
     /**
      * Returns the sample variance of the current set of samples
+     *
      * @return the variance of the samples
      */
-    public double getVariance()
-        {
+    public double getVariance() {
         return this.statistics.getVariance();
-        }
+    }
 
     /**
      * Returns the sample standard deviation of the current set of samples
+     *
      * @return the standard deviation of the samples
      */
-    public double getStandardDeviation()
-        {
+    public double getStandardDeviation() {
         return this.statistics.getStandardDeviation();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Modifying
@@ -109,23 +109,21 @@ public class MovingStatistics
     /**
      * Resets the statistics to an empty state
      */
-    public void clear()
-        {
+    public void clear() {
         this.statistics.clear();
         this.samples.clear();
-        }
+    }
 
     /**
      * Adds a new sample to the statistics, possibly also removing the oldest.
+     *
      * @param x the sample to add
      */
-    public void add(double x)
-        {
+    public void add(double x) {
         this.statistics.add(x);
         this.samples.add(x);
-        if (this.samples.size() > capacity)
-            {
+        if (this.samples.size() > capacity) {
             this.statistics.remove(this.samples.remove());
-            }
         }
     }
+}

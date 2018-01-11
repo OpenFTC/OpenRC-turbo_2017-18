@@ -72,30 +72,26 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  * {@link AdafruitI2cColorSensor} provides an implementation of color sensor functionality
  * for the <a href="http://adafru.it/1334">AdaFruit color sensor</a>
  */
-public class AdafruitI2cColorSensor extends AMSColorSensorImpl
-    {
+public class AdafruitI2cColorSensor extends AMSColorSensorImpl {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public AdafruitI2cColorSensor(I2cDeviceSynchSimple deviceClient)
-        {
+    public AdafruitI2cColorSensor(I2cDeviceSynchSimple deviceClient) {
         super(Parameters.createForTCS34725(), deviceClient, true);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public String getDeviceName()
-        {
+    public String getDeviceName() {
         return AppUtil.getDefContext().getString(R.string.configTypeAdafruitColorSensor);
-        }
+    }
 
     @Override
-    public Manufacturer getManufacturer()
-        {
+    public Manufacturer getManufacturer() {
         return Manufacturer.Adafruit;
-        }
     }
+}

@@ -34,47 +34,40 @@ package org.firstinspires.ftc.robotcore.internal.hardware;
 
 /**
  * {@link TimeWindow} represents an interval in time on the System nanotime clock
+ *
  * @see System#nanoTime()
  */
 @SuppressWarnings("WeakerAccess")
-public class TimeWindow
-    {
+public class TimeWindow {
     protected long nsFirst;    // inclusive
     protected long nsLast;     // inclusive
 
-    public TimeWindow()
-        {
+    public TimeWindow() {
         clear();
-        }
+    }
 
-    public void clear()
-        {
+    public void clear() {
         this.nsFirst = 0;
         this.nsLast = 0;
-        }
-
-    public boolean isCleared()
-        {
-        return this.nsFirst==0 && this.nsLast==0;
-        }
-
-    public void setNanosecondsFirst(long nsFirst)
-        {
-        this.nsFirst = nsFirst;
-        }
-
-    public void setNanosecondsLast(long nsLast)
-        {
-        this.nsLast = nsLast;
-        }
-
-    public long getNanosecondsFirst()
-        {
-        return nsFirst;
-        }
-
-    public long getNanosecondsLast()
-        {
-        return nsLast;
-        }
     }
+
+    public boolean isCleared() {
+        return this.nsFirst == 0 && this.nsLast == 0;
+    }
+
+    public void setNanosecondsFirst(long nsFirst) {
+        this.nsFirst = nsFirst;
+    }
+
+    public void setNanosecondsLast(long nsLast) {
+        this.nsLast = nsLast;
+    }
+
+    public long getNanosecondsFirst() {
+        return nsFirst;
+    }
+
+    public long getNanosecondsLast() {
+        return nsLast;
+    }
+}

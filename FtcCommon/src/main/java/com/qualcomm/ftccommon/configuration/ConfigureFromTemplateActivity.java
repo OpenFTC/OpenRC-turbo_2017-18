@@ -71,187 +71,162 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * {@link ConfigureFromTemplateActivity} allows one to add a configuration to your
  * robot by instantiating from a list of templates.
  */
-public class ConfigureFromTemplateActivity extends EditActivity implements RecvLoopRunnable.RecvLoopCallback
-    {
+public class ConfigureFromTemplateActivity extends EditActivity implements RecvLoopRunnable.RecvLoopCallback {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final RequestCode requestCode = RequestCode.CONFIG_FROM_TEMPLATE;
-    public static final String      TAG = "ConfigFromTemplate";
-    @Override public String getTag() { return TAG; }
+    public static final String TAG = "ConfigFromTemplate";
 
-    protected NetworkConnectionHandler  networkConnectionHandler    = NetworkConnectionHandler.getInstance();
-    protected List<RobotConfigFile>     configurationList           = new CopyOnWriteArrayList<RobotConfigFile>();
-    protected List<RobotConfigFile>     templateList                = new CopyOnWriteArrayList<RobotConfigFile>();
-    protected USBScanManager            usbScanManager;
-    protected ViewGroup                 feedbackAnchor;
-    protected Map<String,String>        remoteTemplates             = new ConcurrentHashMap<String,String>();
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
+    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
+    protected List<RobotConfigFile> configurationList = new CopyOnWriteArrayList<RobotConfigFile>();
+    protected List<RobotConfigFile> templateList = new CopyOnWriteArrayList<RobotConfigFile>();
+    protected USBScanManager usbScanManager;
+    protected ViewGroup feedbackAnchor;
+    protected Map<String, String> remoteTemplates = new ConcurrentHashMap<String, String>();
     protected final Deque<StringProcessor> receivedConfigProcessors = new LinkedList<StringProcessor>();
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
-    @Override public void onCreate(Bundle savedInstanceState)
-        {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configure_from_template);
 
         EditParameters parameters = EditParameters.fromIntent(this, getIntent());
         deserialize(parameters);
 
-        if (remoteConfigure)
-            {
+        if (remoteConfigure) {
             networkConnectionHandler.pushReceiveLoopCallback(this);
-            }
+        }
 
-        try
-            {
+        try {
             usbScanManager = new USBScanManager(context, remoteConfigure);
             this.usbScanManager.startExecutorService();
             this.usbScanManager.startDeviceScanIfNecessary();
-            }
-        catch (RobotCoreException e)
-            {
+        } catch (RobotCoreException e) {
             appUtil.showToast(UILocation.ONLY_LOCAL, context, getString(R.string.templateConfigureFailedToOpenUSBScanManager));
             RobotLog.ee(TAG, e, "Failed to open usb scan manager: " + e.toString());
-            }
-
-        this.feedbackAnchor = (ViewGroup)findViewById(R.id.feedbackAnchor);
         }
 
+        this.feedbackAnchor = (ViewGroup) findViewById(R.id.feedbackAnchor);
+    }
+
     @Override
-    protected void onStart()
-        {
+    protected void onStart() {
         super.onStart();
         this.robotConfigFileManager.updateActiveConfigHeader(this.currentCfgFile);
 
-        if (!remoteConfigure)
-            {
+        if (!remoteConfigure) {
             configurationList = robotConfigFileManager.getXMLFiles();
             templateList = robotConfigFileManager.getXMLTemplates();
             warnIfNoTemplates();
-            }
-        else
-            {
+        } else {
             // Ask the RC to send us (the DS) the list of extant configs and templates. Do the configurations
             // first before the templates so that they'll arrive before the user has anything to click on.
             networkConnectionHandler.sendCommand(new Command(CommandList.CMD_REQUEST_CONFIGURATIONS));
             networkConnectionHandler.sendCommand(new Command(CommandList.CMD_REQUEST_CONFIGURATION_TEMPLATES));
-            }
-        populate();
         }
+        populate();
+    }
 
     // RC has informed DS of the list of configurations
-    protected CallbackResult handleCommandRequestConfigurationsResp(String extra) throws RobotCoreException
-        {
+    protected CallbackResult handleCommandRequestConfigurationsResp(String extra) throws RobotCoreException {
         configurationList = robotConfigFileManager.deserializeXMLConfigList(extra);
         return CallbackResult.HANDLED;
-        }
+    }
 
     // RC has informed DS of the list of configuration templates
-    protected CallbackResult handleCommandRequestTemplatesResp(String extra) throws RobotCoreException
-        {
+    protected CallbackResult handleCommandRequestTemplatesResp(String extra) throws RobotCoreException {
         templateList = robotConfigFileManager.deserializeXMLConfigList(extra);
         warnIfNoTemplates();
         populate();
         return CallbackResult.HANDLED;
-        }
+    }
 
     @Override
-    protected void onDestroy()
-        {
+    protected void onDestroy() {
         super.onDestroy();
         this.usbScanManager.stopExecutorService();
         this.usbScanManager = null;
-        if (remoteConfigure)
-            {
+        if (remoteConfigure) {
             networkConnectionHandler.removeReceiveLoopCallback(this);
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Template list management
     //----------------------------------------------------------------------------------------------
 
-    protected void warnIfNoTemplates()
-        {
-        if (templateList.size() == 0)
-            {
+    protected void warnIfNoTemplates() {
+        if (templateList.size() == 0) {
             feedbackAnchor.setVisibility(View.INVISIBLE);
             final String msg0 = getString(R.string.noTemplatesFoundTitle);
             final String msg1 = getString(R.string.noTemplatesFoundMessage);
-            runOnUiThread(new Runnable()
-                {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void run()
-                    {
+                public void run() {
                     utility.setFeedbackText(msg0, msg1, R.id.feedbackAnchor, R.layout.feedback, R.id.feedbackText0, R.id.feedbackText1);
-                    }
-                });
-            }
-        else
-            {
-            runOnUiThread(new Runnable()
-                {
+                }
+            });
+        } else {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void run()
-                    {
+                public void run() {
                     feedbackAnchor.removeAllViews();
                     feedbackAnchor.setVisibility(View.GONE);
-                    }
-                });
-            }
+                }
+            });
         }
+    }
 
-    protected void populate()
-        {
-        runOnUiThread(new Runnable()
-            {
+    protected void populate() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void run()
-                {
+            public void run() {
                 ViewGroup parent = (ViewGroup) findViewById(R.id.templateList);
                 parent.removeAllViews();
 
                 final Collator coll = Collator.getInstance();
                 coll.setStrength(Collator.PRIMARY); // use case-insensitive compare
-                Collections.sort(templateList, new Comparator<RobotConfigFile>()
-                    {
-                    @Override public int compare(RobotConfigFile lhs, RobotConfigFile rhs)
-                        {
+                Collections.sort(templateList, new Comparator<RobotConfigFile>() {
+                    @Override
+                    public int compare(RobotConfigFile lhs, RobotConfigFile rhs) {
                         return coll.compare(lhs.getName(), rhs.getName());
-                        }
-                    });
+                    }
+                });
 
-                for (RobotConfigFile template : templateList)
-                    {
+                for (RobotConfigFile template : templateList) {
                     View child = LayoutInflater.from(context).inflate(R.layout.template_info, null);
                     parent.addView(child);
 
                     TextView name = (TextView) child.findViewById(R.id.templateNameText);
                     name.setText(template.getName());
                     name.setTag(template);
-                    }
                 }
-            });
-        }
+            }
+        });
+    }
 
-    public void onConfigureButtonPressed(View v)
-        {
+    public void onConfigureButtonPressed(View v) {
         RobotConfigFile templateMeta = getTemplateMeta(v);
-        getTemplateAndThen(templateMeta, new TemplateProcessor()
-            {
-            @Override public void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser)
-                {
+        getTemplateAndThen(templateMeta, new TemplateProcessor() {
+            @Override
+            public void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser) {
                 configureFromTemplate(templateMeta, xmlPullParser);
-                }
-            });
-        }
+            }
+        });
+    }
 
-    void configureFromTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser)
-        {
+    void configureFromTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser) {
         try {
             RobotConfigMap robotConfigMap = instantiateTemplate(templateMeta, xmlPullParser);
             awaitScannedDevices();
@@ -268,143 +243,115 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
             // as it just shows briefly before FtcConfigurationActivity takes over.
             robotConfigFileManager.setActiveConfig(RobotConfigFile.noConfig(robotConfigFileManager));
             startActivityForResult(intent, FtcConfigurationActivity.requestCode.value);
-            }
-        catch (RobotCoreException e)
-            {
-            }
+        } catch (RobotCoreException e) {
         }
+    }
 
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data)
-        {
-        if (requestCode==FtcConfigurationActivity.requestCode.value)
-            {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FtcConfigurationActivity.requestCode.value) {
             // FtcConfigurationActivity can change the current config. Update our local copy.
             this.currentCfgFile = robotConfigFileManager.getActiveConfigAndUpdateUI();
-            }
         }
+    }
 
-    public void onInfoButtonPressed(View v)
-        {
+    public void onInfoButtonPressed(View v) {
         RobotConfigFile templateMeta = getTemplateMeta(v);
-        getTemplateAndThen(templateMeta, new TemplateProcessor()
-            {
-            @Override public void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser)
-                {
+        getTemplateAndThen(templateMeta, new TemplateProcessor() {
+            @Override
+            public void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser) {
                 showInfo(templateMeta, xmlPullParser);
-                }
-            });
-        }
+            }
+        });
+    }
 
-    protected void showInfo(RobotConfigFile template, XmlPullParser xmlPullParser)
-        {
-        String description   = indent(3, robotConfigFileManager.getRobotConfigDescription(xmlPullParser));
-        final String title   = getString(R.string.templateConfigureConfigurationInstructionsTitle);
+    protected void showInfo(RobotConfigFile template, XmlPullParser xmlPullParser) {
+        String description = indent(3, robotConfigFileManager.getRobotConfigDescription(xmlPullParser));
+        final String title = getString(R.string.templateConfigureConfigurationInstructionsTitle);
         final String message = String.format(getString(R.string.templateConfigurationInstructions), template.getName(), description);
 
-        runOnUiThread(new Runnable()
-            {
+        runOnUiThread(new Runnable() {
             @Override
-            public void run()
-                {
+            public void run() {
                 utility.setFeedbackText(title, message.trim(), R.id.feedbackAnchor, R.layout.feedback, R.id.feedbackText0, R.id.feedbackText1, R.id.feedbackOKButton);
-                }
-            });
-        }
+            }
+        });
+    }
 
     //----------------------------------------------------------------------------------------------
     // Remote templates
     //----------------------------------------------------------------------------------------------
 
-    protected interface TemplateProcessor
-        {
+    protected interface TemplateProcessor {
         void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser);
-        }
+    }
 
-    protected interface StringProcessor
-        {
+    protected interface StringProcessor {
         void processString(String string);
-        }
+    }
 
-    protected void getTemplateAndThen(final RobotConfigFile templateMeta, final TemplateProcessor processor)
-        {
-        if (remoteConfigure)
-            {
+    protected void getTemplateAndThen(final RobotConfigFile templateMeta, final TemplateProcessor processor) {
+        if (remoteConfigure) {
             // Look in cache if we have it, otherwise ask for it from RC
             String template = remoteTemplates.get(templateMeta.getName());
-            if (template != null)
-                {
+            if (template != null) {
                 XmlPullParser xmlPullParser = xmlPullParserFromString(template);
                 processor.processTemplate(templateMeta, xmlPullParser);
-                }
-            else
-                {
-                synchronized (receivedConfigProcessors)
-                    {
-                    receivedConfigProcessors.addLast(new StringProcessor()
-                        {
-                        @Override public void processString(String template)
-                            {
+            } else {
+                synchronized (receivedConfigProcessors) {
+                    receivedConfigProcessors.addLast(new StringProcessor() {
+                        @Override
+                        public void processString(String template) {
                             // Remember it in the cache for next time
                             remoteTemplates.put(templateMeta.getName(), template);
                             // Process it now
                             XmlPullParser xmlPullParser = xmlPullParserFromString(template);
                             processor.processTemplate(templateMeta, xmlPullParser);
-                            }
-                        });
+                        }
+                    });
                     networkConnectionHandler.sendCommand(new Command(CommandList.CMD_REQUEST_PARTICULAR_CONFIGURATION, templateMeta.toString()));
-                    }
                 }
             }
-        else
-            {
+        } else {
             processor.processTemplate(templateMeta, templateMeta.getXml());
-            }
         }
+    }
 
-    protected CallbackResult handleCommandRequestParticularConfigurationResp(String config) throws RobotCoreException
-        {
+    protected CallbackResult handleCommandRequestParticularConfigurationResp(String config) throws RobotCoreException {
         StringProcessor processor = null;
-        synchronized (receivedConfigProcessors)
-            {
+        synchronized (receivedConfigProcessors) {
             processor = receivedConfigProcessors.pollFirst();
-            }
-        if (processor != null)
-            {
+        }
+        if (processor != null) {
             processor.processString(config);
-            }
+        }
         return CallbackResult.HANDLED;
-        }
+    }
 
-    protected XmlPullParser xmlPullParserFromString(String string)
-        {
+    protected XmlPullParser xmlPullParserFromString(String string) {
         return ReadXMLFileHandler.xmlPullParserFromReader(new StringReader(string));
-        }
+    }
 
-    protected RobotConfigFile getTemplateMeta(View v)
-        {
+    protected RobotConfigFile getTemplateMeta(View v) {
         ViewGroup viewGroup = (ViewGroup) v.getParent();
-        TextView name = (TextView)viewGroup.findViewById(R.id.templateNameText);
+        TextView name = (TextView) viewGroup.findViewById(R.id.templateNameText);
         return (RobotConfigFile) name.getTag();
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Template management
     //----------------------------------------------------------------------------------------------
 
-    protected ScannedDevices awaitScannedDevices()
-        {
+    protected ScannedDevices awaitScannedDevices() {
         try {
             scannedDevices = usbScanManager.awaitScannedDevices();
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
-        return scannedDevices;
         }
+        return scannedDevices;
+    }
 
-    RobotConfigMap instantiateTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser) throws RobotCoreException
-        {
+    RobotConfigMap instantiateTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser) throws RobotCoreException {
         awaitScannedDevices();
         //
         ReadXMLFileHandler readXMLFileHandler = new ReadXMLFileHandler();
@@ -413,102 +360,82 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
         robotConfigMap.bindUnboundControllers(scannedDevices);
         //
         return robotConfigMap;
-        }
+    }
 
-    private String indent(int count, String target)
-        {
+    private String indent(int count, String target) {
         String indent = "";
-        for (int i = 0; i < count; i++) indent += " ";
-        return indent + target.replace("\n", "\n" + indent);
+        for (int i = 0; i < count; i++) {
+            indent += " ";
         }
+        return indent + target.replace("\n", "\n" + indent);
+    }
 
     //----------------------------------------------------------------------------------------------
     // Network listener
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public CallbackResult commandEvent(Command command)
-        {
+    public CallbackResult commandEvent(Command command) {
         CallbackResult result = CallbackResult.NOT_HANDLED;
-        try
-            {
+        try {
             String name = command.getName();
             String extra = command.getExtra();
 
-            if (name.equals(CommandList.CMD_SCAN_RESP))
-                {
+            if (name.equals(CommandList.CMD_SCAN_RESP)) {
                 result = handleCommandScanResp(extra);
-                }
-            else if (name.equals(CommandList.CMD_REQUEST_CONFIGURATIONS_RESP))
-                {
+            } else if (name.equals(CommandList.CMD_REQUEST_CONFIGURATIONS_RESP)) {
                 result = handleCommandRequestConfigurationsResp(extra);
-                }
-            else if (name.equals(CommandList.CMD_REQUEST_CONFIGURATION_TEMPLATES_RESP))
-                {
+            } else if (name.equals(CommandList.CMD_REQUEST_CONFIGURATION_TEMPLATES_RESP)) {
                 result = handleCommandRequestTemplatesResp(extra);
-                }
-            else if (name.equals(CommandList.CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP))
-                {
+            } else if (name.equals(CommandList.CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP)) {
                 result = handleCommandRequestParticularConfigurationResp(extra);
-                }
-            else if (name.equals(CommandList.CMD_NOTIFY_ACTIVE_CONFIGURATION))
-                {
+            } else if (name.equals(CommandList.CMD_NOTIFY_ACTIVE_CONFIGURATION)) {
                 result = handleCommandNotifyActiveConfig(extra);
-                }
             }
-        catch (RobotCoreException e)
-            {
+        } catch (RobotCoreException e) {
             RobotLog.logStacktrace(e);
-            }
-        return result;
         }
+        return result;
+    }
 
-    private CallbackResult handleCommandScanResp(String extra) throws RobotCoreException
-        {
+    private CallbackResult handleCommandScanResp(String extra) throws RobotCoreException {
         Assert.assertTrue(remoteConfigure);
         usbScanManager.handleCommandScanResponse(extra);
         return CallbackResult.HANDLED_CONTINUE;  // someone else in the chain might want the same result
-        }
-
-    @Override
-    public CallbackResult packetReceived(RobocolDatagram packet)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
-
-    @Override
-    public CallbackResult peerDiscoveryEvent(RobocolDatagram packet)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
-
-    @Override
-    public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
-
-    @Override
-    public CallbackResult telemetryEvent(RobocolDatagram packet)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
-
-    @Override
-    public CallbackResult gamepadEvent(RobocolDatagram packet)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
-
-    @Override
-    public CallbackResult emptyEvent(RobocolDatagram packet)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
-
-    @Override
-    public CallbackResult reportGlobalError(String error, boolean recoverable)
-        {
-        return CallbackResult.NOT_HANDLED;
-        }
     }
+
+    @Override
+    public CallbackResult packetReceived(RobocolDatagram packet) {
+        return CallbackResult.NOT_HANDLED;
+    }
+
+    @Override
+    public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) {
+        return CallbackResult.NOT_HANDLED;
+    }
+
+    @Override
+    public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) {
+        return CallbackResult.NOT_HANDLED;
+    }
+
+    @Override
+    public CallbackResult telemetryEvent(RobocolDatagram packet) {
+        return CallbackResult.NOT_HANDLED;
+    }
+
+    @Override
+    public CallbackResult gamepadEvent(RobocolDatagram packet) {
+        return CallbackResult.NOT_HANDLED;
+    }
+
+    @Override
+    public CallbackResult emptyEvent(RobocolDatagram packet) {
+        return CallbackResult.NOT_HANDLED;
+    }
+
+    @Override
+    public CallbackResult reportGlobalError(String error, boolean recoverable) {
+        return CallbackResult.NOT_HANDLED;
+    }
+}

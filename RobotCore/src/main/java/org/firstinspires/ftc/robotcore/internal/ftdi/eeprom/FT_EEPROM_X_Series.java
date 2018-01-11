@@ -39,8 +39,7 @@ package org.firstinspires.ftc.robotcore.internal.ftdi.eeprom;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EEPROM_X_Series extends FT_EEPROM
-    {
+public class FT_EEPROM_X_Series extends FT_EEPROM {
     public short A_DeviceTypeValue = 0;
     public boolean A_LoadVCP = false;
     public boolean A_LoadD2XX = false;
@@ -77,12 +76,10 @@ public class FT_EEPROM_X_Series extends FT_EEPROM
     public boolean RS485EchoSuppress = false;
     public boolean PowerSaveEnable = false;
 
-    public FT_EEPROM_X_Series()
-        {
-        }
+    public FT_EEPROM_X_Series() {
+    }
 
-    public static final class CBUS
-        {
+    public static final class CBUS {
         static final int TRISTATE = 0;
         static final int RXLED = 1;
         static final int TXLED = 2;
@@ -106,20 +103,17 @@ public class FT_EEPROM_X_Series extends FT_EEPROM
         static final int Time_Stamp = 20;
         static final int Keep_Awake = 21;
 
-        public CBUS()
-            {
-            }
+        public CBUS() {
         }
+    }
 
-    public static final class DRIVE_STRENGTH
-        {
+    public static final class DRIVE_STRENGTH {
         static final byte DRIVE_4mA = 0;
         static final byte DRIVE_8mA = 1;
         static final byte DRIVE_12mA = 2;
         static final byte DRIVE_16mA = 3;
 
-        public DRIVE_STRENGTH()
-            {
-            }
+        public DRIVE_STRENGTH() {
         }
     }
+}

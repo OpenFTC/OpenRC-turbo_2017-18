@@ -38,74 +38,76 @@ import java.net.InetAddress;
 
 public abstract class NetworkConnection {
 
-  public enum Event {
-    DISCOVERING_PEERS,
-    PEERS_AVAILABLE,
-    GROUP_CREATED,
-    CONNECTING,
-    CONNECTED_AS_PEER,
-    CONNECTED_AS_GROUP_OWNER,
-    DISCONNECTED,
-    CONNECTION_INFO_AVAILABLE,
-    AP_CREATED,
-    ERROR,
-    UNKNOWN
-  }
+    public enum Event {
+        DISCOVERING_PEERS,
+        PEERS_AVAILABLE,
+        GROUP_CREATED,
+        CONNECTING,
+        CONNECTED_AS_PEER,
+        CONNECTED_AS_GROUP_OWNER,
+        DISCONNECTED,
+        CONNECTION_INFO_AVAILABLE,
+        AP_CREATED,
+        ERROR,
+        UNKNOWN
+    }
 
-  public enum ConnectStatus {
-    NOT_CONNECTED,
-    CONNECTING,
-    CONNECTED,
-    GROUP_OWNER,
-    ERROR
-  }
+    public enum ConnectStatus {
+        NOT_CONNECTED,
+        CONNECTING,
+        CONNECTED,
+        GROUP_OWNER,
+        ERROR
+    }
 
-  public interface NetworkConnectionCallback {
-    CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event);
-  }
+    public interface NetworkConnectionCallback {
+        CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event);
+    }
 
-  public abstract NetworkType getNetworkType();
+    public abstract NetworkType getNetworkType();
 
-  public abstract void enable();
-  public abstract void disable();
+    public abstract void enable();
 
-  public abstract void setCallback(@NonNull NetworkConnectionCallback callback);
+    public abstract void disable();
 
-  public abstract void discoverPotentialConnections();
+    public abstract void setCallback(@NonNull NetworkConnectionCallback callback);
 
-  public abstract void cancelPotentialConnections();
+    public abstract void discoverPotentialConnections();
 
-  public abstract void createConnection();
+    public abstract void cancelPotentialConnections();
 
-  public abstract void connect(String deviceAddress);
+    public abstract void createConnection();
 
-  public abstract void connect(String connectionName, String connectionPassword);
+    public abstract void connect(String deviceAddress);
 
-  public abstract InetAddress getConnectionOwnerAddress();
+    public abstract void connect(String connectionName, String connectionPassword);
 
-  public abstract String getConnectionOwnerName();
+    public abstract InetAddress getConnectionOwnerAddress();
 
-  public abstract String getConnectionOwnerMacAddress();
+    public abstract String getConnectionOwnerName();
 
-  public abstract boolean isConnected();
+    public abstract String getConnectionOwnerMacAddress();
 
-  public abstract String getDeviceName();
+    public abstract boolean isConnected();
 
-  public abstract String getInfo();
+    public abstract String getDeviceName();
 
-  public abstract String getFailureReason();
+    public abstract String getInfo();
 
-  public abstract String getPassphrase();
+    public abstract String getFailureReason();
 
-  public abstract WifiDirectAssistant.ConnectStatus getConnectStatus();
+    public abstract String getPassphrase();
 
-  /**
-   * Return true if the device name is valid. A valid device name is greater
-   * than 0 characters and contains only alphanumeric or punctuation characters
-   * only.
-   * @return true if device name is valid
-   */
-  public static boolean isDeviceNameValid(String deviceName) {
-    return deviceName.matches("^\\p{Print}+$");
-  }
+    public abstract WifiDirectAssistant.ConnectStatus getConnectStatus();
+
+    /**
+     * Return true if the device name is valid. A valid device name is greater
+     * than 0 characters and contains only alphanumeric or punctuation characters
+     * only.
+     *
+     * @return true if device name is valid
+     */
+    public static boolean isDeviceNameValid(String deviceName) {
+        return deviceName.matches("^\\p{Print}+$");
+    }
 }

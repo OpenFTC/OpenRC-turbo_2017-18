@@ -34,23 +34,25 @@ package com.qualcomm.robotcore.hardware.configuration;
 
 public class ServoConfiguration extends DeviceConfiguration {
 
-  public ServoConfiguration(int port, ConfigurationType type, String name, boolean enabled) {
-    super(port, type, name, enabled);
-    if (type==BuiltInConfigurationType.SERVO || type==BuiltInConfigurationType.CONTINUOUS_ROTATION_SERVO) return;
-    throw new IllegalArgumentException(String.format("ServoConfiguration: illegal servo type: %s", type.toString()));
-  }
+    public ServoConfiguration(int port, ConfigurationType type, String name, boolean enabled) {
+        super(port, type, name, enabled);
+        if (type == BuiltInConfigurationType.SERVO || type == BuiltInConfigurationType.CONTINUOUS_ROTATION_SERVO) {
+            return;
+        }
+        throw new IllegalArgumentException(String.format("ServoConfiguration: illegal servo type: %s", type.toString()));
+    }
 
-  public ServoConfiguration(int port, String name, boolean enabled) {
-    super(port, BuiltInConfigurationType.SERVO, name, enabled);
-  }
+    public ServoConfiguration(int port, String name, boolean enabled) {
+        super(port, BuiltInConfigurationType.SERVO, name, enabled);
+    }
 
-  public ServoConfiguration(int port) {
-    super(port, BuiltInConfigurationType.SERVO, DISABLED_DEVICE_NAME, false);
-  }
+    public ServoConfiguration(int port) {
+        super(port, BuiltInConfigurationType.SERVO, DISABLED_DEVICE_NAME, false);
+    }
 
-  public ServoConfiguration(String name) {
-    super(BuiltInConfigurationType.SERVO);
-    super.setName(name);
-  }
+    public ServoConfiguration(String name) {
+        super(BuiltInConfigurationType.SERVO);
+        super.setName(name);
+    }
 
 }

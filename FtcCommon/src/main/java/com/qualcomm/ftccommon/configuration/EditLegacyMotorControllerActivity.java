@@ -39,11 +39,14 @@ import android.view.View;
  * motor controller. A key distinguishing feature of this controller is that it is not USB
  * connected, but rather operates through the Modern Robotics Core Legacy module
  */
-public class EditLegacyMotorControllerActivity extends EditMotorControllerActivity
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
-    @Override protected void refreshSerialNumber()
-        {
-        textViewSerialNumber.setVisibility(View.GONE);
-        }
+public class EditLegacyMotorControllerActivity extends EditMotorControllerActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
+
+    @Override
+    protected void refreshSerialNumber() {
+        textViewSerialNumber.setVisibility(View.GONE);
+    }
+}

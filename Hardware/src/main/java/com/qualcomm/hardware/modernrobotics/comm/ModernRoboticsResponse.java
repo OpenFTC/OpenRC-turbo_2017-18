@@ -37,13 +37,12 @@ package com.qualcomm.hardware.modernrobotics.comm;
  * Robotics controllers.
  */
 @SuppressWarnings("WeakerAccess")
-public class ModernRoboticsResponse extends ModernRoboticsDatagram
-    {
+public class ModernRoboticsResponse extends ModernRoboticsDatagram {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    public static final byte[] syncBytes = new byte[] { (byte)0x33, (byte)0xCC };
+    public static final byte[] syncBytes = new byte[]{(byte) 0x33, (byte) 0xCC};
 
     protected final AllocationContext<ModernRoboticsResponse> allocationContext;
 
@@ -51,34 +50,29 @@ public class ModernRoboticsResponse extends ModernRoboticsDatagram
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    private ModernRoboticsResponse(AllocationContext<ModernRoboticsResponse> allocationContext, int cbPayloadAlloc)
-        {
+    private ModernRoboticsResponse(AllocationContext<ModernRoboticsResponse> allocationContext, int cbPayloadAlloc) {
         super(cbPayloadAlloc);
         this.allocationContext = allocationContext;
-        }
+    }
 
-    public static ModernRoboticsResponse newInstance(AllocationContext<ModernRoboticsResponse> allocationContext, int cbPayloadAlloc)
-        {
+    public static ModernRoboticsResponse newInstance(AllocationContext<ModernRoboticsResponse> allocationContext, int cbPayloadAlloc) {
         ModernRoboticsResponse instance = allocationContext.tryAlloc(cbPayloadAlloc);
-        if (instance == null)
-            {
+        if (instance == null) {
             instance = new ModernRoboticsResponse(allocationContext, cbPayloadAlloc);
-            }
+        }
         instance.initialize(syncBytes[0], syncBytes[1]);
         return instance;
-        }
+    }
 
-    public void close()
-        {
+    public void close() {
         allocationContext.tryCache0(this);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
-    public boolean syncBytesValid()
-        {
-        return data[IB_SYNC_0]==syncBytes[0] && data[IB_SYNC_1]==syncBytes[1];
-        }
+    public boolean syncBytesValid() {
+        return data[IB_SYNC_0] == syncBytes[0] && data[IB_SYNC_1] == syncBytes[1];
     }
+}

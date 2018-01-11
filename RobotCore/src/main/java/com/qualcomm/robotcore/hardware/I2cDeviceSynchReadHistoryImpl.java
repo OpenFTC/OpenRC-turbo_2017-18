@@ -42,73 +42,62 @@ import java.util.concurrent.BlockingQueue;
  * of the I2c read history queue
  */
 @SuppressWarnings("WeakerAccess")
-public class I2cDeviceSynchReadHistoryImpl implements I2cDeviceSynchReadHistory
-    {
+public class I2cDeviceSynchReadHistoryImpl implements I2cDeviceSynchReadHistory {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final Object                       historyQueueLock = new Object();
-    protected BlockingQueue<TimestampedI2cData>  historyQueue;
-    protected int                                historyQueueCapacity;
+    protected final Object historyQueueLock = new Object();
+    protected BlockingQueue<TimestampedI2cData> historyQueue;
+    protected int historyQueueCapacity;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public I2cDeviceSynchReadHistoryImpl()
-        {
+    public I2cDeviceSynchReadHistoryImpl() {
         setHistoryQueueCapacity(0);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // I2cDeviceSyncReadHistory implementation
     //----------------------------------------------------------------------------------------------
 
-    @Override public BlockingQueue<TimestampedI2cData> getHistoryQueue()
-        {
-        synchronized (this.historyQueueLock)
-            {
+    @Override
+    public BlockingQueue<TimestampedI2cData> getHistoryQueue() {
+        synchronized (this.historyQueueLock) {
             return historyQueue;
-            }
         }
+    }
 
-    @Override public void setHistoryQueueCapacity(int capacity)
-        {
-        synchronized (this.historyQueueLock)
-            {
+    @Override
+    public void setHistoryQueueCapacity(int capacity) {
+        synchronized (this.historyQueueLock) {
             this.historyQueueCapacity = Math.max(0, capacity);
-            if (capacity <= 0)
-                {
+            if (capacity <= 0) {
                 this.historyQueue = new ArrayBlockingQueue<TimestampedI2cData>(1); // dummy, never actually written to
-                }
-            else
-                {
+            } else {
                 this.historyQueue = new EvictingBlockingQueue<TimestampedI2cData>(new ArrayBlockingQueue<TimestampedI2cData>(capacity));
-                }
             }
         }
+    }
 
-    @Override public int getHistoryQueueCapacity()
-        {
-        synchronized (this.historyQueueLock)
-            {
+    @Override
+    public int getHistoryQueueCapacity() {
+        synchronized (this.historyQueueLock) {
             return this.historyQueueCapacity;
-            }
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Queue maintenance
     //----------------------------------------------------------------------------------------------
 
-    public void addToHistoryQueue(TimestampedI2cData data)
-        {
-        synchronized (historyQueueLock)
-            {
-            if (historyQueueCapacity > 0)
-                {
+    public void addToHistoryQueue(TimestampedI2cData data) {
+        synchronized (historyQueueLock) {
+            if (historyQueueCapacity > 0) {
                 historyQueue.add(data);
-                }
             }
         }
     }
+}

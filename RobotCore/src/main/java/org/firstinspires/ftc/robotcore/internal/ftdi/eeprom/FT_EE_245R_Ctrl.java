@@ -42,8 +42,7 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
  * Created by bob on 3/18/2017.
  */
 @SuppressWarnings("WeakerAccess")
-public class FT_EE_245R_Ctrl extends FT_EE_Ctrl
-    {
+public class FT_EE_245R_Ctrl extends FT_EE_Ctrl {
     private static final short EEPROM_SIZE = 80;
     private static final short ENDOFUSERLOCATION = 63;
     private static final short EE_MAX_SIZE = 1024;
@@ -61,71 +60,55 @@ public class FT_EE_245R_Ctrl extends FT_EE_Ctrl
 
     private FtDevice ftDevice;
 
-    public FT_EE_245R_Ctrl(FtDevice usbC)
-        {
+    public FT_EE_245R_Ctrl(FtDevice usbC) {
         super(usbC);
         ftDevice = usbC;
-        }
+    }
 
-    @Override public void writeWord(short offset, short value) throws RobotUsbException
-        {
-        if (offset >= 1024)
-            {
+    @Override
+    public void writeWord(short offset, short value) throws RobotUsbException {
+        if (offset >= 1024) {
             throw new IllegalArgumentException(String.format("offset >= 1024: %d", offset));
-            }
-        else
-            {
+        } else {
             byte latency = ftDevice.getLatencyTimer();
             ftDevice.setLatencyTimer((byte) 119);
             try {
                 int status = ftDevice.getConnection().controlTransfer(64, 145, value, offset, (byte[]) null, 0, 0);
                 FtDevice.throwIfStatus(status, "writeWord");
-                }
-            finally
-                {
+            } finally {
                 ftDevice.setLatencyTimer(latency);
-                }
             }
         }
+    }
 
-    @Override public short programEeprom(FT_EEPROM ee)
-        {
+    @Override
+    public short programEeprom(FT_EEPROM ee) {
         int[] data = new int[EEPROM_SIZE];
-        if (ee.getClass() != FT_EEPROM_245R.class)
-            {
+        if (ee.getClass() != FT_EEPROM_245R.class) {
             return 1;
-            }
-        else
-            {
+        } else {
             FT_EEPROM_245R eeprom = (FT_EEPROM_245R) ee;
 
-            try
-                {
-                for (short e = 0; e < 80; ++e)
-                    {
+            try {
+                for (short e = 0; e < 80; ++e) {
                     data[e] = this.readWord(e);
-                    }
+                }
 
                 byte wordx00 = 0;
                 int var17 = wordx00 | data[0] & '\uff00';
-                if (eeprom.HighIO)
-                    {
+                if (eeprom.HighIO) {
                     var17 |= 4;
-                    }
+                }
 
-                if (eeprom.LoadVCP)
-                    {
+                if (eeprom.LoadVCP) {
                     var17 |= 8;
-                    }
+                }
 
-                if (eeprom.ExternalOscillator)
-                    {
+                if (eeprom.ExternalOscillator) {
                     var17 |= 2;
-                    }
-                else
-                    {
+                } else {
                     var17 &= '�';
-                    }
+                }
 
                 data[0] = var17;
                 data[1] = eeprom.VendorId;
@@ -133,45 +116,37 @@ public class FT_EE_245R_Ctrl extends FT_EE_Ctrl
                 data[3] = 1536;
                 data[4] = this.setUSBConfig(ee);
                 int wordx05 = this.setDeviceControl(ee);
-                if (eeprom.InvertTXD)
-                    {
+                if (eeprom.InvertTXD) {
                     wordx05 |= 256;
-                    }
+                }
 
-                if (eeprom.InvertRXD)
-                    {
+                if (eeprom.InvertRXD) {
                     wordx05 |= 512;
-                    }
+                }
 
-                if (eeprom.InvertRTS)
-                    {
+                if (eeprom.InvertRTS) {
                     wordx05 |= 1024;
-                    }
+                }
 
-                if (eeprom.InvertCTS)
-                    {
+                if (eeprom.InvertCTS) {
                     wordx05 |= 2048;
-                    }
+                }
 
-                if (eeprom.InvertDTR)
-                    {
+                if (eeprom.InvertDTR) {
                     wordx05 |= 4096;
-                    }
+                }
 
-                if (eeprom.InvertDSR)
-                    {
+                if (eeprom.InvertDSR) {
                     wordx05 |= 8192;
-                    }
+                }
 
-                if (eeprom.InvertDCD)
-                    {
+                if (eeprom.InvertDCD) {
                     wordx05 |= 16384;
-                    }
+                }
 
-                if (eeprom.InvertRI)
-                    {
+                if (eeprom.InvertRI) {
                     wordx05 |= '耀';
-                    }
+                }
 
                 data[5] = wordx05;
                 boolean wordx0A = false;
@@ -190,153 +165,110 @@ public class FT_EE_245R_Ctrl extends FT_EE_Ctrl
                 byte saddr = 12;
                 int var23 = this.setStringDescriptor(eeprom.Manufacturer, data, saddr, 7, true);
                 var23 = this.setStringDescriptor(eeprom.Product, data, var23, 8, true);
-                if (eeprom.SerNumEnable)
-                    {
+                if (eeprom.SerNumEnable) {
                     this.setStringDescriptor(eeprom.SerialNumber, data, var23, 9, true);
-                    }
+                }
 
-                if (data[1] != 0 && data[2] != 0)
-                    {
+                if (data[1] != 0 && data[2] != 0) {
                     boolean returnCode = false;
                     byte latencyTimer = ftDevice.getLatencyTimer();
                     ftDevice.setLatencyTimer((byte) 119);
                     try {
                         returnCode = this.programEeprom(data, 80);
-                        }
-                    finally
-                        {
+                    } finally {
                         ftDevice.setLatencyTimer(latencyTimer);
-                        }
+                    }
                     return (short) (returnCode ? 0 : 1);
-                    }
-                else
-                    {
+                } else {
                     return 2;
-                    }
                 }
-            catch (Exception e)
-                {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return 0;
-                }
             }
         }
+    }
 
-    @Override public FT_EEPROM readEeprom()
-        {
+    @Override
+    public FT_EEPROM readEeprom() {
         FT_EEPROM_245R eeprom = new FT_EEPROM_245R();
         int[] data = new int[80];
 
-        try
-            {
+        try {
             int e;
-            for (e = 0; e < 80; ++e)
-                {
+            for (e = 0; e < 80; ++e) {
                 data[e] = this.readWord((short) e);
-                }
+            }
 
-            if ((data[0] & 4) == 4)
-                {
+            if ((data[0] & 4) == 4) {
                 eeprom.HighIO = true;
-                }
-            else
-                {
+            } else {
                 eeprom.HighIO = false;
-                }
+            }
 
-            if ((data[0] & 8) == 8)
-                {
+            if ((data[0] & 8) == 8) {
                 eeprom.LoadVCP = true;
-                }
-            else
-                {
+            } else {
                 eeprom.LoadVCP = false;
-                }
+            }
 
-            if ((data[0] & 2) == 2)
-                {
+            if ((data[0] & 2) == 2) {
                 eeprom.ExternalOscillator = true;
-                }
-            else
-                {
+            } else {
                 eeprom.ExternalOscillator = false;
-                }
+            }
 
             eeprom.VendorId = (short) data[1];
             eeprom.ProductId = (short) data[2];
             this.getUSBConfig(eeprom, data[4]);
             this.getDeviceControl(eeprom, data[5]);
-            if ((data[5] & 256) == 256)
-                {
+            if ((data[5] & 256) == 256) {
                 eeprom.InvertTXD = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertTXD = false;
-                }
+            }
 
-            if ((data[5] & 512) == 512)
-                {
+            if ((data[5] & 512) == 512) {
                 eeprom.InvertRXD = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertRXD = false;
-                }
+            }
 
-            if ((data[5] & 1024) == 1024)
-                {
+            if ((data[5] & 1024) == 1024) {
                 eeprom.InvertRTS = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertRTS = false;
-                }
+            }
 
-            if ((data[5] & 2048) == 2048)
-                {
+            if ((data[5] & 2048) == 2048) {
                 eeprom.InvertCTS = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertCTS = false;
-                }
+            }
 
-            if ((data[5] & 4096) == 4096)
-                {
+            if ((data[5] & 4096) == 4096) {
                 eeprom.InvertDTR = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertDTR = false;
-                }
+            }
 
-            if ((data[5] & 8192) == 8192)
-                {
+            if ((data[5] & 8192) == 8192) {
                 eeprom.InvertDSR = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertDSR = false;
-                }
+            }
 
-            if ((data[5] & 16384) == 16384)
-                {
+            if ((data[5] & 16384) == 16384) {
                 eeprom.InvertDCD = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertDCD = false;
-                }
+            }
 
-            if ((data[5] & '耀') == '耀')
-                {
+            if ((data[5] & '耀') == '耀') {
                 eeprom.InvertRI = true;
-                }
-            else
-                {
+            } else {
                 eeprom.InvertRI = false;
-                }
+            }
 
             e = data[10];
             int cbus0 = e & 15;
@@ -362,15 +294,13 @@ public class FT_EE_245R_Ctrl extends FT_EE_Ctrl
             addr /= 2;
             eeprom.SerialNumber = this.getStringDescriptor(addr, data);
             return eeprom;
-            }
-        catch (Exception var10)
-            {
+        } catch (Exception var10) {
             return null;
-            }
         }
+    }
 
-    @Override public int getUserSize() throws RobotUsbException
-        {
+    @Override
+    public int getUserSize() throws RobotUsbException {
         int data = this.readWord((short) 7);
         int ptr07 = (data & '\uff00') >> 8;
         ptr07 /= 2;
@@ -382,105 +312,82 @@ public class FT_EE_245R_Ctrl extends FT_EE_Ctrl
         int length = (data & '\uff00') >> 8;
         length /= 2;
         return (63 - ptr - length - 1) * 2;
-        }
+    }
 
-    @Override public int writeUserData(byte[] data) throws RobotUsbException
-        {
+    @Override
+    public int writeUserData(byte[] data) throws RobotUsbException {
         boolean dataWrite = false;
         boolean offset = false;
-        if (data.length > this.getUserSize())
-            {
+        if (data.length > this.getUserSize()) {
             return 0;
-            }
-        else
-            {
+        } else {
             int[] eeprom = new int[80];
 
-            for (short i = 0; i < 80; ++i)
-                {
+            for (short i = 0; i < 80; ++i) {
                 eeprom[i] = this.readWord(i);
-                }
+            }
 
             short var8 = (short) (63 - this.getUserSize() / 2 - 1);
             var8 = (short) (var8 & '\uffff');
 
-            for (int var9 = 0; var9 < data.length; var9 += 2)
-                {
+            for (int var9 = 0; var9 < data.length; var9 += 2) {
                 int var7;
-                if (var9 + 1 < data.length)
-                    {
+                if (var9 + 1 < data.length) {
                     var7 = data[var9 + 1] & 255;
-                    }
-                else
-                    {
+                } else {
                     var7 = 0;
-                    }
+                }
 
                 var7 <<= 8;
                 var7 |= data[var9] & 255;
                 eeprom[var8++] = var7;
-                }
+            }
 
-            if (eeprom[1] != 0 && eeprom[2] != 0)
-                {
+            if (eeprom[1] != 0 && eeprom[2] != 0) {
                 boolean returnCode = false;
                 byte latencyTimer = ftDevice.getLatencyTimer();
                 ftDevice.setLatencyTimer((byte) 119);
                 try {
                     returnCode = this.programEeprom(eeprom, 63);
-                    }
-                finally
-                    {
+                } finally {
                     ftDevice.setLatencyTimer(latencyTimer);
-                    }
-                if (!returnCode)
-                    {
+                }
+                if (!returnCode) {
                     return 0;
-                    }
-                else
-                    {
+                } else {
                     return data.length;
-                    }
                 }
-            else
-                {
+            } else {
                 return 0;
-                }
             }
         }
+    }
 
-    @Override public byte[] readUserData(int length) throws RobotUsbException
-        {
+    @Override
+    public byte[] readUserData(int length) throws RobotUsbException {
         boolean Hi = false;
         boolean Lo = false;
         boolean dataRead = false;
         byte[] data = new byte[length];
-        if (length != 0 && length <= this.getUserSize())
-            {
+        if (length != 0 && length <= this.getUserSize()) {
             short offset = (short) (63 - this.getUserSize() / 2 - 1);
 
-            for (int i = 0; i < length; i += 2)
-                {
+            for (int i = 0; i < length; i += 2) {
                 int var10 = this.readWord(offset++);
-                if (i + 1 < data.length)
-                    {
+                if (i + 1 < data.length) {
                     byte var8 = (byte) (var10 & 255);
                     data[i + 1] = var8;
-                    }
-                else
-                    {
+                } else {
                     Lo = false;
-                    }
+                }
 
                 byte var9 = (byte) ((var10 & '\uff00') >> 8);
                 data[i] = var9;
-                }
+            }
 
             return data;
-            }
-        else
-            {
+        } else {
             return null;
-            }
         }
     }
+}

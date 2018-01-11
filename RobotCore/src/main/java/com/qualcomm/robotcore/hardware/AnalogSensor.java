@@ -36,13 +36,13 @@ package com.qualcomm.robotcore.hardware;
  * Instances of this interface are sensors whose input is reported as a voltage level
  * to an analog to digital converter.
  */
-public interface AnalogSensor
-    {
+public interface AnalogSensor {
     /**
-    * Returns the sensor's current value as a raw voltage level. Note that for
-    * Returns the light level voltage as reported by the sensor. Note that returned values
-    * INCREASE as the light energy INCREASES.
-    * @return unscaled / unclipped voltage level reported by the device
-    */
+     * Returns the sensor's current value as a raw voltage level. Note that for
+     * Returns the light level voltage as reported by the sensor. Note that returned values
+     * INCREASE as the light energy INCREASES.
+     *
+     * @return unscaled / unclipped voltage level reported by the device
+     */
     double readRawVoltage();
-    }
+}

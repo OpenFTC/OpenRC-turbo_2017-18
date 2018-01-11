@@ -1,7 +1,14 @@
 dependencies {
-    compile project(':FtcRobotController')
-    compile project(':RobotCore')
-    compile project(':Hardware')
-    compile project(':FtcCommon')
-    compile (name:'WirelessP2p-release', ext:'aar')
+    implementation project(path: ':FtcRobotController')
+
+    implementation(name: 'Analytics-release', ext: 'aar')
+    implementation(name: 'WirelessP2p-release', ext: 'aar')
+
+    stockImplementation(name: 'RobotCore-release', ext: 'aar')
+    stockImplementation(name: 'Hardware-release', ext: 'aar')
+    stockImplementation(name: 'FtcCommon-release', ext: 'aar')
+
+    openrcImplementation project(':RobotCore')
+    openrcImplementation project(':Hardware')
+    openrcImplementation project(':FtcCommon')
 }

@@ -47,50 +47,42 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by bob on 2016-05-07.
  */
-public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
-    {
+public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck> {
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public static class Steps implements Iterable<Blinker.Step>
-        {
+    public static class Steps implements Iterable<Blinker.Step> {
         ArrayList<Blinker.Step> steps = new ArrayList<>(maxStepCount);
 
-        public void add(Blinker.Step step)
-            {
-            if (steps.size() < maxStepCount)
-                {
+        public void add(Blinker.Step step) {
+            if (steps.size() < maxStepCount) {
                 this.steps.add(step);
-                }
-            }
-        public void add(int index, Blinker.Step step)
-            {
-            if (index < maxStepCount)
-                {
-                this.steps.add(index, step);
-                }
-            }
-        public Iterator<Blinker.Step> iterator()
-            {
-            return this.steps.iterator();
-            }
-        public int size()
-            {
-            return steps.size();
-            }
-        public int cbSerialize()
-            {
-            if (this.size() == maxStepCount)
-                {
-                return this.steps.size() * cbSerializeStep();
-                }
-            else
-                {
-                return (this.steps.size()+1) * cbSerializeStep();
-                }
             }
         }
+
+        public void add(int index, Blinker.Step step) {
+            if (index < maxStepCount) {
+                this.steps.add(index, step);
+            }
+        }
+
+        public Iterator<Blinker.Step> iterator() {
+            return this.steps.iterator();
+        }
+
+        public int size() {
+            return steps.size();
+        }
+
+        public int cbSerialize() {
+            if (this.size() == maxStepCount) {
+                return this.steps.size() * cbSerializeStep();
+            } else {
+                return (this.steps.size() + 1) * cbSerializeStep();
+            }
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -104,98 +96,85 @@ public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxSetModuleLEDPatternCommand(LynxModule module)
-        {
+    public LynxSetModuleLEDPatternCommand(LynxModule module) {
         super(module);
-        }
+    }
 
-    public LynxSetModuleLEDPatternCommand(LynxModule module, Steps steps)
-        {
+    public LynxSetModuleLEDPatternCommand(LynxModule module, Steps steps) {
         this(module);
         this.steps = steps;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Step Serialization
     //----------------------------------------------------------------------------------------------
 
-    public static void serializeStep(Blinker.Step step, ByteBuffer buffer)
-        {
+    public static void serializeStep(Blinker.Step step, ByteBuffer buffer) {
         int msDuration = step.getDurationMs();
-        int tenthsDuration = (int)Math.round(msDuration / 100.);
+        int tenthsDuration = (int) Math.round(msDuration / 100.);
 
         @ColorInt int color = step.getColor();
-        buffer.put((byte)Math.min(255, tenthsDuration));
-        buffer.put((byte)Color.blue(color));
-        buffer.put((byte)Color.green(color));
-        buffer.put((byte)Color.red(color));
-        }
+        buffer.put((byte) Math.min(255, tenthsDuration));
+        buffer.put((byte) Color.blue(color));
+        buffer.put((byte) Color.green(color));
+        buffer.put((byte) Color.red(color));
+    }
 
-    public static void deserializeStep(Blinker.Step step, ByteBuffer buffer)
-        {
+    public static void deserializeStep(Blinker.Step step, ByteBuffer buffer) {
         int tenths = buffer.get();
-        int ms     = tenths * 100;
+        int ms = tenths * 100;
         step.setDuration(ms, TimeUnit.MILLISECONDS);
 
         byte b = buffer.get();
         byte g = buffer.get();
         byte r = buffer.get();
         step.setColor(Color.rgb(r, g, b));
-        }
+    }
 
-    public static int cbSerializeStep()
-        {
+    public static int cbSerializeStep() {
         return 4;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_SET_MODULE_LED_PATTERN;
-        }
+    }
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
     @Override
-    public int getCommandNumber()
-        {
+    public int getCommandNumber() {
         return getStandardCommandNumber();
-        }
+    }
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         int cbPayload = this.steps.cbSerialize();
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
-        for (Blinker.Step step : this.steps)
-            {
+        for (Blinker.Step step : this.steps) {
             serializeStep(step, buffer);
-            }
-        if (this.steps.size() < maxStepCount)
-            {
+        }
+        if (this.steps.size() < maxStepCount) {
             serializeStep(Blinker.Step.nullStep(), buffer);
-            }
-
-        return buffer.array();
         }
 
+        return buffer.array();
+    }
+
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.steps = new Steps();
-        while (buffer.remaining() >= cbSerializeStep())
-            {
+        while (buffer.remaining() >= cbSerializeStep()) {
             Blinker.Step step = new Blinker.Step();
             deserializeStep(step, buffer);
             this.steps.add(step);
-            }
         }
     }
+}

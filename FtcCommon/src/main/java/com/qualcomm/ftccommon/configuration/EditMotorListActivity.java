@@ -44,62 +44,69 @@ import com.qualcomm.robotcore.hardware.configuration.MotorConfigurationType;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class EditMotorListActivity extends EditPortListSpinnerActivity<MotorConfiguration>
-    {
-    @Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditMotorListActivity extends EditPortListSpinnerActivity<MotorConfiguration> {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     ConfigurationType[] configurationTypes = new ConfigurationType[0];
     ConfigurationType unspecifiedMotorType = MotorConfigurationType.getUnspecifiedMotorType();
 
-    public EditMotorListActivity()
-        {
-        this.layoutMain             = R.layout.motor_list;
-        this.idListParentLayout     = R.id.item_list_parent;
-        this.layoutItem             = R.layout.motor;
-        this.idItemRowPort          = R.id.row_port;
-        this.idItemSpinner          = R.id.choiceMotorSpinner;
-        this.idItemEditTextResult   = R.id.editTextResult;
-        this.idItemPortNumber       = R.id.port_number;
-        }
-
-    @Override protected void deserialize(EditParameters parameters)
-        {
-        super.deserialize(parameters);
-        if (parameters.getConfigurationTypes() != null)
-            {
-            this.configurationTypes = parameters.getConfigurationTypes();
-            }
-        }
+    public EditMotorListActivity() {
+        this.layoutMain = R.layout.motor_list;
+        this.idListParentLayout = R.id.item_list_parent;
+        this.layoutItem = R.layout.motor;
+        this.idItemRowPort = R.id.row_port;
+        this.idItemSpinner = R.id.choiceMotorSpinner;
+        this.idItemEditTextResult = R.id.editTextResult;
+        this.idItemPortNumber = R.id.port_number;
+    }
 
     @Override
-    protected void localizeSpinner(View itemView)
-        {
+    protected void deserialize(EditParameters parameters) {
+        super.deserialize(parameters);
+        if (parameters.getConfigurationTypes() != null) {
+            this.configurationTypes = parameters.getConfigurationTypes();
+        }
+    }
+
+    @Override
+    protected void localizeSpinner(View itemView) {
         Spinner spinner = (Spinner) itemView.findViewById(this.idItemSpinner);
 
-        Comparator<ConfigurationType> comparator = new Comparator<ConfigurationType>()
-            {
-            @Override public int compare(ConfigurationType lhs, ConfigurationType rhs)
-                {
+        Comparator<ConfigurationType> comparator = new Comparator<ConfigurationType>() {
+            @Override
+            public int compare(ConfigurationType lhs, ConfigurationType rhs) {
                 // Make sure 'nothing' is first, and 'unspecified' is second
-                if (lhs==rhs) return 0;
-                if (lhs==BuiltInConfigurationType.NOTHING) return -1;
-                if (rhs==BuiltInConfigurationType.NOTHING) return 1;
-                if (lhs==unspecifiedMotorType) return -1;
-                if (rhs==unspecifiedMotorType) return 1;
-                return 0;   // they'll be distinguished using an outer level comparator
+                if (lhs == rhs) {
+                    return 0;
                 }
-            };
+                if (lhs == BuiltInConfigurationType.NOTHING) {
+                    return -1;
+                }
+                if (rhs == BuiltInConfigurationType.NOTHING) {
+                    return 1;
+                }
+                if (lhs == unspecifiedMotorType) {
+                    return -1;
+                }
+                if (rhs == unspecifiedMotorType) {
+                    return 1;
+                }
+                return 0;   // they'll be distinguished using an outer level comparator
+            }
+        };
 
         localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor.Normal, spinner, Arrays.asList(this.configurationTypes), comparator);
-        }
+    }
 
     @Override
-    protected ConfigurationType getDefaultEnabledSelection()
-        {
-        if (unspecifiedMotorType != null)
-            {
+    protected ConfigurationType getDefaultEnabledSelection() {
+        if (unspecifiedMotorType != null) {
             return unspecifiedMotorType;
-            }
-        return super.getDefaultEnabledSelection();
         }
-
+        return super.getDefaultEnabledSelection();
     }
+
+}

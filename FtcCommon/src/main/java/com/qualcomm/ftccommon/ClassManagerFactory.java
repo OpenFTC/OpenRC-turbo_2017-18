@@ -42,16 +42,17 @@ import java.util.Collection;
 
 /**
  * A helper for classes that want to inspect the list of classes packaged with an APK.
- *
+ * <p>
  * This is called very early in startup.  Any classes that want to select a subset of the
  * classes packaged with the APK may implement ClassFilter and register with the ClassManager
  * here.
  */
 public class ClassManagerFactory {
 
-    /** Register all them that wants to see the classes in our APK */
-    public static void registerFilters()
-    {
+    /**
+     * Register all them that wants to see the classes in our APK
+     */
+    public static void registerFilters() {
         registerResourceFilters();
 
         ClassManager classManager = ClassManager.getInstance();
@@ -59,34 +60,30 @@ public class ClassManagerFactory {
         classManager.registerFilter(UserConfigurationTypeManager.getInstance());
     }
 
-    public static void registerResourceFilters()
-    {
+    public static void registerResourceFilters() {
         ClassManager classManager = ClassManager.getInstance();
 
         final RobotConfigResFilter idResFilter = new RobotConfigResFilter(RobotConfigFileManager.getRobotConfigTypeAttribute());
-        RobotConfigFileManager.setXmlResourceIdSupplier(new Supplier<Collection<Integer>>()
-            {
-            @Override public Collection<Integer> get()
-                {
+        RobotConfigFileManager.setXmlResourceIdSupplier(new Supplier<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> get() {
                 return idResFilter.getXmlIds();
-                }
-            });
+            }
+        });
 
         final RobotConfigResFilter idTemplateResFilter = new RobotConfigResFilter(RobotConfigFileManager.getRobotConfigTemplateAttribute());
-        RobotConfigFileManager.setXmlResourceTemplateIdSupplier(new Supplier<Collection<Integer>>()
-            {
-            @Override public Collection<Integer> get()
-                {
+        RobotConfigFileManager.setXmlResourceTemplateIdSupplier(new Supplier<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> get() {
                 return idTemplateResFilter.getXmlIds();
-                }
-            });
+            }
+        });
 
         classManager.registerFilter(idResFilter);
         classManager.registerFilter(idTemplateResFilter);
     }
 
-    public static void processAllClasses()
-    {
+    public static void processAllClasses() {
         ClassManager.getInstance().processAllClasses();
     }
 }

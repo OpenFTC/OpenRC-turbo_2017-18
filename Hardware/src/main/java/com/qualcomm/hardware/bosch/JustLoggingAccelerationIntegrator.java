@@ -43,39 +43,43 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  * integrate accelerations, but merely reports them in the logcat log. This is a debugging
  * and demonstration tool, little more.
  */
-public class JustLoggingAccelerationIntegrator implements BNO055IMU.AccelerationIntegrator
-    {
+public class JustLoggingAccelerationIntegrator implements BNO055IMU.AccelerationIntegrator {
     BNO055IMU.Parameters parameters;
     Acceleration acceleration;
 
-    @Override public void initialize(BNO055IMU.Parameters parameters, Position initialPosition, Velocity initialVelocity)
-        {
+    @Override
+    public void initialize(BNO055IMU.Parameters parameters, Position initialPosition, Velocity initialVelocity) {
         this.parameters = parameters;
-        }
+    }
 
-    @Override public Position getPosition() { return new Position(); }
-    @Override public Velocity getVelocity() { return new Velocity(); }
-    @Override public Acceleration getAcceleration()
-        {
+    @Override
+    public Position getPosition() {
+        return new Position();
+    }
+
+    @Override
+    public Velocity getVelocity() {
+        return new Velocity();
+    }
+
+    @Override
+    public Acceleration getAcceleration() {
         return this.acceleration == null ? new Acceleration() : this.acceleration;
-        }
+    }
 
-    @Override public void update(Acceleration linearAcceleration)
-        {
+    @Override
+    public void update(Acceleration linearAcceleration) {
         // We should always be given a timestamp here
-        if (linearAcceleration.acquisitionTime != 0)
-            {
-            if (acceleration != null)
-                {
+        if (linearAcceleration.acquisitionTime != 0) {
+            if (acceleration != null) {
                 Acceleration accelPrev = acceleration;
                 acceleration = linearAcceleration;
-                if (parameters.loggingEnabled)
-                    {
-                    RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime)*1e-9, acceleration);
-                    }
+                if (parameters.loggingEnabled) {
+                    RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime) * 1e-9, acceleration);
                 }
-            else
+            } else {
                 acceleration = linearAcceleration;
             }
         }
     }
+}

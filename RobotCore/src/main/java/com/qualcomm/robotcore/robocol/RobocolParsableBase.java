@@ -44,102 +44,98 @@ import java.util.concurrent.atomic.AtomicInteger;
  * RobocolParsableBase is an implementation base class for Robocol elements, providing
  * functionality that is common to all such elements.
  */
-public abstract class RobocolParsableBase implements RobocolParsable
-    {
+public abstract class RobocolParsableBase implements RobocolParsable {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected int   sequenceNumber;
-    protected long  nanotimeTransmit;
+    protected int sequenceNumber;
+    protected long nanotimeTransmit;
 
     // Interval between retransmissions of a given one parsable
     protected static final long nanotimeTransmitInterval = 200L * ElapsedTime.MILLIS_IN_NANO;
 
     protected static AtomicInteger nextSequenceNumber = new AtomicInteger();
 
-    /** A utility function that helps us separate driver station from robot controller packets */
-    public static void initializeSequenceNumber(int sequenceNumber)
-        {
+    /**
+     * A utility function that helps us separate driver station from robot controller packets
+     */
+    public static void initializeSequenceNumber(int sequenceNumber) {
         nextSequenceNumber = new AtomicInteger(sequenceNumber);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobocolParsableBase()
-        {
+    public RobocolParsableBase() {
         setSequenceNumber();
         nanotimeTransmit = 0;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // RobocolParsable
     //----------------------------------------------------------------------------------------------
 
-    @Override public int getSequenceNumber()
-        {
+    @Override
+    public int getSequenceNumber() {
         return this.sequenceNumber;
-        }
+    }
 
-    public void setSequenceNumber(short sequenceNumber)
-        {
+    public void setSequenceNumber(short sequenceNumber) {
         // We only transmit sequence numbers as two byte values, but we maintain as unsigned
         // for easier human interpretation
         this.sequenceNumber = TypeConversion.unsignedShortToInt(sequenceNumber);
-        }
+    }
 
-    @Override public void setSequenceNumber()
-        {
-        setSequenceNumber((short)nextSequenceNumber.getAndIncrement());
-        }
+    @Override
+    public void setSequenceNumber() {
+        setSequenceNumber((short) nextSequenceNumber.getAndIncrement());
+    }
 
-    /** Serialize, but also record timestamp if for transmission */
-    @Override public byte[] toByteArrayForTransmission() throws RobotCoreException
-        {
+    /**
+     * Serialize, but also record timestamp if for transmission
+     */
+    @Override
+    public byte[] toByteArrayForTransmission() throws RobotCoreException {
         byte[] result = toByteArray();
         this.nanotimeTransmit = System.nanoTime();
         return result;
-        }
+    }
 
-    @Override public boolean shouldTransmit(long nanotimeNow)
-        {
-        return this.nanotimeTransmit==0 || (nanotimeNow - this.nanotimeTransmit > nanotimeTransmitInterval);
-        }
+    @Override
+    public boolean shouldTransmit(long nanotimeNow) {
+        return this.nanotimeTransmit == 0 || (nanotimeNow - this.nanotimeTransmit > nanotimeTransmitInterval);
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected ByteBuffer allocateWholeWriteBuffer(int overallSize)
-        {
+    protected ByteBuffer allocateWholeWriteBuffer(int overallSize) {
         return ByteBuffer.allocate(overallSize);
-        }
+    }
 
-    protected ByteBuffer getWholeReadBuffer(byte[] byteArray)
-        {
+    protected ByteBuffer getWholeReadBuffer(byte[] byteArray) {
         return ByteBuffer.wrap(byteArray);
-        }
+    }
 
-    protected ByteBuffer getWriteBuffer(int payloadSize)
-        {
+    protected ByteBuffer getWriteBuffer(int payloadSize) {
         ByteBuffer result = allocateWholeWriteBuffer(HEADER_LENGTH + payloadSize);
         //
         result.put(getRobocolMsgType().asByte());
-        result.putShort((short)payloadSize);
-        result.putShort((short)this.sequenceNumber);
+        result.putShort((short) payloadSize);
+        result.putShort((short) this.sequenceNumber);
         //
         return result;
-        }
+    }
 
-    protected ByteBuffer getReadBuffer(byte[] byteArray)
-        {
+    protected ByteBuffer getReadBuffer(byte[] byteArray) {
         int cbHeaderWithoutSeqNum = HEADER_LENGTH - 2;
         ByteBuffer result = ByteBuffer.wrap(byteArray, cbHeaderWithoutSeqNum, byteArray.length - cbHeaderWithoutSeqNum);
         //
         setSequenceNumber(result.getShort());
         //
         return result;
-        }
     }
+}

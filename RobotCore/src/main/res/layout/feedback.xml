@@ -5,7 +5,7 @@
               android:layout_height="wrap_content"
               android:layout_margin="5dip"
               android:background="?attr/feedbackShape"
-              >
+    >
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -16,7 +16,8 @@
         android:orientation="vertical"
         >
 
-        <TextView style="@style/FeedbackText"
+        <TextView
+            style="@style/FeedbackText"
             android:id="@+id/feedbackText0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,7 +25,8 @@
             android:padding="3dip"
             android:text="(replaced)"/>
 
-        <TextView style="@style/FeedbackText"
+        <TextView
+            style="@style/FeedbackText"
             android:id="@+id/feedbackText1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +34,8 @@
             android:padding="3dip"
             android:text="(replaced)"/>
 
-        <Button style="@style/FeedbackButton"
+        <Button
+            style="@style/FeedbackButton"
             android:id="@+id/feedbackOKButton"
             android:visibility="gone"
             android:layout_width="wrap_content"

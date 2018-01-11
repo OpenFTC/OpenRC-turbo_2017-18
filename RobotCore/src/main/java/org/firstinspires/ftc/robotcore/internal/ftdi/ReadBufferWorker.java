@@ -42,37 +42,29 @@ import com.qualcomm.robotcore.util.RobotLog;
  * into the read buffer.
  */
 @SuppressWarnings("WeakerAccess")
-public class ReadBufferWorker implements Runnable
-    {
+public class ReadBufferWorker implements Runnable {
     public static final String TAG = "ReadBufferWorker";
 
     private final ReadBufferManager readBufferManager;
 
-    ReadBufferWorker(ReadBufferManager readBufferManager)
-        {
+    ReadBufferWorker(ReadBufferManager readBufferManager) {
         this.readBufferManager = readBufferManager;
-        }
+    }
 
-    public void run()
-        {
-        try
-            {
-            do  {
+    public void run() {
+        try {
+            do {
                 BulkPacketBufferIn packetBuffer = this.readBufferManager.acquireReadableInputBuffer();
                 this.readBufferManager.processBulkInData(packetBuffer);
                 this.readBufferManager.releaseWritableInputBuffer(packetBuffer);
-                }
+            }
             while (!Thread.interrupted());
 
             throw new InterruptedException();
-            }
-        catch (InterruptedException e)
-            {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            }
-        catch (FtDeviceIOException|RuntimeException e)
-            {
+        } catch (FtDeviceIOException | RuntimeException e) {
             RobotLog.ee(TAG, e, "exception in read buffer worker: fatal");
-            }
         }
     }
+}

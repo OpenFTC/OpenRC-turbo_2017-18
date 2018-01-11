@@ -43,100 +43,89 @@ import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 
-public class RcInspectionActivity extends InspectionActivity
-    {
+public class RcInspectionActivity extends InspectionActivity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     final boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
 
-    final RecvLoopRunnable.RecvLoopCallback recvLoopCallback = new RecvLoopRunnable.DegenerateCallback()
-        {
-        @Override public CallbackResult commandEvent(Command command) throws RobotCoreException
-            {
-            if (remoteConfigure)
-                {
-                switch (command.getName())
-                    {
+    final RecvLoopRunnable.RecvLoopCallback recvLoopCallback = new RecvLoopRunnable.DegenerateCallback() {
+        @Override
+        public CallbackResult commandEvent(Command command) throws RobotCoreException {
+            if (remoteConfigure) {
+                switch (command.getName()) {
                     case RobotCoreCommandList.CMD_REQUEST_INSPECTION_REPORT_RESP: {
                         final InspectionState rcState = InspectionState.deserialize(command.getExtra());
-                        AppUtil.getInstance().runOnUiThread(new Runnable()
-                            {
-                            @Override public void run()
-                                {
+                        AppUtil.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
                                 refresh(rcState);
-                                }
-                            });
+                            }
+                        });
                         return CallbackResult.HANDLED;
-                        }
                     }
                 }
-            return CallbackResult.NOT_HANDLED;
             }
-        };
+            return CallbackResult.NOT_HANDLED;
+        }
+    };
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
-    @Override protected void onCreate(Bundle savedInstanceState)
-        {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         NetworkConnectionHandler.getInstance().pushReceiveLoopCallback(recvLoopCallback);
-        }
+    }
 
-    @Override protected void onDestroy()
-        {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         NetworkConnectionHandler.getInstance().removeReceiveLoopCallback(recvLoopCallback);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override protected void refresh()
-        {
-        if (remoteConfigure)
-            {
+    @Override
+    protected void refresh() {
+        if (remoteConfigure) {
             NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_REQUEST_INSPECTION_REPORT));
-            }
-        else
-            {
+        } else {
             super.refresh();
-            }
         }
+    }
 
-    @Override protected boolean inspectingRobotController()
-        {
+    @Override
+    protected boolean inspectingRobotController() {
         return true;
-        }
+    }
 
-    @Override protected boolean useMenu()
-        {
+    @Override
+    protected boolean useMenu() {
         // When we're remote configuring, the only thing on the menu is something
         // that will simply make the RC inaccessible. So we don't bother.
         return !remoteConfigure;
-        }
+    }
 
-    @Override protected boolean validateAppsInstalled(InspectionState state)
-        {
-        if (state.channelChangerRequired && !state.isChannelChangerInstalled())
-            {
+    @Override
+    protected boolean validateAppsInstalled(InspectionState state) {
+        if (state.channelChangerRequired && !state.isChannelChangerInstalled()) {
             return false;
-            }
+        }
 
         // Driver Station cannot be installed
-        if (state.isDriverStationInstalled())
-            {
+        if (state.isDriverStationInstalled()) {
             return false;
-            }
+        }
 
         // RobotController or AppInventor Required
-        else
-            {
+        else {
             return state.isRobotControllerInstalled() || state.isAppInventorInstalled();
-            }
         }
     }
+}

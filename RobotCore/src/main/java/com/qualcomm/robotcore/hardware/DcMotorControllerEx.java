@@ -37,12 +37,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 /**
  * DcMotorControllerEx is an optional motor controller interface supported by some hardware
  * that provides enhanced motor functionality.
+ *
  * @see DcMotorEx
  */
-public interface DcMotorControllerEx extends DcMotorController
-    {
+public interface DcMotorControllerEx extends DcMotorController {
     /**
      * Individually energizes a particular motor
+     *
      * @param motor the port number of the motor on this controller
      * @see #setMotorDisable(int)
      * @see #isMotorEnabled(int)
@@ -51,6 +52,7 @@ public interface DcMotorControllerEx extends DcMotorController
 
     /**
      * Individually denergizes a particular motor
+     *
      * @param motor the port number of the motor on this controller
      * @see #setMotorEnable(int)
      * @see #isMotorEnabled(int)
@@ -59,6 +61,7 @@ public interface DcMotorControllerEx extends DcMotorController
 
     /**
      * Returns whether a particular motor on the controller is energized
+     *
      * @param motor the port number of the motor on this controller
      * @see #setMotorEnable(int)
      * @see #setMotorDisable(int)
@@ -67,28 +70,30 @@ public interface DcMotorControllerEx extends DcMotorController
 
     /**
      * Sets the target velocity of the indicated motor.
-     * @param motor         motor whose velocity is to be adjusted
-     * @param angularRate   the new target rate for that motor, in 'unit's per second
-     * @param unit          the unit inw which angularRate is expressed.
+     *
+     * @param motor       motor whose velocity is to be adjusted
+     * @param angularRate the new target rate for that motor, in 'unit's per second
+     * @param unit        the unit inw which angularRate is expressed.
      * @see DcMotorEx#setVelocity(double, AngleUnit)
      */
     void setMotorVelocity(int motor, double angularRate, AngleUnit unit);
 
     /**
      * Returns the targeted velocity of the indicated motor.
-     * @param motor         the motor whose velocity is desired
-     * @param unit          the angular unit in which the velocity is to be expressed
-     * @return              the current target velocity of the motor
+     *
+     * @param motor the motor whose velocity is desired
+     * @param unit  the angular unit in which the velocity is to be expressed
+     * @return the current target velocity of the motor
      * @see DcMotorEx#getVelocity(AngleUnit)
      */
     double getMotorVelocity(int motor, AngleUnit unit);
 
     /**
      * Sets the coefficients used for PID control on the indicated motor when in the indicated mode
-     * @param motor the motor whose PID coefficients are to be set
-     * @param mode the mode on that motor whose coefficients are to be set
-     * @param pidCoefficients the new coefficients to set
      *
+     * @param motor           the motor whose PID coefficients are to be set
+     * @param mode            the mode on that motor whose coefficients are to be set
+     * @param pidCoefficients the new coefficients to set
      * @see DcMotorEx#setPIDCoefficients(DcMotor.RunMode, PIDCoefficients)
      * @see #getPIDCoefficients(int, DcMotor.RunMode)
      */
@@ -96,10 +101,10 @@ public interface DcMotorControllerEx extends DcMotorController
 
     /**
      * Returns the coefficients used for PID control on the indicated motor when in the indicated mode
-     * @param motor the motor whose PID coefficients are desired
-     * @param mode the mode on that motor whose coefficients are to be queried
-     * @return the coefficients used for PID control on the indicated motor when in the indicated mode
      *
+     * @param motor the motor whose PID coefficients are desired
+     * @param mode  the mode on that motor whose coefficients are to be queried
+     * @return the coefficients used for PID control on the indicated motor when in the indicated mode
      * @see DcMotorEx#getPIDCoefficients(DcMotor.RunMode)
      * @see #setPIDCoefficients(int, DcMotor.RunMode, PIDCoefficients)
      */
@@ -113,4 +118,4 @@ public interface DcMotorControllerEx extends DcMotorController
      * @param tolerance the tolerance of the desired target position, in encoder ticks
      */
     void setMotorTargetPosition(int motor, int position, int tolerance);
-    }
+}

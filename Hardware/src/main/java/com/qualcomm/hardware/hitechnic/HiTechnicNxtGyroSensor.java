@@ -49,13 +49,13 @@ import java.util.Set;
 /**
  * {@link HiTechnicNxtGyroSensor} supports the legacy HiTechnic gyro sensor. This sensor
  * is an analog sensor that must be connected using a Core Legacy Module.
- *
+ * <p>
  * <p>"The NXT Gyro Sensor contains a single axis gyroscopic sensor that detects rotation and
  * returns a value representing the number of degrees per second of rotation. The Gyro Sensor
  * can measure up to +/- 360° per second of rotation."</p>
- *
+ * <p>
  * <p>"The rotation rate can be read up to approximately 300 times per second"</p>
- *
+ * <p>
  * <p>Note that the value coming out of the sensor is the rotation rate in the <em>clockwise</em>
  * direction.</p>
  *
@@ -64,263 +64,288 @@ import java.util.Set;
  */
 public class HiTechnicNxtGyroSensor extends LegacyModulePortDeviceImpl implements GyroSensor, Gyroscope, AnalogSensor {
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  public static final String TAG = "HiTechnicNxtGyroSensor";
+    public static final String TAG = "HiTechnicNxtGyroSensor";
 
-  /** The voltage indicting zero angular rotation */
-  protected double biasVoltage;
-  /** The conversion factor between voltage and angular rotation rate */
-  protected double degreesPerSecondPerVolt;
-  /** whether or not the gyroscope is currently calibrating */
-  protected boolean isCalibrating         = false;
+    /**
+     * The voltage indicting zero angular rotation
+     */
+    protected double biasVoltage;
+    /**
+     * The conversion factor between voltage and angular rotation rate
+     */
+    protected double degreesPerSecondPerVolt;
+    /**
+     * whether or not the gyroscope is currently calibrating
+     */
+    protected boolean isCalibrating = false;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtGyroSensor(LegacyModule legacyModule, int physicalPort) {
-    super(legacyModule, physicalPort);
-    this.biasVoltage = getDefaultBiasVoltage();
-    this.degreesPerSecondPerVolt = getDefaultDegreesPerSecondPerVolt();
-    finishConstruction();
-  }
-
-  @Override
-  protected void moduleNowArmedOrPretending() {
-    module.enableAnalogReadMode(physicalPort);
+    public HiTechnicNxtGyroSensor(LegacyModule legacyModule, int physicalPort) {
+        super(legacyModule, physicalPort);
+        this.biasVoltage = getDefaultBiasVoltage();
+        this.degreesPerSecondPerVolt = getDefaultDegreesPerSecondPerVolt();
+        finishConstruction();
     }
 
-  //------------------------------------------------------------------------------------------------
-  // Accessing
-  //------------------------------------------------------------------------------------------------
-
-  public double getBiasVoltage() {
-    return this.biasVoltage;
-  }
-  public void setBiasVoltage(double biasVoltage) {
-    this.biasVoltage = biasVoltage;
-    RobotLog.vv(TAG, "biasVoltage=%.3f", this.biasVoltage);
-  }
-
-  public double getDegreesPerSecondPerVolt() {
-    return this.degreesPerSecondPerVolt;
-  }
-  public void setDegreesPerSecondPerVolt(double degreesPerSecondPerVolt) {
-    this.degreesPerSecondPerVolt = degreesPerSecondPerVolt;
-  }
-
-  public double getDefaultDegreesPerSecondPerVolt() {
-    // In the RobotC world, A/D was reported as units in [0,1023)
-    double robotCUnitRange = 1024;
-    // In that reported range, a unit value was a single degree per second
-    double robotCUnitsPerDegreesPerSecond = 1.0;
-    // Now it's just math
-    double robotCUnitsPerVolt = robotCUnitRange / getMaxVoltage();
-    return robotCUnitsPerVolt / robotCUnitsPerDegreesPerSecond;
-  }
-
-  public double getDefaultBiasVoltage() {
-    return 2.908; // experimentally determined
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Gyroscope
-  //------------------------------------------------------------------------------------------------
-
-  @Override public Set<Axis> getAngularVelocityAxes() {
-    Set<Axis> result = new HashSet<Axis>();
-    result.add(Axis.Z);
-    return result;
-  }
-
-  @Override public AngularVelocity getAngularVelocity(AngleUnit unit) {
-    return new AngularVelocity(unit, 0, 0, getAngularZVelocity(unit), System.nanoTime());
+    @Override
+    protected void moduleNowArmedOrPretending() {
+        module.enableAnalogReadMode(physicalPort);
     }
 
-  protected float getAngularZVelocity(AngleUnit unit) {
-    double voltage = readRawVoltage() - biasVoltage;
-    double degsPerSecond = voltage * this.degreesPerSecondPerVolt;
-    degsPerSecond = -degsPerSecond; // convert to usual Cartesian orientation
-    double result = unit.fromUnit(AngleUnit.DEGREES, degsPerSecond);
-    return (float)result;
+    //------------------------------------------------------------------------------------------------
+    // Accessing
+    //------------------------------------------------------------------------------------------------
+
+    public double getBiasVoltage() {
+        return this.biasVoltage;
     }
 
-  //------------------------------------------------------------------------------------------------
-  // Operations
-  //------------------------------------------------------------------------------------------------
-
-  @Override
-  public String toString() {
-    return String.format("Gyro: %3.1f", getAngularZVelocity(AngleUnit.DEGREES));
-  }
-
-  /**
-   * Calibrates the HiTechnic gyroscope attempting to establish a reasonable value for
-   * its internal bias using default calibration parameters.
-   */
-  @Override
-  public synchronized void calibrate() {
-    calibrate(2500, 50);
+    public void setBiasVoltage(double biasVoltage) {
+        this.biasVoltage = biasVoltage;
+        RobotLog.vv(TAG, "biasVoltage=%.3f", this.biasVoltage);
     }
 
-  /**
-   * Calibrates the HiTechnic gyroscope attempting to establish a reasonable value for
-   * its internal bias using specified calibration parameters
-   * @param msCalibrationDuration   the amount of time to spend on calibration
-   * @param msCalibrationInterval   the interval, in ms, to pause between each
-   */
-  public void calibrate(int msCalibrationDuration, int msCalibrationInterval) {
-    calibrate(msCalibrationDuration, msCalibrationInterval, 500);
-  }
+    public double getDegreesPerSecondPerVolt() {
+        return this.degreesPerSecondPerVolt;
+    }
 
-  /**
-   * Calibrates the HiTechnic gyroscope attempting to establish a reasonable value for
-   * its internal bias using specified calibration parameters
-   * @param msCalibrationDuration   the amount of time to spend on calibration
-   * @param msCalibrationInterval   the interval, in ms, to pause between each
-   * @param msSettlingTime          the initial duration, in ms, to allow the gyro to settle
-   */
-  public synchronized void calibrate(int msCalibrationDuration, int msCalibrationInterval, int msSettlingTime) {
-    int calibrationCount = (msCalibrationDuration-msSettlingTime) / msCalibrationInterval;
-    isCalibrating = true;
-    sleep(msSettlingTime); // let things settle
-    try {
-      Statistics statistics = new Statistics();
-      for (int i = 0; !Thread.currentThread().isInterrupted() && i < calibrationCount; i++) {
-        if (i > 0 && msCalibrationInterval > 0) sleep(msCalibrationInterval);
-        double voltage = readRawVoltage();
-        statistics.add(voltage);
-      }
-      setBiasVoltage(statistics.getMean());
-    } finally {
-      isCalibrating = false;
-      }
-  }
+    public void setDegreesPerSecondPerVolt(double degreesPerSecondPerVolt) {
+        this.degreesPerSecondPerVolt = degreesPerSecondPerVolt;
+    }
 
-  protected void sleep(int ms) {
-    try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-  }
+    public double getDefaultDegreesPerSecondPerVolt() {
+        // In the RobotC world, A/D was reported as units in [0,1023)
+        double robotCUnitRange = 1024;
+        // In that reported range, a unit value was a single degree per second
+        double robotCUnitsPerDegreesPerSecond = 1.0;
+        // Now it's just math
+        double robotCUnitsPerVolt = robotCUnitRange / getMaxVoltage();
+        return robotCUnitsPerVolt / robotCUnitsPerDegreesPerSecond;
+    }
 
-  /**
-   * Returns whether or not the gyro is currently calibrating
-   * @return whether or not the gyro is currently calibrating
-   */
-  @Override
-  public boolean isCalibrating() {
-    return isCalibrating;
-  }
+    public double getDefaultBiasVoltage() {
+        return 2.908; // experimentally determined
+    }
 
-  @Override
-  public synchronized double getRotationFraction() {
-    return readRawVoltage() / getMaxVoltage();
-  }
+    //------------------------------------------------------------------------------------------------
+    // Gyroscope
+    //------------------------------------------------------------------------------------------------
 
-  @Override
-  public synchronized double readRawVoltage()  {
-    return module.readAnalogVoltage(physicalPort);
-  }
+    @Override
+    public Set<Axis> getAngularVelocityAxes() {
+        Set<Axis> result = new HashSet<Axis>();
+        result.add(Axis.Z);
+        return result;
+    }
 
-  public double getMaxVoltage() {
-    // The sensor itself is a 5v sensor. As it is always accessed here through a Core
-    // Legacy Module, that is the maximum value that we will always see.
-    final double sensorMaxVoltage = 5.0;
-    return sensorMaxVoltage;
-  }
+    @Override
+    public AngularVelocity getAngularVelocity(AngleUnit unit) {
+        return new AngularVelocity(unit, 0, 0, getAngularZVelocity(unit), System.nanoTime());
+    }
 
-  /**
-   * Method not supported by hardware.
-   * @return nothing
-   * @throws UnsupportedOperationException
-   */
-  @Override
-  public int getHeading() {
-    notSupported();
-    return 0;
-  }
+    protected float getAngularZVelocity(AngleUnit unit) {
+        double voltage = readRawVoltage() - biasVoltage;
+        double degsPerSecond = voltage * this.degreesPerSecondPerVolt;
+        degsPerSecond = -degsPerSecond; // convert to usual Cartesian orientation
+        double result = unit.fromUnit(AngleUnit.DEGREES, degsPerSecond);
+        return (float) result;
+    }
 
-  /**
-   * Method not supported by hardware.
-   * @return nothing
-   * @throws UnsupportedOperationException
-   */
-  @Override
-  public int rawX() {
-    notSupported();
-    return 0;
-  }
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
-  /**
-   * Method not supported by hardware.
-   * @return nothing
-   * @throws UnsupportedOperationException
-   */
-  @Override
-  public int rawY() {
-    notSupported();
-    return 0;
-  }
+    @Override
+    public String toString() {
+        return String.format("Gyro: %3.1f", getAngularZVelocity(AngleUnit.DEGREES));
+    }
 
-  /**
-   * Method not supported by hardware.
-   * @return nothing
-   * @throws UnsupportedOperationException
-   */
-  @Override
-  public int rawZ() {
-    notSupported();
-    return 0;
-  }
+    /**
+     * Calibrates the HiTechnic gyroscope attempting to establish a reasonable value for
+     * its internal bias using default calibration parameters.
+     */
+    @Override
+    public synchronized void calibrate() {
+        calibrate(2500, 50);
+    }
 
-  /**
-   * Method not supported by hardware.
-   * @return nothing
-   * @throws UnsupportedOperationException
-   */
-  @Override
-  public void resetZAxisIntegrator() {
-    // nothing to do
-  }
+    /**
+     * Calibrates the HiTechnic gyroscope attempting to establish a reasonable value for
+     * its internal bias using specified calibration parameters
+     *
+     * @param msCalibrationDuration the amount of time to spend on calibration
+     * @param msCalibrationInterval the interval, in ms, to pause between each
+     */
+    public void calibrate(int msCalibrationDuration, int msCalibrationInterval) {
+        calibrate(msCalibrationDuration, msCalibrationInterval, 500);
+    }
 
-  @Override
-  public String status() {
-    return String.format("NXT Gyro Sensor, connected via device %s, port %d",
-        module.getSerialNumber().toString(), physicalPort);
-  }
+    /**
+     * Calibrates the HiTechnic gyroscope attempting to establish a reasonable value for
+     * its internal bias using specified calibration parameters
+     *
+     * @param msCalibrationDuration the amount of time to spend on calibration
+     * @param msCalibrationInterval the interval, in ms, to pause between each
+     * @param msSettlingTime        the initial duration, in ms, to allow the gyro to settle
+     */
+    public synchronized void calibrate(int msCalibrationDuration, int msCalibrationInterval, int msSettlingTime) {
+        int calibrationCount = (msCalibrationDuration - msSettlingTime) / msCalibrationInterval;
+        isCalibrating = true;
+        sleep(msSettlingTime); // let things settle
+        try {
+            Statistics statistics = new Statistics();
+            for (int i = 0; !Thread.currentThread().isInterrupted() && i < calibrationCount; i++) {
+                if (i > 0 && msCalibrationInterval > 0) {
+                    sleep(msCalibrationInterval);
+                }
+                double voltage = readRawVoltage();
+                statistics.add(voltage);
+            }
+            setBiasVoltage(statistics.getMean());
+        } finally {
+            isCalibrating = false;
+        }
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.HiTechnic;
-  }
+    protected void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTGyro);
-  }
+    /**
+     * Returns whether or not the gyro is currently calibrating
+     *
+     * @return whether or not the gyro is currently calibrating
+     */
+    @Override
+    public boolean isCalibrating() {
+        return isCalibrating;
+    }
 
-  @Override
-  public String getConnectionInfo() {
-    return module.getConnectionInfo() + "; port " + physicalPort;
-  }
+    @Override
+    public synchronized double getRotationFraction() {
+        return readRawVoltage() / getMaxVoltage();
+    }
 
-  @Override
-  public int getVersion() {
-    return 1;
-  }
+    @Override
+    public synchronized double readRawVoltage() {
+        return module.readAnalogVoltage(physicalPort);
+    }
 
-  @Override
-  public void resetDeviceConfigurationForOpMode() {
-    // nothing to do
-  }
+    public double getMaxVoltage() {
+        // The sensor itself is a 5v sensor. As it is always accessed here through a Core
+        // Legacy Module, that is the maximum value that we will always see.
+        final double sensorMaxVoltage = 5.0;
+        return sensorMaxVoltage;
+    }
 
-  @Override
-  public void close() {
-    // take no action
-  }
+    /**
+     * Method not supported by hardware.
+     *
+     * @return nothing
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public int getHeading() {
+        notSupported();
+        return 0;
+    }
 
-  protected void notSupported() {
-    throw new UnsupportedOperationException("This method is not supported for " + getDeviceName());
-  }
+    /**
+     * Method not supported by hardware.
+     *
+     * @return nothing
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public int rawX() {
+        notSupported();
+        return 0;
+    }
+
+    /**
+     * Method not supported by hardware.
+     *
+     * @return nothing
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public int rawY() {
+        notSupported();
+        return 0;
+    }
+
+    /**
+     * Method not supported by hardware.
+     *
+     * @return nothing
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public int rawZ() {
+        notSupported();
+        return 0;
+    }
+
+    /**
+     * Method not supported by hardware.
+     *
+     * @return nothing
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public void resetZAxisIntegrator() {
+        // nothing to do
+    }
+
+    @Override
+    public String status() {
+        return String.format("NXT Gyro Sensor, connected via device %s, port %d",
+                module.getSerialNumber().toString(), physicalPort);
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.HiTechnic;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTGyro);
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return module.getConnectionInfo() + "; port " + physicalPort;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+        // nothing to do
+    }
+
+    @Override
+    public void close() {
+        // take no action
+    }
+
+    protected void notSupported() {
+        throw new UnsupportedOperationException("This method is not supported for " + getDeviceName());
+    }
 
 }

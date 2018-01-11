@@ -41,77 +41,62 @@ import com.qualcomm.robotcore.util.RobotLog;
  * error so as to avoid flooding logs
  */
 @SuppressWarnings("WeakerAccess")
-public class FrequentErrorReporter<T>
-    {
+public class FrequentErrorReporter<T> {
     protected T value;
 
-    public FrequentErrorReporter()
-        {
+    public FrequentErrorReporter() {
         reset();
-        }
+    }
 
-    public void reset()
-        {
+    public void reset() {
         this.value = null;
-        }
+    }
 
-    public synchronized void aa(@NonNull T value, String tag, String format, Object...args)
-        {
+    public synchronized void aa(@NonNull T value, String tag, String format, Object... args) {
         Assert.assertNotNull(value);
-        if (this.value == null || !this.value.equals(value))
-            {
+        if (this.value == null || !this.value.equals(value)) {
             this.value = value;
             RobotLog.aa(tag, format, args);
-            }
-        }
-
-    public synchronized void vv(@NonNull T value, String tag, String format, Object...args)
-        {
-        Assert.assertNotNull(value);
-        if (this.value == null || !this.value.equals(value))
-            {
-            this.value = value;
-            RobotLog.vv(tag, format, args);
-            }
-        }
-
-    public synchronized void dd(@NonNull T value, String tag, String format, Object...args)
-        {
-        Assert.assertNotNull(value);
-        if (this.value == null || !this.value.equals(value))
-            {
-            this.value = value;
-            RobotLog.dd(tag, format, args);
-            }
-        }
-
-    public synchronized void ii(@NonNull T value, String tag, String format, Object...args)
-        {
-        Assert.assertNotNull(value);
-        if (this.value == null || !this.value.equals(value))
-            {
-            this.value = value;
-            RobotLog.ii(tag, format, args);
-            }
-        }
-
-    public synchronized void ww(@NonNull T value, String tag, String format, Object...args)
-        {
-        Assert.assertNotNull(value);
-        if (this.value == null || !this.value.equals(value))
-            {
-            this.value = value;
-            RobotLog.ww(tag, format, args);
-            }
-        }
-
-    public synchronized void ee(@NonNull T value, String tag, String format, Object...args)
-        {
-        Assert.assertNotNull(value);
-        if (this.value == null || !this.value.equals(value))
-            {
-            this.value = value;
-            RobotLog.ee(tag, format, args);
-            }
         }
     }
+
+    public synchronized void vv(@NonNull T value, String tag, String format, Object... args) {
+        Assert.assertNotNull(value);
+        if (this.value == null || !this.value.equals(value)) {
+            this.value = value;
+            RobotLog.vv(tag, format, args);
+        }
+    }
+
+    public synchronized void dd(@NonNull T value, String tag, String format, Object... args) {
+        Assert.assertNotNull(value);
+        if (this.value == null || !this.value.equals(value)) {
+            this.value = value;
+            RobotLog.dd(tag, format, args);
+        }
+    }
+
+    public synchronized void ii(@NonNull T value, String tag, String format, Object... args) {
+        Assert.assertNotNull(value);
+        if (this.value == null || !this.value.equals(value)) {
+            this.value = value;
+            RobotLog.ii(tag, format, args);
+        }
+    }
+
+    public synchronized void ww(@NonNull T value, String tag, String format, Object... args) {
+        Assert.assertNotNull(value);
+        if (this.value == null || !this.value.equals(value)) {
+            this.value = value;
+            RobotLog.ww(tag, format, args);
+        }
+    }
+
+    public synchronized void ee(@NonNull T value, String tag, String format, Object... args) {
+        Assert.assertNotNull(value);
+        if (this.value == null || !this.value.equals(value)) {
+            this.value = value;
+            RobotLog.ee(tag, format, args);
+        }
+    }
+}

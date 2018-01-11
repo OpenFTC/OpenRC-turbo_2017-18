@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 import dalvik.system.DexFile;
+
 @SuppressWarnings("WeakerAccess")
 public class InstantRunDexHelper {
 
@@ -56,8 +57,7 @@ public class InstantRunDexHelper {
      * @param context the application context
      * @return A list of class names
      */
-    public static List<String> getAllClassNames(Context context)
-    {
+    public static List<String> getAllClassNames(Context context) {
         ApplicationInfo applicationInfo = null;
         List<String> classNames = new ArrayList<String>();
 
@@ -67,6 +67,25 @@ public class InstantRunDexHelper {
             RobotLog.ee(TAG, e, "Could not obtain application info for class scanning");
             return classNames;
         }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            String[] apkFiles = applicationInfo.splitSourceDirs;
+            if (apkFiles != null) {
+                for (String path : apkFiles) {
+                    try {
+                        DexFile dexFile = new DexFile(path);
+                        try {
+                            classNames.addAll(Collections.list(dexFile.entries()));
+                        } finally {
+                            dexFile.close();
+                        }
+                    } catch (IOException e) {
+                        RobotLog.ee(TAG, e,"Error accessing apk file: " + path + ", IOException: " + e.toString());
+                    }
+                }
+            }
+        }
+
 
         File[] instantRunDexes = new File(applicationInfo.dataDir, INSTANT_RUN_LOCATION).listFiles();
         if (instantRunDexes != null) {

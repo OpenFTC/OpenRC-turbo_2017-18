@@ -42,24 +42,24 @@ import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterDS;
  */
 public class FixWifiDirectSetup {
 
-  public static final int WIFI_TOGGLE_DELAY = 2 * 1000; // in milliseconds
+    public static final int WIFI_TOGGLE_DELAY = 2 * 1000; // in milliseconds
 
-  public static void fixWifiDirectSetup(WifiManager wifiManager) throws InterruptedException {
-    toggleWifi(false, wifiManager);
-    toggleWifi(true, wifiManager);
-  }
-
-  public static void disableWifiDirect(WifiManager wifiManager) throws InterruptedException {
-    toggleWifi(false, wifiManager);
-  }
-
-  private static void toggleWifi(boolean enabled, WifiManager wifiManager) throws InterruptedException {
-    String toggle = enabled ? "on" : "off";
-    RobotLog.i("Toggling Wifi " + toggle);
-    wifiManager.setWifiEnabled(enabled);
-    if (AppUtil.getInstance().isDriverStation()) {
-      PreferenceRemoterDS.getInstance().onWifiToggled(enabled);
+    public static void fixWifiDirectSetup(WifiManager wifiManager) throws InterruptedException {
+        toggleWifi(false, wifiManager);
+        toggleWifi(true, wifiManager);
     }
-    Thread.sleep(WIFI_TOGGLE_DELAY);
-  }
+
+    public static void disableWifiDirect(WifiManager wifiManager) throws InterruptedException {
+        toggleWifi(false, wifiManager);
+    }
+
+    private static void toggleWifi(boolean enabled, WifiManager wifiManager) throws InterruptedException {
+        String toggle = enabled ? "on" : "off";
+        RobotLog.i("Toggling Wifi " + toggle);
+        wifiManager.setWifiEnabled(enabled);
+        if (AppUtil.getInstance().isDriverStation()) {
+            PreferenceRemoterDS.getInstance().onWifiToggled(enabled);
+        }
+        Thread.sleep(WIFI_TOGGLE_DELAY);
+    }
 }

@@ -41,8 +41,7 @@ import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 /**
  * EditPortListCheckboxActivity provides a template-driven editing of a list of checkboxed list items
  */
-public abstract class EditPortListCheckboxActivity<ITEM_T extends DeviceConfiguration> extends EditPortListActivity<ITEM_T>
-    {
+public abstract class EditPortListCheckboxActivity<ITEM_T extends DeviceConfiguration> extends EditPortListActivity<ITEM_T> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -53,41 +52,35 @@ public abstract class EditPortListCheckboxActivity<ITEM_T extends DeviceConfigur
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected EditPortListCheckboxActivity()
-        {
-        }
+    protected EditPortListCheckboxActivity() {
+    }
 
     @Override
     protected void addViewListenersOnIndex(int index)
     // Plumb up all the event handlers for the indicated item
-        {
+    {
         addCheckBoxListenerOnIndex(index);
         addNameTextChangeWatcherOnIndex(index);
         handleDisabledDeviceByIndex(index);
-        }
+    }
 
-    protected void handleDisabledDeviceByIndex(int index)
-        {
+    protected void handleDisabledDeviceByIndex(int index) {
         View itemView = findViewByIndex(index);
         CheckBox checkbox = (CheckBox) itemView.findViewById(idItemCheckbox);
         DeviceConfiguration device = this.itemList.get(index);
-        if (device.isEnabled())
-            {
+        if (device.isEnabled()) {
             checkbox.setChecked(true);
             EditText name = (EditText) itemView.findViewById(idItemEditTextResult);
             name.setText(device.getName());
-            }
-        else
-            {
+        } else {
             checkbox.setChecked(true); // kind of a hack. Sets the checkbox to true, so
             // when performing the click programmatically,
             // the checkbox becomes "unclicked" which does the right thing.
             checkbox.performClick();
-            }
         }
+    }
 
-    protected void addCheckBoxListenerOnIndex(final int index)
-        {
+    protected void addCheckBoxListenerOnIndex(final int index) {
         View itemView = findViewByIndex(index);
         final EditText name;
         name = (EditText) itemView.findViewById(this.idItemEditTextResult);
@@ -96,26 +89,21 @@ public abstract class EditPortListCheckboxActivity<ITEM_T extends DeviceConfigur
         device = this.itemList.get(index);
 
         CheckBox checkbox = (CheckBox) itemView.findViewById(this.idItemCheckbox);
-        checkbox.setOnClickListener(new View.OnClickListener()
-        {
-        @Override
-        public void onClick(View view)
-            {
-            if (((CheckBox) view).isChecked())
-                {
-                name.setEnabled(true);
-                name.setText("");
-                device.setEnabled(true);
-                device.setName("");
-                }
-            else
-                {
-                name.setEnabled(false);
-                name.setText(disabledDeviceName());
-                device.setEnabled(false);
-                device.setName(disabledDeviceName());
+        checkbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (((CheckBox) view).isChecked()) {
+                    name.setEnabled(true);
+                    name.setText("");
+                    device.setEnabled(true);
+                    device.setName("");
+                } else {
+                    name.setEnabled(false);
+                    name.setText(disabledDeviceName());
+                    device.setEnabled(false);
+                    device.setName(disabledDeviceName());
                 }
             }
         });
-        }
     }
+}

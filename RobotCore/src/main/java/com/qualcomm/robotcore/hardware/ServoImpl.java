@@ -42,161 +42,173 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  */
 public class ServoImpl implements Servo {
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  protected ServoController controller  = null;
-  protected int             portNumber  = -1;
+    protected ServoController controller = null;
+    protected int portNumber = -1;
 
-  protected Direction       direction        = Direction.FORWARD;
-  protected double          limitPositionMin = MIN_POSITION;
-  protected double          limitPositionMax = MAX_POSITION;
+    protected Direction direction = Direction.FORWARD;
+    protected double limitPositionMin = MIN_POSITION;
+    protected double limitPositionMax = MAX_POSITION;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  /**
-   * Constructor
-   * @param controller Servo controller that this servo is attached to
-   * @param portNumber physical port number on the servo controller
-   */
-  public ServoImpl(ServoController controller, int portNumber) {
-    this(controller, portNumber, Direction.FORWARD);
-  }
-
-  /**
-   * COnstructor
-   * @param controller Servo controller that this servo is attached to
-   * @param portNumber physical port number on the servo controller
-   * @param direction FORWARD for normal operation, REVERSE to reverse operation
-   */
-  public ServoImpl(ServoController controller, int portNumber, Direction direction) {
-    this.direction = direction;
-    this.controller = controller;
-    this.portNumber = portNumber;
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // HardwareDevice interface
-  //------------------------------------------------------------------------------------------------
-
-  @Override public Manufacturer getManufacturer() {
-    return controller.getManufacturer();
-  }
-
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(R.string.configTypeServo);
-  }
-
-  @Override
-  public String getConnectionInfo() {
-    return controller.getConnectionInfo() + "; port " + portNumber;
-  }
-
-  @Override
-  public int getVersion() {
-    return 1;
-  }
-
-  @Override
-  public synchronized void resetDeviceConfigurationForOpMode() {
-    this.limitPositionMin = MIN_POSITION;
-    this.limitPositionMax = MAX_POSITION;
-    this.direction = Direction.FORWARD;
-  }
-
-  @Override
-  public void close() {
-    // take no action
-  }
-
-  //------------------------------------------------------------------------------------------------
-  // Servo operations
-  //------------------------------------------------------------------------------------------------
-
-  /**
-   * Get Servo Controller
-   * @return servo controller
-   */
-  public ServoController getController() {
-    return controller;
-  }
-
-  /**
-   * Set the direction
-   * @param direction direction
-   */
-  synchronized public void setDirection(Direction direction) {
-    this.direction = direction;
-  }
-
-  /**
-   * Get the direction
-   * @return direction
-   */
-  public Direction getDirection() {
-    return direction;
-  }
-
-  /**
-   * Get Channel
-   * @return channel
-   */
-  public int getPortNumber() {
-    return portNumber;
-  }
-
-  /**
-   * Commands the servo to move to a designated position. This method initiates the movement;
-   * the servo will arrive at the commanded position at some later time.
-   *
-   * @param position the commanded servo position. Should be in the range [0.0, 1.0].
-   * @see #getPosition()
-   */
-  synchronized public void setPosition(double position) {
-    position = Range.clip(position, MIN_POSITION, MAX_POSITION);
-    if (direction == Direction.REVERSE) position = reverse(position);
-    double scaled = Range.scale(position, MIN_POSITION, MAX_POSITION, limitPositionMin, limitPositionMax);
-    internalSetPosition(scaled);
-  }
-
-  protected void internalSetPosition(double position) {
-    controller.setServoPosition(portNumber, position);
-  }
-
-  /**
-   * Returns the position to which the servo was last commanded, or Double.NaN if that is
-   * unavailable.
-   * @return the last commanded position
-   * @see #setPosition(double)
-   * @see Double#isNaN(double)
-   */
-  synchronized public double getPosition() {
-    double position = controller.getServoPosition(portNumber);
-    if (direction == Direction.REVERSE) position = reverse(position);
-    double scaled = Range.scale(position, limitPositionMin, limitPositionMax, MIN_POSITION, MAX_POSITION);
-    return Range.clip(scaled, MIN_POSITION, MAX_POSITION);
-  }
-
-  /**
-   * Automatically scales the position of the servo.
-   */
-  synchronized public void scaleRange(double min, double max) {
-    min = Range.clip(min, MIN_POSITION, MAX_POSITION);
-    max = Range.clip(max, MIN_POSITION, MAX_POSITION);
-
-    if (min >= max) {
-      throw new IllegalArgumentException("min must be less than max");
+    /**
+     * Constructor
+     *
+     * @param controller Servo controller that this servo is attached to
+     * @param portNumber physical port number on the servo controller
+     */
+    public ServoImpl(ServoController controller, int portNumber) {
+        this(controller, portNumber, Direction.FORWARD);
     }
 
-    limitPositionMin = min;
-    limitPositionMax = max;
-  }
+    /**
+     * COnstructor
+     *
+     * @param controller Servo controller that this servo is attached to
+     * @param portNumber physical port number on the servo controller
+     * @param direction  FORWARD for normal operation, REVERSE to reverse operation
+     */
+    public ServoImpl(ServoController controller, int portNumber, Direction direction) {
+        this.direction = direction;
+        this.controller = controller;
+        this.portNumber = portNumber;
+    }
 
-  private double reverse(double position) {
-    return MAX_POSITION - position + MIN_POSITION;
-  }
+    //------------------------------------------------------------------------------------------------
+    // HardwareDevice interface
+    //------------------------------------------------------------------------------------------------
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return controller.getManufacturer();
+    }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(R.string.configTypeServo);
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return controller.getConnectionInfo() + "; port " + portNumber;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
+    }
+
+    @Override
+    public synchronized void resetDeviceConfigurationForOpMode() {
+        this.limitPositionMin = MIN_POSITION;
+        this.limitPositionMax = MAX_POSITION;
+        this.direction = Direction.FORWARD;
+    }
+
+    @Override
+    public void close() {
+        // take no action
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Servo operations
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     * Get Servo Controller
+     *
+     * @return servo controller
+     */
+    public ServoController getController() {
+        return controller;
+    }
+
+    /**
+     * Set the direction
+     *
+     * @param direction direction
+     */
+    synchronized public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    /**
+     * Get the direction
+     *
+     * @return direction
+     */
+    public Direction getDirection() {
+        return direction;
+    }
+
+    /**
+     * Get Channel
+     *
+     * @return channel
+     */
+    public int getPortNumber() {
+        return portNumber;
+    }
+
+    /**
+     * Commands the servo to move to a designated position. This method initiates the movement;
+     * the servo will arrive at the commanded position at some later time.
+     *
+     * @param position the commanded servo position. Should be in the range [0.0, 1.0].
+     * @see #getPosition()
+     */
+    synchronized public void setPosition(double position) {
+        position = Range.clip(position, MIN_POSITION, MAX_POSITION);
+        if (direction == Direction.REVERSE) {
+            position = reverse(position);
+        }
+        double scaled = Range.scale(position, MIN_POSITION, MAX_POSITION, limitPositionMin, limitPositionMax);
+        internalSetPosition(scaled);
+    }
+
+    protected void internalSetPosition(double position) {
+        controller.setServoPosition(portNumber, position);
+    }
+
+    /**
+     * Returns the position to which the servo was last commanded, or Double.NaN if that is
+     * unavailable.
+     *
+     * @return the last commanded position
+     * @see #setPosition(double)
+     * @see Double#isNaN(double)
+     */
+    synchronized public double getPosition() {
+        double position = controller.getServoPosition(portNumber);
+        if (direction == Direction.REVERSE) {
+            position = reverse(position);
+        }
+        double scaled = Range.scale(position, limitPositionMin, limitPositionMax, MIN_POSITION, MAX_POSITION);
+        return Range.clip(scaled, MIN_POSITION, MAX_POSITION);
+    }
+
+    /**
+     * Automatically scales the position of the servo.
+     */
+    synchronized public void scaleRange(double min, double max) {
+        min = Range.clip(min, MIN_POSITION, MAX_POSITION);
+        max = Range.clip(max, MIN_POSITION, MAX_POSITION);
+
+        if (min >= max) {
+            throw new IllegalArgumentException("min must be less than max");
+        }
+
+        limitPositionMin = min;
+        limitPositionMax = max;
+    }
+
+    private double reverse(double position) {
+        return MAX_POSITION - position + MIN_POSITION;
+    }
 }

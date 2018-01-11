@@ -45,17 +45,26 @@ import com.qualcomm.robotcore.util.SerialNumber;
  * LynxModuleIntf is an interface to LynxModule so as to allow for an alternate
  * substitution of PretendLynxModule when necessary.
  */
-public interface LynxModuleIntf extends RobotCoreLynxModule, HardwareDevice, Engagable
-    {
+public interface LynxModuleIntf extends RobotCoreLynxModule, HardwareDevice, Engagable {
     SerialNumber getSerialNumber();
-    <T> T acquireI2cLockWhile(Supplier<T> supplier)                     throws InterruptedException, RobotCoreException, LynxNackException;
-    void acquireNetworkTransmissionLock(@NonNull LynxMessage message)   throws InterruptedException;
-    void releaseNetworkTransmissionLock(@NonNull LynxMessage message)   throws InterruptedException;
-    void validateCommandNumber(int commandNumber)               throws LynxUnsupportedCommandNumberException;
-    void sendCommand(LynxMessage message)                       throws InterruptedException, LynxUnsupportedCommandNumberException;
+
+    <T> T acquireI2cLockWhile(Supplier<T> supplier) throws InterruptedException, RobotCoreException, LynxNackException;
+
+    void acquireNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException;
+
+    void releaseNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException;
+
+    void validateCommandNumber(int commandNumber) throws LynxUnsupportedCommandNumberException;
+
+    void sendCommand(LynxMessage message) throws InterruptedException, LynxUnsupportedCommandNumberException;
+
     void resetPingTimer(@NonNull LynxMessage message);
-    void retransmit(LynxMessage message)                        throws InterruptedException;
-    void finishedWithMessage(LynxMessage message)               throws InterruptedException;
+
+    void retransmit(LynxMessage message) throws InterruptedException;
+
+    void finishedWithMessage(LynxMessage message) throws InterruptedException;
+
     void noteAttentionRequired();
+
     int getInterfaceBaseCommandNumber(String interfaceName);
-    }
+}

@@ -80,20 +80,18 @@ import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
  * {@link RunOnBoot} is responsible for auto-starting the robot controller app when
  * a headless device boots.
  */
-public class RunOnBoot extends BroadcastReceiver
-    {
+public class RunOnBoot extends BroadcastReceiver {
     public static final String TAG = "RunOnBoot";
 
-    protected Context           context = null;
+    protected Context context = null;
     protected PreferencesHelper preferencesHelper = null;
 
-    @Override public void onReceive(Context context, Intent intent)
-        {
+    @Override
+    public void onReceive(Context context, Intent intent) {
         this.context = context;
-        if (preferencesHelper == null)
-            {
+        if (preferencesHelper == null) {
             preferencesHelper = new PreferencesHelper(TAG, context);
-            }
+        }
 
         String action = intent.getAction();
         RobotLog.vv(TAG, "onReceive() action=%s", action);
@@ -103,32 +101,22 @@ public class RunOnBoot extends BroadcastReceiver
         // robot controller is executed manually. In the latter case, we especially don't want
         // to inadvertently terminate this process :-).
 
-        if (action.equals(Intent.ACTION_BOOT_COMPLETED))
-            {
-            if (AppUtil.getInstance().isRobotController())
-                {
+        if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+            if (AppUtil.getInstance().isRobotController()) {
                 onRobotControllerBoot();
-                }
-            else if (AppUtil.getInstance().isDriverStation())
-                {
+            } else if (AppUtil.getInstance().isDriverStation()) {
                 onDriverStationBoot();
-                }
             }
-        else
-            {
-            if (AppUtil.getInstance().isRobotController())
-                {
+        } else {
+            if (AppUtil.getInstance().isRobotController()) {
                 onRobotControllerPostBoot();
-                }
-            else if (AppUtil.getInstance().isDriverStation())
-                {
+            } else if (AppUtil.getInstance().isDriverStation()) {
                 onDriverStationPostBoot();
-                }
             }
         }
+    }
 
-    protected void onRobotControllerBoot()
-        {
+    protected void onRobotControllerBoot() {
         // On boot, we initialize the state that will help us auto-launch the robot
         // controller *exactly* once. Note that we're taking advantage here of the fact
         // that (a) we only ever receive ACTION_BOOT_COMPLETED at most one time, no matter
@@ -138,74 +126,63 @@ public class RunOnBoot extends BroadcastReceiver
         // here)
         preferencesHelper.remove(context.getString(R.string.pref_autostarted_robot_controller));
 
-        if (shouldAutoLaunchRobotController())
-            {
+        if (shouldAutoLaunchRobotController()) {
             launchRobotController();
-            }
-        else
-            {
+        } else {
             // Having cleared that state, if we *still* shouldn't launch the robot
             // controller, then we've got no business sticking around.
             noteDragonboardPresenceAndExitIfNoRC();
-            }
         }
+    }
 
-    protected void onRobotControllerPostBoot()
-        {
+    protected void onRobotControllerPostBoot() {
         noteDragonboardPresenceAndExitIfNoRC();
-        }
+    }
 
-    protected void onDriverStationBoot()
-        {
+    protected void onDriverStationBoot() {
         PreferenceRemoterDS.getInstance().onPhoneBoot();
-        }
+    }
 
-    protected void onDriverStationPostBoot()
-        {
+    protected void onDriverStationPostBoot() {
         // Nothing to do
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
 
-    /** If we're on the DB/Lynx comb, then ensure that the 'isPresent' pin is in the appropriate
+    /**
+     * If we're on the DB/Lynx comb, then ensure that the 'isPresent' pin is in the appropriate
      * state. Then, unless the RC is running in *this* incarnation of this broadcast receiver, get
-     * the heck out of Dodge. */
-    protected void noteDragonboardPresenceAndExitIfNoRC()
-        {
+     * the heck out of Dodge.
+     */
+    protected void noteDragonboardPresenceAndExitIfNoRC() {
         RobotLog.vv(TAG, "noteDragonboardPresenceAndExitIfNoRC()");
         //
-        if (LynxConstants.isRevControlHub())
-            {
+        if (LynxConstants.isRevControlHub()) {
             DragonboardLynxDragonboardIsPresentPin.getInstance().setState(!LynxConstants.disableDragonboard());
-            }
-        //
-        if (!isRobotControllerRunningInThisProcess())
-            {
-            AppUtil.getInstance().exitApplication();
-            }
         }
+        //
+        if (!isRobotControllerRunningInThisProcess()) {
+            AppUtil.getInstance().exitApplication();
+        }
+    }
 
-    protected boolean isRobotControllerRunningInThisProcess()
-        {
+    protected boolean isRobotControllerRunningInThisProcess() {
         // If only this BroadcastReceiver has been executed, not the RC itself, then the root activity will be null
         return FtcRobotControllerWatchdogService.isFtcRobotControllerActivity(AppUtil.getInstance().getRootActivity());
-        }
+    }
 
-    protected boolean shouldAutoLaunchRobotController()
-        {
+    protected boolean shouldAutoLaunchRobotController() {
         boolean result = FtcRobotControllerWatchdogService.shouldAutoLaunchRobotController();
-        if (result)
-            {
+        if (result) {
             // Finally, we avoid auto-starting more than once (paranoia)
             result = !preferencesHelper.readBoolean(context.getString(R.string.pref_autostarted_robot_controller), false);
-            }
+        }
 
         RobotLog.vv(TAG, "shouldAutoLauchRobotController() result=%s", result);
         return result;
-        }
+    }
 
-    protected void launchRobotController()
-        {
+    protected void launchRobotController() {
         RobotLog.vv(TAG, "launchRobotController()");
 
         // Start the guy
@@ -213,5 +190,5 @@ public class RunOnBoot extends BroadcastReceiver
 
         // Remember that we did so so that we don't try to do that a second time
         preferencesHelper.writeBooleanPrefIfDifferent(context.getString(R.string.pref_autostarted_robot_controller), true);
-        }
     }
+}

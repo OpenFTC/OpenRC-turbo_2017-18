@@ -45,63 +45,61 @@ import java.io.IOException;
  * {@link DragonboardIndicatorLED} provides a means to access the LEDs on the Qualcomm
  * Dragonboard 410c. The logic we have here *might* be generalizable to other systems,
  * as it uses simple Linux APIs at its core, but we have not attempted to do so as yet.
- *
+ * <p>
  * The Dragonboard has four user LEDs. On the silkscreen, these are labeled 1, 2, 3, and 4.
  * Internally, they are known as led1, led2, led3, and boot. The last of these is used as
  * a boot indicator: it turns on (green) early in the boot process and turns off once the
  * boot is complete. See (root)\kernel\arch\arm\boot\dts\qcom\apq8016-sbc.dtsi where these
  * are defined.
- *
+ * <p>
  * Each LED appears as a directory in the Android device tree:
- *
+ * <p>
  * root@msm8916_64:/sys/class/leds # ls
- *    boot
- *    bt
- *    lcd-backlight
- *    led1
- *    led2
- *    led3
- *    wlan
- *
+ * boot
+ * bt
+ * lcd-backlight
+ * led1
+ * led2
+ * led3
+ * wlan
+ * <p>
  * root@msm8916_64:/sys/class/leds # cd led1
- *
+ * <p>
  * root@msm8916_64:/sys/class/leds/led1 # ls
- *    brightness
- *    device
- *    max_brightness
- *    power
- *    subsystem
- *    trigger
- *    uevent
- *
+ * brightness
+ * device
+ * max_brightness
+ * power
+ * subsystem
+ * trigger
+ * uevent
+ * <p>
  * Brightness, for example, is controlled by writing a '1' or '0' to the 'brightness' file. Other
  * Other aspects of the LEDs can be controlled similarly, but we haven't explored same in detail.
-
+ * <p>
  * The stock Dragonboard Android had perms on the LEDs of 0755. In our FTCAndroid build, we've
  * changed that to uniformly be 0777. 'brightness', 'max_brightness', 'trigger', and 'uevent'
  * were 644; they're now 666. 'power' was 755, which we haven't bothered yet to change.
  * See ...\qcom_common\rootdir\etc\init.qcom.post_boot.sh
  */
 @SuppressWarnings("WeakerAccess")
-public class DragonboardIndicatorLED implements SwitchableLight
-    {
+public class DragonboardIndicatorLED implements SwitchableLight {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public final static String TAG = "DBLED";
     public final static int LED_FIRST = 1;
-    public final static int LED_LAST  = 4;
+    public final static int LED_LAST = 4;
 
-    protected static String[] ledNames = { "dummy", "led1", "led2", "led3", "boot"}; // 1-indexed
-    protected static DragonboardIndicatorLED[] instances = new DragonboardIndicatorLED[LED_LAST+1]; // 1-indexed
-    static
-        {
-        for (int i = LED_FIRST; i <= LED_LAST; i++)
-            {
+    protected static String[] ledNames = {"dummy", "led1", "led2", "led3", "boot"}; // 1-indexed
+    protected static DragonboardIndicatorLED[] instances = new DragonboardIndicatorLED[LED_LAST + 1]; // 1-indexed
+
+    static {
+        for (int i = LED_FIRST; i <= LED_LAST; i++) {
             instances[i] = new DragonboardIndicatorLED(i);
-            }
         }
+    }
 
     protected String ledName;
 
@@ -109,76 +107,66 @@ public class DragonboardIndicatorLED implements SwitchableLight
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public static DragonboardIndicatorLED forIndex(int index)
-        {
-        if (index < LED_FIRST || index > LED_LAST) throw new IllegalArgumentException("illegal LED index: " + index);
+    public static DragonboardIndicatorLED forIndex(int index) {
+        if (index < LED_FIRST || index > LED_LAST) {
+            throw new IllegalArgumentException("illegal LED index: " + index);
+        }
         return instances[index];
-        }
+    }
 
-    protected DragonboardIndicatorLED(int index)
-        {
+    protected DragonboardIndicatorLED(int index) {
         this.ledName = ledNames[index];
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override public synchronized boolean isLightOn()
-        {
+    @Override
+    public synchronized boolean isLightOn() {
         try {
             String brightness = readAspect("brightness");
             return Integer.parseInt(brightness) != 0;
-            }
-        catch (IOException ignored)
-            {
+        } catch (IOException ignored) {
             return false;
-            }
         }
+    }
 
-    @Override public synchronized void enableLight(boolean enabled)
-        {
+    @Override
+    public synchronized void enableLight(boolean enabled) {
         try {
             // To avoid contention, eliminate any *automatic* enablement of this LED
             writeAspect("trigger", "none");
             // Actually change the level
             writeAspect("brightness", enabled ? "1" : "0");
-            }
-        catch (IOException ignored)
-            {
-            }
+        } catch (IOException ignored) {
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected String readAspect(String aspect) throws IOException
-        {
+    protected String readAspect(String aspect) throws IOException {
         File aspectFile = new File(getLEDPath(), aspect);
-        try (BufferedReader reader = new BufferedReader(new FileReader(aspectFile)))
-            {
+        try (BufferedReader reader = new BufferedReader(new FileReader(aspectFile))) {
             return reader.readLine();
-            }
         }
-
-    protected void writeAspect(String aspect, String value) throws IOException
-        {
-        File aspectFile = new File(getLEDPath(), aspect);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(aspectFile)))
-            {
-            writer.write(value);
-            }
-        }
-
-    protected File getLEDsPath()
-        {
-        return new File("/sys/class/leds");
-        }
-
-    protected File getLEDPath()
-        {
-        return new File(getLEDsPath(), ledName);
-        }
-
     }
+
+    protected void writeAspect(String aspect, String value) throws IOException {
+        File aspectFile = new File(getLEDPath(), aspect);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(aspectFile))) {
+            writer.write(value);
+        }
+    }
+
+    protected File getLEDsPath() {
+        return new File("/sys/class/leds");
+    }
+
+    protected File getLEDPath() {
+        return new File(getLEDsPath(), ledName);
+    }
+
+}

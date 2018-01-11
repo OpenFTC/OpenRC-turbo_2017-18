@@ -42,8 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxResetMotorEncoderCommand extends LynxDekaInterfaceCommand<LynxRespondable>
-    {
+public class LynxResetMotorEncoderCommand extends LynxDekaInterfaceCommand<LynxRespondable> {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -56,41 +55,36 @@ public class LynxResetMotorEncoderCommand extends LynxDekaInterfaceCommand<LynxR
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxResetMotorEncoderCommand(LynxModuleIntf module)
-        {
+    public LynxResetMotorEncoderCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
-    public LynxResetMotorEncoderCommand(LynxModuleIntf module, int motorZ)
-        {
+    public LynxResetMotorEncoderCommand(LynxModuleIntf module, int motorZ) {
         this(module);
         LynxConstants.validateMotorZ(motorZ);
-        this.motor = (byte)motorZ;
-        }
+        this.motor = (byte) motorZ;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean isResponseExpected()
-        {
+    public boolean isResponseExpected() {
         return false;
-        }
+    }
 
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.put(this.motor);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
-        }
     }
+}

@@ -49,8 +49,7 @@ import com.qualcomm.robotcore.util.GlobalWarningSource;
  * The working interface to Lynx USB Devices. Separating out the interface like this allows
  * us to create delegators where we need to.
  */
-public interface LynxUsbDevice extends RobotUsbModule, GlobalWarningSource, RobotCoreLynxUsbDevice, HardwareDevice, SyncdDevice, Engagable
-    {
+public interface LynxUsbDevice extends RobotUsbModule, GlobalWarningSource, RobotCoreLynxUsbDevice, HardwareDevice, SyncdDevice, Engagable {
     RobotUsbDevice getRobotUsbDevice();
 
     boolean isSystemSynthetic();
@@ -76,4 +75,4 @@ public interface LynxUsbDevice extends RobotUsbModule, GlobalWarningSource, Robo
     void transmit(LynxMessage message) throws InterruptedException;
 
     LynxUsbDeviceImpl getDelegationTarget();
-    }
+}

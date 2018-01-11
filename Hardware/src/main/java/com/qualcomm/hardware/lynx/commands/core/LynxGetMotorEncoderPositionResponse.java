@@ -40,8 +40,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bob on 2016-03-07.
  */
-public class LynxGetMotorEncoderPositionResponse extends LynxDekaInterfaceResponse
-    {
+public class LynxGetMotorEncoderPositionResponse extends LynxDekaInterfaceResponse {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -54,36 +53,32 @@ public class LynxGetMotorEncoderPositionResponse extends LynxDekaInterfaceRespon
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetMotorEncoderPositionResponse(LynxModuleIntf module)
-        {
+    public LynxGetMotorEncoderPositionResponse(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getPosition()
-        {
+    public int getPosition() {
         return this.position;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public byte[] toPayloadByteArray()
-        {
+    public byte[] toPayloadByteArray() {
         ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
         buffer.putInt(this.position);
         return buffer.array();
-        }
+    }
 
     @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
+    public void fromPayloadByteArray(byte[] rgb) {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.position = buffer.getInt();
-        }
     }
+}

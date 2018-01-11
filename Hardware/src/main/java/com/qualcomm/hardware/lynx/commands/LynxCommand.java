@@ -39,24 +39,23 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Created by bob on 2016-03-06.
  */
-public abstract class LynxCommand<RESPONSE extends LynxMessage> extends LynxRespondable<RESPONSE>
-    {
+public abstract class LynxCommand<RESPONSE extends LynxMessage> extends LynxRespondable<RESPONSE> {
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxCommand(LynxModuleIntf module)
-        {
+    public LynxCommand(LynxModuleIntf module) {
         super(module);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Metaprogramming
     //----------------------------------------------------------------------------------------------
 
-    /** Returns the LynxResponse that goes with this class */
-    public static Class<? extends LynxResponse> getResponseClass(Class clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
-        {
-        return (Class<? extends LynxResponse>)invokeStaticNullaryMethod(clazz, "getResponseClass");
-        }
+    /**
+     * Returns the LynxResponse that goes with this class
+     */
+    public static Class<? extends LynxResponse> getResponseClass(Class clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        return (Class<? extends LynxResponse>) invokeStaticNullaryMethod(clazz, "getResponseClass");
     }
+}

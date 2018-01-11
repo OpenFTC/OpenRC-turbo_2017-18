@@ -65,13 +65,15 @@ package com.qualcomm.ftccommon.configuration;
 
 import com.qualcomm.ftccommon.R;
 
-public class EditAnalogInputDevicesActivity extends EditPortListSpinnerActivity
-    {
-	@Override public String getTag() { return this.getClass().getSimpleName(); }
+public class EditAnalogInputDevicesActivity extends EditPortListSpinnerActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_ANALOG_INPUT;
 
-    public EditAnalogInputDevicesActivity()
-        {
+    public EditAnalogInputDevicesActivity() {
         this.layoutMain = R.layout.analog_inputs;
         this.idListParentLayout = R.id.item_list_parent;
         this.layoutItem = R.layout.analog_input_device;
@@ -79,5 +81,5 @@ public class EditAnalogInputDevicesActivity extends EditPortListSpinnerActivity
         this.idItemSpinner = R.id.choiceSpinner;
         this.idItemEditTextResult = R.id.editTextResult;
         this.idItemPortNumber = R.id.port_number;
-        }
     }
+}

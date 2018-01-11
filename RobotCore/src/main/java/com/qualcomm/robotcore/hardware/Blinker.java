@@ -43,29 +43,32 @@ import java.util.concurrent.TimeUnit;
  * sequenced pattern of colors and durations.
  */
 @SuppressWarnings("WeakerAccess")
-public interface Blinker
-    {
+public interface Blinker {
     /**
      * Sets the pattern with which this LED or light should illuminate. If the list of steps is longer
      * than the maximum number supported, then the pattern is truncated.
+     *
      * @param steps the pattern of colors and durations that the LED or light should illuminate itself with
      */
     void setPattern(Collection<Step> steps);
 
     /**
      * Returns the current blinking pattern
+     *
      * @return the current blinking pattern
      */
     Collection<Step> getPattern();
 
     /**
      * Saves the existing pattern such that it can be later restored, then calls setPattern().
+     *
      * @param steps the new pattern to be displayed
      */
     void pushPattern(Collection<Step> steps);
 
     /**
      * Returns whether the pattern stack is currently nonempty.
+     *
      * @return whether the pattern stack is currently nonempty.
      */
     boolean patternStackNotEmpty();
@@ -73,6 +76,7 @@ public interface Blinker
     /**
      * Pops the next pattern off of the stack of saved patterns, if any.
      * If the stack is empty, then this sets the blinker to a constant black.
+     *
      * @return whether or not a pattern was removed from the stack (ie: whether
      * the pattern stack was not empty prior to the call
      */
@@ -80,6 +84,7 @@ public interface Blinker
 
     /**
      * Sets the blinker pattern to be a single, unchanging color
+     *
      * @param color the color with which the LED or light should be illuminated
      */
     void setConstant(@ColorInt int color);
@@ -91,6 +96,7 @@ public interface Blinker
 
     /**
      * Returns the maximum number of {@link Step}s that can be present in a pattern
+     *
      * @return the maximum number of {@link Step}s that can be present in a pattern
      */
     int getBlinkerPatternMaxLength();
@@ -98,85 +104,83 @@ public interface Blinker
     /**
      * {@link Step} represents a particular color held for a particular length of time.
      */
-    class Step
-        {
+    class Step {
         //------------------------------------------------------------------------------------------
         // State
         //------------------------------------------------------------------------------------------
 
-        protected @ColorInt int color = 0;
-        protected           int msDuration = 0;
+        protected
+        @ColorInt
+        int color = 0;
+        protected int msDuration = 0;
 
         //------------------------------------------------------------------------------------------
         // Construction
         //------------------------------------------------------------------------------------------
 
-        public Step() { }
-        public Step(@ColorInt int color, long duration, TimeUnit unit)
-            {
+        public Step() {
+        }
+
+        public Step(@ColorInt int color, long duration, TimeUnit unit) {
             this.color = color & 0xFFFFFF;  // strip alpha so that equals() is robust
             setDuration(duration, unit);
-            }
-        public static Step nullStep()
-            {
+        }
+
+        public static Step nullStep() {
             return new Step();
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // Comparing
         //------------------------------------------------------------------------------------------
 
-        @Override public boolean equals(Object them)
-            {
-            if (them instanceof Step)
-                {
-                return this.equals((Step)them);
-                }
+        @Override
+        public boolean equals(Object them) {
+            if (them instanceof Step) {
+                return this.equals((Step) them);
+            }
             return false;
-            }
+        }
 
-        public boolean equals(Step step)
-            {
+        public boolean equals(Step step) {
             return this.color == step.color && this.msDuration == step.msDuration;
-            }
+        }
 
-        @Override public int hashCode()
-            {
+        @Override
+        public int hashCode() {
             return ((this.color << 5) | this.msDuration) ^ 0x2EDA /*arbitrary*/;
-            }
+        }
 
         //------------------------------------------------------------------------------------------
         // Accessing
         //------------------------------------------------------------------------------------------
 
-        public boolean isLit()
-            {
+        public boolean isLit() {
             return Color.red(color) != 0
                     || Color.green(color) != 0
                     || Color.blue(color) != 0;
-            }
+        }
 
-        public void setLit(boolean isEnabled)
-            {
+        public void setLit(boolean isEnabled) {
             setColor(isEnabled ? Color.WHITE : Color.BLACK);
-            }
+        }
 
-        public @ColorInt int getColor()
-            {
+        public
+        @ColorInt
+        int getColor() {
             return color;
-            }
-        public void setColor(@ColorInt int color)
-            {
-            this.color = color;
-            }
+        }
 
-        public int getDurationMs()
-            {
+        public void setColor(@ColorInt int color) {
+            this.color = color;
+        }
+
+        public int getDurationMs() {
             return msDuration;
-            }
-        public void setDuration(long duration, TimeUnit unit)
-            {
-            this.msDuration = (int)unit.toMillis(duration);
-            }
+        }
+
+        public void setDuration(long duration, TimeUnit unit) {
+            this.msDuration = (int) unit.toMillis(duration);
         }
     }
+}

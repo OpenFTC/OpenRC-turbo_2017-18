@@ -41,41 +41,41 @@ import android.view.View;
  */
 public class ImmersiveMode {
 
-  // Used by the activity to correctly set the view
-  // that should be using immersive mode.
-  View decorView;
+    // Used by the activity to correctly set the view
+    // that should be using immersive mode.
+    View decorView;
 
-  public ImmersiveMode(View decorView){
-    this.decorView = decorView;
-  }
-
-  // A handler that hides the system UI stuff.
-  // This helps us be able to cancel a "hide" in the case of a
-  // dialog popup or similar.
-  Handler hideSystemUiHandler = new Handler() {
-    @Override
-    public void handleMessage(Message msg){
-      hideSystemUI();
+    public ImmersiveMode(View decorView) {
+        this.decorView = decorView;
     }
-  };
 
-  public void cancelSystemUIHide(){
-    hideSystemUiHandler.removeMessages(0);
-  }
+    // A handler that hides the system UI stuff.
+    // This helps us be able to cancel a "hide" in the case of a
+    // dialog popup or similar.
+    Handler hideSystemUiHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            hideSystemUI();
+        }
+    };
 
-  public void hideSystemUI() {
-    // Set the IMMERSIVE flag.
-    // Set the content to appear under the system bars so that the content
-    // doesn't resize when the nav bar hides and shows.
+    public void cancelSystemUIHide() {
+        hideSystemUiHandler.removeMessages(0);
+    }
 
-    decorView.setSystemUiVisibility(
-        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-  }
+    public void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the nav bar hides and shows.
 
-  // Immersive sticky flag only works on API >= 19
-  public static boolean apiOver19(){
-    int currentApiVersion = Build.VERSION.SDK_INT;
-    return currentApiVersion >= Build.VERSION_CODES.KITKAT;
-  }
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    // Immersive sticky flag only works on API >= 19
+    public static boolean apiOver19() {
+        int currentApiVersion = Build.VERSION.SDK_INT;
+        return currentApiVersion >= Build.VERSION_CODES.KITKAT;
+    }
 }

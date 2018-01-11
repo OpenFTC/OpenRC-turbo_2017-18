@@ -47,86 +47,90 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 public class RobotUsbManagerFtdi implements RobotUsbManager {
 
-  public static final String TAG = "RobotUsbManagerFtdi";
+    public static final String TAG = "RobotUsbManagerFtdi";
 
-  private Context     context;
-  private FtDeviceManager ftDeviceManager;
-  private int         numberOfDevices;
+    private Context context;
+    private FtDeviceManager ftDeviceManager;
+    private int numberOfDevices;
 
-  /**
-   * Constructor
-   * @param context application context
-   */
-  public RobotUsbManagerFtdi(Context context) throws RobotCoreException {
-    this.context = context;
+    /**
+     * Constructor
+     *
+     * @param context application context
+     */
+    public RobotUsbManagerFtdi(Context context) throws RobotCoreException {
+        this.context = context;
 
-    try {
-      ftDeviceManager = FtDeviceManager.getInstance(context);
-    } catch (FtDeviceIOException e) {
-      RobotLog.ee(TAG, e, "Unable to create FtDeviceManager; cannot open USB devices");
-      throw RobotCoreException.createChained(e, "unable to create FtDeviceManager");
-    }
-  }
-
-  /**
-   * Scan for USB devices
-   * @return number of USB devices found
-   * @throws RobotCoreException
-   */
-  @Override
-  public synchronized int scanForDevices() throws RobotCoreException {
-    numberOfDevices = ftDeviceManager.createDeviceInfoList(context);
-    return numberOfDevices;
-  }
-
-  @Override
-  public synchronized int getScanCount() {
-    return numberOfDevices;
-  }
-
- /**
-   * get device serial number. Is thread safe.
-   * @param index index of device
-   * @return serial number
-   * @throws RobotCoreException
-   */
-  @Override
-  public SerialNumber getDeviceSerialNumberByIndex(int index) throws RobotCoreException {
-    return new SerialNumber(ftDeviceManager.getDeviceInfoListDetail(index).serialNumber);
-  }
-
-  // Is thread safe
-  @Override
-  public String getDeviceDescriptionByIndex(int index) throws RobotCoreException {
-    return ftDeviceManager.getDeviceInfoListDetail(index).description;
-  }
-
-  public static SerialNumber getSerialNumber(FtDevice device) {
-    FtDeviceInfo devInfo = device.getDeviceInfo();
-    return new SerialNumber(devInfo.serialNumber);
-  }
-
-  /**
-   * Open device by serial number. Is threadsafe since we only ever pass the one context.
-   * @param serialNumber USB serial number
-   * @return usb device
-   * @throws RobotCoreException
-   */
-  @Override
-  public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
-    // openBySerialNumber() will return null if the device can't be opened. In particular, it
-    // will return null if the device is *already* opened.
-    FtDevice device = ftDeviceManager.openBySerialNumber(context, serialNumber.toString());
-    if (device == null) {
-      throw new RobotCoreException("FTDI driver failed to open USB device with serial number " + serialNumber + " (returned null device)");
-    }
-    // Some good housekeeping: reset the FTDI layer (why not?)
-    try {
-      device.resetDevice();
-    } catch (RobotUsbException e) {
-      throw RobotCoreException.createChained(e, "unable to reset FtDevice");
+        try {
+            ftDeviceManager = FtDeviceManager.getInstance(context);
+        } catch (FtDeviceIOException e) {
+            RobotLog.ee(TAG, e, "Unable to create FtDeviceManager; cannot open USB devices");
+            throw RobotCoreException.createChained(e, "unable to create FtDeviceManager");
+        }
     }
 
-    return new RobotUsbDeviceFtdi(device, serialNumber);
-  }
+    /**
+     * Scan for USB devices
+     *
+     * @return number of USB devices found
+     * @throws RobotCoreException
+     */
+    @Override
+    public synchronized int scanForDevices() throws RobotCoreException {
+        numberOfDevices = ftDeviceManager.createDeviceInfoList(context);
+        return numberOfDevices;
+    }
+
+    @Override
+    public synchronized int getScanCount() {
+        return numberOfDevices;
+    }
+
+    /**
+     * get device serial number. Is thread safe.
+     *
+     * @param index index of device
+     * @return serial number
+     * @throws RobotCoreException
+     */
+    @Override
+    public SerialNumber getDeviceSerialNumberByIndex(int index) throws RobotCoreException {
+        return new SerialNumber(ftDeviceManager.getDeviceInfoListDetail(index).serialNumber);
+    }
+
+    // Is thread safe
+    @Override
+    public String getDeviceDescriptionByIndex(int index) throws RobotCoreException {
+        return ftDeviceManager.getDeviceInfoListDetail(index).description;
+    }
+
+    public static SerialNumber getSerialNumber(FtDevice device) {
+        FtDeviceInfo devInfo = device.getDeviceInfo();
+        return new SerialNumber(devInfo.serialNumber);
+    }
+
+    /**
+     * Open device by serial number. Is threadsafe since we only ever pass the one context.
+     *
+     * @param serialNumber USB serial number
+     * @return usb device
+     * @throws RobotCoreException
+     */
+    @Override
+    public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
+        // openBySerialNumber() will return null if the device can't be opened. In particular, it
+        // will return null if the device is *already* opened.
+        FtDevice device = ftDeviceManager.openBySerialNumber(context, serialNumber.toString());
+        if (device == null) {
+            throw new RobotCoreException("FTDI driver failed to open USB device with serial number " + serialNumber + " (returned null device)");
+        }
+        // Some good housekeeping: reset the FTDI layer (why not?)
+        try {
+            device.resetDevice();
+        } catch (RobotUsbException e) {
+            throw RobotCoreException.createChained(e, "unable to reset FtDevice");
+        }
+
+        return new RobotUsbDeviceFtdi(device, serialNumber);
+    }
 }

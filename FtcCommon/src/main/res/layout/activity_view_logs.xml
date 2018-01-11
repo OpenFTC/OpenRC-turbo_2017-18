@@ -14,23 +14,23 @@
     tools:context="com.qualcomm.ftccommon.ViewLogsActivity"
     android:orientation="vertical">
 
-  <HorizontalScrollView
-      android:id="@+id/horizontalScrollView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-
-    <ScrollView
-        android:id="@+id/verticalScrollView"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-      <TextView
-          android:id="@+id/textAdbLogs"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="12sp" />
+        <ScrollView
+            android:id="@+id/verticalScrollView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
-    </ScrollView>
+            <TextView
+                android:id="@+id/textAdbLogs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"/>
 
-  </HorizontalScrollView>
+        </ScrollView>
+
+    </HorizontalScrollView>
 </LinearLayout>

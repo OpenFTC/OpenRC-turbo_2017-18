@@ -35,28 +35,25 @@ package org.firstinspires.ftc.robotcore.internal.network;
 /**
  * {@link WifiState} is an integer that enumerates the various possible Wifi states
  */
-public enum WifiState
-    {
+public enum WifiState {
     // Integers are from WifiManager.java. Note that 'FAILED' is @hide in the Android source tree
     DISABLING(0), DISABLED(1), ENABLING(2), ENABLED(3), UNKNOWN(4), FAILED(5);
     public int state;
 
-    WifiState(int state)
-        {
+    WifiState(int state) {
         this.state = state;
-        }
-
-    public static WifiState from(int state)
-        {
-        for (WifiState e : values())
-            {
-            if (e.state == state) return e;
-            }
-        return UNKNOWN;
-        }
-
-    public boolean isEnabled()
-        {
-        return this==ENABLED;
-        }
     }
+
+    public static WifiState from(int state) {
+        for (WifiState e : values()) {
+            if (e.state == state) {
+                return e;
+            }
+        }
+        return UNKNOWN;
+    }
+
+    public boolean isEnabled() {
+        return this == ENABLED;
+    }
+}

@@ -47,18 +47,24 @@ import com.qualcomm.robotcore.util.RobotLog;
  * {@link EditSwapUsbDevices} provides the means to pick an item from a list of USB controllers
  * for the purposes of swapping serial-numbers.
  */
-public class EditSwapUsbDevices extends EditActivity
-    {
+public class EditSwapUsbDevices extends EditActivity {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "EditSwapUsbDevices";
-    @Override public String getTag() { return TAG; }
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_SWAP_USB_DEVICES;
 
 
-    /** the controller for whom we seek a swap */
+    /**
+     * the controller for whom we seek a swap
+     */
     protected ControllerConfiguration targetConfiguration;
 
     //------------------------------------------------------------------------------------------------
@@ -66,8 +72,7 @@ public class EditSwapUsbDevices extends EditActivity
     //------------------------------------------------------------------------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-        {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RobotLog.vv(TAG, "onCreate()");
         setContentView(R.layout.activity_swap_usb_devices);
@@ -85,45 +90,39 @@ public class EditSwapUsbDevices extends EditActivity
         doneButton.setVisibility(View.GONE);
 
         populateList();
-        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // Life cycle support
     //------------------------------------------------------------------------------------------------
 
-    protected void populateList()
-        {
+    protected void populateList() {
         ListView controllerListView = (ListView) findViewById(R.id.controllersList);
 
         DeviceInfoAdapter adapter = new DeviceInfoAdapter(this, android.R.layout.simple_list_item_2, getRobotConfigMap().getEligibleSwapTargets(targetConfiguration, scannedDevices, this));
         controllerListView.setAdapter(adapter);
 
-        controllerListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-            {
+        controllerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View v, int pos, long arg3)
-                {
+            public void onItemClick(AdapterView<?> adapterView, View v, int pos, long arg3) {
                 ControllerConfiguration controllerConfiguration = (ControllerConfiguration) adapterView.getItemAtPosition(pos);
                 finishOk(new EditParameters(EditSwapUsbDevices.this, controllerConfiguration));
-                }
-            });
-        }
+            }
+        });
+    }
 
     @Override
-    public void onBackPressed()
-        {
+    public void onBackPressed() {
         RobotLog.vv(TAG, "onBackPressed()");
         doBackOrCancel();
-        }
+    }
 
-    public void onCancelButtonPressed(View view)
-        {
+    public void onCancelButtonPressed(View view) {
         RobotLog.vv(TAG, "onCancelButtonPressed()");
         doBackOrCancel();
-        }
-
-    protected void doBackOrCancel()
-        {
-        finishCancel();
-        }
     }
+
+    protected void doBackOrCancel() {
+        finishCancel();
+    }
+}

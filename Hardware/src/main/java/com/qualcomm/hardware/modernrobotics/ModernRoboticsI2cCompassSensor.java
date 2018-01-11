@@ -52,7 +52,7 @@ import java.util.Locale;
 
 /**
  * {@link ModernRoboticsI2cCompassSensor} implements support for the Modern Robotics compass sensor.
- *
+ * <p>
  * "During normal operation the LED will blink briefly at 1Hz. During Hard Iron Calibration the LED
  * will blink at 1/2Hz. During tilt up and tilt down calibration the LED will be on during a period
  * of calibration measurement."
@@ -61,68 +61,74 @@ import java.util.Locale;
  * @see <a href="https://cdn-shop.adafruit.com/datasheets/LSM303DLHC.PDF">LSM 303 datasheet</a>
  */
 @I2cSensor(name = "MR Compass Sensor", description = "a MR compass sensor", xmlTag = "ModernRoboticsI2cCompassSensor")
-public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> implements CompassSensor, I2cAddrConfig
-    {
+public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> implements CompassSensor, I2cAddrConfig {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x24);
 
-    public enum Register
-        {
-            READ_WINDOW_FIRST(0x00),
-            FIRMWARE_REV(0x00),
-            MANUFACTURE_CODE(0x01),
-            SENSOR_ID(0x02),
-            COMMAND(0x03),
-            HEADING(0x04),
-            ACCELX(0x06),
-            ACCELY(0x08),
-            ACCELZ(0x0a),
-            MAGX(0x0c),
-            MAGY(0x0e),
-            MAGZ(0x10),
-            READ_WINDOW_LAST(MAGZ.bVal+1),
-            ACCELX_OFFSET(0x12),
-            ACCELY_OFFSET(0x14),
-            ACCELZ_OFFSET(0x16),
-            MAGX_OFFSET(0x18),
-            MAGY_OFFSET(0x1a),
-            MAGZ_OFFSET(0x1c),
-            MAG_TILT_COEFF(0x1e),
-            ACCEL_SCALE_COEFF(0x20),
-            MAG_SCALE_COEFF_X(0x22),
-            MAG_SCALE_COEFF_Y(0x24),
-            UNKNOWN(-1);
+    public enum Register {
+        READ_WINDOW_FIRST(0x00),
+        FIRMWARE_REV(0x00),
+        MANUFACTURE_CODE(0x01),
+        SENSOR_ID(0x02),
+        COMMAND(0x03),
+        HEADING(0x04),
+        ACCELX(0x06),
+        ACCELY(0x08),
+        ACCELZ(0x0a),
+        MAGX(0x0c),
+        MAGY(0x0e),
+        MAGZ(0x10),
+        READ_WINDOW_LAST(MAGZ.bVal + 1),
+        ACCELX_OFFSET(0x12),
+        ACCELY_OFFSET(0x14),
+        ACCELZ_OFFSET(0x16),
+        MAGX_OFFSET(0x18),
+        MAGY_OFFSET(0x1a),
+        MAGZ_OFFSET(0x1c),
+        MAG_TILT_COEFF(0x1e),
+        ACCEL_SCALE_COEFF(0x20),
+        MAG_SCALE_COEFF_X(0x22),
+        MAG_SCALE_COEFF_Y(0x24),
+        UNKNOWN(-1);
 
         public byte bVal;
-        Register(int bVal) { this.bVal = (byte)bVal; }
+
+        Register(int bVal) {
+            this.bVal = (byte) bVal;
+        }
+    }
+
+    public enum Command {
+        NORMAL(0x00),
+        CALIBRATE_IRON(0x43),
+        ACCEL_NULL_X(0x58),
+        ACCEL_NULL_Y(0x59),
+        ACCEL_NULL_Z(0x5A),
+        ACCEL_GAIN_ADJUST(0x47),
+        MEASURE_TILT_UP(0x55),
+        MEASURE_TILT_DOWN(0x44),
+        WRITE_EEPROM(0x57),
+        CALIBRATION_FAILED(0x46),
+        UNKNOWN(-1);
+
+        public byte bVal;
+
+        Command(int bVal) {
+            this.bVal = (byte) bVal;
         }
 
-    public enum Command
-        {
-            NORMAL(0x00),
-            CALIBRATE_IRON(0x43),
-            ACCEL_NULL_X(0x58),
-            ACCEL_NULL_Y(0x59),
-            ACCEL_NULL_Z(0x5A),
-            ACCEL_GAIN_ADJUST(0x47),
-            MEASURE_TILT_UP(0x55),
-            MEASURE_TILT_DOWN(0x44),
-            WRITE_EEPROM(0x57),
-            CALIBRATION_FAILED(0x46),
-            UNKNOWN(-1);
-
-        public byte bVal;
-        Command(int bVal) { this.bVal = (byte)bVal; }
         public static Command fromByte(byte b) {
             for (Command command : values()) {
-                if (command.bVal == b) return command;
+                if (command.bVal == b) {
+                    return command;
                 }
-            return UNKNOWN;
             }
+            return UNKNOWN;
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -134,8 +140,7 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cCompassSensor(I2cDeviceSynch deviceClient)
-        {
+    public ModernRoboticsI2cCompassSensor(I2cDeviceSynch deviceClient) {
         super(deviceClient, true);
 
         this.setOptimalReadWindow();
@@ -143,77 +148,67 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
 
         this.registerArmingStateCallback(false);
         this.deviceClient.engage();
-        }
+    }
 
-    protected void setOptimalReadWindow()
-        {
+    protected void setOptimalReadWindow() {
         I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
                 Register.READ_WINDOW_FIRST.bVal,
                 Register.READ_WINDOW_LAST.bVal - Register.READ_WINDOW_FIRST.bVal + 1,
                 I2cDeviceSynch.ReadMode.REPEAT);
         this.deviceClient.setReadWindow(readWindow);
-        }
+    }
 
     @Override
-    protected synchronized boolean doInitialize()
-        {
+    protected synchronized boolean doInitialize() {
         setMode(CompassMode.MEASUREMENT_MODE);
         return true;
-        }
+    }
 
     @Override
-    public Manufacturer getManufacturer()
-        {
+    public Manufacturer getManufacturer() {
         return Manufacturer.ModernRobotics;
-        }
+    }
 
-    @Override public String getDeviceName()
-        {
+    @Override
+    public String getDeviceName() {
         RobotUsbDevice.FirmwareVersion firmwareVersion = new RobotUsbDevice.FirmwareVersion(this.read8(Register.FIRMWARE_REV));
         return String.format(Locale.getDefault(), "Modern Robotics Compass Sensor %s", firmwareVersion);
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    public byte read8(Register reg)
-        {
+    public byte read8(Register reg) {
         return this.deviceClient.read8(reg.bVal);
-        }
+    }
 
-    public void write8(Register reg, byte value)
-        {
+    public void write8(Register reg, byte value) {
         this.deviceClient.write8(reg.bVal, value);
-        }
+    }
 
-    public int readShort(Register reg)
-        {
+    public int readShort(Register reg) {
         return TypeConversion.byteArrayToShort(this.deviceClient.read(reg.bVal, 2), ByteOrder.LITTLE_ENDIAN);
-        }
+    }
 
-    public void writeShort(Register reg, short value)
-        {
+    public void writeShort(Register reg, short value) {
         this.deviceClient.write(reg.bVal, TypeConversion.shortToByteArray(value, ByteOrder.LITTLE_ENDIAN));
-        }
+    }
 
-    public void writeCommand(Command command)
-        {
+    public void writeCommand(Command command) {
         this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);    // avoid overwriting previous command
         this.write8(Register.COMMAND, command.bVal);
-        }
+    }
 
-    public Command readCommand()
-        {
+    public Command readCommand() {
         return Command.fromByte(this.read8(Register.COMMAND));
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // CompassSensor
     //----------------------------------------------------------------------------------------------
 
-    public Acceleration getAcceleration()
-        {
+    public Acceleration getAcceleration() {
         // Capture all the data at once so as to get them all from one read
         TimestampedData ts = this.deviceClient.readTimeStamped(Register.ACCELX.bVal, 3 * 2/*sizeof short*/);
         ByteBuffer buffer = ByteBuffer.wrap(ts.data).order(ByteOrder.LITTLE_ENDIAN);
@@ -223,10 +218,9 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
         int mgZ = (buffer.getShort());
         double scale = 0.001;
         return Acceleration.fromGravity(mgX * scale, mgY * scale, mgZ * scale, ts.nanoTime);
-        }
+    }
 
-    public MagneticFlux getMagneticFlux()
-        {
+    public MagneticFlux getMagneticFlux() {
         // Capture all the data at once so as to get them all from one read
         TimestampedData ts = this.deviceClient.readTimeStamped(Register.MAGX.bVal, 3 * 2/*sizeof short*/);
         ByteBuffer buffer = ByteBuffer.wrap(ts.data).order(ByteOrder.LITTLE_ENDIAN);
@@ -235,18 +229,18 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
         int magY = (buffer.getShort());
         int magZ = (buffer.getShort());
         double scale = 0.0001;
-        return new MagneticFlux(magX * scale, magY * scale,  magZ * scale, ts.nanoTime);
-        }
+        return new MagneticFlux(magX * scale, magY * scale, magZ * scale, ts.nanoTime);
+    }
 
-    @Override public double getDirection()
-        {
+    @Override
+    public double getDirection() {
         return this.readShort(Register.HEADING);
-        }
+    }
 
-    @Override public String status()
-        {
+    @Override
+    public String status() {
         return String.format(Locale.getDefault(), "%s on %s", getDeviceName(), this.getConnectionInfo());
-        }
+    }
 
     /*
         The calibration process is as follows:
@@ -262,35 +256,32 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
         from the command byte indicating a Failed state.
      */
 
-    public boolean isCalibrating()
-        {
-        return this.readCommand()==Command.CALIBRATE_IRON;
-        }
+    public boolean isCalibrating() {
+        return this.readCommand() == Command.CALIBRATE_IRON;
+    }
 
-    @Override public boolean calibrationFailed()
-        {
-        return this.readCommand()==Command.CALIBRATION_FAILED;
-        }
+    @Override
+    public boolean calibrationFailed() {
+        return this.readCommand() == Command.CALIBRATION_FAILED;
+    }
 
-    @Override public void setMode(CompassMode mode)
-        {
-        this.writeCommand(mode==CompassMode.CALIBRATION_MODE ? Command.CALIBRATE_IRON : Command.NORMAL);
-        }
+    @Override
+    public void setMode(CompassMode mode) {
+        this.writeCommand(mode == CompassMode.CALIBRATION_MODE ? Command.CALIBRATE_IRON : Command.NORMAL);
+    }
 
     //----------------------------------------------------------------------------------------------
     // I2cAddrConfig
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setI2cAddress(I2cAddr newAddress)
-        {
+    public void setI2cAddress(I2cAddr newAddress) {
         // In light of the existence of I2C multiplexers, we don't *require* a valid Modern Robotics I2cAddr
         this.deviceClient.setI2cAddress(newAddress);
-        }
+    }
 
     @Override
-    public I2cAddr getI2cAddress()
-        {
+    public I2cAddr getI2cAddress() {
         return this.deviceClient.getI2cAddress();
-        }
     }
+}

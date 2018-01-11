@@ -42,53 +42,47 @@ import org.xmlpull.v1.XmlSerializer;
  * On Lynx, the latter is only used in the configuration UI to maintain the sort order.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxI2cDeviceConfiguration extends DeviceConfiguration
-    {
+public class LynxI2cDeviceConfiguration extends DeviceConfiguration {
     public static final String TAG = "LynxI2cDeviceConfiguration";
     public static final String XMLATTR_BUS = "bus";
 
     protected int bus = 0;
 
-    public LynxI2cDeviceConfiguration()
-        {
+    public LynxI2cDeviceConfiguration() {
         super();
-        }
+    }
 
-    public int getBus()
-        {
+    public int getBus() {
         return bus;
-        }
+    }
 
-    public void setBus(int bus)
-        {
+    public void setBus(int bus) {
         this.bus = bus;
-        }
+    }
 
-    @Override public I2cChannel getI2cChannel()
-        {
+    @Override
+    public I2cChannel getI2cChannel() {
         return new I2cChannel(getBus());
-        }
+    }
 
-    @Override public void serializeXmlAttributes(XmlSerializer serializer)
-        {
+    @Override
+    public void serializeXmlAttributes(XmlSerializer serializer) {
         try {
             super.serializeXmlAttributes(serializer);
             serializer.attribute("", XMLATTR_BUS, String.valueOf(this.getBus()));
-            }
-        catch (Exception e)
-            {
+        } catch (Exception e) {
             RobotLog.ee(TAG, e, "exception serializing");
             throw new RuntimeException(e);
-            }
         }
+    }
 
-    @Override public void deserializeAttributes(XmlPullParser parser)
-        {
+    @Override
+    public void deserializeAttributes(XmlPullParser parser) {
         super.deserializeAttributes(parser);
 
         // Read the bus. If there is no bus (the legacy case), then we use the port
         String busAttr = parser.getAttributeValue(null, LynxI2cDeviceConfiguration.XMLATTR_BUS);
-        int bus = busAttr == null ? this.getPort(): Integer.parseInt(busAttr);
+        int bus = busAttr == null ? this.getPort() : Integer.parseInt(busAttr);
         this.setBus(bus);
-        }
     }
+}

@@ -41,19 +41,15 @@ import java.io.IOException;
  * A flavor of IOException that can be specifically identified as having
  * originated within our layer here.
  */
-public class FtDeviceIOException extends IOException
-    {
-    public FtDeviceIOException()
-        {
-        }
-
-    public FtDeviceIOException(String ftStatusMsg)
-        {
-        super(ftStatusMsg);
-        }
-
-    public FtDeviceIOException(String message, Throwable cause)
-        {
-        super(message, cause);
-        }
+public class FtDeviceIOException extends IOException {
+    public FtDeviceIOException() {
     }
+
+    public FtDeviceIOException(String ftStatusMsg) {
+        super(ftStatusMsg);
+    }
+
+    public FtDeviceIOException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

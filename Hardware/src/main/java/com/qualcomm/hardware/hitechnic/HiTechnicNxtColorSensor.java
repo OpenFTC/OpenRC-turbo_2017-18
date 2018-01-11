@@ -54,171 +54,181 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch>
         implements ColorSensor, NormalizedColorSensor, SwitchableLight, I2cAddressableDevice {
 
-  //------------------------------------------------------------------------------------------------
-  // Constants
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------
 
-  public final static I2cAddr ADDRESS_I2C = I2cAddr.create8bit(2);
+    public final static I2cAddr ADDRESS_I2C = I2cAddr.create8bit(2);
 
-  public enum Register
-    {
-      COMMAND(0x41),
-      COLOR_NUMBER(0x42),
-      RED(0x43),
-      GREEN(0x44),
-      BLUE(0x45),
-      READ_WINDOW_FIRST(RED.bVal),
-      READ_WINDOW_LAST(BLUE.bVal);
-    public byte bVal;
-    Register(int value) { this.bVal = (byte) value; }
+    public enum Register {
+        COMMAND(0x41),
+        COLOR_NUMBER(0x42),
+        RED(0x43),
+        GREEN(0x44),
+        BLUE(0x45),
+        READ_WINDOW_FIRST(RED.bVal),
+        READ_WINDOW_LAST(BLUE.bVal);
+        public byte bVal;
+
+        Register(int value) {
+            this.bVal = (byte) value;
+        }
     }
 
-  public enum Command
-    {
-      ACTIVE_LED(0x00),
-      PASSIVE_LED(0x01);
-    public byte bVal;
-    Command(int value) { this.bVal = (byte) value; }
+    public enum Command {
+        ACTIVE_LED(0x00),
+        PASSIVE_LED(0x01);
+        public byte bVal;
+
+        Command(int value) {
+            this.bVal = (byte) value;
+        }
     }
 
-  //------------------------------------------------------------------------------------------------
-  // State
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
 
-  protected final float colorNormalizationFactor = 1.0f / 256.0f; // color values are unsigned bytes
+    protected final float colorNormalizationFactor = 1.0f / 256.0f; // color values are unsigned bytes
 
-  protected boolean isLightOn = false;
+    protected boolean isLightOn = false;
 
-  //------------------------------------------------------------------------------------------------
-  // Construction
-  //------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
 
-  public HiTechnicNxtColorSensor(I2cDeviceSynch deviceClient) {
-    super(deviceClient, true);
+    public HiTechnicNxtColorSensor(I2cDeviceSynch deviceClient) {
+        super(deviceClient, true);
 
-    I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
-          Register.READ_WINDOW_FIRST.bVal,
-          Register.READ_WINDOW_LAST.bVal - Register.READ_WINDOW_FIRST.bVal + 1,
-          I2cDeviceSynch.ReadMode.REPEAT);
-    this.deviceClient.setReadWindow(readWindow);
-    this.deviceClient.setI2cAddress(ADDRESS_I2C);
-    this.deviceClient.engage();
+        I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
+                Register.READ_WINDOW_FIRST.bVal,
+                Register.READ_WINDOW_LAST.bVal - Register.READ_WINDOW_FIRST.bVal + 1,
+                I2cDeviceSynch.ReadMode.REPEAT);
+        this.deviceClient.setReadWindow(readWindow);
+        this.deviceClient.setI2cAddress(ADDRESS_I2C);
+        this.deviceClient.engage();
 
-    this.registerArmingStateCallback(false);
-  }
-
-  @Override
-  protected synchronized boolean doInitialize() {
-    enableLed(true);
-    return true;
+        this.registerArmingStateCallback(false);
     }
 
-  //------------------------------------------------------------------------------------------------
-  // Utility
-  //------------------------------------------------------------------------------------------------
+    @Override
+    protected synchronized boolean doInitialize() {
+        enableLed(true);
+        return true;
+    }
 
-  public byte read8(Register reg) {
-      return this.deviceClient.read8(reg.bVal);
-      }
-  public void write8(Register reg, byte value) {
-      this.deviceClient.write8(reg.bVal, value);
-      }
+    //------------------------------------------------------------------------------------------------
+    // Utility
+    //------------------------------------------------------------------------------------------------
 
-  public int readColorByte(Register register) {
-      return TypeConversion.unsignedByteToInt(read8(register));
-      }
+    public byte read8(Register reg) {
+        return this.deviceClient.read8(reg.bVal);
+    }
 
-  public void writeCommand(Command command) {
-      this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);    // avoid overwriting previous command
-      this.write8(Register.COMMAND, command.bVal);
-      }
+    public void write8(Register reg, byte value) {
+        this.deviceClient.write8(reg.bVal, value);
+    }
 
-  //------------------------------------------------------------------------------------------------
-  // Color interfaces
-  //------------------------------------------------------------------------------------------------
+    public int readColorByte(Register register) {
+        return TypeConversion.unsignedByteToInt(read8(register));
+    }
 
-  @Override
-  public String toString() {
-    return String.format("argb: 0x%08x", argb());
-  }
+    public void writeCommand(Command command) {
+        this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);    // avoid overwriting previous command
+        this.write8(Register.COMMAND, command.bVal);
+    }
 
-  @Override
-  public int red() {
-    return readColorByte(Register.RED);
-  }
+    //------------------------------------------------------------------------------------------------
+    // Color interfaces
+    //------------------------------------------------------------------------------------------------
 
-  @Override
-  public int green() {
-    return readColorByte(Register.GREEN);
-  }
+    @Override
+    public String toString() {
+        return String.format("argb: 0x%08x", argb());
+    }
 
-  @Override
-  public int blue() {
-    return readColorByte(Register.BLUE);
-  }
+    @Override
+    public int red() {
+        return readColorByte(Register.RED);
+    }
 
-  @Override
-  public int alpha() {
-    return 0;
-  }
+    @Override
+    public int green() {
+        return readColorByte(Register.GREEN);
+    }
 
-  @Override
-  public @ColorInt int argb() {
-    return Color.argb(alpha(), red(), green(), blue());
-  }
+    @Override
+    public int blue() {
+        return readColorByte(Register.BLUE);
+    }
 
-  @Override public NormalizedRGBA getNormalizedColors() {
-    NormalizedRGBA result = new NormalizedRGBA();
-    result.red   = red()   * colorNormalizationFactor;
-    result.green = green() * colorNormalizationFactor;
-    result.blue  = blue()  * colorNormalizationFactor;
-    // We make up an alpha that at least somewhat approximates what an actual alpha-measuring sensor
-    // could reasonably read given the red, green, and blue values.
-    result.alpha = Math.max(Math.max(result.red, result.green), result.blue);
-    return result;
-  }
+    @Override
+    public int alpha() {
+        return 0;
+    }
 
-  @Override
-  public synchronized void enableLed(boolean enable) {
-    writeCommand(enable ? Command.ACTIVE_LED : Command.PASSIVE_LED);
-    this.isLightOn = enable;
-  }
+    @Override
+    public
+    @ColorInt
+    int argb() {
+        return Color.argb(alpha(), red(), green(), blue());
+    }
 
-  @Override
-  public void enableLight(boolean enable) {
-    enableLed(enable);
-  }
+    @Override
+    public NormalizedRGBA getNormalizedColors() {
+        NormalizedRGBA result = new NormalizedRGBA();
+        result.red = red() * colorNormalizationFactor;
+        result.green = green() * colorNormalizationFactor;
+        result.blue = blue() * colorNormalizationFactor;
+        // We make up an alpha that at least somewhat approximates what an actual alpha-measuring sensor
+        // could reasonably read given the red, green, and blue values.
+        result.alpha = Math.max(Math.max(result.red, result.green), result.blue);
+        return result;
+    }
 
-  @Override public boolean isLightOn() {
-    return this.isLightOn;
-  }
+    @Override
+    public synchronized void enableLed(boolean enable) {
+        writeCommand(enable ? Command.ACTIVE_LED : Command.PASSIVE_LED);
+        this.isLightOn = enable;
+    }
 
-@Override
-  public void setI2cAddress(I2cAddr newAddress) {
-    // Necessary because of legacy considerations
-    throw new UnsupportedOperationException("setI2cAddress is not supported.");
-  }
+    @Override
+    public void enableLight(boolean enable) {
+        enableLed(enable);
+    }
 
-  @Override
-  public I2cAddr getI2cAddress() {
-    return ADDRESS_I2C;
-  }
+    @Override
+    public boolean isLightOn() {
+        return this.isLightOn;
+    }
 
-  //------------------------------------------------------------------------------------------------
-  // HardwareDevice
-  //------------------------------------------------------------------------------------------------
+    @Override
+    public void setI2cAddress(I2cAddr newAddress) {
+        // Necessary because of legacy considerations
+        throw new UnsupportedOperationException("setI2cAddress is not supported.");
+    }
 
-  @Override public Manufacturer getManufacturer() {
-    return Manufacturer.HiTechnic;
-  }
+    @Override
+    public I2cAddr getI2cAddress() {
+        return ADDRESS_I2C;
+    }
 
-  @Override
-  public String getDeviceName() {
-    return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTColorSensor);
-  }
+    //------------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //------------------------------------------------------------------------------------------------
 
-  @Override
-  public int getVersion() {
-    return 2;
-  }
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.HiTechnic;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTColorSensor);
+    }
+
+    @Override
+    public int getVersion() {
+        return 2;
+    }
 }

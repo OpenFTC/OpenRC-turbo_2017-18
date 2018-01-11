@@ -41,16 +41,15 @@ import com.qualcomm.robotcore.util.TypeConversion;
  * Created by bob on 2016-03-06.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxGetModuleStatusResponse extends LynxStandardResponse
-    {
+public class LynxGetModuleStatusResponse extends LynxStandardResponse {
     //----------------------------------------------------------------------------------------------
     // Constants
     //----------------------------------------------------------------------------------------------
 
-    public static final int bitKeepAliveTimeout   = (1<<0);
-    public static final int bitDeviceReset        = (1<<1);
-    public static final int bitFailSafe           = (1<<2);
-    public static final int bitControllerOverTemp = (1<<3);
+    public static final int bitKeepAliveTimeout = (1 << 0);
+    public static final int bitDeviceReset = (1 << 1);
+    public static final int bitFailSafe = (1 << 2);
+    public static final int bitControllerOverTemp = (1 << 3);
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -63,108 +62,102 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxGetModuleStatusResponse(LynxModule module)
-        {
+    public LynxGetModuleStatusResponse(LynxModule module) {
         super(module);
-        }
+    }
 
-    @Override public String toString()
-        {
+    @Override
+    public String toString() {
         StringBuilder builder = new StringBuilder();
-        appendBit(builder, bitKeepAliveTimeout,     "KeepAliveTimeout");
-        appendBit(builder, bitDeviceReset,          "Reset");
-        appendBit(builder, bitFailSafe,             "FailSafe");
-        appendBit(builder, bitControllerOverTemp,   "Temp");
+        appendBit(builder, bitKeepAliveTimeout, "KeepAliveTimeout");
+        appendBit(builder, bitDeviceReset, "Reset");
+        appendBit(builder, bitFailSafe, "FailSafe");
+        appendBit(builder, bitControllerOverTemp, "Temp");
         String message = builder.toString();
-        if (message.length() > 0) message = ": " + message;
+        if (message.length() > 0) {
+            message = ": " + message;
+        }
         return String.format("LynxGetModuleStatusResponse(status=0x%02x alerts=0x%02x%s)", status, motorAlerts, message);
-        }
+    }
 
-    protected void appendBit(StringBuilder builder, int bit, String message)
-        {
-        if (testBitsOn(bit))
-            {
-            if (builder.length() > 0) builder.append("|");
-            builder.append(message);
+    protected void appendBit(StringBuilder builder, int bit, String message) {
+        if (testBitsOn(bit)) {
+            if (builder.length() > 0) {
+                builder.append("|");
             }
+            builder.append(message);
         }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean isKeepAliveTimeout()
-        {
+    public boolean isKeepAliveTimeout() {
         return testBitsOn(bitKeepAliveTimeout);
-        }
-    public boolean isDeviceReset()
-        {
+    }
+
+    public boolean isDeviceReset() {
         return testBitsOn(bitDeviceReset);
-        }
-    public boolean isFailSafe()
-        {
+    }
+
+    public boolean isFailSafe() {
         return testBitsOn(bitFailSafe);
-        }
-    public boolean isControllerOverTemp()
-        {
+    }
+
+    public boolean isControllerOverTemp() {
         return testBitsOn(bitControllerOverTemp);
-        }
+    }
 
-    public int getStatus()
-        {
+    public int getStatus() {
         return TypeConversion.unsignedByteToInt(this.status);
-        }
-    public boolean testBitsOn(int bits)
-        {
-        return (getStatus() & bits) == bits;
-        }
-    public boolean testAnyBits(int bits)
-        {
-        return (getStatus() & bits) != 0;
-        }
+    }
 
-    public int getMotorAlerts()
-        {
+    public boolean testBitsOn(int bits) {
+        return (getStatus() & bits) == bits;
+    }
+
+    public boolean testAnyBits(int bits) {
+        return (getStatus() & bits) != 0;
+    }
+
+    public int getMotorAlerts() {
         return TypeConversion.unsignedByteToInt(this.motorAlerts);
-        }
-    public boolean hasMotorLostCounts(int motorZ)
-        {
+    }
+
+    public boolean hasMotorLostCounts(int motorZ) {
         LynxConstants.validateMotorZ(motorZ);
-        int bit = (1<<motorZ);
+        int bit = (1 << motorZ);
         return (getMotorAlerts() & bit) == bit;
-        }
-    public boolean isMotorBridgeOverTemp(int motorZ)
-        {
+    }
+
+    public boolean isMotorBridgeOverTemp(int motorZ) {
         LynxConstants.validateMotorZ(motorZ);
-        int bit = (1<<(motorZ+4));
+        int bit = (1 << (motorZ + 4));
         return (getMotorAlerts() & bit) == bit;
-        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber()
-        {
+    public static int getStandardCommandNumber() {
         return LynxGetModuleStatusCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
-        }
-
-    @Override
-    public int getCommandNumber()
-        {
-        return getStandardCommandNumber();
-        }
-
-    @Override
-    public byte[] toPayloadByteArray()
-        {
-        return new byte[] { this.status, this.motorAlerts };
-        }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb)
-        {
-        this.status      = rgb[0];
-        this.motorAlerts = rgb[1];
-        }
     }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        return new byte[]{this.status, this.motorAlerts};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.status = rgb[0];
+        this.motorAlerts = rgb[1];
+    }
+}

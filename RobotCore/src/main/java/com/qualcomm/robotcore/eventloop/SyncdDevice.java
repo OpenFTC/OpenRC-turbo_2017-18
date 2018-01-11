@@ -37,12 +37,12 @@ import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
  * device registered with the event loop manager then the event loop manager will run the event
  * loop in this manner:
  * <ol>
- *   <li>wait until all sync'd device have returned from blockUtilReady()</li>
- *   <li>run EventLoop.loop()</li>
- *   <li>call startBlockingWork() on all sync'd device</li>
+ * <li>wait until all sync'd device have returned from blockUtilReady()</li>
+ * <li>run EventLoop.loop()</li>
+ * <li>call startBlockingWork() on all sync'd device</li>
  * </ol>
  * Sync'd devices need to register themselves with the event loop manager
- *
+ * <p>
  * Note: the original actual need for {@link SyncdDevice} per se now lies in the dustbin of time.
  * However, this self-same object and its associated registration mechanism is also used as part
  * of logic used to deal with abnormal device shutdown (e.g.: USB disconnects) and the processing
@@ -50,49 +50,58 @@ import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
  */
 public interface SyncdDevice {
 
-  /**
-   * Has this device shutdown abnormally? Note that even if this method returns true that
-   * a close() will still be necessary to fully clean up associated resources.
-   *
-   * @return whether the device has experienced an abnormal shutdown
-   */
-  ShutdownReason getShutdownReason();
+    /**
+     * Has this device shutdown abnormally? Note that even if this method returns true that
+     * a close() will still be necessary to fully clean up associated resources.
+     *
+     * @return whether the device has experienced an abnormal shutdown
+     */
+    ShutdownReason getShutdownReason();
 
-  /**
-   * {@link ShutdownReason} indicates the health of the shutdown of the device.
-   */
-  enum ShutdownReason {
-    /** The device shutdown normally */
-    NORMAL,
-    /** The device shutdown abnormally, and we don't know anything about when it might
-     * be useful to try to communicate with it again. Its USB cable might have been pulled,
-     * for example, and we don't know when it will be plugged back in, if ever. */
-    ABNORMAL,
-    /** The device shutdown abnormally, but due to a temporary circumstance (such as ESD)
-     * that we believe might be recoverable from after a brief interval
-     * @see #msAbnormalReopenInterval */
-    ABNORMAL_ATTEMPT_REOPEN
-  }
+    /**
+     * {@link ShutdownReason} indicates the health of the shutdown of the device.
+     */
+    enum ShutdownReason {
+        /**
+         * The device shutdown normally
+         */
+        NORMAL,
+        /**
+         * The device shutdown abnormally, and we don't know anything about when it might
+         * be useful to try to communicate with it again. Its USB cable might have been pulled,
+         * for example, and we don't know when it will be plugged back in, if ever.
+         */
+        ABNORMAL,
+        /**
+         * The device shutdown abnormally, but due to a temporary circumstance (such as ESD)
+         * that we believe might be recoverable from after a brief interval
+         *
+         * @see #msAbnormalReopenInterval
+         */
+        ABNORMAL_ATTEMPT_REOPEN
+    }
 
-  /** When a device shuts down with {@link ShutdownReason#ABNORMAL_ATTEMPT_REOPEN}, this is
-   * the recommended duration of time to wait before attempting reopen. It was only heuristically
-   * determined, and might thus perhaps be shortened */
-  int msAbnormalReopenInterval = 250;
+    /**
+     * When a device shuts down with {@link ShutdownReason#ABNORMAL_ATTEMPT_REOPEN}, this is
+     * the recommended duration of time to wait before attempting reopen. It was only heuristically
+     * determined, and might thus perhaps be shortened
+     */
+    int msAbnormalReopenInterval = 250;
 
-  /**
-  * Records the owning module of this sync'd device. The owner of the device is the party
-  * that is responsible for the device's lifetime management, and thus who should be involved
-  * if the device experiences problems and needs to be shutdown or restarted.
-  *
-  * @see #getOwner()
-  */
-  void setOwner(RobotUsbModule owner);
+    /**
+     * Records the owning module of this sync'd device. The owner of the device is the party
+     * that is responsible for the device's lifetime management, and thus who should be involved
+     * if the device experiences problems and needs to be shutdown or restarted.
+     *
+     * @see #getOwner()
+     */
+    void setOwner(RobotUsbModule owner);
 
-  /**
-   * Retrieves the owning module of this sync'd device.
-   *
-   * @return the {@link RobotUsbModule} which is the owner of this device
-   * @see #setOwner(RobotUsbModule)
-   */
-  RobotUsbModule getOwner();
+    /**
+     * Retrieves the owning module of this sync'd device.
+     *
+     * @return the {@link RobotUsbModule} which is the owner of this device
+     * @see #setOwner(RobotUsbModule)
+     */
+    RobotUsbModule getOwner();
 }

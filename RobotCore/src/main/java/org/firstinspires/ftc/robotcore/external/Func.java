@@ -35,11 +35,11 @@ package org.firstinspires.ftc.robotcore.external;
 /**
  * Instances of {@link Func} are nullary producers of values.
  */
-public interface Func<T>
-    {
+public interface Func<T> {
     /**
      * Returns a value of the indicated type
+     *
      * @return a value of the indicated type
      */
     T value();
-    }
+}

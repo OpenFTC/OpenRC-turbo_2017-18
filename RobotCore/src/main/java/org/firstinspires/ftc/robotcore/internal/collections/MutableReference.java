@@ -37,17 +37,14 @@ package org.firstinspires.ftc.robotcore.internal.collections;
  * we couldn't find one after a brief search.
  */
 @SuppressWarnings("WeakerAccess")
-public class MutableReference<T>
-    {
+public class MutableReference<T> {
     public T value;
 
-    public MutableReference(T value)
-        {
+    public MutableReference(T value) {
         this.value = value;
-        }
-
-    public MutableReference()
-        {
-        this(null);
-        }
     }
+
+    public MutableReference() {
+        this(null);
+    }
+}
