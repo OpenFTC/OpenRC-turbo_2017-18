@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
+import org.firstinspires.ftc.teamcode.Revbot;
 import org.firstinspires.ftc.teamcode.claw.CubeClaw;
+import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
 import org.firstinspires.ftc.teamcode.claw.RelicClaw;
-import org.firstinspires.ftc.teamcode.drivetrain.AbstractDrivetrain;
-import org.firstinspires.ftc.teamcode.drivetrain.RevbotDrivetrain;
+import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
+import org.firstinspires.ftc.teamcode.drivetrain.Slide;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
 import org.firstinspires.ftc.teamcode.enums.Column;
 import org.firstinspires.ftc.teamcode.enums.Direction;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.lift.AbstractLift;
 import org.firstinspires.ftc.teamcode.lift.ArmWinch;
 import org.firstinspires.ftc.teamcode.lift.CubeLift;
 import org.firstinspires.ftc.teamcode.lift.RelicSlide;
-import org.firstinspires.ftc.teamcode.robot.Revbot;
+import org.firstinspires.ftc.teamcode.sensor.RevbotSensors;
 import org.firstinspires.ftc.teamcode.swivel.BallKnock;
 import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
 
@@ -23,20 +24,22 @@ import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
  * Abstract Autonomous class from which all Auto classes extend from.
  */
 
-public abstract class AbstractAuto extends LinearOpMode {
+public abstract class AutoTop extends LinearOpMode {
     private Revbot robot = new Revbot();
 
     private OneServoClaw relicClaw;
     private CubeClaw cubeClaw;
     private BallKnock ballKnock;
-    private AbstractDrivetrain drivetrain;
+    private Drivetrain drivetrain;
     private AbstractLift armWinch, cubeLift, relicSlide;
+
+    private RevbotSensors sensors;
 
     private Alliance alliance;
     private Location location;
     private Column boxLocation;
 
-    AbstractAuto(Alliance alliance, Location location) {
+    AutoTop(Alliance alliance, Location location) {
         this.alliance = alliance;
         this.location = location;
     }
@@ -48,11 +51,12 @@ public abstract class AbstractAuto extends LinearOpMode {
 
         relicClaw = new RelicClaw(robot.relicClaw);
         cubeClaw = new CubeClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
-        ballKnock = new BallKnock(robot.fondler, robot.color);
-        drivetrain = new RevbotDrivetrain(robot);
+        ballKnock = new BallKnock(robot.fondler);
+        drivetrain = new Slide(robot);
         armWinch = new ArmWinch(robot.armWinch);
         cubeLift = new CubeLift(robot.cubeLift);
         relicSlide = new RelicSlide(robot.relicSlide);
+        sensors = new RevbotSensors(robot.color);
 
 
         cubeClaw.close();
@@ -73,7 +77,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         drivetrain.strafe(Direction.LEFT, 0.75, 750);
         sleep(500);
 
-        ballKnock.knockBalls(alliance);
+        knockBalls(alliance);
         sleep(500);
 
         drivetrain.strafe(Direction.RIGHT, 0.25, 1000);
@@ -91,7 +95,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         cubeIntoCrypotbox();
         sleep(500);
 
-        drivetrain.turn(Direction.LEFT, 0.5, 1500);
+        drivetrain.turn(Direction.LEFT, 0.5, 750);
         sleep(500);
 
         drivetrain.drive(Direction.FORWARD, 0.5, 1000);
@@ -121,5 +125,22 @@ public abstract class AbstractAuto extends LinearOpMode {
                 drivetrain.drive(direction, 0.5, 1500);
                 break;
         }
+    }
+
+    private void knockBalls(Alliance alliance) {
+
+        if ((alliance.equals(Alliance.BLUE) && sensors.isBlue())
+                || (alliance.equals(Alliance.RED) && sensors.isRed())) {
+            ballKnock.swivelRight();
+        } else if ((alliance.equals(Alliance.BLUE) && sensors.isRed())
+                || (alliance.equals(Alliance.RED) && sensors.isBlue())) {
+            ballKnock.swivelLeft();
+        } else {
+            ballKnock.swivelRight();
+            ballKnock.swivelLeft();
+        }
+
+        Revbot.sleep(1000);
+
     }
 }

@@ -24,20 +24,22 @@ public class TwoServoClaw extends Claw {
     public void open() {
         claw1.open();
         claw2.open();
+        OPEN = true;
     }
 
     public void close() {
         claw1.close();
         claw2.close();
+        OPEN = false;
+    }
+
+    public double getPosition() {
+        return claw1.getPosition();
     }
 
     public void setPosition(double position) {
         claw1.setPosition(position);
         claw2.setPosition(position);
-    }
-
-    public double getPosition() {
-        return claw1.getPosition();
     }
 
     public OneServoClaw getClaw1() {

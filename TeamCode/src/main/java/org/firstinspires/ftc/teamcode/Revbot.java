@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -15,22 +15,32 @@ import com.qualcomm.robotcore.hardware.Servo;
 @SuppressWarnings("unused")
 public class Revbot {
 
-    private HardwareMap hardwareMap;
-
     // Define hardware
     public DcMotor leftDrive, rightDrive, strafeDrive;
     public DcMotor cubeLift;
-
     public Servo clawRight, clawLeft, relicClaw;
     public Servo fondler;
     public CRServo armWinch, relicSlide;
-
     public ColorSensor color;
-
+    private HardwareMap hardwareMap;
     private ToneGenerator tone;
 
     /**
+     * This method puts the current thread to sleep for the given time in msec.
+     *
+     * @param sleepTime specifies sleep time in msec.
+     */
+    public static void sleep(long sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            System.out.println("got interrupted!");
+        }
+    }   //sleep
+
+    /**
      * void init() Initializes the hardware, call this method first
+     *
      * @param aHwMap HardwareMap to pass in
      */
     public void init(HardwareMap aHwMap) {
@@ -38,7 +48,7 @@ public class Revbot {
         this.hardwareMap = aHwMap;
 
         // Initalize drive motors
-        leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
+        leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
         rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
         strafeDrive = hardwareMap.get(DcMotor.class, "strafe");
 
@@ -82,6 +92,7 @@ public class Revbot {
 
     /**
      * void setMode(DcMotor.RunMode mode) Set all drive motors to the same mode.
+     *
      * @param mode desired motor mode.
      */
     private void setMode(DcMotor.RunMode mode) {
@@ -89,18 +100,4 @@ public class Revbot {
         rightDrive.setMode(mode);
         strafeDrive.setMode(mode);
     }
-
-    /**
-     * This method puts the current thread to sleep for the given time in msec.
-     *
-     * @param sleepTime specifies sleep time in msec.
-     */
-    public static void sleep(long sleepTime)
-    {
-        try{
-            Thread.sleep(sleepTime);
-        }catch(InterruptedException e){
-            System.out.println("got interrupted!");
-        }
-    }   //sleep
 }

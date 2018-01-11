@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.lift;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 
-import org.firstinspires.ftc.teamcode.robot.Revbot;
+import org.firstinspires.ftc.teamcode.Revbot;
 
 /**
  * Created by josh on 1/5/18.

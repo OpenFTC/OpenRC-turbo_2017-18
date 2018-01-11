@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @SuppressWarnings("unused")
 @TeleOp(name = "Drone Op", group = "teleop")
-public class DroneOp extends AbstractRevbotTeleOp {
+public class DroneOp extends RevbotTeleOp {
     @Override
     public void setCurrentDirection(double[] direction) {
         double left = -gamepad1.left_stick_y;
@@ -23,6 +23,6 @@ public class DroneOp extends AbstractRevbotTeleOp {
         direction[1] = right;
         direction[2] = strafe;
 
-        super.setCurrentDirection(direction);
+        this.currentDirection = direction;
     }
 }

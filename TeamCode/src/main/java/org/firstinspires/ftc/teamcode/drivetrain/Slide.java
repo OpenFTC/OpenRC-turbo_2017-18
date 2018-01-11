@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.drivetrain;
 
+import org.firstinspires.ftc.teamcode.Revbot;
 import org.firstinspires.ftc.teamcode.enums.Direction;
-import org.firstinspires.ftc.teamcode.robot.Revbot;
 
 /**
  * Created by josh on 1/5/18.
  */
 
-public class RevbotDrivetrain extends AbstractDrivetrain {
+public class Slide extends Drivetrain {
     Revbot robot;
 
-    public RevbotDrivetrain(Revbot robot) {
+    public Slide(Revbot robot) {
         this.robot = robot;
     }
 

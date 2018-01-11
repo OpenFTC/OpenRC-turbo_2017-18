@@ -21,15 +21,18 @@ public class OneServoClaw extends Claw {
 
     public void open() {
         clawServo.setPosition(OPEN_POSITION);
+        OPEN = true;
     }
     public void close() {
         clawServo.setPosition(CLOSED_POSITION);
+        OPEN = false;
+    }
+
+    public double getPosition() {
+        return clawServo.getPosition();
     }
 
     public void setPosition(double position) {
         clawServo.setPosition(position);
-    }
-    public double getPosition() {
-        return clawServo.getPosition();
     }
 }
