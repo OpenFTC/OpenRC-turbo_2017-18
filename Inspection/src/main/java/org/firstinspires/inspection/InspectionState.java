@@ -92,6 +92,12 @@ public class InspectionState {
     public InspectionState() {
     }
 
+    // Modified for OpenRC: If this InspectionState will be sent to the DS, show that OpenRC is installed)
+    public void initializeForDs() {
+        initializeLocal();
+        this.robotControllerVersion = robotControllerVersion.concat(" (OpenRC " + org.openftc.rc.BuildConfig.VERSION_NAME + ")");
+    }
+
     public void initializeLocal() {
         DeviceNameManager nameManager = DeviceNameManager.getInstance();
         StartResult startResult = nameManager.start();

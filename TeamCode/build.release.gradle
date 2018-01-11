@@ -8,7 +8,7 @@ dependencies {
     stockImplementation(name: 'Hardware-release', ext: 'aar')
     stockImplementation(name: 'FtcCommon-release', ext: 'aar')
 
-    openftcImplementation project(':RobotCore')
-    openftcImplementation project(':Hardware')
-    openftcImplementation project(':FtcCommon')
+    openrcImplementation project(':RobotCore')
+    openrcImplementation project(':Hardware')
+    openrcImplementation project(':FtcCommon')
 }

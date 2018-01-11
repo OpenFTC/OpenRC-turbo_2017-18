@@ -4,7 +4,7 @@
     <application>
 
         <activity-alias
-            android:name="org.openftc.robotcontroller.SplashActivity"
+            android:name="org.openftc.rc.SplashActivity"
             android:targetActivity="org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity">
 
             <intent-filter>

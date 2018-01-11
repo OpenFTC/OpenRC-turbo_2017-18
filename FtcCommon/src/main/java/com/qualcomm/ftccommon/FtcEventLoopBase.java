@@ -814,7 +814,10 @@ public abstract class FtcEventLoopBase implements EventLoop {
      */
     protected void handleCommandRequestInspectionReport() {
         InspectionState inspectionState = new InspectionState();
-        inspectionState.initializeLocal();
+
+        // Modified for OpenRC: Call new initializeForDs method (includes version of OpenRC)
+        inspectionState.initializeForDs();
+
         String serialized = inspectionState.serialize();
         networkConnectionHandler.sendCommand(new Command(CommandList.CMD_REQUEST_INSPECTION_REPORT_RESP, serialized));
     }

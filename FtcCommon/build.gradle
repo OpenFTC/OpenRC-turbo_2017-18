@@ -31,6 +31,6 @@ dependencies {
     implementation project(':RobotCore')
     implementation project(':Hardware')
     implementation project(':Inspection')
-    implementation project(':OpenFTC')
+    implementation project(':OpenRC')
     implementation project(path: ':Turbo')
 }

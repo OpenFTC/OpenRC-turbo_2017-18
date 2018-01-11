@@ -1,4 +1,4 @@
-package org.openftc;
+package org.openftc.rc;
 
 import android.content.pm.PackageManager;
 

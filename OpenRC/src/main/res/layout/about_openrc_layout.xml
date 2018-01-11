@@ -8,6 +8,6 @@
         android:layout_margin="10dp"
         android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="@string/openFtcSummary"/>
+        android:text="@string/openRcSummary"/>
 
 </ScrollView>

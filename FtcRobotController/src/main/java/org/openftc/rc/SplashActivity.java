@@ -1,4 +1,4 @@
-package org.openftc.robotcontroller;
+package org.openftc.rc;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.cyanogenmod.updater.utils.MD5;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.openftc.exceptions.VuforiaCorruptedException;
-import org.openftc.exceptions.VuforiaNotFoundException;
+import org.openftc.rc.exceptions.VuforiaCorruptedException;
+import org.openftc.rc.exceptions.VuforiaNotFoundException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -130,7 +130,7 @@ public class SplashActivity extends Activity
                 " on the phone's storage yourself.<br><br>" +
 
                 "<a href='https://github.com/OpenFTC/OpenFTC-app-turbo/blob/5b706b920252ed810038849e4c52c7c5c89e56ef/doc/libVuforia.so?raw=true'>" +
-                "You can find it in the 'doc' folder of the OpenFTC repository</a>.";
+                "You can find it in the 'doc' folder of the OpenRC repository</a>.";
 
         AlertDialog dialog = new AlertDialog.Builder(this)
         .setTitle("libVuforia.so not found!")
