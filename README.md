@@ -26,6 +26,19 @@ This version keeps the OnBotJava and Blocks programming system. If your team doe
 # Release Notes
 To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGELOG.md](doc/FIRST_CHANGELOG.md)
 
+## 2.0 beta 1
+* Migrated to version 3 of the Android Gradle plugin (Android Studio 3.0 or later is now required)
+* ‎Ran Android Studio's formatting tool on the entire project. If you made any changes to files outside of TeamCode, you will almost certainly have merge conflicts because of this.
+* ‎Show OpenRC version on about screen
+* ‎Added stockDebug build configuration that will build an app without any of the OpenFTC modifications enabled
+* ‎Fix for Instant Run (It's recommended that you continue to leave instant run turned off in the Android Studio settings. In addition, be aware that changes applied with the instant run lightning bolt button may not persist when you restart the app.)
+* ‎Updated to version 3.6 of the official RC app
+* ‎Added splash screen
+* ‎Large deployment time improvements for both Turbo and Full variants (accomplished by pushing Vuforia once from a Gradle task, instead of every time bundled inside the APK)
+* ‎Removed all Vuforia targets except for the VuMarks used in Relic Recovery (for additional size reduction and lower deployment times)
+* ‎Added an easy way to keep your Vuforia key off of GitHub (which would violate the Vuforia Developer Agreement)
+* Show OpenRC version when the robot controller inspection screen is viewed from the driver station
+
 ## 1.1
 * Updated the app to be based on version 3.5 of the official SDK.
 
