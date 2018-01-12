@@ -58,14 +58,6 @@ public abstract class AutoTop extends LinearOpMode {
         relicSlide = new RelicSlide(robot.relicSlide);
         sensors = new RevbotSensors(robot.color);
 
-
-        cubeClaw.close();
-        telemetry.addData("Cube Claw", cubeClaw.getPosition());
-        ballKnock.swivelCenter();
-
-        armWinch.lower(4000);
-        cubeLift.raise(125);
-
         robot.beep();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -73,20 +65,31 @@ public abstract class AutoTop extends LinearOpMode {
         waitForStart();
 
         boxLocation = Vuforia.readImage();
+        telemetry.addData("Vuforia Target Seen:", boxLocation);
+        telemetry.update();
 
-        drivetrain.strafe(Direction.LEFT, 0.75, 750);
+        cubeClaw.close();
+
+        telemetry.addData("Cube Claw", cubeClaw.getPosition());
+        telemetry.update();
+
+        ballKnock.swivelCenter();
+
+        armWinch.lower(3500);
+        cubeLift.raise(125);
+
+        drivetrain.strafe(Direction.LEFT, 0.5, 750);
         sleep(500);
 
         knockBalls(alliance);
         sleep(500);
 
-        drivetrain.strafe(Direction.RIGHT, 0.25, 1000);
         ballKnock.swivelCenter();
-        armWinch.raise(4500);
-        drivetrain.stopStrafing();
+        drivetrain.strafe(Direction.RIGHT, 0.5, 125);
+        armWinch.raise(4000);
         sleep(500);
 
-        drivetrain.drive(alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD, 0.5, 750);
+        drivetrain.drive(alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD, 0.5, 700);
         sleep(500);
 
         drivetrain.strafe(Direction.RIGHT, 0.5, 750);
@@ -95,7 +98,7 @@ public abstract class AutoTop extends LinearOpMode {
         cubeIntoCrypotbox();
         sleep(500);
 
-        drivetrain.turn(Direction.LEFT, 0.5, 750);
+        drivetrain.turn(Direction.LEFT, 0.5, 900);
         sleep(500);
 
         drivetrain.drive(Direction.FORWARD, 0.5, 1000);
@@ -112,18 +115,34 @@ public abstract class AutoTop extends LinearOpMode {
 
     private void cubeIntoCrypotbox() {
         Direction direction = alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD;
-        switch (boxLocation) {
-            case RIGHT:
-                drivetrain.drive(direction, 0.5, 500);
-                break;
+        if (alliance.equals(Alliance.RED)) {
+            switch (boxLocation) {
+                case RIGHT:
+                    drivetrain.drive(direction, 0.5, 300);
+                    break;
 
-            case CENTER:
-                drivetrain.drive(direction, 0.5, 1000);
-                break;
+                case CENTER:
+                    drivetrain.drive(direction, 0.5, 550);
+                    break;
 
-            case LEFT:
-                drivetrain.drive(direction, 0.5, 1500);
-                break;
+                case LEFT:
+                    drivetrain.drive(direction, 0.5, 800);
+                    break;
+            }
+        } else if (alliance.equals(Alliance.BLUE)) {
+            switch (boxLocation) {
+                case RIGHT:
+                    drivetrain.drive(direction, 0.5, 800);
+                    break;
+
+                case CENTER:
+                    drivetrain.drive(direction, 0.5, 550);
+                    break;
+
+                case LEFT:
+                    drivetrain.drive(direction, 0.5, 300);
+                    break;
+            }
         }
     }
 

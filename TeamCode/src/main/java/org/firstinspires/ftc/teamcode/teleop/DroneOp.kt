@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 class DroneOp : RevbotTeleOp() {
     override fun getUserInput():DoubleArray {
         val direction = DoubleArray(3)
-        var left = -gamepad1.left_stick_y.toDouble()
-        var right = -gamepad1.left_stick_y.toDouble()
+        var left = -(gamepad1.left_stick_y).toDouble()
+        var right = -(gamepad1.left_stick_y).toDouble()
         val turn = gamepad1.right_stick_x.toDouble()
         val strafe = -gamepad1.left_stick_x.toDouble()
 

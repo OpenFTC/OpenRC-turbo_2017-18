@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.swivel.BallKnock;
  */
 
 public abstract class RevbotTeleOp extends LinearOpMode {
-    double[] currentDirection = new double[3];
+    private double[] currentDirection = new double[3];
     private Revbot robot = new Revbot();
     private InputHandler inputHandler = new InputHandler();
 
@@ -37,11 +37,11 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         return currentDirection;
     }
 
-    public abstract double[] getUserInput();
-
     private void setCurrentDirection(double[] currentDirection) {
         this.currentDirection = currentDirection;
     }
+
+    public abstract double[] getUserInput();
 
     private double[] getSavedDirection() {
         return savedDirection;
@@ -77,7 +77,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             setCurrentDirection(getUserInput());
             inputHandler.handleInput();
-
+            /*
             if (inputHandler.useSavedDirection) {
                 setCurrentDirection(getSavedDirection());
             }
@@ -87,6 +87,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             }
 
             setCurrentDirection(gear.gearMovement(getCurrentDirection()));
+            */
 
             drivetrain.move(getCurrentDirection());
 
@@ -98,6 +99,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
     /**
      * Controls:
+     * See github.com
      */
 
     class InputHandler {
@@ -106,10 +108,6 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         CubeClaw cubeClaw;
         BallKnock ballKnock;
         AbstractLift armWinch, cubeLift, relicSlide;
-        boolean lockFourAxis = false;
-        boolean useSavedDirection = false;
-
-        double prevSpeed;
 
         void init(Revbot robot) {
             relicClaw = new RelicClaw(robot.relicClaw);
@@ -121,76 +119,59 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         }
 
         void handleInput() {
-            if (gamepad1.a) {
-                setCurrentDirection(new double[]{1., 1., 0.});
-            } else if (gamepad1.b) {
-                setCurrentDirection(new double[]{-1., -1., 0.});
-            }
-
-            if (gamepad1.y) {
-                armWinch.raise();
-            } else if (gamepad1.x) {
-                armWinch.lower();
-            } else {
-                armWinch.stop();
-            }
-
-            if (gamepad2.dpad_up) {
+            // D-Pad control (g1, g2)
+            if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 cubeLift.raise();
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 cubeLift.lower();
             } else {
                 cubeLift.stop();
             }
 
-            if (gamepad1.dpad_left) {
-                cubeClaw.open();
-            } else if (gamepad1.dpad_right) {
-                cubeClaw.close();
+            // Face button control (Relic/Endgame) (g1)
+            if (gamepad1.a) {
+                setCurrentDirection(new double[]{1., 1., 0.});
             }
 
-            if (gamepad1.left_bumper && prevSpeed == -1) {
-                prevSpeed = gear.getCurrentGear();
-                gear.setCurrentGear(0.5);
-            }
-            if (!gamepad1.left_bumper && prevSpeed != -1) {
-                gear.setCurrentGear(prevSpeed);
-                prevSpeed = -1;
-            }
-
-            lockFourAxis = gamepad1.right_bumper;
-
-            if (gamepad1.left_trigger > MIN_TRIGGER_VALUE)
-                setSavedDirection(getCurrentDirection());
-
-            useSavedDirection = gamepad1.right_trigger > MIN_TRIGGER_VALUE;
-
-
-            if (gamepad2.a) {
-
-                cubeClaw.getClaw2().setPosition(gamepad2.right_trigger);
-            }
-
-            if (gamepad2.dpad_up) {
-                relicSlide.raise();
-            } else {
-                relicSlide.stop();
-            }
-
-            if (gamepad2.dpad_left) {
-                relicClaw.open();
-            } else if (gamepad2.dpad_right) {
+            if (gamepad1.b) {
                 relicClaw.close();
+            } else if (gamepad1.x) {
+                relicClaw.open();
             }
 
-            if (gamepad2.left_bumper) {
+            if (gamepad1.y) {
+                relicSlide.raise();
+            }
+
+            // Shoulder button control (g1)
+            if (gamepad1.left_bumper) {
+                // Lock four axes
+            }
+
+            if (gamepad1.left_trigger > MIN_TRIGGER_VALUE) {
+                // Vincent's analog gearing
+            }
+
+            if (gamepad1.right_bumper) {
+                // Save movement
+            } else if (gamepad1.right_trigger > MIN_TRIGGER_VALUE) {
+                // Recall movement
+            }
+
+            // Face button control (g2)
+            if (gamepad2.b) {
+                cubeClaw.getClaw2().open();
+            } else if (gamepad2.x) {
+                cubeClaw.getClaw1().open();
+            }
+
+            // Shoulder button control (g2)
+            if (gamepad2.left_bumper && gamepad2.right_bumper) {
+                gear.setCurrentGear(gear.START_SPEED);
+            } else if (gamepad2.left_bumper) {
                 gear.gearDown();
             } else if (gamepad2.right_bumper) {
                 gear.gearUp();
-            }
-
-            if (gamepad2.left_bumper && gamepad2.right_bumper) {
-                gear.setCurrentGear(gear.START_SPEED);
             }
         }
 
@@ -216,6 +197,10 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             return currentGear;
         }
 
+        /**
+         * Returns the gear that the robot will be at in 15 seconds' time
+         * @param currentGear not the current gear
+         */
         private void setCurrentGear(double currentGear) {
             this.currentGear = Range.clip(currentGear, 0, 1.0);
         }

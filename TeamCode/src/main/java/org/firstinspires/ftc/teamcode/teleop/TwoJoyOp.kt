@@ -12,7 +12,7 @@ class TwoJoyOp : RevbotTeleOp() {
         val direction = DoubleArray(3)
         val left = -gamepad1.left_stick_y.toDouble()
         val right = -gamepad1.right_stick_y.toDouble()
-        val strafe = ((gamepad1.left_stick_x + gamepad1.right_stick_x) / 2).toDouble()
+        val strafe = (-(gamepad1.left_stick_x + gamepad1.right_stick_x) / 2).toDouble()
 
         direction[0] = left
         direction[1] = right
