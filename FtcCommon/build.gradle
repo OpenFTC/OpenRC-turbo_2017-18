@@ -31,11 +31,6 @@ dependencies {
     implementation project(':RobotCore')
     implementation project(':Hardware')
     implementation project(':Inspection')
-<<<<<<< HEAD
-    compile project(path: ':OpenFTC')
-}
-=======
     implementation project(':OpenRC')
     implementation project(path: ':Turbo')
 }
->>>>>>> upstream/master

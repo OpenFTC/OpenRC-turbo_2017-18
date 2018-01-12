@@ -31,9 +31,5 @@ repositories {
 
 dependencies {
     implementation project(':RobotCore')
-<<<<<<< HEAD
-    implementation project(':OpenFTC')
-=======
     implementation project(':OpenRC')
->>>>>>> upstream/master
 }
