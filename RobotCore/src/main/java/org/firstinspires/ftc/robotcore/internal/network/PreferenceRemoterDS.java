@@ -51,26 +51,9 @@ public class PreferenceRemoterDS extends PreferenceRemoter {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_prefremds";
-
-    public String getTag() {
-        return TAG;
-    }
-
     @SuppressLint("StaticFieldLeak")
     protected static PreferenceRemoterDS theInstance = null;
-
-    public synchronized static PreferenceRemoterDS getInstance() {
-        if (null == theInstance) {
-            theInstance = new PreferenceRemoterDS();
-        }
-        return theInstance;
-    }
-
     protected PreferencesHelper.StringMap mapGroupOwnerToDeviceName;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     public PreferenceRemoterDS() {
         loadRenameMap();
@@ -79,6 +62,21 @@ public class PreferenceRemoterDS extends PreferenceRemoter {
         preferencesHelper.remove(context.getString(R.string.pref_wifip2p_groupowner_lastconnectedto));
         preferencesHelper.remove(context.getString(R.string.pref_wifip2p_channel));
         preferencesHelper.remove(context.getString(R.string.pref_has_independent_phone_battery_rc));
+    }
+
+    public synchronized static PreferenceRemoterDS getInstance() {
+        if (null == theInstance) {
+            theInstance = new PreferenceRemoterDS();
+        }
+        return theInstance;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public String getTag() {
+        return TAG;
     }
 
     @Override

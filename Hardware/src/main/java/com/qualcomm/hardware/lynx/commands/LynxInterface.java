@@ -38,7 +38,6 @@ import junit.framework.Assert;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -111,10 +110,6 @@ public class LynxInterface {
         return this.commands.length;
     }
 
-    public void setBaseCommandNumber(Integer baseCommandNumber) {
-        this.baseCommandNumber = baseCommandNumber;
-    }
-
     public void setWasNacked(boolean nacked) {
         this.wasNacked = nacked;
     }
@@ -125,6 +120,10 @@ public class LynxInterface {
 
     public Integer getBaseCommandNumber() {
         return this.baseCommandNumber;
+    }
+
+    public void setBaseCommandNumber(Integer baseCommandNumber) {
+        this.baseCommandNumber = baseCommandNumber;
     }
 
     /**

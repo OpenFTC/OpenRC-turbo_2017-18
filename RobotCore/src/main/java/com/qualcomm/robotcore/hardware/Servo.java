@@ -50,21 +50,6 @@ public interface Servo extends HardwareDevice {
     double MAX_POSITION = 1.0;
 
     /**
-     * Servos can be configured to internally reverse the values
-     * to which their positioning power is set. This makes it easy, e.g.,
-     * to have cooperating servos on two sides of a robot arm:
-     * one would be set at at forward, the other at reverse, and the
-     * difference between the two in that respect could be thereafter ignored.
-     * <p>
-     * <p>At the start of an OpMode, servos are guaranteed to be in the forward direction.</p>
-     *
-     * @see #setDirection(Direction)
-     */
-    enum Direction {
-        FORWARD, REVERSE
-    }
-
-    /**
      * Returns the underlying servo controller on which this servo is situated.
      *
      * @return the underlying servo controller on which this servo is situated.
@@ -81,15 +66,6 @@ public interface Servo extends HardwareDevice {
     int getPortNumber();
 
     /**
-     * Sets the logical direction in which this servo operates.
-     *
-     * @param direction the direction to set for this servo
-     * @see #getDirection()
-     * @see com.qualcomm.robotcore.hardware.Servo.Direction
-     */
-    void setDirection(Direction direction);
-
-    /**
      * Returns the current logical direction in which this servo is set as operating.
      *
      * @return the current logical direction in which this servo is set as operating.
@@ -98,15 +74,13 @@ public interface Servo extends HardwareDevice {
     Direction getDirection();
 
     /**
-     * Sets the current position of the servo, expressed as a fraction of its available
-     * range. If PWM power is enabled for the servo, the servo will attempt to move to
-     * the indicated position.
+     * Sets the logical direction in which this servo operates.
      *
-     * @param position the position to which the servo should move, a value in the range [0.0, 1.0]
-     * @see ServoController#pwmEnable()
-     * @see #getPosition()
+     * @param direction the direction to set for this servo
+     * @see #getDirection()
+     * @see com.qualcomm.robotcore.hardware.Servo.Direction
      */
-    void setPosition(double position);
+    void setDirection(Direction direction);
 
     /**
      * Returns the position to which the servo was last commanded to move. Note that this method
@@ -120,6 +94,17 @@ public interface Servo extends HardwareDevice {
      * @see Double#isNaN()
      */
     double getPosition();
+
+    /**
+     * Sets the current position of the servo, expressed as a fraction of its available
+     * range. If PWM power is enabled for the servo, the servo will attempt to move to
+     * the indicated position.
+     *
+     * @param position the position to which the servo should move, a value in the range [0.0, 1.0]
+     * @see ServoController#pwmEnable()
+     * @see #getPosition()
+     */
+    void setPosition(double position);
 
     /**
      * Scales the available movement range of the servo to be a subset of its maximum range. Subsequent
@@ -146,4 +131,19 @@ public interface Servo extends HardwareDevice {
      * @see #setPosition(double)
      */
     void scaleRange(double min, double max);
+
+    /**
+     * Servos can be configured to internally reverse the values
+     * to which their positioning power is set. This makes it easy, e.g.,
+     * to have cooperating servos on two sides of a robot arm:
+     * one would be set at at forward, the other at reverse, and the
+     * difference between the two in that respect could be thereafter ignored.
+     * <p>
+     * <p>At the start of an OpMode, servos are guaranteed to be in the forward direction.</p>
+     *
+     * @see #setDirection(Direction)
+     */
+    enum Direction {
+        FORWARD, REVERSE
+    }
 }

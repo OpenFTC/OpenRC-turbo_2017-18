@@ -48,10 +48,10 @@ import com.qualcomm.robotcore.wifi.NetworkConnection;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
 import org.firstinspires.ftc.ftccommon.external.RobotStateMonitor;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @SuppressWarnings("WeakerAccess")
 public class UpdateUI {
@@ -59,6 +59,85 @@ public class UpdateUI {
     //------------------------------------------------------------------------------------------------
     // Callback
     //------------------------------------------------------------------------------------------------
+
+    public static final boolean DEBUG = false;
+
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
+    private static final int NUM_GAMEPADS = 2;
+    protected TextView textDeviceName;
+    protected TextView textNetworkConnectionStatus;
+    protected TextView textRobotStatus;
+    protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
+    protected TextView textOpMode;
+    protected TextView textErrorMessage;
+    protected
+    @ColorInt
+    int textErrorMessageOriginalColor;
+    protected RobotState robotState = RobotState.NOT_STARTED;
+    protected RobotStatus robotStatus = RobotStatus.NONE;
+    protected NetworkStatus networkStatus = NetworkStatus.UNKNOWN;
+    protected String networkStatusExtra = null;
+    protected PeerStatus peerStatus = PeerStatus.DISCONNECTED;
+    protected String networkStatusMessage = null;
+    protected String stateStatusMessage = null;
+    Restarter restarter;
+    FtcRobotControllerService controllerService;
+    Activity activity;
+    Dimmer dimmer;
+
+    public UpdateUI(Activity activity, Dimmer dimmer) {
+        this.activity = activity;
+        this.dimmer = dimmer;
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
+    public void setTextViews(TextView textWifiDirectStatus, TextView textRobotStatus,
+                             TextView[] textGamepad, TextView textOpMode, TextView textErrorMessage,
+                             TextView textDeviceName) {
+
+        this.textNetworkConnectionStatus = textWifiDirectStatus;
+        this.textRobotStatus = textRobotStatus;
+        this.textGamepad = textGamepad;
+        this.textOpMode = textOpMode;
+        this.textErrorMessage = textErrorMessage;
+        this.textErrorMessageOriginalColor = textErrorMessage.getCurrentTextColor();
+        this.textDeviceName = textDeviceName;
+    }
+
+    protected void setText(TextView textView, String message) {
+        // Allow the view to be optional, change view visibility according to whether the message is empty or not
+        if (textView != null && message != null) {
+            message = message.trim();
+            if (message.length() > 0) {
+                textView.setText(message);
+                textView.setVisibility(View.VISIBLE);
+            } else {
+                textView.setVisibility(View.INVISIBLE);
+                textView.setText(" ");  // paranoia: there are rumors of Android not doing a redraw if "" is used
+            }
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
+
+    public void setControllerService(FtcRobotControllerService controllerService) {
+        this.controllerService = controllerService;
+    }
+
+    public void setRestarter(Restarter restarter) {
+        this.restarter = restarter;
+    }
+
+    private void requestRobotRestart() {
+        restarter.requestRestart();
+    }
 
     public class Callback {
 
@@ -153,13 +232,6 @@ public class UpdateUI {
                     break;
                 default:
                     break;
-            }
-        }
-
-        protected class DeviceNameManagerCallback implements DeviceNameManager.Callback {
-            @Override
-            public void onDeviceNameChanged(String newDeviceName) {
-                displayDeviceName(newDeviceName);
             }
         }
 
@@ -307,88 +379,13 @@ public class UpdateUI {
             return message;
         }
 
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // State
-    //------------------------------------------------------------------------------------------------
-
-    public static final boolean DEBUG = false;
-    private static final int NUM_GAMEPADS = 2;
-
-    protected TextView textDeviceName;
-    protected TextView textNetworkConnectionStatus;
-    protected TextView textRobotStatus;
-    protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
-    protected TextView textOpMode;
-    protected TextView textErrorMessage;
-    protected
-    @ColorInt
-    int textErrorMessageOriginalColor;
-    protected RobotState robotState = RobotState.NOT_STARTED;
-    protected RobotStatus robotStatus = RobotStatus.NONE;
-    protected NetworkStatus networkStatus = NetworkStatus.UNKNOWN;
-    protected String networkStatusExtra = null;
-    protected PeerStatus peerStatus = PeerStatus.DISCONNECTED;
-    protected String networkStatusMessage = null;
-    protected String stateStatusMessage = null;
-
-    Restarter restarter;
-    FtcRobotControllerService controllerService;
-
-    Activity activity;
-    Dimmer dimmer;
-
-    //------------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------------
-
-    public UpdateUI(Activity activity, Dimmer dimmer) {
-        this.activity = activity;
-        this.dimmer = dimmer;
-    }
-
-    public void setTextViews(TextView textWifiDirectStatus, TextView textRobotStatus,
-                             TextView[] textGamepad, TextView textOpMode, TextView textErrorMessage,
-                             TextView textDeviceName) {
-
-        this.textNetworkConnectionStatus = textWifiDirectStatus;
-        this.textRobotStatus = textRobotStatus;
-        this.textGamepad = textGamepad;
-        this.textOpMode = textOpMode;
-        this.textErrorMessage = textErrorMessage;
-        this.textErrorMessageOriginalColor = textErrorMessage.getCurrentTextColor();
-        this.textDeviceName = textDeviceName;
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // Operations
-    //------------------------------------------------------------------------------------------------
-
-    protected void setText(TextView textView, String message) {
-        // Allow the view to be optional, change view visibility according to whether the message is empty or not
-        if (textView != null && message != null) {
-            message = message.trim();
-            if (message.length() > 0) {
-                textView.setText(message);
-                textView.setVisibility(View.VISIBLE);
-            } else {
-                textView.setVisibility(View.INVISIBLE);
-                textView.setText(" ");  // paranoia: there are rumors of Android not doing a redraw if "" is used
+        protected class DeviceNameManagerCallback implements DeviceNameManager.Callback {
+            @Override
+            public void onDeviceNameChanged(String newDeviceName) {
+                displayDeviceName(newDeviceName);
             }
         }
-    }
 
-    public void setControllerService(FtcRobotControllerService controllerService) {
-        this.controllerService = controllerService;
-    }
-
-    public void setRestarter(Restarter restarter) {
-        this.restarter = restarter;
-    }
-
-    private void requestRobotRestart() {
-        restarter.requestRestart();
     }
 
 }

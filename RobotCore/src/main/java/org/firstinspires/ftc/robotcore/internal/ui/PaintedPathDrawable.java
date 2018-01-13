@@ -72,24 +72,24 @@ public abstract class PaintedPathDrawable extends Drawable {
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-        paint.setAlpha(alpha);
-    }
-
-    @Override
     public int getAlpha() {
         return paint.getAlpha();
     }
 
     @Override
-    public void setColorFilter(ColorFilter cf) {
-        paint.setColorFilter(cf);
+    public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
+        paint.setAlpha(alpha);
     }
 
     @Nullable
     @Override
     public ColorFilter getColorFilter() {
         return paint.getColorFilter();
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+        paint.setColorFilter(cf);
     }
 
     @Override

@@ -50,10 +50,10 @@ import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.RobocolDatagram;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
 import java.io.File;
 import java.text.Collator;
@@ -74,18 +74,22 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
 
     // Also in Android.manifest
     public static final String TAG = FtcConfigurationActivity.TAG;
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
+    DialogInterface.OnClickListener doNothingAndCloseListener = new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int button) {
+            //do nothing
+        }
+    };
     private List<RobotConfigFile> fileList = new CopyOnWriteArrayList<RobotConfigFile>();
     private NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
 
     //------------------------------------------------------------------------------------------------
     // Life Cycle
     //------------------------------------------------------------------------------------------------
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +131,7 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
 
     // RC has informed DS of the list of configuration files. Take that as gospel and update.
     protected CallbackResult handleCommandRequestConfigFilesResp(String extra) throws RobotCoreException {
-        fileList = robotConfigFileManager.deserializeXMLConfigList(extra);
+        fileList = RobotConfigFileManager.deserializeXMLConfigList(extra);
         warnIfNoFiles();
         populate();
         return CallbackResult.HANDLED;
@@ -143,6 +147,10 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
         super.onStop();
     }
 
+//------------------------------------------------------------------------------------------------
+    // Misc
+    //------------------------------------------------------------------------------------------------
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -150,10 +158,6 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
             networkConnectionHandler.removeReceiveLoopCallback(this);
         }
     }
-
-//------------------------------------------------------------------------------------------------
-    // Misc
-    //------------------------------------------------------------------------------------------------
 
     private void buildInfoButtons() {
         Button saveConfigButton = (Button) findViewById(R.id.files_holder).findViewById(R.id.info_btn);
@@ -182,12 +186,6 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
             }
         });
     }
-
-    DialogInterface.OnClickListener doNothingAndCloseListener = new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int button) {
-            //do nothing
-        }
-    };
 
     private void warnIfNoFiles() {
         if (fileList.size() == 0) {

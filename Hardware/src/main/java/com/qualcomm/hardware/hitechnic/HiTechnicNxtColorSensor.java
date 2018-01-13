@@ -34,13 +34,13 @@ import android.graphics.Color;
 import android.support.annotation.ColorInt;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.I2cWaitControl;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cAddressableDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
+import com.qualcomm.robotcore.hardware.I2cWaitControl;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.TypeConversion;
 
@@ -59,42 +59,11 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
     //------------------------------------------------------------------------------------------------
 
     public final static I2cAddr ADDRESS_I2C = I2cAddr.create8bit(2);
-
-    public enum Register {
-        COMMAND(0x41),
-        COLOR_NUMBER(0x42),
-        RED(0x43),
-        GREEN(0x44),
-        BLUE(0x45),
-        READ_WINDOW_FIRST(RED.bVal),
-        READ_WINDOW_LAST(BLUE.bVal);
-        public byte bVal;
-
-        Register(int value) {
-            this.bVal = (byte) value;
-        }
-    }
-
-    public enum Command {
-        ACTIVE_LED(0x00),
-        PASSIVE_LED(0x01);
-        public byte bVal;
-
-        Command(int value) {
-            this.bVal = (byte) value;
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // State
-    //------------------------------------------------------------------------------------------------
-
     protected final float colorNormalizationFactor = 1.0f / 256.0f; // color values are unsigned bytes
-
     protected boolean isLightOn = false;
 
     //------------------------------------------------------------------------------------------------
-    // Construction
+    // State
     //------------------------------------------------------------------------------------------------
 
     public HiTechnicNxtColorSensor(I2cDeviceSynch deviceClient) {
@@ -118,7 +87,7 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
     }
 
     //------------------------------------------------------------------------------------------------
-    // Utility
+    // Construction
     //------------------------------------------------------------------------------------------------
 
     public byte read8(Register reg) {
@@ -129,6 +98,10 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
         this.deviceClient.write8(reg.bVal, value);
     }
 
+    //------------------------------------------------------------------------------------------------
+    // Utility
+    //------------------------------------------------------------------------------------------------
+
     public int readColorByte(Register register) {
         return TypeConversion.unsignedByteToInt(read8(register));
     }
@@ -137,10 +110,6 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
         this.deviceClient.waitForWriteCompletions(I2cWaitControl.ATOMIC);    // avoid overwriting previous command
         this.write8(Register.COMMAND, command.bVal);
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Color interfaces
-    //------------------------------------------------------------------------------------------------
 
     @Override
     public String toString() {
@@ -151,6 +120,10 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
     public int red() {
         return readColorByte(Register.RED);
     }
+
+    //------------------------------------------------------------------------------------------------
+    // Color interfaces
+    //------------------------------------------------------------------------------------------------
 
     @Override
     public int green() {
@@ -203,19 +176,15 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
     }
 
     @Override
-    public void setI2cAddress(I2cAddr newAddress) {
-        // Necessary because of legacy considerations
-        throw new UnsupportedOperationException("setI2cAddress is not supported.");
-    }
-
-    @Override
     public I2cAddr getI2cAddress() {
         return ADDRESS_I2C;
     }
 
-    //------------------------------------------------------------------------------------------------
-    // HardwareDevice
-    //------------------------------------------------------------------------------------------------
+    @Override
+    public void setI2cAddress(I2cAddr newAddress) {
+        // Necessary because of legacy considerations
+        throw new UnsupportedOperationException("setI2cAddress is not supported.");
+    }
 
     @Override
     public Manufacturer getManufacturer() {
@@ -227,8 +196,37 @@ public class HiTechnicNxtColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch
         return AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.configTypeHTColorSensor);
     }
 
+    //------------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //------------------------------------------------------------------------------------------------
+
     @Override
     public int getVersion() {
         return 2;
+    }
+
+    public enum Register {
+        COMMAND(0x41),
+        COLOR_NUMBER(0x42),
+        RED(0x43),
+        GREEN(0x44),
+        BLUE(0x45),
+        READ_WINDOW_FIRST(RED.bVal),
+        READ_WINDOW_LAST(BLUE.bVal);
+        public byte bVal;
+
+        Register(int value) {
+            this.bVal = (byte) value;
+        }
+    }
+
+    public enum Command {
+        ACTIVE_LED(0x00),
+        PASSIVE_LED(0x01);
+        public byte bVal;
+
+        Command(int value) {
+            this.bVal = (byte) value;
+        }
     }
 }

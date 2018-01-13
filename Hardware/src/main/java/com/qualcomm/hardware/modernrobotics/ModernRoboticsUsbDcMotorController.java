@@ -107,12 +107,7 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "MRMotorController";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
+    public final static int BUSY_THRESHOLD = 5;
     /**
      * Enable DEBUG_LOGGING logging
      */
@@ -211,39 +206,11 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
     protected static final int[] ADDRESS_MOTOR_CURRENT_ENCODER_VALUE_MAP = {ADDRESS_UNUSED, ADDRESS_MOTOR1_CURRENT_ENCODER_VALUE, ADDRESS_MOTOR2_CURRENT_ENCODER_VALUE};
     protected static final int[] ADDRESS_MOTOR_GEAR_RATIO_MAP = {ADDRESS_UNUSED, ADDRESS_MOTOR1_GEAR_RATIO, ADDRESS_MOTOR2_GEAR_RATIO};
     protected static final int[] ADDRESS_MAX_DIFFERENTIAL_CONTROL_LOOP_COEFFICIENT_MAP = {ADDRESS_UNUSED, ADDRESS_MOTOR1_P_COEFFICIENT, ADDRESS_MOTOR2_P_COEFFICIENT};
-
-    public final static int BUSY_THRESHOLD = 5;
     protected static final byte cbEncoder = 4;
     protected static final int cbRatioPIDParams = 4;
-
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
-    static class MotorProperties {
-        // We have caches of values that we *could* read from the controller, and need to
-        // do so if the cache is invalid
-        LastKnown<Byte> lastKnownPowerByte = new LastKnown<Byte>();
-        LastKnown<Integer> lastKnownTargetPosition = new LastKnown<Integer>();
-        LastKnown<DcMotor.RunMode> lastKnownMode = new LastKnown<DcMotor.RunMode>();
-
-        // The remainder of the data is authoritative, here
-        DcMotor.ZeroPowerBehavior zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
-        boolean modeSwitchCompletionNeeded = false;
-        int modeSwitchWaitCount = 0;
-        int modeSwitchWaitCountMax = 4;
-        DcMotor.RunMode prevRunMode = null;
-        double prevPower;
-        MotorConfigurationType motorType = MotorConfigurationType.getUnspecifiedMotorType();
-    }
-
     final MotorProperties[] motors = new MotorProperties[MOTOR_MAX];
     protected ReadWriteRunnableSegment pidParamsLockSegment;
     protected ReadWriteRunnableSegment[] rgPidParamsSegment;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Use HardwareDeviceManager to create an instance of this class
      */
@@ -260,16 +227,53 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         }
     }
 
+    public static byte modeToByte(DcMotor.RunMode mode) {
+        switch (mode.migrate()) {
+            case RUN_USING_ENCODER:
+                return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED;
+            case RUN_WITHOUT_ENCODER:
+                return CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY;
+            case RUN_TO_POSITION:
+                return CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION;
+            case STOP_AND_RESET_ENCODER:
+                return CHANNEL_MODE_FLAG_SELECT_RESET;
+        }
+        return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public static DcMotor.RunMode modeFromByte(byte flag) {
+        switch (flag & CHANNEL_MODE_MASK_SELECTION) {
+            case CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED:
+                return DcMotor.RunMode.RUN_USING_ENCODER;
+            case CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY:
+                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+            case CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION:
+                return DcMotor.RunMode.RUN_TO_POSITION;
+            case CHANNEL_MODE_FLAG_SELECT_RESET:
+                return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+        }
+        return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+    }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Arming and disarming
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void initializeHardware() {
         // set all motors to float for safety reasons
         floatHardware();
         setDifferentialControlLoopCoefficientsToDefault();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Arming and disarming
-    //----------------------------------------------------------------------------------------------
 
     void brakeAllAtZero() {
         for (int motor = MOTOR_FIRST; motor <= MOTOR_LAST; motor++) {
@@ -343,6 +347,10 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         doCloseFromOther();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // HardwareDevice interface
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void doCloseFromOther() {
         try {
@@ -353,10 +361,6 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
             // ignore, won't actually happen
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // HardwareDevice interface
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public Manufacturer getManufacturer() {
@@ -386,6 +390,10 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         forgetLastKnown();
     }
 
+    //------------------------------------------------------------------------------------------------
+    // DcMotorController interface
+    //------------------------------------------------------------------------------------------------
+
     /**
      * Close this device
      */
@@ -394,10 +402,6 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         floatHardware();
         super.doClose();
     }
-
-    //------------------------------------------------------------------------------------------------
-    // DcMotorController interface
-    //------------------------------------------------------------------------------------------------
 
     @Override
     public synchronized void setMotorType(int motor, MotorConfigurationType motorType) {
@@ -429,9 +433,9 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
                     //    Up till then, it's just been sitting there a-reading away the motor power etc.
                     //  * It then unlocks, writes, and locks in quick succession, taking no more than
                     //    40ms in total to do same. This seems to be at full speed.
-                    //  * It then waits about 100ms before initiating its regular read cycle. This allows the 
+                    //  * It then waits about 100ms before initiating its regular read cycle. This allows the
                     //    write to the EEPROM to take place in peace.
-                    // 
+                    //
                     // During the update, and the wait, there's only the bare-bones minimally necessary to carry
                     // out the update going on. No extraneous reads or whatnot.
                     //
@@ -491,7 +495,7 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         waitForNextReadComplete();
     }
 
-    // Execute a wait that we include merely out of paranoia due to the fact that we don't actually 
+    // Execute a wait that we include merely out of paranoia due to the fact that we don't actually
     // have in hand the specification that would tell us whether such a wait is needed or not
     protected void paranoidSleep(int ms) {
         if (ms > 0) {
@@ -712,13 +716,6 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         }
     }
 
-    @Override
-    public synchronized double getMotorPower(int motor) {
-        this.validateMotor(motor);
-        finishModeSwitchIfNecessary(motor);
-        return internalQueryMotorPower(motor);
-    }
-
     // From the HiTechnic Motor Controller specification (the Modern Robotics motor controller is
     // understood to have the self-same issue):
     //
@@ -731,6 +728,13 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
     //      before the Busy bit will be set.
     //
     // Our task here is to work around that 50ms issue.
+
+    @Override
+    public synchronized double getMotorPower(int motor) {
+        this.validateMotor(motor);
+        finishModeSwitchIfNecessary(motor);
+        return internalQueryMotorPower(motor);
+    }
 
     @Override
     public boolean isBusy(int motor) {
@@ -816,14 +820,14 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         return internalQueryMotorCurrentPosition(motor);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // VoltageSensor
+    //----------------------------------------------------------------------------------------------
+
     int internalQueryMotorCurrentPosition(int motor) {
         byte[] bytes = this.read(ADDRESS_MOTOR_CURRENT_ENCODER_VALUE_MAP[motor], cbEncoder);
         return TypeConversion.byteArrayToInt(bytes, ByteOrder.BIG_ENDIAN);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // VoltageSensor
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Get battery voltage. Measurements range from 0 to BATTERY_MAX_VOLTAGE. Measurement resolution
@@ -882,6 +886,10 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
                 new byte[]{(byte) pid.p, (byte) pid.i, (byte) pid.d});
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
+
     public DifferentialControlLoopCoefficients getDifferentialControlLoopCoefficients(int motor) {
         validateMotor(motor);
 
@@ -892,38 +900,6 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         pid.d = data[2];
 
         return pid;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
-    public static byte modeToByte(DcMotor.RunMode mode) {
-        switch (mode.migrate()) {
-            case RUN_USING_ENCODER:
-                return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED;
-            case RUN_WITHOUT_ENCODER:
-                return CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY;
-            case RUN_TO_POSITION:
-                return CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION;
-            case STOP_AND_RESET_ENCODER:
-                return CHANNEL_MODE_FLAG_SELECT_RESET;
-        }
-        return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED;
-    }
-
-    public static DcMotor.RunMode modeFromByte(byte flag) {
-        switch (flag & CHANNEL_MODE_MASK_SELECTION) {
-            case CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED:
-                return DcMotor.RunMode.RUN_USING_ENCODER;
-            case CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY:
-                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-            case CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION:
-                return DcMotor.RunMode.RUN_TO_POSITION;
-            case CHANNEL_MODE_FLAG_SELECT_RESET:
-                return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-        }
-        return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
     }
 
     private void floatHardware() {
@@ -958,5 +934,25 @@ public final class ModernRoboticsUsbDcMotorController extends ModernRoboticsUsbC
         } else {
             throw new IllegalArgumentException(String.format("illegal motor power %f; must be in interval [%f,%f]", power, apiPowerMin, apiPowerMax));
         }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // State
+    //----------------------------------------------------------------------------------------------
+    static class MotorProperties {
+        // We have caches of values that we *could* read from the controller, and need to
+        // do so if the cache is invalid
+        LastKnown<Byte> lastKnownPowerByte = new LastKnown<Byte>();
+        LastKnown<Integer> lastKnownTargetPosition = new LastKnown<Integer>();
+        LastKnown<DcMotor.RunMode> lastKnownMode = new LastKnown<DcMotor.RunMode>();
+
+        // The remainder of the data is authoritative, here
+        DcMotor.ZeroPowerBehavior zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
+        boolean modeSwitchCompletionNeeded = false;
+        int modeSwitchWaitCount = 0;
+        int modeSwitchWaitCountMax = 4;
+        DcMotor.RunMode prevRunMode = null;
+        double prevPower;
+        MotorConfigurationType motorType = MotorConfigurationType.getUnspecifiedMotorType();
     }
 }

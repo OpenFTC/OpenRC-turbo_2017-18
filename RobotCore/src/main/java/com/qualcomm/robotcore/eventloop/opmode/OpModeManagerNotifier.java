@@ -46,6 +46,24 @@ import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
  */
 public interface OpModeManagerNotifier {
     /**
+     * Registers an object as explicitly interested in receiving notifications as
+     * to the coming and going of opmodes.
+     *
+     * @param listener the object which is to receive notifications
+     * @return the currently active opmode at the instant of registration
+     * @see #unregisterListener(Notifications)
+     */
+    OpMode registerListener(OpModeManagerNotifier.Notifications listener);
+
+    /**
+     * Unregisters a previously registered listener. If the provided listener is in
+     * fact not currently registered, the call has no effect.
+     *
+     * @param listener the listener to be unregistered.
+     */
+    void unregisterListener(OpModeManagerNotifier.Notifications listener);
+
+    /**
      * {@link Notifications} can be used to receive notifications of the comings
      * and goings of opmodes in the system. These notifications are sent to any
      * {@link HardwareDevice} in the hardware map that additional implements the
@@ -68,22 +86,4 @@ public interface OpModeManagerNotifier {
          */
         void onOpModePostStop(OpMode opMode);
     }
-
-    /**
-     * Registers an object as explicitly interested in receiving notifications as
-     * to the coming and going of opmodes.
-     *
-     * @param listener the object which is to receive notifications
-     * @return the currently active opmode at the instant of registration
-     * @see #unregisterListener(Notifications)
-     */
-    OpMode registerListener(OpModeManagerNotifier.Notifications listener);
-
-    /**
-     * Unregisters a previously registered listener. If the provided listener is in
-     * fact not currently registered, the call has no effect.
-     *
-     * @param listener the listener to be unregistered.
-     */
-    void unregisterListener(OpModeManagerNotifier.Notifications listener);
 }

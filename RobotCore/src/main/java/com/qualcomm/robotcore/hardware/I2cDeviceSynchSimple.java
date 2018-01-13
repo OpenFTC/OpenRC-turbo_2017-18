@@ -186,6 +186,15 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
     boolean isArmed();
 
     /**
+     * Returns the I2C address currently being used by this device client
+     *
+     * @return the current I2C address
+     * @deprecated Use {@link #getI2cAddress()} instead.
+     */
+    @Deprecated
+    I2cAddr getI2cAddr();
+
+    /**
      * Sets the I2C address of the underlying client. If necessary, the client may be briefly
      * disengaged (and then automatically reengaged) in the process.
      *
@@ -195,18 +204,14 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
     @Deprecated
     void setI2cAddr(I2cAddr i2cAddr);
 
-    /**
-     * Returns the I2C address currently being used by this device client
-     *
-     * @return the current I2C address
-     * @deprecated Use {@link #getI2cAddress()} instead.
-     */
-    @Deprecated
-    I2cAddr getI2cAddr();
-
     //----------------------------------------------------------------------------------------------
     // Debugging
     //----------------------------------------------------------------------------------------------
+
+    /**
+     * @see #setLogging(boolean)
+     */
+    boolean getLogging();
 
     /**
      * Turn logging on or off. Logging output can be viewed using the Android Logcat tools.
@@ -216,9 +221,9 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
     void setLogging(boolean enabled);
 
     /**
-     * @see #setLogging(boolean)
+     * @see #setLoggingTag(String)
      */
-    boolean getLogging();
+    String getLoggingTag();
 
     /**
      * Set the tag to use when logging is on.
@@ -226,9 +231,4 @@ public interface I2cDeviceSynchSimple extends HardwareDevice, HardwareDeviceHeal
      * @param loggingTag the logging tag to sue
      */
     void setLoggingTag(String loggingTag);
-
-    /**
-     * @see #setLoggingTag(String)
-     */
-    String getLoggingTag();
 }

@@ -108,17 +108,17 @@ public interface DcMotorEx extends DcMotor {
     PIDCoefficients getPIDCoefficients(RunMode mode);
 
     /**
+     * Returns the current target positioning tolerance of this motor
+     *
+     * @return the current target positioning tolerance of this motor
+     */
+    int getTargetPositionTolerance();
+
+    /**
      * Sets the target positioning tolerance of this motor
      *
      * @param tolerance the desired tolerance, in encoder ticks
      * @see DcMotor#setTargetPosition(int)
      */
     void setTargetPositionTolerance(int tolerance);
-
-    /**
-     * Returns the current target positioning tolerance of this motor
-     *
-     * @return the current target positioning tolerance of this motor
-     */
-    int getTargetPositionTolerance();
 }

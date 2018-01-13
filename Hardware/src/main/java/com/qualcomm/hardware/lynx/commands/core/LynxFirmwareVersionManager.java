@@ -38,12 +38,7 @@ import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynchV1;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynchV2;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxUnsupportedCommandNumberException;
-import com.qualcomm.hardware.lynx.commands.LynxInterface;
 import com.qualcomm.robotcore.util.RobotLog;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * LynxFirmwareVersionManager

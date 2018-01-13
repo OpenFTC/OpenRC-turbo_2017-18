@@ -46,17 +46,16 @@ import com.qualcomm.hardware.hitechnic.HiTechnicNxtTouchSensor;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtTouchSensorMultiplexer;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtUltrasonicSensor;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
-import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxUsbDevice;
 import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
 import com.qualcomm.hardware.lynx.LynxUsbUtil;
 import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cIrSeekerSensorV3;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDevice;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDeviceInterfaceModule;
@@ -150,10 +149,9 @@ public class HardwareDeviceManager implements DeviceManager {
     public static final String TAG_USB_SCAN = "USBScan";
 
     public final static Object scanDevicesLock = new Object();
-
-    private RobotUsbManager usbManager;
     private final EventLoopManager manager;
     private final Context context;
+    private RobotUsbManager usbManager;
 
     //------------------------------------------------------------------------------------------------
     // Construction

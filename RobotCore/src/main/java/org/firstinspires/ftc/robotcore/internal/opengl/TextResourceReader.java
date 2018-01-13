@@ -8,13 +8,13 @@
  ***/
 package org.firstinspires.ftc.robotcore.internal.opengl;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import android.content.Context;
-import android.content.res.Resources;
 
 public class TextResourceReader {
     /**

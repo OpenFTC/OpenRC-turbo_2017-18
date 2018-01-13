@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.robotcore.hardware;
 
-import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
 import com.qualcomm.robotcore.hardware.usb.RobotArmingStateNotifier;
+import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
 
 public abstract class LegacyModulePortDeviceImpl implements RobotArmingStateNotifier.Callback, LegacyModulePortDevice {
     //----------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ public abstract class LegacyModulePortDeviceImpl implements RobotArmingStateNoti
         moduleNowArmedOrPretending();
 
         if (module instanceof RobotUsbModule) {
-            ((RobotUsbModule) module).registerCallback((RobotArmingStateNotifier.Callback) this, false);
+            ((RobotUsbModule) module).registerCallback(this, false);
         }
     }
 

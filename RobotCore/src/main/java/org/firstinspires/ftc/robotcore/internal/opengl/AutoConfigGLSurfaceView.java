@@ -43,6 +43,14 @@ public class AutoConfigGLSurfaceView extends GLSurfaceView {
     // Initialization
     //----------------------------------------------------------------------------------------------
 
+    // Checks the OpenGL error.
+    private static void checkEglError(String prompt, EGL10 egl) {
+        int error;
+        while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS) {
+            RobotLog.ee(LOGTAG, "%s: EGL error: 0x%x", prompt, error);
+        }
+    }
+
     public void init(boolean translucent, int depth, int stencil) {
         // By default GLSurfaceView tries to find a surface that is as close as possible to a
         // 16-bit RGB frame buffer with a 16-bit depth buffer. This function can override the
@@ -83,14 +91,6 @@ public class AutoConfigGLSurfaceView extends GLSurfaceView {
 
         public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
             egl.eglDestroyContext(display, context);
-        }
-    }
-
-    // Checks the OpenGL error.
-    private static void checkEglError(String prompt, EGL10 egl) {
-        int error;
-        while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS) {
-            RobotLog.ee(LOGTAG, "%s: EGL error: 0x%x", prompt, error);
         }
     }
 

@@ -54,13 +54,21 @@ public class LocalByRefIntentExtraHolder implements Parcelable {
     // State
     //----------------------------------------------------------------------------------------------
 
-    private static final Map<UUID, Object> map = new ConcurrentHashMap<>();
+    public static final Parcelable.Creator<LocalByRefIntentExtraHolder> CREATOR = new Parcelable.Creator<LocalByRefIntentExtraHolder>() {
+        public LocalByRefIntentExtraHolder createFromParcel(Parcel parcel) {
+            return new LocalByRefIntentExtraHolder(parcel);
+        }
 
-    protected UUID uuid;
+        public LocalByRefIntentExtraHolder[] newArray(int size) {
+            return new LocalByRefIntentExtraHolder[size];
+        }
+    };
+    private static final Map<UUID, Object> map = new ConcurrentHashMap<>();
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
+    protected UUID uuid;
 
     public LocalByRefIntentExtraHolder(Object target) {
         this.uuid = UUID.randomUUID();
@@ -71,15 +79,15 @@ public class LocalByRefIntentExtraHolder implements Parcelable {
         uuid = UUID.fromString(parcel.readString());
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Parcelable
+    //----------------------------------------------------------------------------------------------
+
     public Object getTargetAndForget() {
         Object result = map.get(uuid);
         map.remove(uuid);
         return result;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Parcelable
-    //----------------------------------------------------------------------------------------------
 
     public int describeContents() {
         return 0;
@@ -88,15 +96,5 @@ public class LocalByRefIntentExtraHolder implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(uuid.toString());
     }
-
-    public static final Parcelable.Creator<LocalByRefIntentExtraHolder> CREATOR = new Parcelable.Creator<LocalByRefIntentExtraHolder>() {
-        public LocalByRefIntentExtraHolder createFromParcel(Parcel parcel) {
-            return new LocalByRefIntentExtraHolder(parcel);
-        }
-
-        public LocalByRefIntentExtraHolder[] newArray(int size) {
-            return new LocalByRefIntentExtraHolder[size];
-        }
-    };
 
 }

@@ -56,18 +56,18 @@ public class EditUSBDeviceActivity extends EditActivity {
     // State
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     protected ScannedDevices extraUSBDevices = new ScannedDevices();
+
+    public EditUSBDeviceActivity() {
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public EditUSBDeviceActivity() {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 
     protected void deserialize(EditParameters parameters) {

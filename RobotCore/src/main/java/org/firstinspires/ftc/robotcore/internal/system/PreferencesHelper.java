@@ -178,7 +178,7 @@ public class PreferencesHelper {
         Assert.assertNotNull(newValue);
         boolean changed = false;
         for (; ; ) {
-            if (contains(prefName) && newValue.equals(readStringSet(prefName, (Set<String>) null))) {
+            if (contains(prefName) && newValue.equals(readStringSet(prefName, null))) {
                 break;
             }
             logWrite(prefName, newValue);
@@ -267,16 +267,16 @@ public class PreferencesHelper {
     //----------------------------------------------------------------------------------------------
 
     public static class StringMap extends HashMap<String, String> {
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
         public static StringMap deserialize(String serialized) {
             if (serialized == null) {
                 return null;
             } else {
                 return SimpleGson.getInstance().fromJson(serialized, StringMap.class);
             }
+        }
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
         }
     }
 

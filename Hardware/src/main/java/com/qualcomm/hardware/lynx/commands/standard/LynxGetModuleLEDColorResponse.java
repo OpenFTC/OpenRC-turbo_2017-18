@@ -60,6 +60,10 @@ public class LynxGetModuleLEDColorResponse extends LynxStandardResponse {
     // Accessors
     //----------------------------------------------------------------------------------------------
 
+    public static int getStandardCommandNumber() {
+        return LynxGetModuleLEDColorCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
+    }
+
     int getRed() {
         return TypeConversion.unsignedByteToInt(this.red);
     }
@@ -68,16 +72,12 @@ public class LynxGetModuleLEDColorResponse extends LynxStandardResponse {
         return TypeConversion.unsignedByteToInt(this.green);
     }
 
-    int getBlue() {
-        return TypeConversion.unsignedByteToInt(this.blue);
-    }
-
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return LynxGetModuleLEDColorCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
+    int getBlue() {
+        return TypeConversion.unsignedByteToInt(this.blue);
     }
 
     @Override

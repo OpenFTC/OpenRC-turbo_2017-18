@@ -69,13 +69,6 @@ package com.qualcomm.robotcore.hardware;
 @SuppressWarnings("WeakerAccess")
 public interface DigitalChannel extends HardwareDevice {
     /**
-     * Digital channel mode - input or output
-     */
-    enum Mode {
-        INPUT, OUTPUT
-    }
-
-    /**
      * Returns whether the channel is in input or output mode
      *
      * @return whether the channel is in input or output mode
@@ -89,6 +82,12 @@ public interface DigitalChannel extends HardwareDevice {
      * @param mode whether the channel is in input or output mode
      */
     void setMode(Mode mode);
+
+    /**
+     * @deprecated use {@link #setMode(Mode)} instead
+     */
+    @Deprecated
+    void setMode(DigitalChannelController.Mode mode);
 
     /**
      * Returns the current state of the channel
@@ -105,8 +104,9 @@ public interface DigitalChannel extends HardwareDevice {
     void setState(boolean state);
 
     /**
-     * @deprecated use {@link #setMode(Mode)} instead
+     * Digital channel mode - input or output
      */
-    @Deprecated
-    void setMode(DigitalChannelController.Mode mode);
+    enum Mode {
+        INPUT, OUTPUT
+    }
 }

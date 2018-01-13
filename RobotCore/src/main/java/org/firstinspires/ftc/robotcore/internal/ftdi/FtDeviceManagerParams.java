@@ -51,20 +51,20 @@ public class FtDeviceManagerParams {
     public FtDeviceManagerParams() {
     }
 
-    public void setMaxReadBufferSize(int cbReadBufferMax) {
-        this.cbReadBufferMax = cbReadBufferMax;
-    }
-
     public int getMaxReadBufferSize() {
         return this.cbReadBufferMax;
     }
 
-    public void setPacketBufferCacheSize(int bufferCount) {
-        this.packetBufferCacheSize = bufferCount;
+    public void setMaxReadBufferSize(int cbReadBufferMax) {
+        this.cbReadBufferMax = cbReadBufferMax;
     }
 
     public int getPacketBufferCacheSize() {
         return this.packetBufferCacheSize;
+    }
+
+    public void setPacketBufferCacheSize(int bufferCount) {
+        this.packetBufferCacheSize = bufferCount;
     }
 
     public void setBuildInReadTimeout(int msTimeout) {

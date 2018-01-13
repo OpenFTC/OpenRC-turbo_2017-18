@@ -61,13 +61,13 @@ public class CRServoImplEx extends CRServoImpl implements PwmControl {
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setPwmRange(PwmRange range) {
-        controllerEx.setServoPwmRange(this.getPortNumber(), range);
+    public PwmRange getPwmRange() {
+        return controllerEx.getServoPwmRange(this.getPortNumber());
     }
 
     @Override
-    public PwmRange getPwmRange() {
-        return controllerEx.getServoPwmRange(this.getPortNumber());
+    public void setPwmRange(PwmRange range) {
+        controllerEx.setServoPwmRange(this.getPortNumber(), range);
     }
 
     @Override

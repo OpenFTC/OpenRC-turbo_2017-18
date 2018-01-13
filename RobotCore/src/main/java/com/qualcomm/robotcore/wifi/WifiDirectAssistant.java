@@ -50,9 +50,9 @@ import android.os.Looper;
 import com.qualcomm.robotcore.R;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.internal.network.WifiDirectInviteDialogMonitor;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
-import org.firstinspires.ftc.robotcore.internal.network.WifiDirectInviteDialogMonitor;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -103,168 +103,6 @@ public class WifiDirectAssistant extends NetworkConnection {
 
     private NetworkConnectionCallback callback = null;
 
-    /*
-     * Maintains the list of wifi p2p peers available
-     */
-    private class WifiDirectPeerListListener implements PeerListListener {
-
-        /*
-         * callback method, called by Android when the peer list changes
-         */
-        @Override
-        public void onPeersAvailable(WifiP2pDeviceList peerList) {
-
-            peers.clear();
-            peers.addAll(peerList.getDeviceList());
-
-            RobotLog.vv(TAG, "peers found: " + peers.size());
-            for (WifiP2pDevice peer : peers) {
-                // deviceAddress is the MAC address, deviceName is the human readable name
-                String s = "    peer: " + peer.deviceAddress + " " + peer.deviceName;
-                RobotLog.vv(TAG, s);
-            }
-
-            sendEvent(Event.PEERS_AVAILABLE);
-        }
-    }
-
-    /*
-     * Updates when this device connects
-     */
-    private class WifiDirectConnectionInfoListener implements WifiP2pManager.ConnectionInfoListener {
-
-        @Override
-        public void onConnectionInfoAvailable(final WifiP2pInfo info) {
-
-            wifiP2pManager.requestGroupInfo(wifiP2pChannel, groupInfoListener);
-            synchronized (groupOwnerLock) {
-                groupOwnerAddress = info.groupOwnerAddress;
-                RobotLog.dd(TAG, "group owners address: " + groupOwnerAddress.toString());
-            }
-
-            if (info.groupFormed && info.isGroupOwner) {
-                RobotLog.dd(TAG, "group formed, this device is the group owner (GO)");
-                synchronized (connectStatusLock) {
-                    connectStatus = ConnectStatus.GROUP_OWNER;
-                }
-                sendEvent(Event.CONNECTED_AS_GROUP_OWNER);
-            } else if (info.groupFormed) {
-                RobotLog.dd(TAG, "group formed, this device is a client");
-                synchronized (connectStatusLock) {
-                    connectStatus = ConnectStatus.CONNECTED;
-                }
-                sendEvent(Event.CONNECTED_AS_PEER);
-            } else {
-                RobotLog.dd(TAG, "group NOT formed, ERROR: " + info.toString());
-                failureReason = WifiP2pManager.ERROR; // there is no error code for this
-                synchronized (connectStatusLock) {
-                    connectStatus = ConnectStatus.ERROR;
-                }
-                sendEvent(Event.ERROR);
-            }
-        }
-    }
-
-    private class WifiDirectGroupInfoListener implements WifiP2pManager.GroupInfoListener {
-
-        @Override
-        public void onGroupInfoAvailable(WifiP2pGroup group) {
-            if (group == null) {
-                return;
-            }
-
-            if (group.isGroupOwner()) {
-                groupOwnerMacAddress = deviceMacAddress;
-                groupOwnerName = deviceName;
-            } else {
-                WifiP2pDevice go = group.getOwner();
-                groupOwnerMacAddress = go.deviceAddress;
-                groupOwnerName = go.deviceName;
-            }
-
-            groupInterface = group.getInterface();
-            groupNetworkName = group.getNetworkName();
-
-            passphrase = group.getPassphrase();
-
-            // make sure passphase isn't null
-            passphrase = (passphrase != null) ? passphrase : "";
-
-            RobotLog.vv(TAG, "connection information available");
-            RobotLog.vv(TAG, "connection information - groupOwnerName = " + groupOwnerName);
-            RobotLog.vv(TAG, "connection information - groupOwnerMacAddress = " + groupOwnerMacAddress);
-            RobotLog.vv(TAG, "connection information - groupInterface = " + groupInterface);
-            RobotLog.vv(TAG, "connection information - groupNetworkName = " + groupNetworkName);
-
-            sendEvent(Event.CONNECTION_INFO_AVAILABLE);
-        }
-    }
-
-    private class WifiP2pBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-                int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-                isWifiP2pEnabled = (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED);
-                RobotLog.dd(TAG, "broadcast: state - enabled: " + isWifiP2pEnabled);
-
-            } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-                RobotLog.dd(TAG, "broadcast: peers changed");
-                wifiP2pManager.requestPeers(wifiP2pChannel, peerListListener);
-
-            } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-                // Note: this is sent out periodically (on the order of four times an hour) even when
-                // *nothing* has actually changed. So be careful when processing things: we get data *levels*
-                // here, not data *transitions*.
-                //
-                NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-                WifiP2pInfo wifip2pinfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
-                WifiP2pGroup wifiP2pGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
-                //
-                RobotLog.dd(TAG, "broadcast: connection changed: connectStatus=%s networkInfo.state=%s", connectStatus, networkInfo.getState());
-                //
-                if (networkInfo.isConnected()) {
-                    if (!isConnected()) {
-                        preferencesHelper.writeStringPrefIfDifferent(context.getString(R.string.pref_wifip2p_groupowner_connectedto), wifiP2pGroup.getOwner().deviceName);
-                        wifiP2pManager.requestConnectionInfo(wifiP2pChannel, connectionListener);
-                        wifiP2pManager.stopPeerDiscovery(wifiP2pChannel, null);
-                    }
-                } else {
-                    preferencesHelper.remove(context.getString(R.string.pref_wifip2p_groupowner_connectedto));
-                    synchronized (connectStatusLock) {
-                        connectStatus = ConnectStatus.NOT_CONNECTED;
-                    }
-                    if (!groupFormed) {
-                        discoverPeers();
-                    }
-                    // if we were previously connected, notify that we are now disconnected
-                    if (isConnected()) {
-                        RobotLog.vv(TAG, "disconnecting");
-                        sendEvent(Event.DISCONNECTED);
-                    }
-                    groupFormed = wifip2pinfo.groupFormed;
-                }
-
-            } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-                RobotLog.dd(TAG, "broadcast: this device changed");
-                onWifiP2pThisDeviceChanged((WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));
-
-            } else {
-                RobotLog.dd(TAG, "broadcast: %s", action);
-            }
-        }
-    }
-
-    public synchronized static WifiDirectAssistant getWifiDirectAssistant(Context context) {
-        if (wifiDirectAssistant == null) {
-            wifiDirectAssistant = new WifiDirectAssistant(context);
-        }
-        return wifiDirectAssistant;
-    }
-
     private WifiDirectAssistant(Context context) {
         this.context = context == null ? AppUtil.getDefContext() : context;
 
@@ -284,6 +122,26 @@ public class WifiDirectAssistant extends NetworkConnection {
         inviteDialogMonitor = new WifiDirectInviteDialogMonitor(this.context);
         preferencesHelper = new PreferencesHelper(TAG, this.context);
         preferencesHelper.remove(context.getString(R.string.pref_wifip2p_groupowner_connectedto));
+    }
+
+    public synchronized static WifiDirectAssistant getWifiDirectAssistant(Context context) {
+        if (wifiDirectAssistant == null) {
+            wifiDirectAssistant = new WifiDirectAssistant(context);
+        }
+        return wifiDirectAssistant;
+    }
+
+    public static String failureReasonToString(int reason) {
+        switch (reason) {
+            case WifiP2pManager.P2P_UNSUPPORTED:
+                return "P2P_UNSUPPORTED";
+            case WifiP2pManager.ERROR:
+                return "ERROR";
+            case WifiP2pManager.BUSY:
+                return "BUSY";
+            default:
+                return "UNKNOWN (reason " + reason + ")";
+        }
     }
 
     @Override
@@ -623,19 +481,6 @@ public class WifiDirectAssistant extends NetworkConnection {
         return failureReasonToString(failureReason);
     }
 
-    public static String failureReasonToString(int reason) {
-        switch (reason) {
-            case WifiP2pManager.P2P_UNSUPPORTED:
-                return "P2P_UNSUPPORTED";
-            case WifiP2pManager.ERROR:
-                return "ERROR";
-            case WifiP2pManager.BUSY:
-                return "BUSY";
-            default:
-                return "UNKNOWN (reason " + reason + ")";
-        }
-    }
-
     private void sendEvent(Event event) {
         // don't send duplicate events
         if (lastEvent == event && lastEvent != Event.PEERS_AVAILABLE) {
@@ -646,6 +491,161 @@ public class WifiDirectAssistant extends NetworkConnection {
         synchronized (callbackLock) {
             if (callback != null) {
                 callback.onNetworkConnectionEvent(event);
+            }
+        }
+    }
+
+    /*
+     * Maintains the list of wifi p2p peers available
+     */
+    private class WifiDirectPeerListListener implements PeerListListener {
+
+        /*
+         * callback method, called by Android when the peer list changes
+         */
+        @Override
+        public void onPeersAvailable(WifiP2pDeviceList peerList) {
+
+            peers.clear();
+            peers.addAll(peerList.getDeviceList());
+
+            RobotLog.vv(TAG, "peers found: " + peers.size());
+            for (WifiP2pDevice peer : peers) {
+                // deviceAddress is the MAC address, deviceName is the human readable name
+                String s = "    peer: " + peer.deviceAddress + " " + peer.deviceName;
+                RobotLog.vv(TAG, s);
+            }
+
+            sendEvent(Event.PEERS_AVAILABLE);
+        }
+    }
+
+    /*
+     * Updates when this device connects
+     */
+    private class WifiDirectConnectionInfoListener implements WifiP2pManager.ConnectionInfoListener {
+
+        @Override
+        public void onConnectionInfoAvailable(final WifiP2pInfo info) {
+
+            wifiP2pManager.requestGroupInfo(wifiP2pChannel, groupInfoListener);
+            synchronized (groupOwnerLock) {
+                groupOwnerAddress = info.groupOwnerAddress;
+                RobotLog.dd(TAG, "group owners address: " + groupOwnerAddress.toString());
+            }
+
+            if (info.groupFormed && info.isGroupOwner) {
+                RobotLog.dd(TAG, "group formed, this device is the group owner (GO)");
+                synchronized (connectStatusLock) {
+                    connectStatus = ConnectStatus.GROUP_OWNER;
+                }
+                sendEvent(Event.CONNECTED_AS_GROUP_OWNER);
+            } else if (info.groupFormed) {
+                RobotLog.dd(TAG, "group formed, this device is a client");
+                synchronized (connectStatusLock) {
+                    connectStatus = ConnectStatus.CONNECTED;
+                }
+                sendEvent(Event.CONNECTED_AS_PEER);
+            } else {
+                RobotLog.dd(TAG, "group NOT formed, ERROR: " + info.toString());
+                failureReason = WifiP2pManager.ERROR; // there is no error code for this
+                synchronized (connectStatusLock) {
+                    connectStatus = ConnectStatus.ERROR;
+                }
+                sendEvent(Event.ERROR);
+            }
+        }
+    }
+
+    private class WifiDirectGroupInfoListener implements WifiP2pManager.GroupInfoListener {
+
+        @Override
+        public void onGroupInfoAvailable(WifiP2pGroup group) {
+            if (group == null) {
+                return;
+            }
+
+            if (group.isGroupOwner()) {
+                groupOwnerMacAddress = deviceMacAddress;
+                groupOwnerName = deviceName;
+            } else {
+                WifiP2pDevice go = group.getOwner();
+                groupOwnerMacAddress = go.deviceAddress;
+                groupOwnerName = go.deviceName;
+            }
+
+            groupInterface = group.getInterface();
+            groupNetworkName = group.getNetworkName();
+
+            passphrase = group.getPassphrase();
+
+            // make sure passphase isn't null
+            passphrase = (passphrase != null) ? passphrase : "";
+
+            RobotLog.vv(TAG, "connection information available");
+            RobotLog.vv(TAG, "connection information - groupOwnerName = " + groupOwnerName);
+            RobotLog.vv(TAG, "connection information - groupOwnerMacAddress = " + groupOwnerMacAddress);
+            RobotLog.vv(TAG, "connection information - groupInterface = " + groupInterface);
+            RobotLog.vv(TAG, "connection information - groupNetworkName = " + groupNetworkName);
+
+            sendEvent(Event.CONNECTION_INFO_AVAILABLE);
+        }
+    }
+
+    private class WifiP2pBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
+                int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
+                isWifiP2pEnabled = (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED);
+                RobotLog.dd(TAG, "broadcast: state - enabled: " + isWifiP2pEnabled);
+
+            } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+                RobotLog.dd(TAG, "broadcast: peers changed");
+                wifiP2pManager.requestPeers(wifiP2pChannel, peerListListener);
+
+            } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+                // Note: this is sent out periodically (on the order of four times an hour) even when
+                // *nothing* has actually changed. So be careful when processing things: we get data *levels*
+                // here, not data *transitions*.
+                //
+                NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+                WifiP2pInfo wifip2pinfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
+                WifiP2pGroup wifiP2pGroup = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
+                //
+                RobotLog.dd(TAG, "broadcast: connection changed: connectStatus=%s networkInfo.state=%s", connectStatus, networkInfo.getState());
+                //
+                if (networkInfo.isConnected()) {
+                    if (!isConnected()) {
+                        preferencesHelper.writeStringPrefIfDifferent(context.getString(R.string.pref_wifip2p_groupowner_connectedto), wifiP2pGroup.getOwner().deviceName);
+                        wifiP2pManager.requestConnectionInfo(wifiP2pChannel, connectionListener);
+                        wifiP2pManager.stopPeerDiscovery(wifiP2pChannel, null);
+                    }
+                } else {
+                    preferencesHelper.remove(context.getString(R.string.pref_wifip2p_groupowner_connectedto));
+                    synchronized (connectStatusLock) {
+                        connectStatus = ConnectStatus.NOT_CONNECTED;
+                    }
+                    if (!groupFormed) {
+                        discoverPeers();
+                    }
+                    // if we were previously connected, notify that we are now disconnected
+                    if (isConnected()) {
+                        RobotLog.vv(TAG, "disconnecting");
+                        sendEvent(Event.DISCONNECTED);
+                    }
+                    groupFormed = wifip2pinfo.groupFormed;
+                }
+
+            } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
+                RobotLog.dd(TAG, "broadcast: this device changed");
+                onWifiP2pThisDeviceChanged((WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));
+
+            } else {
+                RobotLog.dd(TAG, "broadcast: %s", action);
             }
         }
     }

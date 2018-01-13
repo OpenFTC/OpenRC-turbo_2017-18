@@ -52,62 +52,25 @@ public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public static class Steps implements Iterable<Blinker.Step> {
-        ArrayList<Blinker.Step> steps = new ArrayList<>(maxStepCount);
-
-        public void add(Blinker.Step step) {
-            if (steps.size() < maxStepCount) {
-                this.steps.add(step);
-            }
-        }
-
-        public void add(int index, Blinker.Step step) {
-            if (index < maxStepCount) {
-                this.steps.add(index, step);
-            }
-        }
-
-        public Iterator<Blinker.Step> iterator() {
-            return this.steps.iterator();
-        }
-
-        public int size() {
-            return steps.size();
-        }
-
-        public int cbSerialize() {
-            if (this.size() == maxStepCount) {
-                return this.steps.size() * cbSerializeStep();
-            } else {
-                return (this.steps.size() + 1) * cbSerializeStep();
-            }
-        }
-    }
+    public static final int maxStepCount = 16;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
     Steps steps = new Steps();
-
-    public static final int maxStepCount = 16;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     public LynxSetModuleLEDPatternCommand(LynxModule module) {
         super(module);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public LynxSetModuleLEDPatternCommand(LynxModule module, Steps steps) {
         this(module);
         this.steps = steps;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Step Serialization
-    //----------------------------------------------------------------------------------------------
 
     public static void serializeStep(Blinker.Step step, ByteBuffer buffer) {
         int msDuration = step.getDurationMs();
@@ -119,6 +82,10 @@ public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
         buffer.put((byte) Color.green(color));
         buffer.put((byte) Color.red(color));
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Step Serialization
+    //----------------------------------------------------------------------------------------------
 
     public static void deserializeStep(Blinker.Step step, ByteBuffer buffer) {
         int tenths = buffer.get();
@@ -135,13 +102,13 @@ public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
         return 4;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
     public static int getStandardCommandNumber() {
         return COMMAND_NUMBER_SET_MODULE_LED_PATTERN;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public boolean isResponseExpected() {
@@ -175,6 +142,38 @@ public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
             Blinker.Step step = new Blinker.Step();
             deserializeStep(step, buffer);
             this.steps.add(step);
+        }
+    }
+
+    public static class Steps implements Iterable<Blinker.Step> {
+        ArrayList<Blinker.Step> steps = new ArrayList<>(maxStepCount);
+
+        public void add(Blinker.Step step) {
+            if (steps.size() < maxStepCount) {
+                this.steps.add(step);
+            }
+        }
+
+        public void add(int index, Blinker.Step step) {
+            if (index < maxStepCount) {
+                this.steps.add(index, step);
+            }
+        }
+
+        public Iterator<Blinker.Step> iterator() {
+            return this.steps.iterator();
+        }
+
+        public int size() {
+            return steps.size();
+        }
+
+        public int cbSerialize() {
+            if (this.size() == maxStepCount) {
+                return this.steps.size() * cbSerializeStep();
+            } else {
+                return (this.steps.size() + 1) * cbSerializeStep();
+            }
         }
     }
 }

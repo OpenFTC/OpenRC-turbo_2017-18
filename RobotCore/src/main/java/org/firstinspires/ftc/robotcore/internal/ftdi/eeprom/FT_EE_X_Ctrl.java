@@ -73,8 +73,8 @@ public class FT_EE_X_Ctrl extends FT_EE_Ctrl {
     private static final int DBUS_SCHMITT = 8;
     private static final int CBUS_SLEW = 64;
     private static final int CBUS_SCHMITT = 128;
-    private static FtDevice ft_device;
     private static final short EE_MAX_SIZE = 1024;
+    private static FtDevice ft_device;
 
     public FT_EE_X_Ctrl(FtDevice usbC) {
         super(usbC);
@@ -351,35 +351,15 @@ public class FT_EE_X_Ctrl extends FT_EE_Ctrl {
                 dataRead[e] = this.readWord(e);
             }
 
-            if ((dataRead[0] & 1) > 0) {
-                eeprom.BCDEnable = true;
-            } else {
-                eeprom.BCDEnable = false;
-            }
+            eeprom.BCDEnable = (dataRead[0] & 1) > 0;
 
-            if ((dataRead[0] & 2) > 0) {
-                eeprom.BCDForceCBusPWREN = true;
-            } else {
-                eeprom.BCDForceCBusPWREN = false;
-            }
+            eeprom.BCDForceCBusPWREN = (dataRead[0] & 2) > 0;
 
-            if ((dataRead[0] & 4) > 0) {
-                eeprom.BCDDisableSleep = true;
-            } else {
-                eeprom.BCDDisableSleep = false;
-            }
+            eeprom.BCDDisableSleep = (dataRead[0] & 4) > 0;
 
-            if ((dataRead[0] & 8) > 0) {
-                eeprom.RS485EchoSuppress = true;
-            } else {
-                eeprom.RS485EchoSuppress = false;
-            }
+            eeprom.RS485EchoSuppress = (dataRead[0] & 8) > 0;
 
-            if ((dataRead[0] & 64) > 0) {
-                eeprom.PowerSaveEnable = true;
-            } else {
-                eeprom.PowerSaveEnable = false;
-            }
+            eeprom.PowerSaveEnable = (dataRead[0] & 64) > 0;
 
             if ((dataRead[0] & 128) > 0) {
                 eeprom.A_LoadVCP = true;
@@ -393,77 +373,29 @@ public class FT_EE_X_Ctrl extends FT_EE_Ctrl {
             eeprom.ProductId = (short) dataRead[2];
             this.getUSBConfig(eeprom, dataRead[4]);
             this.getDeviceControl(eeprom, dataRead[5]);
-            if ((dataRead[5] & 16) > 0) {
-                eeprom.FT1248ClockPolarity = true;
-            } else {
-                eeprom.FT1248ClockPolarity = false;
-            }
+            eeprom.FT1248ClockPolarity = (dataRead[5] & 16) > 0;
 
-            if ((dataRead[5] & 32) > 0) {
-                eeprom.FT1248LSB = true;
-            } else {
-                eeprom.FT1248LSB = false;
-            }
+            eeprom.FT1248LSB = (dataRead[5] & 32) > 0;
 
-            if ((dataRead[5] & 64) > 0) {
-                eeprom.FT1248FlowControl = true;
-            } else {
-                eeprom.FT1248FlowControl = false;
-            }
+            eeprom.FT1248FlowControl = (dataRead[5] & 64) > 0;
 
-            if ((dataRead[5] & 128) > 0) {
-                eeprom.I2CDisableSchmitt = true;
-            } else {
-                eeprom.I2CDisableSchmitt = false;
-            }
+            eeprom.I2CDisableSchmitt = (dataRead[5] & 128) > 0;
 
-            if ((dataRead[5] & 256) == 256) {
-                eeprom.InvertTXD = true;
-            } else {
-                eeprom.InvertTXD = false;
-            }
+            eeprom.InvertTXD = (dataRead[5] & 256) == 256;
 
-            if ((dataRead[5] & 512) == 512) {
-                eeprom.InvertRXD = true;
-            } else {
-                eeprom.InvertRXD = false;
-            }
+            eeprom.InvertRXD = (dataRead[5] & 512) == 512;
 
-            if ((dataRead[5] & 1024) == 1024) {
-                eeprom.InvertRTS = true;
-            } else {
-                eeprom.InvertRTS = false;
-            }
+            eeprom.InvertRTS = (dataRead[5] & 1024) == 1024;
 
-            if ((dataRead[5] & 2048) == 2048) {
-                eeprom.InvertCTS = true;
-            } else {
-                eeprom.InvertCTS = false;
-            }
+            eeprom.InvertCTS = (dataRead[5] & 2048) == 2048;
 
-            if ((dataRead[5] & 4096) == 4096) {
-                eeprom.InvertDTR = true;
-            } else {
-                eeprom.InvertDTR = false;
-            }
+            eeprom.InvertDTR = (dataRead[5] & 4096) == 4096;
 
-            if ((dataRead[5] & 8192) == 8192) {
-                eeprom.InvertDSR = true;
-            } else {
-                eeprom.InvertDSR = false;
-            }
+            eeprom.InvertDSR = (dataRead[5] & 8192) == 8192;
 
-            if ((dataRead[5] & 16384) == 16384) {
-                eeprom.InvertDCD = true;
-            } else {
-                eeprom.InvertDCD = false;
-            }
+            eeprom.InvertDCD = (dataRead[5] & 16384) == 16384;
 
-            if ((dataRead[5] & '耀') == '耀') {
-                eeprom.InvertRI = true;
-            } else {
-                eeprom.InvertRI = false;
-            }
+            eeprom.InvertRI = (dataRead[5] & '耀') == '耀';
 
             e = (short) (dataRead[6] & 3);
             switch (e) {
@@ -481,18 +413,10 @@ public class FT_EE_X_Ctrl extends FT_EE_Ctrl {
             }
 
             short data2x06 = (short) (dataRead[6] & 4);
-            if (data2x06 == 4) {
-                eeprom.AD_SlowSlew = true;
-            } else {
-                eeprom.AD_SlowSlew = false;
-            }
+            eeprom.AD_SlowSlew = data2x06 == 4;
 
             short data3x06 = (short) (dataRead[6] & 8);
-            if (data3x06 == 8) {
-                eeprom.AD_SchmittInput = true;
-            } else {
-                eeprom.AD_SchmittInput = false;
-            }
+            eeprom.AD_SchmittInput = data3x06 == 8;
 
             short data45x06 = (short) ((dataRead[6] & 48) >> 4);
             switch (data45x06) {
@@ -510,18 +434,10 @@ public class FT_EE_X_Ctrl extends FT_EE_Ctrl {
             }
 
             short data6x06 = (short) (dataRead[6] & 64);
-            if (data6x06 == 64) {
-                eeprom.AC_SlowSlew = true;
-            } else {
-                eeprom.AC_SlowSlew = false;
-            }
+            eeprom.AC_SlowSlew = data6x06 == 64;
 
             short data7x06 = (short) (dataRead[6] & 128);
-            if (data7x06 == 128) {
-                eeprom.AC_SchmittInput = true;
-            } else {
-                eeprom.AC_SchmittInput = false;
-            }
+            eeprom.AC_SchmittInput = data7x06 == 128;
 
             eeprom.I2CSlaveAddress = dataRead[10];
             eeprom.I2CDeviceID = dataRead[11];

@@ -32,9 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.bosch;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.meanIntegrate;
-import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.plus;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -43,6 +40,9 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.meanIntegrate;
+import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.plus;
 
 /**
  * {@link NaiveAccelerationIntegrator} provides a very naive implementation of
@@ -60,6 +60,13 @@ public class NaiveAccelerationIntegrator implements BNO055IMU.AccelerationIntegr
     Velocity velocity;
     Acceleration acceleration;
 
+    NaiveAccelerationIntegrator() {
+        this.parameters = null;
+        this.position = new Position();
+        this.velocity = new Velocity();
+        this.acceleration = null;
+    }
+
     public Position getPosition() {
         return this.position;
     }
@@ -68,19 +75,12 @@ public class NaiveAccelerationIntegrator implements BNO055IMU.AccelerationIntegr
         return this.velocity;
     }
 
-    public Acceleration getAcceleration() {
-        return this.acceleration;
-    }
-
     //------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------
 
-    NaiveAccelerationIntegrator() {
-        this.parameters = null;
-        this.position = new Position();
-        this.velocity = new Velocity();
-        this.acceleration = null;
+    public Acceleration getAcceleration() {
+        return this.acceleration;
     }
 
     //------------------------------------------------------------------------------------------

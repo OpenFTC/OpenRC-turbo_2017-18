@@ -36,10 +36,6 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface HardwareDevice {
 
-    enum Manufacturer {
-        Unknown, Other, Lego, HiTechnic, ModernRobotics, Adafruit, Matrix, Lynx, AMS
-    }
-
     /**
      * Returns an indication of the manufacturer of this device.
      *
@@ -80,5 +76,9 @@ public interface HardwareDevice {
      * Closes this device
      */
     void close();
+
+    enum Manufacturer {
+        Unknown, Other, Lego, HiTechnic, ModernRobotics, Adafruit, Matrix, Lynx, AMS
+    }
 
 }

@@ -66,11 +66,6 @@ package com.qualcomm.ftccommon.configuration;
 import com.qualcomm.ftccommon.R;
 
 public class EditDigitalDevicesActivity extends EditPortListSpinnerActivity {
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     public static final RequestCode requestCode = RequestCode.EDIT_DIGITAL;
 
     public EditDigitalDevicesActivity() {
@@ -81,5 +76,10 @@ public class EditDigitalDevicesActivity extends EditPortListSpinnerActivity {
         this.idItemSpinner = R.id.choiceSpinner;
         this.idItemEditTextResult = R.id.editTextResult;
         this.idItemPortNumber = R.id.port_number;
+    }
+
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 }

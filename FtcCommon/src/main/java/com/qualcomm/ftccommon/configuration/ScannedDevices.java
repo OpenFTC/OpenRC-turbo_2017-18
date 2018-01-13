@@ -33,7 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.ftccommon.configuration;
 
 import com.qualcomm.robotcore.hardware.DeviceManager;
-import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import java.util.HashMap;
@@ -44,30 +43,17 @@ import java.util.Map;
  * to device types. Simple serialization and deserialization logic is provided.
  */
 public class ScannedDevices extends HashMap<SerialNumber, DeviceManager.DeviceType> {
+    private static final String pairSeparatorWrite = "|";
+    private static final String pairSeparatorSplit = "\\|";  // '|' is a a regex metachar, so we have to escape
+    private static final String keyValueSeparatorWrite = ",";
+    private static final String keyValueSeparatorSplit = ",";
+
     public ScannedDevices(Map<SerialNumber, DeviceManager.DeviceType> map) {
         super(map);
     }
 
     public ScannedDevices() {
         super();
-    }
-
-    private static final String pairSeparatorWrite = "|";
-    private static final String pairSeparatorSplit = "\\|";  // '|' is a a regex metachar, so we have to escape
-    private static final String keyValueSeparatorWrite = ",";
-    private static final String keyValueSeparatorSplit = ",";
-
-    public String toSerializationString() {
-        StringBuilder result = new StringBuilder();
-        for (Entry<SerialNumber, DeviceManager.DeviceType> entry : this.entrySet()) {
-            if (result.length() > 0) {
-                result.append(pairSeparatorWrite);
-            }
-            result.append(entry.getKey().toString());
-            result.append(keyValueSeparatorWrite);
-            result.append(entry.getValue().toString());
-        }
-        return result.toString();
     }
 
     public static ScannedDevices fromSerializationString(String string) {
@@ -85,5 +71,18 @@ public class ScannedDevices extends HashMap<SerialNumber, DeviceManager.DeviceTy
         }
         //
         return result;
+    }
+
+    public String toSerializationString() {
+        StringBuilder result = new StringBuilder();
+        for (Entry<SerialNumber, DeviceManager.DeviceType> entry : this.entrySet()) {
+            if (result.length() > 0) {
+                result.append(pairSeparatorWrite);
+            }
+            result.append(entry.getKey().toString());
+            result.append(keyValueSeparatorWrite);
+            result.append(entry.getValue().toString());
+        }
+        return result.toString();
     }
 }

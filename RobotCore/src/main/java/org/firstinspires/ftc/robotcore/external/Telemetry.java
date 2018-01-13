@@ -302,6 +302,107 @@ public interface Telemetry {
     //----------------------------------------------------------------------------------------------
 
     /**
+     * Creates and returns a new line in the receiver {@link Telemetry}.
+     *
+     * @return a new line in the receiver {@link Telemetry}
+     */
+    Line addLine();
+
+    /**
+     * Creates and returns a new line in the receiver {@link Telemetry}.
+     *
+     * @param lineCaption the caption for the line
+     * @return a new line in the receiver {@link Telemetry}
+     */
+    Line addLine(String lineCaption);
+
+    /**
+     * Removes a line from the receiver telemetry, if present.
+     *
+     * @param line the line to be removed
+     * @return whether any change was made to the receiver
+     */
+    boolean removeLine(Line line);
+
+    /**
+     * Answers whether {@link #clear()} is automatically called after each call to {@link #update()}.
+     *
+     * @return whether {@link #clear()} is automatically called after each call to {@link #update()}.
+     * @see #setAutoClear(boolean)
+     */
+    boolean isAutoClear();
+
+    //----------------------------------------------------------------------------------------------
+    // Data Items
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Sets whether {@link #clear()} is automatically called after each call to {@link #update()}.
+     *
+     * @param autoClear if true, {@link #clear()} is automatically called after each call to {@link #update()}.
+     */
+    void setAutoClear(boolean autoClear);
+
+    //----------------------------------------------------------------------------------------------
+    // Properties
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Returns the minimum interval between {@link Telemetry} transmissions from the robot controller
+     * to the driver station
+     *
+     * @return the minimum interval between {@link Telemetry} transmissions from the robot controller to the diver station
+     * @see #setMsTransmissionInterval(int)
+     */
+    int getMsTransmissionInterval();
+
+    /**
+     * Sets the minimum interval between {@link Telemetry} transmissions from the robot controller
+     * to the driver station.
+     *
+     * @param msTransmissionInterval the minimum interval between {@link Telemetry} transmissions
+     *                               from the robot controller to the driver station
+     * @see #getMsTransmissionInterval()
+     */
+    void setMsTransmissionInterval(int msTransmissionInterval);
+
+    /**
+     * Returns the string which is used to separate {@link Item}s contained within a line. The default
+     * separator is " | ".
+     *
+     * @return the string which is use to separate {@link Item}s contained within a line.
+     * @see #setItemSeparator(String)
+     * @see #addLine()
+     */
+    String getItemSeparator();
+
+    /**
+     * @see #setItemSeparator(String)
+     */
+    void setItemSeparator(String itemSeparator);
+
+    /**
+     * Returns the string which is used to separate caption from value within a {@link Telemetry}
+     * {@link Item}. The default separator is " : ";
+     *
+     * @return the string which is used to separate caption from value within a {@link Telemetry} {@link Item}.
+     */
+    String getCaptionValueSeparator();
+
+    /**
+     * @see #getCaptionValueSeparator()
+     */
+    void setCaptionValueSeparator(String captionValueSeparator);
+
+    /**
+     * Returns the log of this {@link Telemetry} to which log entries may be appended.
+     *
+     * @return the log of this {@link Telemetry} to which log entries may be appended.
+     * @see Log#addData(String, Object)
+     */
+    Log log();
+
+    /**
      * Instances of {@link Line} build lines of data on the driver station telemetry display.
      */
     interface Line {
@@ -334,31 +435,8 @@ public interface Telemetry {
         <T> Item addData(String caption, String format, Func<T> valueProducer);
     }
 
-    /**
-     * Creates and returns a new line in the receiver {@link Telemetry}.
-     *
-     * @return a new line in the receiver {@link Telemetry}
-     */
-    Line addLine();
-
-    /**
-     * Creates and returns a new line in the receiver {@link Telemetry}.
-     *
-     * @param lineCaption the caption for the line
-     * @return a new line in the receiver {@link Telemetry}
-     */
-    Line addLine(String lineCaption);
-
-    /**
-     * Removes a line from the receiver telemetry, if present.
-     *
-     * @param line the line to be removed
-     * @return whether any change was made to the receiver
-     */
-    boolean removeLine(Line line);
-
     //----------------------------------------------------------------------------------------------
-    // Data Items
+    // Properties
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -425,6 +503,14 @@ public interface Telemetry {
         <T> Item setValue(String format, Func<T> valueProducer);
 
         /**
+         * Returns whether the item is to be retained in a clear() operation.
+         *
+         * @return whether the item is to be retained in a clear() operation.
+         * @see #setRetained(Boolean)
+         */
+        boolean isRetained();
+
+        /**
          * Sets whether the item is to be retained in clear() operation or not.
          * This is initially true for items that whose value is computed with a
          * value producer; otherwise, it is initially false.
@@ -436,14 +522,6 @@ public interface Telemetry {
          * @see #isRetained()
          */
         Item setRetained(@Nullable Boolean retained);
-
-        /**
-         * Returns whether the item is to be retained in a clear() operation.
-         *
-         * @return whether the item is to be retained in a clear() operation.
-         * @see #setRetained(Boolean)
-         */
-        boolean isRetained();
 
         /**
          * Adds a new data item in the associated {@link Telemetry} immediately following the receiver.
@@ -474,76 +552,6 @@ public interface Telemetry {
         <T> Item addData(String caption, String format, Func<T> valueProducer);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Properties
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * Answers whether {@link #clear()} is automatically called after each call to {@link #update()}.
-     *
-     * @return whether {@link #clear()} is automatically called after each call to {@link #update()}.
-     * @see #setAutoClear(boolean)
-     */
-    boolean isAutoClear();
-
-    /**
-     * Sets whether {@link #clear()} is automatically called after each call to {@link #update()}.
-     *
-     * @param autoClear if true, {@link #clear()} is automatically called after each call to {@link #update()}.
-     */
-    void setAutoClear(boolean autoClear);
-
-    /**
-     * Returns the minimum interval between {@link Telemetry} transmissions from the robot controller
-     * to the driver station
-     *
-     * @return the minimum interval between {@link Telemetry} transmissions from the robot controller to the diver station
-     * @see #setMsTransmissionInterval(int)
-     */
-    int getMsTransmissionInterval();
-
-    /**
-     * Sets the minimum interval between {@link Telemetry} transmissions from the robot controller
-     * to the driver station.
-     *
-     * @param msTransmissionInterval the minimum interval between {@link Telemetry} transmissions
-     *                               from the robot controller to the driver station
-     * @see #getMsTransmissionInterval()
-     */
-    void setMsTransmissionInterval(int msTransmissionInterval);
-
-    /**
-     * Returns the string which is used to separate {@link Item}s contained within a line. The default
-     * separator is " | ".
-     *
-     * @return the string which is use to separate {@link Item}s contained within a line.
-     * @see #setItemSeparator(String)
-     * @see #addLine()
-     */
-    String getItemSeparator();
-
-    /**
-     * @see #setItemSeparator(String)
-     */
-    void setItemSeparator(String itemSeparator);
-
-    /**
-     * Returns the string which is used to separate caption from value within a {@link Telemetry}
-     * {@link Item}. The default separator is " : ";
-     *
-     * @return the string which is used to separate caption from value within a {@link Telemetry} {@link Item}.
-     */
-    String getCaptionValueSeparator();
-
-    /**
-     * @see #getCaptionValueSeparator()
-     */
-    void setCaptionValueSeparator(String captionValueSeparator);
-
-    //----------------------------------------------------------------------------------------------
-    // Properties
-    //----------------------------------------------------------------------------------------------
-
     /**
      * The {@link Log} in a {@link Telemetry} instance provides an append-only list of messages
      * that appear on the driver station below the {@link Item}s of the {@link Telemetry}.
@@ -552,13 +560,6 @@ public interface Telemetry {
      * @see #addData(String, Object)
      */
     interface Log {
-        /**
-         * {@link DisplayOrder} instances indicate the desired ordering of a {@link #log()}.
-         */
-        enum DisplayOrder {
-            NEWEST_FIRST, OLDEST_FIRST
-        }
-
         /**
          * Returns the maximum number of lines which will be retained in a {@link #log()()} and
          * shown on the driver station display.
@@ -607,13 +608,12 @@ public interface Telemetry {
          * Removes all entries from this {@link Log}
          */
         void clear();
-    }
 
-    /**
-     * Returns the log of this {@link Telemetry} to which log entries may be appended.
-     *
-     * @return the log of this {@link Telemetry} to which log entries may be appended.
-     * @see Log#addData(String, Object)
-     */
-    Log log();
+        /**
+         * {@link DisplayOrder} instances indicate the desired ordering of a {@link #log()}.
+         */
+        enum DisplayOrder {
+            NEWEST_FIRST, OLDEST_FIRST
+        }
+    }
 }

@@ -8,14 +8,13 @@
  ***/
 package org.firstinspires.ftc.robotcore.internal.opengl.models;
 
-import java.util.List;
-
-import org.firstinspires.ftc.robotcore.internal.opengl.models.VertexBuilder.DrawCommand;
-import org.firstinspires.ftc.robotcore.internal.opengl.models.VertexBuilder.GeneratedData;
 import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Cylinder;
 import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Point3;
-
+import org.firstinspires.ftc.robotcore.internal.opengl.models.VertexBuilder.DrawCommand;
+import org.firstinspires.ftc.robotcore.internal.opengl.models.VertexBuilder.GeneratedData;
 import org.firstinspires.ftc.robotcore.internal.opengl.shaders.PositionAttributeShader;
+
+import java.util.List;
 
 public class SolidCylinder {
     private static final int coordinatesPerVertex = 3;

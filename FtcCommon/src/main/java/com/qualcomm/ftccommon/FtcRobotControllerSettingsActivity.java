@@ -40,8 +40,8 @@ import android.preference.SwitchPreference;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 
 public class FtcRobotControllerSettingsActivity extends ThemedActivity {
@@ -49,6 +49,19 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
     @Override
     public String getTag() {
         return this.getClass().getSimpleName();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Always make sure we have a real device name before we launch
+        DeviceNameManager.getInstance().initializeDeviceNameIfNecessary();
+
+        // Display the fragment as the main content.
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new SettingsFragment())
+                .commit();
     }
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -97,18 +110,5 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
             lwPreference.setOrder(0);
             logCategory.addPreference(lwPreference);
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Always make sure we have a real device name before we launch
-        DeviceNameManager.getInstance().initializeDeviceNameIfNecessary();
-
-        // Display the fragment as the main content.
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragment())
-                .commit();
     }
 }

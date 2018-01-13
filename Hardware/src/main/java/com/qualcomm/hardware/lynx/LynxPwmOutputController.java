@@ -62,32 +62,29 @@ public class LynxPwmOutputController extends LynxController implements PWMOutput
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxPwmOutputController";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     public static final int apiPortFirst = 0;
     public static final int apiPortLast = apiPortFirst + LynxConstants.NUMBER_OF_PWM_CHANNELS - 1;
+    protected LastKnown<Integer>[] lastKnownOutputTimes;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    protected LastKnown<Integer>[] lastKnownOutputTimes;
     protected LastKnown<Integer>[] lastKnownPulseWidthPeriods;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public LynxPwmOutputController(final Context context, final LynxModule module)
             throws RobotCoreException, InterruptedException {
         super(context, module);
         this.lastKnownOutputTimes = LastKnown.createArray(LynxConstants.NUMBER_OF_PWM_CHANNELS);
         this.lastKnownPulseWidthPeriods = LastKnown.createArray(LynxConstants.NUMBER_OF_PWM_CHANNELS);
         this.finishConstruction();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
     @Override

@@ -45,14 +45,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class EditMotorListActivity extends EditPortListSpinnerActivity<MotorConfiguration> {
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     ConfigurationType[] configurationTypes = new ConfigurationType[0];
     ConfigurationType unspecifiedMotorType = MotorConfigurationType.getUnspecifiedMotorType();
-
     public EditMotorListActivity() {
         this.layoutMain = R.layout.motor_list;
         this.idListParentLayout = R.id.item_list_parent;
@@ -61,6 +55,11 @@ public class EditMotorListActivity extends EditPortListSpinnerActivity<MotorConf
         this.idItemSpinner = R.id.choiceMotorSpinner;
         this.idItemEditTextResult = R.id.editTextResult;
         this.idItemPortNumber = R.id.port_number;
+    }
+
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 
     @Override

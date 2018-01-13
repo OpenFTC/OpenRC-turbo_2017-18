@@ -90,8 +90,29 @@ public final class MotorConfigurationType extends UserConfigurationType implemen
     // Accessing
     //----------------------------------------------------------------------------------------------
 
+    public MotorConfigurationType(Class clazz, String xmlTag) {
+        super(clazz, Flavor.MOTOR, xmlTag);
+    }
+
+    // Used by gson deserialization
+    public MotorConfigurationType() {
+        super(Flavor.MOTOR);
+    }
+
+    public static MotorConfigurationType getUnspecifiedMotorType() {
+        return UserConfigurationTypeManager.getInstance().getUnspecifiedMotorType();
+    }
+
+    public static MotorConfigurationType getMotorType(Class<?> clazz) {
+        return (MotorConfigurationType) UserConfigurationTypeManager.getInstance().userTypeFromClass(Flavor.MOTOR, clazz);
+    }
+
     public double getTicksPerRev() {
         return ticksPerRev;
+    }
+
+    public void setTicksPerRev(double ticksPerRev) {
+        this.ticksPerRev = ticksPerRev;
     }
 
     public double getAchieveableMaxTicksPerSecond() {
@@ -103,10 +124,6 @@ public final class MotorConfigurationType extends UserConfigurationType implemen
 
     public int getAchieveableMaxTicksPerSecondRounded() {
         return (int) Math.round(getAchieveableMaxTicksPerSecond());
-    }
-
-    public void setTicksPerRev(double ticksPerRev) {
-        this.ticksPerRev = ticksPerRev;
     }
 
     public double getGearing() {
@@ -155,6 +172,10 @@ public final class MotorConfigurationType extends UserConfigurationType implemen
         return !hubVelocityParams.isDefault();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public ExpansionHubMotorControllerParamsState getHubVelocityParams() {
         return hubVelocityParams;
     }
@@ -171,27 +192,6 @@ public final class MotorConfigurationType extends UserConfigurationType implemen
     @NonNull
     DistributorInfoState getDistributorInfo() {
         return distributorInfo;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    public static MotorConfigurationType getUnspecifiedMotorType() {
-        return UserConfigurationTypeManager.getInstance().getUnspecifiedMotorType();
-    }
-
-    public static MotorConfigurationType getMotorType(Class<?> clazz) {
-        return (MotorConfigurationType) UserConfigurationTypeManager.getInstance().userTypeFromClass(Flavor.MOTOR, clazz);
-    }
-
-    public MotorConfigurationType(Class clazz, String xmlTag) {
-        super(clazz, Flavor.MOTOR, xmlTag);
-    }
-
-    // Used by gson deserialization
-    public MotorConfigurationType() {
-        super(Flavor.MOTOR);
     }
 
     public MotorConfigurationType clone() {

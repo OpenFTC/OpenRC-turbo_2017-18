@@ -54,6 +54,62 @@ public class RunShellCommand {
     }
 
     /**
+     * Kill any spawn processes matching a given process name
+     *
+     * @param processName name of process to kill
+     * @param packageName name of this package
+     * @param shell       an instance of RunShellCommand
+     * @throws RobotCoreException if unable to kill process
+     */
+    public static void killSpawnedProcess(String processName, String packageName, RunShellCommand shell) throws RobotCoreException {
+        try {
+            int pid = getSpawnedProcessPid(processName, packageName, shell);
+            while (pid != -1) {
+                RobotLog.v("Killing PID " + pid);
+                shell.run(String.format("kill %d", pid));
+                pid = getSpawnedProcessPid(processName, packageName, shell);
+            }
+        } catch (Exception e) {
+            throw new RobotCoreException(String.format("Failed to kill %s instances started by this app", processName));
+        }
+    }
+
+    /**
+     * return the PID of a given process name started a given package name
+     *
+     * @param processName name of process to search for
+     * @param packageName name of this package
+     * @param shell       an instance of RunShellCommand
+     * @return PID, or -1 if none found
+     */
+    public static int getSpawnedProcessPid(String processName, String packageName, RunShellCommand shell) {
+        // This method has a heavy dependency on the Android version of 'ps'.
+
+        // run ps
+        String psOutput = shell.run("ps");
+        String username = "invalid";
+
+        // determine the username of this app
+        for (String line : psOutput.split("\n")) {
+            if (line.contains(packageName)) {
+                String[] tokens = line.split("\\s+");
+                username = tokens[0];
+                break;
+            }
+        }
+
+        // find an instance of logcat started by this app, if any
+        for (String line : psOutput.split("\n")) {
+            if (line.contains(processName) && line.contains(username)) {
+                String[] tokens = line.split("\\s+");
+                return Integer.parseInt(tokens[1]); // if 'ps' changes format this call will fail
+            }
+        }
+
+        return -1;
+    }
+
+    /**
      * If logging is enabled, all command will be logged
      *
      * @param enable true to enable
@@ -131,61 +187,5 @@ public class RunShellCommand {
             }
         }
         return output;
-    }
-
-    /**
-     * Kill any spawn processes matching a given process name
-     *
-     * @param processName name of process to kill
-     * @param packageName name of this package
-     * @param shell       an instance of RunShellCommand
-     * @throws RobotCoreException if unable to kill process
-     */
-    public static void killSpawnedProcess(String processName, String packageName, RunShellCommand shell) throws RobotCoreException {
-        try {
-            int pid = getSpawnedProcessPid(processName, packageName, shell);
-            while (pid != -1) {
-                RobotLog.v("Killing PID " + pid);
-                shell.run(String.format("kill %d", pid));
-                pid = getSpawnedProcessPid(processName, packageName, shell);
-            }
-        } catch (Exception e) {
-            throw new RobotCoreException(String.format("Failed to kill %s instances started by this app", processName));
-        }
-    }
-
-    /**
-     * return the PID of a given process name started a given package name
-     *
-     * @param processName name of process to search for
-     * @param packageName name of this package
-     * @param shell       an instance of RunShellCommand
-     * @return PID, or -1 if none found
-     */
-    public static int getSpawnedProcessPid(String processName, String packageName, RunShellCommand shell) {
-        // This method has a heavy dependency on the Android version of 'ps'.
-
-        // run ps
-        String psOutput = shell.run("ps");
-        String username = "invalid";
-
-        // determine the username of this app
-        for (String line : psOutput.split("\n")) {
-            if (line.contains(packageName)) {
-                String[] tokens = line.split("\\s+");
-                username = tokens[0];
-                break;
-            }
-        }
-
-        // find an instance of logcat started by this app, if any
-        for (String line : psOutput.split("\n")) {
-            if (line.contains(processName) && line.contains(username)) {
-                String[] tokens = line.split("\\s+");
-                return Integer.parseInt(tokens[1]); // if 'ps' changes format this call will fail
-            }
-        }
-
-        return -1;
     }
 }

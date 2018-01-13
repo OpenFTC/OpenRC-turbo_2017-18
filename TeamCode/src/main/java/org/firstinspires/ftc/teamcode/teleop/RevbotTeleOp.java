@@ -51,17 +51,6 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         this.savedDirection = savedDirection;
     }
 
-    private double[] lockFourAxis(double[] direction) {
-        if (Math.abs(direction[0]) >= Math.abs(direction[2])) {
-            direction[2] = 0;
-        } else {
-            direction[0] = 0;
-            direction[1] = 0;
-        }
-
-        return direction;
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
@@ -77,19 +66,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             setCurrentDirection(getUserInput());
             inputHandler.handleInput();
-            /*
-            if (inputHandler.useSavedDirection) {
-                setCurrentDirection(getSavedDirection());
-            }
-
-            if (inputHandler.lockFourAxis) {
-                setCurrentDirection(lockFourAxis(getCurrentDirection()));
-            }
-
-            setCurrentDirection(gear.gearMovement(getCurrentDirection()));
-            */
-
-            drivetrain.move(getCurrentDirection());
+            drivetrain.move(gear.applyGearing(currentDirection));
 
             telemetry.addData("Status", "Running");
             telemetry.addData("Gearing", gear.getCurrentGear());
@@ -109,6 +86,8 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         BallKnock ballKnock;
         AbstractLift armWinch, cubeLift, relicSlide;
 
+        double[] fourAxisDirection;
+
         void init(Revbot robot) {
             relicClaw = new RelicClaw(robot.relicClaw);
             cubeClaw = new CubeClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
@@ -120,12 +99,20 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
         void handleInput() {
             // D-Pad control (g1, g2)
+            // Raise and lower the cube lift.
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 cubeLift.raise();
             } else if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 cubeLift.lower();
             } else {
                 cubeLift.stop();
+            }
+
+            // Open and close the cube claw.
+            if (gamepad1.dpad_left || gamepad2.dpad_left) {
+                cubeClaw.open();
+            } else if (gamepad1.dpad_right || gamepad2.dpad_right) {
+                cubeClaw.close();
             }
 
             // Face button control (Relic/Endgame) (g1)
@@ -145,24 +132,40 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
             // Shoulder button control (g1)
             if (gamepad1.left_bumper) {
-                // Lock four axes
+                fourAxisDirection = getCurrentDirection();
+                if (Math.abs(fourAxisDirection[0]) >= Math.abs(fourAxisDirection[2])) {
+                    fourAxisDirection[2] = 0;
+                } else if (Math.abs(fourAxisDirection[0]) < Math.abs(fourAxisDirection[2])) {
+                    fourAxisDirection[0] = 0;
+                    fourAxisDirection[1] = 0;
+                }
+
+                setCurrentDirection(fourAxisDirection);
             }
 
             if (gamepad1.left_trigger > MIN_TRIGGER_VALUE) {
-                // Vincent's analog gearing
+                setCurrentDirection(gear.analogGear(getCurrentDirection(), (double) gamepad1.left_trigger));
             }
 
             if (gamepad1.right_bumper) {
-                // Save movement
+                setSavedDirection(getCurrentDirection());
             } else if (gamepad1.right_trigger > MIN_TRIGGER_VALUE) {
-                // Recall movement
+                setCurrentDirection(getSavedDirection());
             }
 
             // Face button control (g2)
             if (gamepad2.b) {
-                cubeClaw.getClaw2().open();
+                cubeClaw.openRight();
             } else if (gamepad2.x) {
-                cubeClaw.getClaw1().open();
+                cubeClaw.openLeft();
+            }
+
+            if (gamepad2.a) {
+                armWinch.lower();
+            } else if (gamepad2.y) {
+                armWinch.raise();
+            } else {
+                armWinch.stop();
             }
 
             // Shoulder button control (g2)
@@ -173,6 +176,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             } else if (gamepad2.right_bumper) {
                 gear.gearUp();
             }
+
         }
 
     }
@@ -182,7 +186,6 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         private final double SPEED_INCREMENT;
 
         private double currentGear = 1.0;
-        private boolean changingGears;
 
         Gear() {
             this(1.0, 0.1);
@@ -206,27 +209,34 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         }
 
         public void gearUp() {
-            if (!changingGears) {
-                changingGears = true;
-                setCurrentGear(currentGear + SPEED_INCREMENT);
-                changingGears = false;
-            }
+            setCurrentGear(currentGear + SPEED_INCREMENT);
         }
 
         public void gearDown() {
-            if (!changingGears) {
-                changingGears = true;
-                setCurrentGear(currentGear - SPEED_INCREMENT);
-                changingGears = false;
-            }
+            setCurrentGear(currentGear - SPEED_INCREMENT);
         }
 
-        public double[] gearMovement(double[] movement) {
+        public double[] applyGearing(double[] movement) {
+            double[] newMovement = new double[movement.length];
+
             for (int i = 0; i < movement.length; i++) {
-                movement[i] *= currentGear;
+                newMovement[i] = movement[i] * currentGear;
             }
 
-            return movement;
+            return newMovement;
+        }
+
+
+        // Hyper precision
+        public double[] analogGear(double[] movement, double hpValue) {
+            double[] newMovement = new double[movement.length];
+            hpValue = (hpValue * 3) + 1;
+
+            for (int i = 0; i < movement.length; i++) {
+                newMovement[i] = movement[i] / hpValue;
+            }
+
+            return newMovement;
         }
     }
 }

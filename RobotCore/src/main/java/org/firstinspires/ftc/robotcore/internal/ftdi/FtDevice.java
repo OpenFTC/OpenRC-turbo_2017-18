@@ -48,8 +48,6 @@ import android.support.annotation.Nullable;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EEPROM;
 import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EE_2232H_Ctrl;
 import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EE_2232_Ctrl;
@@ -61,6 +59,8 @@ import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EE_245R_Ctrl;
 import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EE_4232H_Ctrl;
 import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EE_Ctrl;
 import org.firstinspires.ftc.robotcore.internal.ftdi.eeprom.FT_EE_X_Ctrl;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbDeviceClosedException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbUnspecifiedException;
@@ -91,19 +91,17 @@ public class FtDevice extends FtConstants {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    private Context mContext;
     private final UsbDevice mUsbDevice;
     private final UsbInterface mUsbInterface;
     private final int mInterfaceID;
-
     private final Object openCloseLock = new Object();
     FtDeviceInfo mDeviceInfo;
     long mEventMask;
-    private boolean mIsOpen;
-    private boolean mDebugRetainBuffers;
     UsbEndpoint mBulkOutEndpoint;
     UsbEndpoint mBulkInEndpoint;
+    private Context mContext;
+    private boolean mIsOpen;
+    private boolean mDebugRetainBuffers;
     private FT_EE_Ctrl mEEPROM;
     private byte mLatencyTimer;
     private FtDeviceManagerParams mParams;
@@ -127,6 +125,16 @@ public class FtDevice extends FtConstants {
         this.mInterfaceID = this.mUsbInterface.getId() + 1;
         //
         initialize(usbManager);
+    }
+
+    public static boolean isOpen(FtDevice device) {
+        return device != null && device.isOpen();
+    }
+
+    public static void throwIfStatus(int status, String context) throws RobotUsbException {
+        if (status != 0) {
+            throw new RobotUsbUnspecifiedException("%s: status=%d", context, status);
+        }
     }
 
     protected void initialize(UsbManager usbManager) throws FtDeviceIOException, RobotUsbException {
@@ -260,7 +268,7 @@ public class FtDevice extends FtConstants {
                             default:
                                 this.getConnection().releaseInterface(this.mUsbInterface);
                                 this.getConnection().close();
-                                this.setConnection((UsbDeviceConnection) null);
+                                this.setConnection(null);
                                 this.setClosed();
                         }
                 }
@@ -269,6 +277,10 @@ public class FtDevice extends FtConstants {
             throw new FtDeviceIOException("exception instantiating FT_Device ", e);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
 
     protected String getStringDescriptor(int index) throws RobotUsbException {
         byte[] buffer = new byte[255];
@@ -290,10 +302,6 @@ public class FtDevice extends FtConstants {
                 0
         );
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
 
     public SerialNumber getSerialNumber() {
         return new SerialNumber(this.getDeviceInfo().serialNumber);
@@ -373,14 +381,14 @@ public class FtDevice extends FtConstants {
         return rc;
     }
 
+    FtDeviceManagerParams getDriverParameters() {
+        return this.mParams;
+    }
+
     protected void setDriverParameters(FtDeviceManagerParams params) {
         this.mParams.setMaxReadBufferSize(params.getMaxReadBufferSize());
         this.mParams.setPacketBufferCacheSize(params.getPacketBufferCacheSize());
         this.mParams.setBuildInReadTimeout(params.getBulkInReadTimeout());
-    }
-
-    FtDeviceManagerParams getDriverParameters() {
-        return this.mParams;
     }
 
     public int getReadTimeout() {
@@ -460,10 +468,6 @@ public class FtDevice extends FtConstants {
         return this.mIsOpen;
     }
 
-    public static boolean isOpen(FtDevice device) {
-        return device != null && device.isOpen();
-    }
-
     private synchronized void setOpen() {
         this.mIsOpen = true;
         this.mDeviceClosedReason = null;
@@ -475,12 +479,12 @@ public class FtDevice extends FtConstants {
         this.mDeviceInfo.flags &= ~FtDeviceManager.FLAGS_OPENED;
     }
 
-    public void setDeviceClosedReason(RobotUsbException deviceClosedReason) {
-        this.mDeviceClosedReason = deviceClosedReason;
-    }
-
     public RobotUsbException getDeviceClosedReason() {
         return this.mDeviceClosedReason;
+    }
+
+    public void setDeviceClosedReason(RobotUsbException deviceClosedReason) {
+        this.mDeviceClosedReason = deviceClosedReason;
     }
 
     /**
@@ -649,6 +653,10 @@ public class FtDevice extends FtConstants {
         }
     }
 
+    public synchronized boolean getDebugRetainBuffers() {
+        return mDebugRetainBuffers;
+    }
+
     public void setDebugRetainBuffers(boolean retainBuffers) {
         synchronized (openCloseLock) {
             mDebugRetainBuffers = retainBuffers;
@@ -656,10 +664,6 @@ public class FtDevice extends FtConstants {
                 mReadBufferManager.setDebugRetainBuffers(retainBuffers);
             }
         }
-    }
-
-    public synchronized boolean getDebugRetainBuffers() {
-        return mDebugRetainBuffers;
     }
 
     public synchronized void logRetainedBuffers(long nsTimerStart, long nsTimerExpire, String tag, String format, Object... args) {
@@ -733,7 +737,7 @@ public class FtDevice extends FtConstants {
             }
 
             if (rc == 1) {
-                int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_SET_BAUDRATE, divisors[0], divisors[1], (byte[]) null, 0, 0);
+                int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_SET_BAUDRATE, divisors[0], divisors[1], null, 0, 0);
                 if (status != 0) {
                     throw new RobotUsbUnspecifiedException("setBaudRate: status=%d", status);
                 }
@@ -770,14 +774,8 @@ public class FtDevice extends FtConstants {
         if (!this.isOpen()) {
             throw new RobotUsbDeviceClosedException("setBreak");
         } else {
-            int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_SET_DATA, wValue, this.mInterfaceID, (byte[]) null, 0, 0);
+            int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_SET_DATA, wValue, this.mInterfaceID, null, 0, 0);
             throwIfStatus(status, "setBreak");
-        }
-    }
-
-    public static void throwIfStatus(int status, String context) throws RobotUsbException {
-        if (status != 0) {
-            throw new RobotUsbUnspecifiedException("%s: status=%d", context, status);
         }
     }
 
@@ -792,7 +790,7 @@ public class FtDevice extends FtConstants {
                 wValue = (short) (wValue | xon & 255);
             }
 
-            int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_SET_FLOW_CTRL, wValue, this.mInterfaceID | flowControl, (byte[]) null, 0, 0);
+            int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_SET_FLOW_CTRL, wValue, this.mInterfaceID | flowControl, null, 0, 0);
             if (status == 0) {
                 rc = true;
                 if (flowControl == FtDeviceManager.FLOW_RTS_CTS) {
@@ -952,7 +950,7 @@ public class FtDevice extends FtConstants {
         } else {
             // Notice that this isn't sent to a specific interface, but rather the whole device
             RobotLog.vv(TAG, "resetting %s", getSerialNumber());
-            int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_RESET, FTDI_SIO_RESET_SIO, 0, (byte[]) null, 0, 0);
+            int status = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, FTDI_SIO_RESET, FTDI_SIO_RESET_SIO, 0, null, 0, 0);
             return (status == 0);
         }
     }
@@ -961,7 +959,7 @@ public class FtDevice extends FtConstants {
         if (!this.isOpen()) {
             return RC_DEVICE_CLOSED;
         } else {
-            return this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, request, wValue, this.mInterfaceID, (byte[]) null, 0, 0);
+            return this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_OUT, request, wValue, this.mInterfaceID, null, 0, 0);
         }
     }
 
@@ -1052,6 +1050,16 @@ public class FtDevice extends FtConstants {
         }
     }
 
+    public byte getLatencyTimer() throws RobotUsbException {
+        byte[] latency = new byte[1];
+        if (!this.isOpen()) {
+            return RC_DEVICE_CLOSED;
+        } else {
+            int status1 = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_IN, FTDI_SIO_GET_LATENCY, 0, this.mInterfaceID, latency, latency.length, 0);
+            return status1 == latency.length ? latency[0] : 0;
+        }
+    }
+
     public void setLatencyTimer(byte latency) throws RobotUsbException {
         int wValue = latency & 0xff;
         if (this.isOpen()) {
@@ -1061,16 +1069,6 @@ public class FtDevice extends FtConstants {
             } else {
                 throwIfStatus(status, "setLatencyTimer");
             }
-        }
-    }
-
-    public byte getLatencyTimer() throws RobotUsbException {
-        byte[] latency = new byte[1];
-        if (!this.isOpen()) {
-            return RC_DEVICE_CLOSED;
-        } else {
-            int status1 = this.getConnection().controlTransfer(UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_IN, FTDI_SIO_GET_LATENCY, 0, this.mInterfaceID, latency, latency.length, 0);
-            return status1 == latency.length ? latency[0] : 0;
         }
     }
 

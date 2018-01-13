@@ -69,25 +69,11 @@ public class ClassManager {
     // State
     //----------------------------------------------------------------------------------------------
 
-    private static class InstanceHolder {
-        public static ClassManager theInstance = new ClassManager();
-    }
-
-    public static ClassManager getInstance() {
-        return InstanceHolder.theInstance;
-    }
-
     private static final String TAG = "ClassManager";
-
     private List<String> packagesAndClassesToIgnore;
     private List<ClassFilter> filters;
     private Context context;
     private DexFile dexFile;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     private ClassManager() {
         try {
             this.context = AppUtil.getInstance().getApplication();
@@ -99,6 +85,14 @@ public class ClassManager {
         }
 
     }
+
+    public static ClassManager getInstance() {
+        return InstanceHolder.theInstance;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     protected void clearIgnoredList() {
         // We ignore certain packages to make us more robust and efficient
@@ -118,10 +112,6 @@ public class ClassManager {
     protected void clearOnBotJava() {
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
     /**
      * You want to know what classes are in the APK?  Call me.
      *
@@ -130,6 +120,10 @@ public class ClassManager {
     public void registerFilter(ClassFilter filter) {
         filters.add(filter);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Find all the classes in the context in which we should consider looking, which
@@ -247,6 +241,10 @@ public class ClassManager {
             }
             f.filterOnBotJavaClassesComplete();
         }
+    }
+
+    private static class InstanceHolder {
+        public static ClassManager theInstance = new ClassManager();
     }
 
 

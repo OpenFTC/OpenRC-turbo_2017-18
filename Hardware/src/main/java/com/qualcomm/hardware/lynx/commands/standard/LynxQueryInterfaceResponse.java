@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx.commands.standard;
 
-import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.LynxInterface;
 import com.qualcomm.hardware.lynx.commands.LynxResponse;
 import com.qualcomm.robotcore.util.TypeConversion;
@@ -64,20 +64,20 @@ public class LynxQueryInterfaceResponse extends LynxStandardResponse {
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public int getCommandNumberFirst() {
-        return TypeConversion.unsignedShortToInt(this.commandNumberFirst);
+    public static int getStandardCommandNumber() {
+        return LynxQueryInterfaceCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
     }
 
-    public int getNumberOfCommands() {
-        return TypeConversion.unsignedShortToInt(this.numberOfCommands);
+    public int getCommandNumberFirst() {
+        return TypeConversion.unsignedShortToInt(this.commandNumberFirst);
     }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return LynxQueryInterfaceCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
+    public int getNumberOfCommands() {
+        return TypeConversion.unsignedShortToInt(this.numberOfCommands);
     }
 
     @Override

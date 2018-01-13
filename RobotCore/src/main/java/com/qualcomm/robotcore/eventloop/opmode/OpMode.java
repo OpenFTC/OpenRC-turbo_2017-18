@@ -36,9 +36,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robocol.TelemetryMessage;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeServices;
 import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryInternal;
-import org.firstinspires.ftc.robotcore.internal.opmode.OpModeServices;
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,7 +74,15 @@ public abstract class OpMode {
      * updated before every call to loop.
      */
     public double time = 0.0;
-
+    public int msStuckDetectInit = 5000;
+    public int msStuckDetectInitLoop = 5000;
+    public int msStuckDetectStart = 5000;
+    public int msStuckDetectLoop = 5000;
+    public int msStuckDetectStop = 1000;
+    /**
+     * this is logically an internal field. DO NOT USE
+     */
+    public OpModeServices internalOpModeServices = null;
     // internal time tracking
     private long startTime = 0; // in nanoseconds
 
@@ -104,7 +112,9 @@ public abstract class OpMode {
     public void init_loop() {
     }
 
-    ;
+    //----------------------------------------------------------------------------------------------
+    // Telemetry management
+    //----------------------------------------------------------------------------------------------
 
     /**
      * User defined start method.
@@ -116,7 +126,14 @@ public abstract class OpMode {
     public void start() {
     }
 
-    ;
+    //----------------------------------------------------------------------------------------------
+    // Safety Management
+    //
+    // These constants manage the duration we allow for callbacks to user code to run for before
+    // such code is considered to be stuck (in an infinite loop, or wherever) and consequently
+    // the robot controller application is restarted. They SHOULD NOT be modified except as absolutely
+    // necessary as poorly chosen values might inadvertently compromise safety.
+    //----------------------------------------------------------------------------------------------
 
     /**
      * User defined loop method
@@ -134,8 +151,6 @@ public abstract class OpMode {
      */
     public void stop() {
     }
-
-    ;
 
     /**
      * Requests that this OpMode be shut down if it the currently active opMode, much as if the stop
@@ -170,7 +185,7 @@ public abstract class OpMode {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Telemetry management
+    // Internal
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -185,25 +200,6 @@ public abstract class OpMode {
     public void updateTelemetry(Telemetry telemetry) {
         telemetry.update();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Safety Management
-    //
-    // These constants manage the duration we allow for callbacks to user code to run for before
-    // such code is considered to be stuck (in an infinite loop, or wherever) and consequently
-    // the robot controller application is restarted. They SHOULD NOT be modified except as absolutely
-    // necessary as poorly chosen values might inadvertently compromise safety.
-    //----------------------------------------------------------------------------------------------
-
-    public int msStuckDetectInit = 5000;
-    public int msStuckDetectInitLoop = 5000;
-    public int msStuckDetectStart = 5000;
-    public int msStuckDetectLoop = 5000;
-    public int msStuckDetectStop = 1000;
-
-    //----------------------------------------------------------------------------------------------
-    // Internal
-    //----------------------------------------------------------------------------------------------
 
     public void internalPreInit() {
         // Reset telemetry in case opmode instance gets reused from run to run
@@ -225,11 +221,6 @@ public abstract class OpMode {
     public void internalPostLoop() {
         telemetry.update();
     }
-
-    /**
-     * this is logically an internal field. DO NOT USE
-     */
-    public OpModeServices internalOpModeServices = null;
 
     /**
      * This is an internal SDK method, not intended for use by user opmodes.

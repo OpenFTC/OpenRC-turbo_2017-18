@@ -60,10 +60,10 @@ public class WatchdogMonitor {
     // State
     //----------------------------------------------------------------------------------------------
 
+    protected final Object startStopLock = new Object();
     protected ExecutorService executorService = ThreadPool.newSingleThreadExecutor("WatchdogMonitor");
     protected Runner runner = new Runner();
     protected Thread monitoredThread = null;
-    protected final Object startStopLock = new Object();
 
     //----------------------------------------------------------------------------------------------
     // Construction

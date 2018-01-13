@@ -63,6 +63,12 @@ public class DigitalChannelImpl implements DigitalChannel {
         return controller.getDigitalChannelMode(channel);
     }
 
+    @Override
+    @Deprecated
+    public void setMode(DigitalChannelController.Mode mode) {
+        controller.setDigitalChannelMode(channel, mode);
+    }
+
     /**
      * Set the channel mode
      *
@@ -70,12 +76,6 @@ public class DigitalChannelImpl implements DigitalChannel {
      */
     @Override
     public void setMode(DigitalChannel.Mode mode) {
-        controller.setDigitalChannelMode(channel, mode);
-    }
-
-    @Override
-    @Deprecated
-    public void setMode(DigitalChannelController.Mode mode) {
         controller.setDigitalChannelMode(channel, mode);
     }
 

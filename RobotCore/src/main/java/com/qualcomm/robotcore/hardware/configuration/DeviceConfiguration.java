@@ -77,6 +77,15 @@ public class DeviceConfiguration implements Serializable, Comparable<DeviceConfi
         this(port, type, DISABLED_DEVICE_NAME, false);
     }
 
+    public static void sortByName(List<? extends DeviceConfiguration> configurations) {
+        Collections.sort(configurations, new Comparator<DeviceConfiguration>() {
+            @Override
+            public int compare(DeviceConfiguration lhs, DeviceConfiguration rhs) {
+                return lhs.getName().compareToIgnoreCase(rhs.getName());
+            }
+        });
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -93,21 +102,12 @@ public class DeviceConfiguration implements Serializable, Comparable<DeviceConfi
         this.name = newName;
     }
 
-    public void setConfigurationType(ConfigurationType type) {
-        this.type = type;
-    }
-
-    public static void sortByName(List<? extends DeviceConfiguration> configurations) {
-        Collections.sort(configurations, new Comparator<DeviceConfiguration>() {
-            @Override
-            public int compare(DeviceConfiguration lhs, DeviceConfiguration rhs) {
-                return lhs.getName().compareToIgnoreCase(rhs.getName());
-            }
-        });
-    }
-
     public ConfigurationType getConfigurationType() {
         return this.type;
+    }
+
+    public void setConfigurationType(ConfigurationType type) {
+        this.type = type;
     }
 
     public ConfigurationType getSpinnerChoiceType() {
@@ -127,22 +127,6 @@ public class DeviceConfiguration implements Serializable, Comparable<DeviceConfi
      */
     public I2cChannel getI2cChannel() {
         return new I2cChannel(getPort());
-    }
-
-    /**
-     * A separate class to allow the compiler to help us find all the place this should be used
-     */
-    public static class I2cChannel {
-        public final int channel;
-
-        public I2cChannel(int channel) {
-            this.channel = channel;
-        }
-
-        @Override
-        public String toString() {
-            return "channel=" + channel;
-        }
     }
 
     @Override
@@ -166,6 +150,22 @@ public class DeviceConfiguration implements Serializable, Comparable<DeviceConfi
         String portAttr = parser.getAttributeValue(null, DeviceConfiguration.XMLATTR_PORT);
         int port = portAttr == null ? 0 : Integer.parseInt(portAttr);
         this.setPort(port);
+    }
+
+    /**
+     * A separate class to allow the compiler to help us find all the place this should be used
+     */
+    public static class I2cChannel {
+        public final int channel;
+
+        public I2cChannel(int channel) {
+            this.channel = channel;
+        }
+
+        @Override
+        public String toString() {
+            return "channel=" + channel;
+        }
     }
 
 }

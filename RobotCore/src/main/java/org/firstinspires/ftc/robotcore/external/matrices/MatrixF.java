@@ -79,34 +79,6 @@ public abstract class MatrixF {
     }
 
     /**
-     * Returns a matrix which a submatrix of the receiver.
-     *
-     * @param row     the row in the receiver at which the submatrix is to start
-     * @param col     the column in the receiver at which the submatrix is to start
-     * @param numRows the number of rows in the submatrix
-     * @param numCols the number of columns in the submatrix
-     * @return the newly created submatrix
-     * @see #slice(int, int)
-     */
-    @Const
-    public SliceMatrixF slice(int row, int col, int numRows, int numCols) {
-        return new SliceMatrixF(this, row, col, numRows, numCols);
-    }
-
-    /**
-     * Returns a matrix which is a submatrix of the receiver starting at (0,0)
-     *
-     * @param numRows the number of rows in the submatrix
-     * @param numCols the number of columns in the submatrix
-     * @return the newly created submatrix
-     * @see #slice(int, int, int, int)
-     */
-    @Const
-    public SliceMatrixF slice(int numRows, int numCols) {
-        return slice(0, 0, numRows, numCols);
-    }
-
-    /**
      * Returns an identity matrix of the indicated dimension. An identity matrix is zero
      * everywhere except on the diagonal, where it is one.
      *
@@ -149,6 +121,43 @@ public abstract class MatrixF {
         return result;
     }
 
+    @SuppressLint("DefaultLocale")
+    protected static RuntimeException dimensionsError(int numRows, int numCols) {
+        return new IllegalArgumentException(String.format("matrix dimensions are incorrect: rows=%d cols=%d", numRows, numCols));
+    }
+
+    /**
+     * Returns a matrix which a submatrix of the receiver.
+     *
+     * @param row     the row in the receiver at which the submatrix is to start
+     * @param col     the column in the receiver at which the submatrix is to start
+     * @param numRows the number of rows in the submatrix
+     * @param numCols the number of columns in the submatrix
+     * @return the newly created submatrix
+     * @see #slice(int, int)
+     */
+    @Const
+    public SliceMatrixF slice(int row, int col, int numRows, int numCols) {
+        return new SliceMatrixF(this, row, col, numRows, numCols);
+    }
+
+    /**
+     * Returns a matrix which is a submatrix of the receiver starting at (0,0)
+     *
+     * @param numRows the number of rows in the submatrix
+     * @param numCols the number of columns in the submatrix
+     * @return the newly created submatrix
+     * @see #slice(int, int, int, int)
+     */
+    @Const
+    public SliceMatrixF slice(int numRows, int numCols) {
+        return slice(0, 0, numRows, numCols);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
     /**
      * Returns a new empty matrix of the indicated dimensions. If a specific implementation
      * associated with the receiver can be used with these dimensions, then such is used; otherwise
@@ -159,10 +168,6 @@ public abstract class MatrixF {
      */
     @Const
     public abstract MatrixF emptyMatrix(int numRows, int numCols);
-
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns the number of rows in this matrix
@@ -235,6 +240,10 @@ public abstract class MatrixF {
         return result;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Transformation matrix operations
+    //----------------------------------------------------------------------------------------------
+
     @Const
     @Override
     public String toString() {
@@ -256,10 +265,6 @@ public abstract class MatrixF {
         result.append("}");
         return result.toString();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Transformation matrix operations
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Transforms the vector according to this matrix interpreted as a transformation matrix.
@@ -320,6 +325,10 @@ public abstract class MatrixF {
         return formatAsTransform(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Matrix operations
+    //----------------------------------------------------------------------------------------------
+
     /**
      * A simple utility that extracts positioning information from a transformation matrix
      * and formats it in a form palatable to a human being. This should only be invoked on
@@ -349,10 +358,6 @@ public abstract class MatrixF {
 
         return String.format("%s %s", orientation.toString(), translation.toString());
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Matrix operations
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns a matrix which is the transposition of the receiver matrix.
@@ -650,6 +655,10 @@ public abstract class MatrixF {
         this.subtract(new ColumnMatrixF(him));
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Transformations
+    //----------------------------------------------------------------------------------------------
+
     /**
      * @see #subtract(VectorF)
      */
@@ -659,7 +668,7 @@ public abstract class MatrixF {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Transformations
+    // Utility
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -673,17 +682,8 @@ public abstract class MatrixF {
         return this.getColumn(3).normalized3D();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
     protected RuntimeException dimensionsError() {
         return dimensionsError(this.numRows, this.numCols);
-    }
-
-    @SuppressLint("DefaultLocale")
-    protected static RuntimeException dimensionsError(int numRows, int numCols) {
-        return new IllegalArgumentException(String.format("matrix dimensions are incorrect: rows=%d cols=%d", numRows, numCols));
     }
 
     //----------------------------------------------------------------------------------------------

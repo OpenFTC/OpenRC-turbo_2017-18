@@ -44,8 +44,6 @@ import com.qualcomm.hardware.lynx.commands.LynxInterfaceCommand;
 import com.qualcomm.hardware.lynx.commands.LynxMessage;
 import com.qualcomm.hardware.lynx.commands.LynxRespondable;
 import com.qualcomm.hardware.lynx.commands.LynxResponse;
-import com.qualcomm.hardware.lynx.commands.core.LynxDekaInterfaceCommand;
-import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.hardware.lynx.commands.core.LynxPhoneChargeControlCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxPhoneChargeQueryCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxPhoneChargeQueryResponse;
@@ -79,8 +77,8 @@ import com.qualcomm.robotcore.util.ThreadPool;
 
 import junit.framework.Assert;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectInviteDialogMonitor;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -116,42 +114,15 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxModule";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     protected static final int msLivenessLong = 5000;
     protected static final int msLivenessShort = 500;
     protected static final int msInitialContact = 500;      // not an exact number; probably can be reduced
     protected static final int msKeepAliveTimeout = 2500;   // per the Lynx spec
+    protected static Map<Integer, MessageClassAndCtor> standardCommands = new HashMap<Integer, MessageClassAndCtor>();    // command number -> class
 
     //----------------------------------------------------------------------------------------------
     // Command Meta State
     //----------------------------------------------------------------------------------------------
-
-    /**
-     * A {@link Class} for one of the Lynx messages together with a cached constructor thereto
-     */
-    protected static class MessageClassAndCtor {
-        public Class<? extends LynxMessage> clazz;
-        public Constructor<? extends LynxMessage> ctor;
-
-        public void assignCtor() throws NoSuchMethodException {
-            try {
-                this.ctor = this.clazz.getConstructor(LynxModule.class);
-            } catch (NoSuchMethodException ignored) {
-                try {
-                    this.ctor = this.clazz.getConstructor(LynxModuleIntf.class);
-                } catch (NoSuchMethodException e) {
-                    this.ctor = null;
-                }
-            }
-        }
-    }
-
-    protected static Map<Integer, MessageClassAndCtor> standardCommands = new HashMap<Integer, MessageClassAndCtor>();    // command number -> class
     protected static Map<Class<? extends LynxCommand>, MessageClassAndCtor> responseClasses = new HashMap<Class<? extends LynxCommand>, MessageClassAndCtor>();
 
     static {
@@ -169,6 +140,74 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         correlateStandardResponse(LynxGetModuleStatusCommand.class);
         correlateStandardResponse(LynxQueryInterfaceCommand.class);
         correlateStandardResponse(LynxGetModuleLEDColorCommand.class);
+    }
+
+    protected final Object startStopLock;
+    /**
+     * maps message number to command we've issued with said number
+     */
+    protected final ConcurrentHashMap<Integer, LynxRespondable> unfinishedCommands;
+    /**
+     * for all the commands we know about (standard + QueryInterface), maps command number to
+     * class which implements same. Only commands known to be supported by the module are populated
+     */
+    protected final ConcurrentHashMap<Integer, MessageClassAndCtor> commandClasses;
+    protected final ConcurrentHashMap<String, LynxInterface> interfacesQueried;
+    /**
+     * This lock prevents concurrency problems that would arrive from
+     * interleaving messages of the (asynchronous) i2c protocol. In particular it
+     * makes sure that once we issue a read, we can actually read that data before
+     * we get back in there and, say, issue a write on another bus.
+     */
+    protected final Object i2cLock;
+
+    //----------------------------------------------------------------------------------------------
+    // Instance State
+    //----------------------------------------------------------------------------------------------
+    protected final Object futureLock;
+    protected LynxUsbDevice lynxUsbDevice;
+    protected List<LynxController> controllers;
+    protected int moduleAddress;
+    protected AtomicInteger nextMessageNumber;
+    protected boolean isParent;
+    protected boolean isSystemSynthetic;  // if true, then system made this up, not user
+    protected boolean isUserModule;       // if false, then this is for some system-admin purpose
+    protected boolean isEngaged;
+    protected boolean isOpen;
+    /**
+     * State for maintaining stack of blinker patterns
+     */
+    protected ArrayList<Step> currentSteps;
+    protected Deque<ArrayList<Step>> previousSteps;
+    protected ScheduledExecutorService executor;
+    protected Future<?> pingFuture;
+    protected Future<?> attentionRequiredFuture;
+    public LynxModule(LynxUsbDevice lynxUsbDevice, int moduleAddress, boolean isParent) {
+        this.lynxUsbDevice = lynxUsbDevice;
+        this.controllers = new LinkedList<LynxController>();
+        this.moduleAddress = moduleAddress;
+        this.isParent = isParent;
+        this.isSystemSynthetic = false;
+        this.isEngaged = true;
+        this.isUserModule = true;
+        this.isOpen = true;
+        this.startStopLock = new Object();
+
+        this.nextMessageNumber = new AtomicInteger(0); // TODO: start with random number? Either that, or send a 'new msg# seq' start of some sort (less important now that we reset before connecting)
+        this.commandClasses = new ConcurrentHashMap<Integer, MessageClassAndCtor>(standardCommands);
+        this.interfacesQueried = new ConcurrentHashMap<String, LynxInterface>();
+        this.unfinishedCommands = new ConcurrentHashMap<Integer, LynxRespondable>();
+        this.i2cLock = new Object();
+        this.currentSteps = new ArrayList<Step>();
+        this.previousSteps = new ArrayDeque<ArrayList<Step>>();
+        this.executor = null;
+        this.pingFuture = null;
+        this.attentionRequiredFuture = null;
+        this.futureLock = new Object();
+
+        startExecutor();
+
+        this.lynxUsbDevice.registerCallback(this, false);
     }
 
     protected static void addStandardCommand(Class<? extends LynxMessage> clazz) {
@@ -201,89 +240,62 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         responseClasses.put(commandClass, pair);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Instance State
-    //----------------------------------------------------------------------------------------------
-
-    protected LynxUsbDevice lynxUsbDevice;
-    protected List<LynxController> controllers;
-    protected int moduleAddress;
-    protected AtomicInteger nextMessageNumber;
-    protected boolean isParent;
-    protected boolean isSystemSynthetic;  // if true, then system made this up, not user
-    protected boolean isUserModule;       // if false, then this is for some system-admin purpose
-    protected boolean isEngaged;
-    protected boolean isOpen;
-    protected final Object startStopLock;
-
     /**
-     * maps message number to command we've issued with said number
+     * Returns a status warning message indicative of the health of the indicated device, or an
+     * empty string if no such message is currently applicable.
      */
-    protected final ConcurrentHashMap<Integer, LynxRespondable> unfinishedCommands;
-
-    /**
-     * for all the commands we know about (standard + QueryInterface), maps command number to
-     * class which implements same. Only commands known to be supported by the module are populated
-     */
-    protected final ConcurrentHashMap<Integer, MessageClassAndCtor> commandClasses;
-
-    protected final ConcurrentHashMap<String, LynxInterface> interfacesQueried;
-
-    /**
-     * This lock prevents concurrency problems that would arrive from
-     * interleaving messages of the (asynchronous) i2c protocol. In particular it
-     * makes sure that once we issue a read, we can actually read that data before
-     * we get back in there and, say, issue a write on another bus.
-     */
-    protected final Object i2cLock;
-
-    /**
-     * State for maintaining stack of blinker patterns
-     */
-    protected ArrayList<Step> currentSteps;
-    protected Deque<ArrayList<Step>> previousSteps;
-
-    protected ScheduledExecutorService executor;
-    protected Future<?> pingFuture;
-    protected Future<?> attentionRequiredFuture;
-    protected final Object futureLock;
+    public static
+    @NonNull
+    String getHealthStatusWarningMessage(HardwareDeviceHealth hardwareDeviceHealth) {
+        switch (hardwareDeviceHealth.getHealthStatus()) {
+            case UNHEALTHY:
+                String name = null;
+                if (hardwareDeviceHealth instanceof RobotConfigNameable) {
+                    name = ((RobotConfigNameable) hardwareDeviceHealth).getUserConfiguredName();
+                    if (name != null) {
+                        name = AppUtil.getDefContext().getString(R.string.quotes, name);
+                    }
+                }
+                if (name == null && hardwareDeviceHealth instanceof HardwareDevice) {
+                    HardwareDevice hardwareDevice = (HardwareDevice) hardwareDeviceHealth;
+                    String typeDescription = hardwareDevice.getDeviceName();
+                    String connectionInfo = hardwareDevice.getConnectionInfo();
+                    name = AppUtil.getDefContext().getString(R.string.hwDeviceDescriptionAndConnection, typeDescription, connectionInfo);
+                }
+                if (name == null) {
+                    name = AppUtil.getDefContext().getString(R.string.hwPoorlyNamedDevice);
+                }
+                return AppUtil.getDefContext().getString(R.string.unhealthyDevice, name);
+            default:
+                return "";
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxModule(LynxUsbDevice lynxUsbDevice, int moduleAddress, boolean isParent) {
-        this.lynxUsbDevice = lynxUsbDevice;
-        this.controllers = new LinkedList<LynxController>();
-        this.moduleAddress = moduleAddress;
-        this.isParent = isParent;
-        this.isSystemSynthetic = false;
-        this.isEngaged = true;
-        this.isUserModule = true;
-        this.isOpen = true;
-        this.startStopLock = new Object();
+    public static List<Step> getLivenessSteps() {
+        // We set the LED to be a solid green, interrupted occasionally by a brief off duration.
+        List<Step> steps = new ArrayList<Step>();
+        steps.add(new Step(Color.GREEN, msLivenessLong - msLivenessShort, TimeUnit.MILLISECONDS));
+        steps.add(new Step(Color.BLACK, msLivenessShort, TimeUnit.MILLISECONDS));
+        return steps;
+    }
 
-        this.nextMessageNumber = new AtomicInteger(0); // TODO: start with random number? Either that, or send a 'new msg# seq' start of some sort (less important now that we reset before connecting)
-        this.commandClasses = new ConcurrentHashMap<Integer, MessageClassAndCtor>(standardCommands);
-        this.interfacesQueried = new ConcurrentHashMap<String, LynxInterface>();
-        this.unfinishedCommands = new ConcurrentHashMap<Integer, LynxRespondable>();
-        this.i2cLock = new Object();
-        this.currentSteps = new ArrayList<Step>();
-        this.previousSteps = new ArrayDeque<ArrayList<Step>>();
-        this.executor = null;
-        this.pingFuture = null;
-        this.attentionRequiredFuture = null;
-        this.futureLock = new Object();
-
-        startExecutor();
-
-        this.lynxUsbDevice.registerCallback(this, false);
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
     @Override
     public String toString() {
         return String.format("LynxModule(mod#=%d)", this.moduleAddress);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessors
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void close() {
@@ -295,10 +307,6 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             stopExecutor();
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessors
-    //----------------------------------------------------------------------------------------------
 
     public boolean isUserModule() {
         return this.isUserModule;
@@ -409,15 +417,15 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //----------------------------------------------------------------------------------------------
+
     protected void forgetLastKnown() {
         for (LynxController controller : this.controllers) {
             controller.forgetLastKnown();
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // HardwareDevice
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public Manufacturer getManufacturer() {
@@ -474,37 +482,6 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             }
         }
         return result;
-    }
-
-    /**
-     * Returns a status warning message indicative of the health of the indicated device, or an
-     * empty string if no such message is currently applicable.
-     */
-    public static
-    @NonNull
-    String getHealthStatusWarningMessage(HardwareDeviceHealth hardwareDeviceHealth) {
-        switch (hardwareDeviceHealth.getHealthStatus()) {
-            case UNHEALTHY:
-                String name = null;
-                if (hardwareDeviceHealth instanceof RobotConfigNameable) {
-                    name = ((RobotConfigNameable) hardwareDeviceHealth).getUserConfiguredName();
-                    if (name != null) {
-                        name = AppUtil.getDefContext().getString(R.string.quotes, name);
-                    }
-                }
-                if (name == null && hardwareDeviceHealth instanceof HardwareDevice) {
-                    HardwareDevice hardwareDevice = (HardwareDevice) hardwareDeviceHealth;
-                    String typeDescription = hardwareDevice.getDeviceName();
-                    String connectionInfo = hardwareDevice.getConnectionInfo();
-                    name = AppUtil.getDefContext().getString(R.string.hwDeviceDescriptionAndConnection, typeDescription, connectionInfo);
-                }
-                if (name == null) {
-                    name = AppUtil.getDefContext().getString(R.string.hwPoorlyNamedDevice);
-                }
-                return AppUtil.getDefContext().getString(R.string.unhealthyDevice, name);
-            default:
-                return "";
-        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -591,15 +568,15 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     }
 
     @Override
-    public synchronized void setPattern(Collection<Step> steps) {
-        this.currentSteps = steps == null ? new ArrayList<Step>() : new ArrayList<Step>(steps);
-        sendLEDPatternSteps(this.currentSteps);
-    }
-
-    @Override
     public synchronized Collection<Step> getPattern() {
         // Return a copy so caller can't mess with us
         return new ArrayList<Step>(this.currentSteps);
+    }
+
+    @Override
+    public synchronized void setPattern(Collection<Step> steps) {
+        this.currentSteps = steps == null ? new ArrayList<Step>() : new ArrayList<Step>(steps);
+        sendLEDPatternSteps(this.currentSteps);
     }
 
     protected void resendCurrentPattern() {
@@ -684,14 +661,6 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                 }
             }
         }
-    }
-
-    public static List<Step> getLivenessSteps() {
-        // We set the LED to be a solid green, interrupted occasionally by a brief off duration.
-        List<Step> steps = new ArrayList<Step>();
-        steps.add(new Step(Color.GREEN, msLivenessLong - msLivenessShort, TimeUnit.MILLISECONDS));
-        steps.add(new Step(Color.BLACK, msLivenessShort, TimeUnit.MILLISECONDS));
-        return steps;
     }
 
     protected void initializeLEDS() throws InterruptedException {
@@ -837,10 +806,6 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Pinging
-    //----------------------------------------------------------------------------------------------
-
     public void ping() {
         try {
             ping(false);
@@ -848,6 +813,10 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             handleException(e);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Pinging
+    //----------------------------------------------------------------------------------------------
 
     public void ping(boolean initialPing) throws RobotCoreException, InterruptedException, LynxNackException {
         // RobotLog.vv(TAG, "pinging mod#=%d initial=%s", getModuleAddress(), initialPing);
@@ -910,14 +879,9 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                 ThreadPool.awaitTermination(executor, 2, TimeUnit.SECONDS, "lynx module executor");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                ;
             }
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Misc other commands
-    //----------------------------------------------------------------------------------------------
 
     public void failSafe() throws RobotCoreException, InterruptedException, LynxNackException {
         LynxFailSafeCommand command = new LynxFailSafeCommand(this);
@@ -925,6 +889,10 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         //
         forgetLastKnown();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Misc other commands
+    //----------------------------------------------------------------------------------------------
 
     public void enablePhoneCharging(boolean enable) throws RobotCoreException, InterruptedException, LynxNackException {
         LynxPhoneChargeControlCommand command = new LynxPhoneChargeControlCommand(this, enable);
@@ -937,50 +905,6 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         return response.isChargeEnabled();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Debug control
-    //----------------------------------------------------------------------------------------------
-
-    public enum DebugGroup {
-        NONE(0),
-        MAIN(1), TOHOST(2), FROMHOST(3), ADC(4), PWMSERVO(5), MODULELED(6),
-        DIGITALIO(7), I2C(8), MOTOR0(9), MOTOR1(10), MOTOR2(11), MOTOR3(12);
-
-        public final byte bVal;
-
-        DebugGroup(int b) {
-            this.bVal = (byte) b;
-        }
-
-        public static DebugGroup fromInt(int b) {
-            for (DebugGroup debugGroup : DebugGroup.values()) {
-                if (debugGroup.bVal == (byte) b) {
-                    return debugGroup;
-                }
-            }
-            return NONE;
-        }
-    }
-
-    public enum DebugVerbosity {
-        OFF(0), LOW(1), MEDIUM(2), HIGH(3);
-
-        public final byte bVal;
-
-        DebugVerbosity(int b) {
-            this.bVal = (byte) b;
-        }
-
-        public static DebugVerbosity fromInt(int b) {
-            for (DebugVerbosity verbosity : DebugVerbosity.values()) {
-                if (verbosity.bVal == (byte) b) {
-                    return verbosity;
-                }
-            }
-            return OFF;
-        }
-    }
-
     public void setDebug(DebugGroup group, DebugVerbosity verbosity) throws InterruptedException {
         try {
             LynxSetDebugLogLevelCommand command = new LynxSetDebugLogLevelCommand(this, group, verbosity);
@@ -991,7 +915,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     }
 
     //----------------------------------------------------------------------------------------------
-    // Transmission
+    // Debug control
     //----------------------------------------------------------------------------------------------
 
     public <T> T acquireI2cLockWhile(Supplier<T> supplier) throws InterruptedException, RobotCoreException, LynxNackException {
@@ -1007,6 +931,10 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     public void releaseNetworkTransmissionLock(@NonNull LynxMessage message) throws InterruptedException {
         this.lynxUsbDevice.releaseNetworkTransmissionLock(message);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Transmission
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Sends a command to the module, scheduling retransmissions as necessary.
@@ -1101,7 +1029,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                             Assert.assertTrue(incomingMessage.isResponse());
 
                             // Process the response
-                            originatingCommand.onResponseReceived((LynxResponse) incomingMessage);
+                            originatingCommand.onResponseReceived(incomingMessage);
 
                             // After a response is received, we're always done with a command
                             finishedWithMessage(originatingCommand);
@@ -1120,5 +1048,65 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     public void abandonUnfinishedCommands() {
         this.unfinishedCommands.clear();
+    }
+
+    public enum DebugGroup {
+        NONE(0),
+        MAIN(1), TOHOST(2), FROMHOST(3), ADC(4), PWMSERVO(5), MODULELED(6),
+        DIGITALIO(7), I2C(8), MOTOR0(9), MOTOR1(10), MOTOR2(11), MOTOR3(12);
+
+        public final byte bVal;
+
+        DebugGroup(int b) {
+            this.bVal = (byte) b;
+        }
+
+        public static DebugGroup fromInt(int b) {
+            for (DebugGroup debugGroup : DebugGroup.values()) {
+                if (debugGroup.bVal == (byte) b) {
+                    return debugGroup;
+                }
+            }
+            return NONE;
+        }
+    }
+
+    public enum DebugVerbosity {
+        OFF(0), LOW(1), MEDIUM(2), HIGH(3);
+
+        public final byte bVal;
+
+        DebugVerbosity(int b) {
+            this.bVal = (byte) b;
+        }
+
+        public static DebugVerbosity fromInt(int b) {
+            for (DebugVerbosity verbosity : DebugVerbosity.values()) {
+                if (verbosity.bVal == (byte) b) {
+                    return verbosity;
+                }
+            }
+            return OFF;
+        }
+    }
+
+    /**
+     * A {@link Class} for one of the Lynx messages together with a cached constructor thereto
+     */
+    protected static class MessageClassAndCtor {
+        public Class<? extends LynxMessage> clazz;
+        public Constructor<? extends LynxMessage> ctor;
+
+        public void assignCtor() throws NoSuchMethodException {
+            try {
+                this.ctor = this.clazz.getConstructor(LynxModule.class);
+            } catch (NoSuchMethodException ignored) {
+                try {
+                    this.ctor = this.clazz.getConstructor(LynxModuleIntf.class);
+                } catch (NoSuchMethodException e) {
+                    this.ctor = null;
+                }
+            }
+        }
     }
 }

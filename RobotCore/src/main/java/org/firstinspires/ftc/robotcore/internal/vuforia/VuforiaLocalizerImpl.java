@@ -79,19 +79,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
 import org.firstinspires.ftc.robotcore.internal.opengl.AutoConfigGLSurfaceView;
 import org.firstinspires.ftc.robotcore.internal.opengl.Texture;
-import org.firstinspires.ftc.robotcore.internal.opengl.models.SavedMeshObject;
 import org.firstinspires.ftc.robotcore.internal.opengl.models.SolidCylinder;
-import org.firstinspires.ftc.robotcore.internal.opengl.models.Teapot;
 import org.firstinspires.ftc.robotcore.internal.opengl.shaders.CubeMeshProgram;
 import org.firstinspires.ftc.robotcore.internal.opengl.shaders.SimpleColorProgram;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -115,16 +111,26 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "Vuforia";
-
+    protected final Activity activity;
+    // An object used for synchronizing Vuforia initialization, dataset loading
+    // and the Android onDestroy() life cycle event. If the application is
+    // destroyed while a data set is still being loaded, then we wait for the
+    // loading operation to finish before shutting down Vuforia:
+    protected final Object startStopLock = new Object();
+    // Modified for Turbo - removed extraneous assets
+//    protected Texture buildingsTexture = null;
+//    protected SavedMeshObject buildingsModel = null;
+//    protected float buildingsScale = 12.0f;
+    protected final Object updateCallbackLock = new Object();
+    protected final List<VuforiaTrackablesImpl> loadedTrackableSets = new LinkedList<VuforiaTrackablesImpl>();
+    protected final Object frameQueueLock = new Object();
     protected LifeCycleCallbacks lifeCycleCallbacks = new LifeCycleCallbacks();
     protected OpModeManagerImpl opModeManager = null;
     protected OpModeNotifications opModeNotifications = new OpModeNotifications();
     protected VuforiaCallback vuforiaCallback = new VuforiaCallback();
     protected GLSurfaceViewRenderer glSurfaceViewRenderer = new GLSurfaceViewRenderer();
-
     protected AppUtil appUtil = AppUtil.getInstance();
     protected Parameters parameters = null;
-    protected final Activity activity;
     protected int vuforiaFlags = 0;
     protected boolean wantCamera = false;
     protected boolean isCameraInited = false;
@@ -132,35 +138,15 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected boolean isCameraRunning = false;
     protected int cameraIndex = -1;
     protected CameraCalibration camCal = null;
-
     protected ViewGroup glSurfaceParent = null;
     protected AutoConfigGLSurfaceView glSurface = null;
     protected boolean fillSurfaceParent = false;     // vs show full camera image
     protected boolean isPortrait = true;
     protected Parameters.CameraMonitorFeedback cameraCameraMonitorFeedback = null;
-
     protected RelativeLayout loadingIndicatorOverlay = null;
     protected View loadingIndicator = null;
     protected Renderer renderer = null;
     protected boolean rendererIsActive = false;
-
-    // An object used for synchronizing Vuforia initialization, dataset loading
-    // and the Android onDestroy() life cycle event. If the application is
-    // destroyed while a data set is still being loaded, then we wait for the
-    // loading operation to finish before shutting down Vuforia:
-    protected final Object startStopLock = new Object();
-
-    public static class ViewPort {
-        public Point lowerLeft = new Point();
-        public Point extent = new Point();
-
-        public
-        @Override
-        String toString() {
-            return String.format("[(%d,%d)-(%d,%d)]", lowerLeft.x, lowerLeft.y, extent.x, extent.y);
-        }
-    }
-
     protected ViewPort viewport = null;
     protected Matrix44F projectionMatrix = null;
     protected CubeMeshProgram cubeMeshProgram = null;
@@ -171,25 +157,12 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
 //    protected Teapot teapot = null;
 //    protected float teapotScale = 3.0f;
     protected CoordinateAxes coordinateAxes = new CoordinateAxes();
-    // Modified for Turbo - removed extraneous assets
-//    protected Texture buildingsTexture = null;
-//    protected SavedMeshObject buildingsModel = null;
-//    protected float buildingsScale = 12.0f;
-    protected final Object updateCallbackLock = new Object();
-    protected final List<VuforiaTrackablesImpl> loadedTrackableSets = new LinkedList<VuforiaTrackablesImpl>();
     protected boolean isExtendedTrackingActive = false;
-    protected final Object frameQueueLock = new Object();
     protected BlockingQueue<CloseableFrame> frameQueue;
     protected int frameQueueCapacity;
-
     // Some simple statistics, perhaps useful during debugging
     protected int renderCount = 0;
     protected int callbackCount = 0;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public VuforiaLocalizerImpl(VuforiaLocalizer.Parameters parameters) {
         this.parameters = parameters;
         this.activity = parameters.activity == null ? appUtil.getActivity() : parameters.activity;
@@ -213,6 +186,46 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         startAR();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    protected static ObjectTracker getObjectTracker() {
+        return (ObjectTracker) TrackerManager.getInstance().getTracker(ObjectTracker.getClassType());
+    }
+
+    protected static RotationalDeviceTracker getRotationalDeviceTracker() {
+        return (RotationalDeviceTracker) TrackerManager.getInstance().getTracker(RotationalDeviceTracker.getClassType());
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Public API
+    //----------------------------------------------------------------------------------------------
+
+    protected static void throwIfFail(boolean success) {
+        if (!success) {
+            throwFailure();
+        }
+    }
+
+    protected static void throwIfFail(boolean success, String format, Object... args) {
+        if (!success) {
+            throwFailure(format, args);
+        }
+    }
+
+    protected static void throwFailure() {
+        throwFailure("Vuforia operation failed");
+    }
+
+    protected static void throwFailure(String format, Object... args) {
+        throw new FailureException(format, args);
+    }
+
+    protected static void throwFailure(Exception nested) {
+        throw new FailureException(nested, "Vuforia operation failed");
+    }
+
     protected void close()
     // Must be idempotent. Callable from ANY thread
     {
@@ -220,10 +233,6 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         removeLoadingIndicator();
         unregisterLifeCycleCallbacks();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Public API
-    //----------------------------------------------------------------------------------------------
 
     protected void setMonitorViewParent(@IdRes int resourceId) {
         View view = this.activity.findViewById(resourceId); // may return null if resourceId is, e.g., zero
@@ -286,6 +295,11 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         });
     }
 
+
+    //----------------------------------------------------------------------------------------------
+    // Activity life cycles
+    //----------------------------------------------------------------------------------------------
+
     protected void makeLoadingIndicator() {
         removeLoadingIndicator();
         appUtil.synchronousRunOnUiThread(new Runnable() {
@@ -330,6 +344,10 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // AR life cycle
+    //----------------------------------------------------------------------------------------------
+
     public int getRenderCount() {
         return this.renderCount;
     }
@@ -337,11 +355,6 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     public int getCallbackCount() {
         return this.callbackCount;
     }
-
-
-    //----------------------------------------------------------------------------------------------
-    // Activity life cycles
-    //----------------------------------------------------------------------------------------------
 
     protected void registerLifeCycleCallbacks() {
         appUtil.getApplication().registerActivityLifecycleCallbacks(this.lifeCycleCallbacks);
@@ -357,73 +370,6 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }
         appUtil.getApplication().unregisterActivityLifecycleCallbacks(this.lifeCycleCallbacks);
     }
-
-    protected class OpModeNotifications implements OpModeManagerNotifier.Notifications {
-        @Override
-        public void onOpModePreInit(OpMode opMode) {
-        }
-
-        @Override
-        public void onOpModePreStart(OpMode opMode) {
-        }
-
-        @Override
-        public void onOpModePostStop(OpMode opMode) {
-            /** We automatically shut down after the opmode (in which we are started) stops.  */
-            close();
-        }
-    }
-
-    protected class LifeCycleCallbacks implements Application.ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityCreated(Activity activity, Bundle bundle) {
-        }
-
-        @Override
-        public void onActivityStarted(Activity activity) {
-        }
-
-        @Override
-        public void onActivityResumed(Activity activity) {
-            if (activity == VuforiaLocalizerImpl.this.activity) {
-                resumeAR();
-                if (glSurface != null) {
-                    glSurface.setVisibility(View.VISIBLE);
-                    glSurface.onResume();
-                }
-            }
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            if (activity == VuforiaLocalizerImpl.this.activity) {
-                if (glSurface != null) {
-                    glSurface.setVisibility(View.INVISIBLE);
-                    glSurface.onPause();
-                }
-                pauseAR();
-            }
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {
-        }
-
-        @Override
-        public void onActivityDestroyed(Activity activity) {
-            if (activity == VuforiaLocalizerImpl.this.activity) {
-                close();
-            }
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // AR life cycle
-    //----------------------------------------------------------------------------------------------
 
     protected void startAR() {
         synchronized (startStopLock) {
@@ -508,6 +454,11 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Tracker management. Currently, we only use the ObjectTracker flavor, but it's
+    // conceivable that in future we might add additional flavors.
+    //----------------------------------------------------------------------------------------------
+
     protected String getInitializationErrorString(int code) {
         switch (code) {
             case Vuforia.INIT_DEVICE_NOT_SUPPORTED:
@@ -554,15 +505,6 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         Vuforia.onPause();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Tracker management. Currently, we only use the ObjectTracker flavor, but it's
-    // conceivable that in future we might add additional flavors.
-    //----------------------------------------------------------------------------------------------
-
-    protected static ObjectTracker getObjectTracker() {
-        return (ObjectTracker) TrackerManager.getInstance().getTracker(ObjectTracker.getClassType());
-    }
-
     protected void initTracker() {
         TrackerManager.getInstance().initTracker(ObjectTracker.getClassType());
     }
@@ -571,9 +513,15 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         getObjectTracker().start();
     }
 
+    // -----
+
     protected boolean isObjectTargetTrackableResult(TrackableResult trackableResult) {
         return trackableResult.isOfType(ObjectTargetResult.getClassType());
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Camera management
+    //----------------------------------------------------------------------------------------------
 
     protected void stopTracker() {
         getObjectTracker().stop();
@@ -582,16 +530,6 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     protected void deinitTracker() {
         TrackerManager.getInstance().deinitTracker(ObjectTracker.getClassType());
     }
-
-    // -----
-
-    protected static RotationalDeviceTracker getRotationalDeviceTracker() {
-        return (RotationalDeviceTracker) TrackerManager.getInstance().getTracker(RotationalDeviceTracker.getClassType());
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Camera management
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized CameraCalibration getCameraCalibration() {
@@ -773,14 +711,6 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }*/
     }
 
-    protected boolean buildingsRequired() {
-        return this.parameters.cameraMonitorFeedback == Parameters.CameraMonitorFeedback.BUILDINGS;
-    }
-
-    protected boolean teapotRequired() {
-        return this.parameters.cameraMonitorFeedback == Parameters.CameraMonitorFeedback.TEAPOT;
-    }
-
     //----------------------------------------------------------------------------------------------
     // Rendering
     //----------------------------------------------------------------------------------------------
@@ -794,26 +724,12 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         this.textures.add(teapotTexture);
     }*/
 
-    protected class GLSurfaceViewRenderer implements GLSurfaceView.Renderer {
-        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            initRendering();
+    protected boolean buildingsRequired() {
+        return this.parameters.cameraMonitorFeedback == Parameters.CameraMonitorFeedback.BUILDINGS;
+    }
 
-            // Call Vuforia function to (re)initialize rendering after first use
-            // or after OpenGL ES context was lost (e.g. after onPause/onResume):
-            Vuforia.onSurfaceCreated();
-        }
-
-        @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
-            Vuforia.onSurfaceChanged(width, height);
-        }
-
-        @Override
-        public void onDrawFrame(GL10 gl) {
-            if (rendererIsActive) {
-                renderFrame();
-            }
-        }
+    protected boolean teapotRequired() {
+        return this.parameters.cameraMonitorFeedback == Parameters.CameraMonitorFeedback.TEAPOT;
     }
 
     /**
@@ -882,55 +798,8 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         renderer.end();
     }
 
-
     protected void drawAxes(float[] poseMatrix) {
         this.coordinateAxes.draw(poseMatrix);
-    }
-
-    class CoordinateAxes {
-        private SolidCylinder axis;
-
-        public CoordinateAxes() {
-            float radius = 0.05f;
-            float height = 1.0f;
-            this.axis = new SolidCylinder(radius, height, 32);
-        }
-
-        public void draw(float[] poseMatrixIn) {
-            // Axis is, by default, sitting along the y axis, with its center at the origin
-            drawAxis(poseMatrixIn, axis, Color.RED, 0, 0, -1, 0, axis.height / 2, 0);
-            drawAxis(poseMatrixIn, axis, Color.BLUE, -1, 0, 0, 0, -axis.height / 2, 0);
-            drawAxis(poseMatrixIn, axis, Color.GREEN, 0, 0, 0, 0, axis.height / 2, 0);
-        }
-
-        private void drawAxis(float[] poseMatrixIn, SolidCylinder axis, int color,
-                              float rx, float ry, float rz,
-                              float dx, float dy, float dz) {
-            float axesScale = 100f;
-
-            float[] poseMatrix = Arrays.copyOf(poseMatrixIn, poseMatrixIn.length);
-
-            // Yes, it's odd that we scale, then translate, and only finally rotate. But
-            // this works (finally) so we're not incented to change it.
-            if (rx != 0 || ry != 0 || rz != 0) {
-                Matrix.rotateM(poseMatrix, 0, 90f, rx, ry, rz);
-            }
-            Matrix.translateM(poseMatrix, 0, dx * axesScale, dy * axesScale, dz * axesScale);
-
-            Matrix.scaleM(poseMatrix, 0, axesScale, axesScale, axesScale);
-
-            float[] modelViewProjectionMatrix = new float[16];
-            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix.getData(), 0, poseMatrix, 0);
-
-            simpleColorProgram.useProgram();
-            simpleColorProgram.fragment.setColor(color);
-
-            axis.bindData(simpleColorProgram.vertex);
-
-            simpleColorProgram.vertex.setModelViewProjectionMatrix(modelViewProjectionMatrix);
-            axis.draw();
-            simpleColorProgram.vertex.disableAttributes();
-        }
     }
 
     // Modified for Turbo - removed extraneous assets
@@ -988,6 +857,13 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
     }
 
     @Override
+    public int getFrameQueueCapacity() {
+        synchronized (this.frameQueueLock) {
+            return this.frameQueueCapacity;
+        }
+    }
+
+    @Override
     public void setFrameQueueCapacity(int capacity) {
         synchronized (this.frameQueueLock) {
             this.frameQueueCapacity = Math.max(0, capacity);
@@ -1007,16 +883,168 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
         }
     }
 
-    @Override
-    public int getFrameQueueCapacity() {
-        synchronized (this.frameQueueLock) {
-            return this.frameQueueCapacity;
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public static class ViewPort {
+        public Point lowerLeft = new Point();
+        public Point extent = new Point();
+
+        public
+        @Override
+        String toString() {
+            return String.format("[(%d,%d)-(%d,%d)]", lowerLeft.x, lowerLeft.y, extent.x, extent.y);
         }
     }
 
     //----------------------------------------------------------------------------------------------
-    // Operations
+    // Utility
     //----------------------------------------------------------------------------------------------
+
+    public static class FailureException extends RuntimeException {
+        protected Exception nestedException;
+
+        public FailureException(String format, Object... args) {
+            super(String.format(format, args));
+        }
+
+        public FailureException(Exception nestedException, String format, Object... args) {
+            super(String.format(format, args));
+            this.nestedException = nestedException;
+        }
+    }
+
+    protected class OpModeNotifications implements OpModeManagerNotifier.Notifications {
+        @Override
+        public void onOpModePreInit(OpMode opMode) {
+        }
+
+        @Override
+        public void onOpModePreStart(OpMode opMode) {
+        }
+
+        @Override
+        public void onOpModePostStop(OpMode opMode) {
+            /** We automatically shut down after the opmode (in which we are started) stops.  */
+            close();
+        }
+    }
+
+    protected class LifeCycleCallbacks implements Application.ActivityLifecycleCallbacks {
+        @Override
+        public void onActivityCreated(Activity activity, Bundle bundle) {
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            if (activity == VuforiaLocalizerImpl.this.activity) {
+                resumeAR();
+                if (glSurface != null) {
+                    glSurface.setVisibility(View.VISIBLE);
+                    glSurface.onResume();
+                }
+            }
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+            if (activity == VuforiaLocalizerImpl.this.activity) {
+                if (glSurface != null) {
+                    glSurface.setVisibility(View.INVISIBLE);
+                    glSurface.onPause();
+                }
+                pauseAR();
+            }
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+            if (activity == VuforiaLocalizerImpl.this.activity) {
+                close();
+            }
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        }
+    }
+
+    protected class GLSurfaceViewRenderer implements GLSurfaceView.Renderer {
+        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+            initRendering();
+
+            // Call Vuforia function to (re)initialize rendering after first use
+            // or after OpenGL ES context was lost (e.g. after onPause/onResume):
+            Vuforia.onSurfaceCreated();
+        }
+
+        @Override
+        public void onSurfaceChanged(GL10 gl, int width, int height) {
+            Vuforia.onSurfaceChanged(width, height);
+        }
+
+        @Override
+        public void onDrawFrame(GL10 gl) {
+            if (rendererIsActive) {
+                renderFrame();
+            }
+        }
+    }
+
+    class CoordinateAxes {
+        private SolidCylinder axis;
+
+        public CoordinateAxes() {
+            float radius = 0.05f;
+            float height = 1.0f;
+            this.axis = new SolidCylinder(radius, height, 32);
+        }
+
+        public void draw(float[] poseMatrixIn) {
+            // Axis is, by default, sitting along the y axis, with its center at the origin
+            drawAxis(poseMatrixIn, axis, Color.RED, 0, 0, -1, 0, axis.height / 2, 0);
+            drawAxis(poseMatrixIn, axis, Color.BLUE, -1, 0, 0, 0, -axis.height / 2, 0);
+            drawAxis(poseMatrixIn, axis, Color.GREEN, 0, 0, 0, 0, axis.height / 2, 0);
+        }
+
+        private void drawAxis(float[] poseMatrixIn, SolidCylinder axis, int color,
+                              float rx, float ry, float rz,
+                              float dx, float dy, float dz) {
+            float axesScale = 100f;
+
+            float[] poseMatrix = Arrays.copyOf(poseMatrixIn, poseMatrixIn.length);
+
+            // Yes, it's odd that we scale, then translate, and only finally rotate. But
+            // this works (finally) so we're not incented to change it.
+            if (rx != 0 || ry != 0 || rz != 0) {
+                Matrix.rotateM(poseMatrix, 0, 90f, rx, ry, rz);
+            }
+            Matrix.translateM(poseMatrix, 0, dx * axesScale, dy * axesScale, dz * axesScale);
+
+            Matrix.scaleM(poseMatrix, 0, axesScale, axesScale, axesScale);
+
+            float[] modelViewProjectionMatrix = new float[16];
+            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix.getData(), 0, poseMatrix, 0);
+
+            simpleColorProgram.useProgram();
+            simpleColorProgram.fragment.setColor(color);
+
+            axis.bindData(simpleColorProgram.vertex);
+
+            simpleColorProgram.vertex.setModelViewProjectionMatrix(modelViewProjectionMatrix);
+            axis.draw();
+            simpleColorProgram.vertex.disableAttributes();
+        }
+    }
 
     protected class VuforiaCallback implements Vuforia.UpdateCallbackInterface {
         @Override
@@ -1091,46 +1119,5 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer {
                 }
             }
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
-    public static class FailureException extends RuntimeException {
-        protected Exception nestedException;
-
-        public FailureException(String format, Object... args) {
-            super(String.format(format, args));
-        }
-
-        public FailureException(Exception nestedException, String format, Object... args) {
-            super(String.format(format, args));
-            this.nestedException = nestedException;
-        }
-    }
-
-    protected static void throwIfFail(boolean success) {
-        if (!success) {
-            throwFailure();
-        }
-    }
-
-    protected static void throwIfFail(boolean success, String format, Object... args) {
-        if (!success) {
-            throwFailure(format, args);
-        }
-    }
-
-    protected static void throwFailure() {
-        throwFailure("Vuforia operation failed");
-    }
-
-    protected static void throwFailure(String format, Object... args) {
-        throw new FailureException(format, args);
-    }
-
-    protected static void throwFailure(Exception nested) {
-        throw new FailureException(nested, "Vuforia operation failed");
     }
 }

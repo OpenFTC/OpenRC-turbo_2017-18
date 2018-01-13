@@ -56,36 +56,14 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "WifiDirectPersistentGroupManager";
-
-    public String getTag() {
-        return TAG;
-    }
-
     // This is @hide in WifiP2pManager, but functional. There is no extra; one can simply poll for extant groups.
     public static final String WIFI_P2P_PERSISTENT_GROUPS_CHANGED_ACTION = "android.net.wifi.p2p.PERSISTENT_GROUPS_CHANGED";
-
     protected static Class classWifiP2pGroupList;
     protected static Class classPersistentGroupInfoListener;
     protected static Method methodGetGroupList;
     protected static Method methodRequestPersistentGroupInfo;
     protected static Method methodDeletePersistentGroup;
     protected static Method methodGetNetworkId;
-
-    /* From WifiP2pManager:
-
-        /** Interface for callback invocation when stored group info list is available {@hide} *|
-        public interface PersistentGroupInfoListener {
-            /**
-             * The requested stored p2p group info list is available
-             * @param groups Wi-Fi p2p group info list
-             *|
-            public void onPersistentGroupInfoAvailable(WifiP2pGroupList groups);
-        }
-
-     Because that interface is hidden, we can't implement it directly. Fortunately, we can
-     resort to java.lang.reflect.Proxy in order to accomplish effectively the same thing,
-     though it's a bit of mouthful to look at.
-    */
 
     static {
         try {
@@ -112,12 +90,32 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
         }
     }
 
+    /* From WifiP2pManager:
+
+        /** Interface for callback invocation when stored group info list is available {@hide} *|
+        public interface PersistentGroupInfoListener {
+            /**
+             * The requested stored p2p group info list is available
+             * @param groups Wi-Fi p2p group info list
+             *|
+            public void onPersistentGroupInfoAvailable(WifiP2pGroupList groups);
+        }
+
+     Because that interface is hidden, we can't implement it directly. Fortunately, we can
+     resort to java.lang.reflect.Proxy in order to accomplish effectively the same thing,
+     though it's a bit of mouthful to look at.
+    */
+
+    public WifiDirectPersistentGroupManager(WifiDirectAgent wifiDirectAgent) {
+        super(wifiDirectAgent);
+    }
+
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public WifiDirectPersistentGroupManager(WifiDirectAgent wifiDirectAgent) {
-        super(wifiDirectAgent);
+    public String getTag() {
+        return TAG;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -136,10 +134,6 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
     // Group management
     //----------------------------------------------------------------------------------------------
-
-    public interface PersistentGroupInfoListener {
-        void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups);
-    }
 
     /**
      * Asynchronously deletes the indicated persistent group
@@ -253,7 +247,6 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
                         public void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups) {
                             result = groups;
                             releaseCompletion(true);
-                            ;
                         }
                     });
                     waitForCompletion();
@@ -263,6 +256,10 @@ public class WifiDirectPersistentGroupManager extends WifiStartStoppable {
                 return result;
             }
         });
+    }
+
+    public interface PersistentGroupInfoListener {
+        void onPersistentGroupInfoAvailable(Collection<WifiP2pGroup> groups);
     }
 
 }

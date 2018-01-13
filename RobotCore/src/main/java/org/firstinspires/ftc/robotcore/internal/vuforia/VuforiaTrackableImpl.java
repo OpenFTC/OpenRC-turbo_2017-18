@@ -39,9 +39,9 @@ import com.vuforia.VuMarkTemplate;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -59,18 +59,16 @@ public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableN
     // State
     //----------------------------------------------------------------------------------------------
 
+    protected final Object locationLock = new Object();
+    protected final Map<VuMarkInstanceId, VuforiaTrackable> vuMarkMap = new HashMap<>();
     protected VuforiaTrackable parent;
     protected Trackable trackable;
     protected VuforiaTrackablesImpl trackables;
     protected String name;
     protected Listener listener;
     protected Object userData;
-
-    protected final Object locationLock = new Object();
     protected OpenGLMatrix location;
-
     protected Class<? extends VuforiaTrackable.Listener> listenerClass;
-    protected final Map<VuMarkInstanceId, VuforiaTrackable> vuMarkMap = new HashMap<>();
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -148,19 +146,14 @@ public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableN
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public synchronized void setListener(Listener listener) {
-        // We *always* have a listener
-        this.listener = listener == null ? new VuforiaTrackableDefaultListener(this) : listener;
-    }
-
-    @Override
     public synchronized Listener getListener() {
         return this.listener;
     }
 
     @Override
-    public synchronized void setUserData(Object object) {
-        this.userData = object;
+    public synchronized void setListener(Listener listener) {
+        // We *always* have a listener
+        this.listener = listener == null ? new VuforiaTrackableDefaultListener(this) : listener;
     }
 
     @Override
@@ -169,8 +162,20 @@ public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableN
     }
 
     @Override
+    public synchronized void setUserData(Object object) {
+        this.userData = object;
+    }
+
+    @Override
     public VuforiaTrackables getTrackables() {
         return trackables;
+    }
+
+    @Override
+    public OpenGLMatrix getLocation() {
+        synchronized (this.locationLock) {
+            return this.location;
+        }
     }
 
     @Override
@@ -178,13 +183,6 @@ public class VuforiaTrackableImpl implements VuforiaTrackable, VuforiaTrackableN
         /** Separate lock so as to accommodate upcalls from {@link VuforiaTrackableDefaultListener} */
         synchronized (this.locationLock) {
             this.location = location;
-        }
-    }
-
-    @Override
-    public OpenGLMatrix getLocation() {
-        synchronized (this.locationLock) {
-            return this.location;
         }
     }
 

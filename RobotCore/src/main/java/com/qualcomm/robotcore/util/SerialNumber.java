@@ -33,11 +33,11 @@ package com.qualcomm.robotcore.util;
 
 import android.content.Context;
 
-import java.io.Serializable;
-import java.util.UUID;
-
 import com.qualcomm.robotcore.R;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
+
+import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Instances of {@link SerialNumber} represent serial numbers of devices on the USB bus.
@@ -56,18 +56,14 @@ import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
  */
 public class SerialNumber implements Serializable {
 
-    private final String serialNumber;
     private static final String fakePrefix = "FakeUSB:";
+    private final String serialNumber;
 
     /**
      * Constructs a new unique, fake serial number
      */
     public SerialNumber() {
         serialNumber = generateFake();
-    }
-
-    private static String generateFake() {
-        return fakePrefix + UUID.randomUUID().toString();
     }
 
     /**
@@ -78,6 +74,21 @@ public class SerialNumber implements Serializable {
      */
     public SerialNumber(String initializer) {
         this.serialNumber = isLegacyFake(initializer) ? generateFake() : initializer;
+    }
+
+    private static String generateFake() {
+        return fakePrefix + UUID.randomUUID().toString();
+    }
+
+    /**
+     * Returns whether the indicated serial number initialization string is one of the legacy
+     * fake serial number forms or not.
+     *
+     * @param initializer the serial number initialization string to test
+     * @return whether the the serial number initialization string is a legacy fake form of serial number
+     */
+    public static boolean isLegacyFake(String initializer) {
+        return initializer == null || initializer.equals("-1") || initializer.equalsIgnoreCase("N/A") || initializer.trim().isEmpty();
     }
 
     /**
@@ -96,17 +107,6 @@ public class SerialNumber implements Serializable {
      */
     public boolean isReal() {
         return !isFake();
-    }
-
-    /**
-     * Returns whether the indicated serial number initialization string is one of the legacy
-     * fake serial number forms or not.
-     *
-     * @param initializer the serial number initialization string to test
-     * @return whether the the serial number initialization string is a legacy fake form of serial number
-     */
-    public static boolean isLegacyFake(String initializer) {
-        return initializer == null || initializer.equals("-1") || initializer.equalsIgnoreCase("N/A") || initializer.trim().isEmpty();
     }
 
     @Override

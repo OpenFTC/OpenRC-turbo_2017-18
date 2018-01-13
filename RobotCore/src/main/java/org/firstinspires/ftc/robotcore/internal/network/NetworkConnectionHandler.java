@@ -71,20 +71,17 @@ public class NetworkConnectionHandler {
 
     public static final String TAG = "NetworkConnectionHandler";
     private static final NetworkConnectionHandler theInstance = new NetworkConnectionHandler();
-
-    public static NetworkConnectionHandler getInstance() {
-        return theInstance;
-    }
+    protected final NetworkConnectionCallbackChainer theNetworkConnectionCallback = new NetworkConnectionCallbackChainer();
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
+    protected final RecvLoopCallbackChainer theRecvLoopCallback = new RecvLoopCallbackChainer();
+    protected final Object callbackLock = new Object(); // paranoia more than reality, but better safe than sorry. Guards the..Callback vars
     protected
     @Nullable
     WifiManager.WifiLock wifiLock;
     protected boolean setupNeeded = true;
-
     protected Context context;
     protected ElapsedTime lastRecvPacket = new ElapsedTime();
     protected InetAddress remoteAddr;
@@ -99,12 +96,12 @@ public class NetworkConnectionHandler {
     protected
     @Nullable
     String connectionOwnerPassword;
-
     protected NetworkConnection networkConnection = null;
-    protected final NetworkConnectionCallbackChainer theNetworkConnectionCallback = new NetworkConnectionCallbackChainer();
     protected RecvLoopRunnable recvLoopRunnable;
-    protected final RecvLoopCallbackChainer theRecvLoopCallback = new RecvLoopCallbackChainer();
-    protected final Object callbackLock = new Object(); // paranoia more than reality, but better safe than sorry. Guards the..Callback vars
+
+    public static NetworkConnectionHandler getInstance() {
+        return theInstance;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -474,6 +471,18 @@ public class NetworkConnectionHandler {
         }
     }
 
+    public void pushReceiveLoopCallback(@Nullable RecvLoopRunnable.RecvLoopCallback callback) {
+        synchronized (callbackLock) {
+            this.theRecvLoopCallback.push(callback);
+        }
+    }
+
+    public void removeReceiveLoopCallback(@Nullable RecvLoopRunnable.RecvLoopCallback callback) {
+        synchronized (callbackLock) {
+            this.theRecvLoopCallback.remove(callback);
+        }
+    }
+
     protected class NetworkConnectionCallbackChainer implements NetworkConnection.NetworkConnectionCallback {
 
         protected final CopyOnWriteArrayList<NetworkConnection.NetworkConnectionCallback> callbacks = new CopyOnWriteArrayList<NetworkConnection.NetworkConnectionCallback>();
@@ -504,18 +513,6 @@ public class NetworkConnectionHandler {
                 }
             }
             return CallbackResult.NOT_HANDLED;
-        }
-    }
-
-    public void pushReceiveLoopCallback(@Nullable RecvLoopRunnable.RecvLoopCallback callback) {
-        synchronized (callbackLock) {
-            this.theRecvLoopCallback.push(callback);
-        }
-    }
-
-    public void removeReceiveLoopCallback(@Nullable RecvLoopRunnable.RecvLoopCallback callback) {
-        synchronized (callbackLock) {
-            this.theRecvLoopCallback.remove(callback);
         }
     }
 

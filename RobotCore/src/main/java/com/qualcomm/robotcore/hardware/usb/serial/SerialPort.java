@@ -53,15 +53,19 @@ public class SerialPort {
 
     protected static final String TAG = "SerialPort";
 
+    static {
+        System.loadLibrary("RobotCore");
+    }
+
     protected File file;
     protected FileDescriptor fileDescriptor;
     protected FileInputStream fileInputStream;
     protected FileOutputStream fileOutputStream;
-    protected int baudRate;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
+    protected int baudRate;
 
     public SerialPort(File file, int baudRate) throws IOException {
         this.file = file;
@@ -75,19 +79,6 @@ public class SerialPort {
 
         this.fileInputStream = new FileInputStream(this.fileDescriptor);
         this.fileOutputStream = new FileOutputStream(this.fileDescriptor);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        this.close();
-        super.finalize();
-    }
-
-    public synchronized void close() {
-        if (this.fileDescriptor != null) {
-            close(this.fileDescriptor);
-            this.fileDescriptor = null;
-        }
     }
 
     /**
@@ -110,13 +101,34 @@ public class SerialPort {
         }
     }
 
+    private native static FileDescriptor open(String path, int baudrate);
+
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
 
+    public native static void close(FileDescriptor fileDescriptor);
+
+    @Override
+    protected void finalize() throws Throwable {
+        this.close();
+        super.finalize();
+    }
+
+    public synchronized void close() {
+        if (this.fileDescriptor != null) {
+            close(this.fileDescriptor);
+            this.fileDescriptor = null;
+        }
+    }
+
     public String getName() {
         return this.file.getAbsolutePath();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Native methods
+    //----------------------------------------------------------------------------------------------
 
     public InputStream getInputStream() {
         return this.fileInputStream;
@@ -128,17 +140,5 @@ public class SerialPort {
 
     public int getBaudRate() {
         return baudRate;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Native methods
-    //----------------------------------------------------------------------------------------------
-
-    private native static FileDescriptor open(String path, int baudrate);
-
-    public native static void close(FileDescriptor fileDescriptor);
-
-    static {
-        System.loadLibrary("RobotCore");
     }
 }

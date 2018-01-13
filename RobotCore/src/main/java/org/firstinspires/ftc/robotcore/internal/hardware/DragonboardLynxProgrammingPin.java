@@ -43,13 +43,11 @@ public class DragonboardLynxProgrammingPin extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxProgrammingPin";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     protected static final DragonboardLynxProgrammingPin theInstance = new DragonboardLynxProgrammingPin();
+
+    protected DragonboardLynxProgrammingPin() {
+        super(36, false, Active.LOW);
+    }
 
     public static DragonboardLynxProgrammingPin getInstance() {
         return theInstance;
@@ -59,7 +57,8 @@ public class DragonboardLynxProgrammingPin extends DragonboardGPIOPin {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected DragonboardLynxProgrammingPin() {
-        super(36, false, Active.LOW);
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 }

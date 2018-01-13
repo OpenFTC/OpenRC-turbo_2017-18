@@ -44,11 +44,6 @@ public class ImmersiveMode {
     // Used by the activity to correctly set the view
     // that should be using immersive mode.
     View decorView;
-
-    public ImmersiveMode(View decorView) {
-        this.decorView = decorView;
-    }
-
     // A handler that hides the system UI stuff.
     // This helps us be able to cancel a "hide" in the case of a
     // dialog popup or similar.
@@ -58,6 +53,16 @@ public class ImmersiveMode {
             hideSystemUI();
         }
     };
+
+    public ImmersiveMode(View decorView) {
+        this.decorView = decorView;
+    }
+
+    // Immersive sticky flag only works on API >= 19
+    public static boolean apiOver19() {
+        int currentApiVersion = Build.VERSION.SDK_INT;
+        return currentApiVersion >= Build.VERSION_CODES.KITKAT;
+    }
 
     public void cancelSystemUIHide() {
         hideSystemUiHandler.removeMessages(0);
@@ -71,11 +76,5 @@ public class ImmersiveMode {
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
-
-    // Immersive sticky flag only works on API >= 19
-    public static boolean apiOver19() {
-        int currentApiVersion = Build.VERSION.SDK_INT;
-        return currentApiVersion >= Build.VERSION_CODES.KITKAT;
     }
 }

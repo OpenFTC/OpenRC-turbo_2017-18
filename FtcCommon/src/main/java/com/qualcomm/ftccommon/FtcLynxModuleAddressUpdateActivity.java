@@ -51,12 +51,12 @@ import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
-import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,24 +78,26 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcLynxModuleAddressUpdateActivity";
+    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
+    protected RecvLoopRunnable.RecvLoopCallback recvLoopCallback = new ReceiveLoopCallback();
+    protected int msResponseWait = 10000;   // finding addresses can be slow
+    protected BlockingQueue<CommandList.USBAccessibleLynxModulesResp> availableLynxModules = new ArrayBlockingQueue<CommandList.USBAccessibleLynxModulesResp>(1);
+    protected List<USBAccessibleLynxModule> currentModules = new ArrayList<USBAccessibleLynxModule>();
+    protected DisplayedModuleList displayedModuleList = new DisplayedModuleList();
+    DialogInterface.OnClickListener doNothingAndCloseListener = new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int button) {
+            // Do nothing. Dialog will dismiss itself upon return.
+        }
+    };
+
+    //----------------------------------------------------------------------------------------------
+    // Life Cycle
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public String getTag() {
         return TAG;
     }
-
-    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    protected RecvLoopRunnable.RecvLoopCallback recvLoopCallback = new ReceiveLoopCallback();
-
-    protected int msResponseWait = 10000;   // finding addresses can be slow
-    protected BlockingQueue<CommandList.USBAccessibleLynxModulesResp> availableLynxModules = new ArrayBlockingQueue<CommandList.USBAccessibleLynxModulesResp>(1);
-
-    protected List<USBAccessibleLynxModule> currentModules = new ArrayList<USBAccessibleLynxModule>();
-    protected DisplayedModuleList displayedModuleList = new DisplayedModuleList();
-
-    //----------------------------------------------------------------------------------------------
-    // Life Cycle
-    //----------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,14 +134,128 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity {
                 });
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Change management
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         networkConnectionHandler.removeReceiveLoopCallback(recvLoopCallback);
     }
 
+    protected boolean isDirty() {
+        for (USBAccessibleLynxModule module : currentModules) {
+            DisplayedModule displayedModule = displayedModuleList.from(module.getSerialNumber());
+            if (displayedModule.getStartingAddress() != displayedModule.getCurrentAddress()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void onDoneButtonPressed(View view) {
+        RobotLog.vv(TAG, "onDoneButtonPressed()");
+        ArrayList<CommandList.LynxAddressChangeRequest.AddressChange> modulesToChange = new ArrayList<CommandList.LynxAddressChangeRequest.AddressChange>();
+        for (USBAccessibleLynxModule module : currentModules) {
+            DisplayedModule displayedModule = displayedModuleList.from(module.getSerialNumber());
+            if (displayedModule.getStartingAddress() != displayedModule.getCurrentAddress()) {
+                CommandList.LynxAddressChangeRequest.AddressChange addressChange = new CommandList.LynxAddressChangeRequest.AddressChange();
+                addressChange.serialNumber = displayedModule.getSerialNumber();
+                addressChange.oldAddress = displayedModule.getStartingAddress();
+                addressChange.newAddress = displayedModule.getCurrentAddress();
+                modulesToChange.add(addressChange);
+            }
+        }
+
+        if (currentModules.size() > 0) {
+            if (modulesToChange.size() > 0) {
+                CommandList.LynxAddressChangeRequest request = new CommandList.LynxAddressChangeRequest();
+                request.modulesToChange = modulesToChange;
+                sendOrInject(new Command(CommandList.CMD_LYNX_ADDRESS_CHANGE, request.serialize()));
+            } else {
+                AppUtil.getInstance().showToast(UILocation.BOTH, getString(R.string.toastLynxAddressChangeNothingToDo));
+            }
+        }
+
+        finishOk();
+    }
+
+    public void onCancelButtonPressed(View view) {
+        RobotLog.vv(TAG, "onCancelButtonPressed()");
+        doBackOrCancel();
+    }
+
     //----------------------------------------------------------------------------------------------
-    // Change management
+    // Updating
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onBackPressed() {
+        RobotLog.vv(TAG, "onBackPressed()");
+        doBackOrCancel();
+    }
+
+    protected void doBackOrCancel() {
+        if (this.isDirty()) {
+            DialogInterface.OnClickListener exitWithoutSavingButtonListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finishCancel();
+                }
+            };
+
+            AlertDialog.Builder builder = utility.buildBuilder(getString(R.string.saveChangesTitle), getString(R.string.saveChangesMessageScreen));
+            builder.setPositiveButton(R.string.buttonExitWithoutSaving, exitWithoutSavingButtonListener);
+            builder.setNegativeButton(R.string.buttonNameCancel, doNothingAndCloseListener);
+            builder.show();
+        } else {
+            finishCancel();
+        }
+    }
+
+    protected List<USBAccessibleLynxModule> getUSBAccessibleLynxModules() {
+        CommandList.USBAccessibleLynxModulesRequest request = new CommandList.USBAccessibleLynxModulesRequest();
+        CommandList.USBAccessibleLynxModulesResp result = new CommandList.USBAccessibleLynxModulesResp();
+
+        // Send the command
+        availableLynxModules.clear();
+        request.includeModuleNumbers = true;
+        sendOrInject(new Command(CommandList.CMD_GET_USB_ACCESSIBLE_LYNX_MODULES, request.serialize()));
+
+        // Wait, but only a while, for  the result
+        result = awaitResponse(availableLynxModules, result);
+
+        RobotLog.vv(TAG, "found %d lynx modules", result.modules.size());
+        return result.modules;
+    }
+
+    protected void sendOrInject(Command cmd) {
+        if (remoteConfigure) {
+            NetworkConnectionHandler.getInstance().sendCommand(cmd);
+        } else {
+            NetworkConnectionHandler.getInstance().injectReceivedCommand(cmd);
+        }
+    }
+
+    protected <T> T awaitResponse(BlockingQueue<T> queue, T defaultResponse) {
+        return awaitResponse(queue, defaultResponse, msResponseWait, TimeUnit.MILLISECONDS);
+    }
+
+    protected <T> T awaitResponse(BlockingQueue<T> queue, T defaultResponse, long time, TimeUnit timeUnit) {
+        try {
+            T cur = queue.poll(time, timeUnit);
+            if (cur != null) {
+                return cur;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return defaultResponse;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Networking
     //----------------------------------------------------------------------------------------------
 
     protected class DisplayedModuleList {
@@ -336,82 +452,6 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity {
         }
     }
 
-    protected boolean isDirty() {
-        for (USBAccessibleLynxModule module : currentModules) {
-            DisplayedModule displayedModule = displayedModuleList.from(module.getSerialNumber());
-            if (displayedModule.getStartingAddress() != displayedModule.getCurrentAddress()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Updating
-    //----------------------------------------------------------------------------------------------
-
-    DialogInterface.OnClickListener doNothingAndCloseListener = new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int button) {
-            // Do nothing. Dialog will dismiss itself upon return.
-        }
-    };
-
-    public void onDoneButtonPressed(View view) {
-        RobotLog.vv(TAG, "onDoneButtonPressed()");
-        ArrayList<CommandList.LynxAddressChangeRequest.AddressChange> modulesToChange = new ArrayList<CommandList.LynxAddressChangeRequest.AddressChange>();
-        for (USBAccessibleLynxModule module : currentModules) {
-            DisplayedModule displayedModule = displayedModuleList.from(module.getSerialNumber());
-            if (displayedModule.getStartingAddress() != displayedModule.getCurrentAddress()) {
-                CommandList.LynxAddressChangeRequest.AddressChange addressChange = new CommandList.LynxAddressChangeRequest.AddressChange();
-                addressChange.serialNumber = displayedModule.getSerialNumber();
-                addressChange.oldAddress = displayedModule.getStartingAddress();
-                addressChange.newAddress = displayedModule.getCurrentAddress();
-                modulesToChange.add(addressChange);
-            }
-        }
-
-        if (currentModules.size() > 0) {
-            if (modulesToChange.size() > 0) {
-                CommandList.LynxAddressChangeRequest request = new CommandList.LynxAddressChangeRequest();
-                request.modulesToChange = modulesToChange;
-                sendOrInject(new Command(CommandList.CMD_LYNX_ADDRESS_CHANGE, request.serialize()));
-            } else {
-                AppUtil.getInstance().showToast(UILocation.BOTH, getString(R.string.toastLynxAddressChangeNothingToDo));
-            }
-        }
-
-        finishOk();
-    }
-
-    public void onCancelButtonPressed(View view) {
-        RobotLog.vv(TAG, "onCancelButtonPressed()");
-        doBackOrCancel();
-    }
-
-    @Override
-    public void onBackPressed() {
-        RobotLog.vv(TAG, "onBackPressed()");
-        doBackOrCancel();
-    }
-
-    protected void doBackOrCancel() {
-        if (this.isDirty()) {
-            DialogInterface.OnClickListener exitWithoutSavingButtonListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finishCancel();
-                }
-            };
-
-            AlertDialog.Builder builder = utility.buildBuilder(getString(R.string.saveChangesTitle), getString(R.string.saveChangesMessageScreen));
-            builder.setPositiveButton(R.string.buttonExitWithoutSaving, exitWithoutSavingButtonListener);
-            builder.setNegativeButton(R.string.buttonNameCancel, doNothingAndCloseListener);
-            builder.show();
-        } else {
-            finishCancel();
-        }
-    }
-
     protected class AddressConfiguration {
         protected Map<SerialNumber, Integer> starting = new ConcurrentHashMap<SerialNumber, Integer>();
         protected Map<SerialNumber, Integer> current = new ConcurrentHashMap<SerialNumber, Integer>();
@@ -454,10 +494,6 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Networking
-    //----------------------------------------------------------------------------------------------
-
     protected class ReceiveLoopCallback extends RecvLoopRunnable.DegenerateCallback {
         @Override
         public CallbackResult commandEvent(Command command) throws RobotCoreException {
@@ -469,46 +505,6 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity {
             }
             return super.commandEvent(command);
         }
-    }
-
-    protected List<USBAccessibleLynxModule> getUSBAccessibleLynxModules() {
-        CommandList.USBAccessibleLynxModulesRequest request = new CommandList.USBAccessibleLynxModulesRequest();
-        CommandList.USBAccessibleLynxModulesResp result = new CommandList.USBAccessibleLynxModulesResp();
-
-        // Send the command
-        availableLynxModules.clear();
-        request.includeModuleNumbers = true;
-        sendOrInject(new Command(CommandList.CMD_GET_USB_ACCESSIBLE_LYNX_MODULES, request.serialize()));
-
-        // Wait, but only a while, for  the result
-        result = awaitResponse(availableLynxModules, result);
-
-        RobotLog.vv(TAG, "found %d lynx modules", result.modules.size());
-        return result.modules;
-    }
-
-    protected void sendOrInject(Command cmd) {
-        if (remoteConfigure) {
-            NetworkConnectionHandler.getInstance().sendCommand(cmd);
-        } else {
-            NetworkConnectionHandler.getInstance().injectReceivedCommand(cmd);
-        }
-    }
-
-    protected <T> T awaitResponse(BlockingQueue<T> queue, T defaultResponse) {
-        return awaitResponse(queue, defaultResponse, msResponseWait, TimeUnit.MILLISECONDS);
-    }
-
-    protected <T> T awaitResponse(BlockingQueue<T> queue, T defaultResponse, long time, TimeUnit timeUnit) {
-        try {
-            T cur = queue.poll(time, timeUnit);
-            if (cur != null) {
-                return cur;
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        return defaultResponse;
     }
 
 }

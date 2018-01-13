@@ -35,11 +35,6 @@ package com.qualcomm.ftccommon.configuration;
 import com.qualcomm.ftccommon.R;
 
 public class EditServoListActivity extends EditPortListSpinnerActivity {
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     public EditServoListActivity() {
         this.layoutMain = R.layout.servo_list;
         this.idListParentLayout = R.id.item_list_parent;
@@ -48,5 +43,10 @@ public class EditServoListActivity extends EditPortListSpinnerActivity {
         this.idItemSpinner = R.id.choiceSpinner;
         this.idItemEditTextResult = R.id.editTextResult;
         this.idItemPortNumber = R.id.port_number;
+    }
+
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 }

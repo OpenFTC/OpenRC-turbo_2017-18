@@ -34,9 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Demonstrates empty OpMode
  */

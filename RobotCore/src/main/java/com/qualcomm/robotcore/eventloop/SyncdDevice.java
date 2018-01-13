@@ -51,12 +51,36 @@ import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
 public interface SyncdDevice {
 
     /**
+     * When a device shuts down with {@link ShutdownReason#ABNORMAL_ATTEMPT_REOPEN}, this is
+     * the recommended duration of time to wait before attempting reopen. It was only heuristically
+     * determined, and might thus perhaps be shortened
+     */
+    int msAbnormalReopenInterval = 250;
+
+    /**
      * Has this device shutdown abnormally? Note that even if this method returns true that
      * a close() will still be necessary to fully clean up associated resources.
      *
      * @return whether the device has experienced an abnormal shutdown
      */
     ShutdownReason getShutdownReason();
+
+    /**
+     * Retrieves the owning module of this sync'd device.
+     *
+     * @return the {@link RobotUsbModule} which is the owner of this device
+     * @see #setOwner(RobotUsbModule)
+     */
+    RobotUsbModule getOwner();
+
+    /**
+     * Records the owning module of this sync'd device. The owner of the device is the party
+     * that is responsible for the device's lifetime management, and thus who should be involved
+     * if the device experiences problems and needs to be shutdown or restarted.
+     *
+     * @see #getOwner()
+     */
+    void setOwner(RobotUsbModule owner);
 
     /**
      * {@link ShutdownReason} indicates the health of the shutdown of the device.
@@ -80,28 +104,4 @@ public interface SyncdDevice {
          */
         ABNORMAL_ATTEMPT_REOPEN
     }
-
-    /**
-     * When a device shuts down with {@link ShutdownReason#ABNORMAL_ATTEMPT_REOPEN}, this is
-     * the recommended duration of time to wait before attempting reopen. It was only heuristically
-     * determined, and might thus perhaps be shortened
-     */
-    int msAbnormalReopenInterval = 250;
-
-    /**
-     * Records the owning module of this sync'd device. The owner of the device is the party
-     * that is responsible for the device's lifetime management, and thus who should be involved
-     * if the device experiences problems and needs to be shutdown or restarted.
-     *
-     * @see #getOwner()
-     */
-    void setOwner(RobotUsbModule owner);
-
-    /**
-     * Retrieves the owning module of this sync'd device.
-     *
-     * @return the {@link RobotUsbModule} which is the owner of this device
-     * @see #setOwner(RobotUsbModule)
-     */
-    RobotUsbModule getOwner();
 }

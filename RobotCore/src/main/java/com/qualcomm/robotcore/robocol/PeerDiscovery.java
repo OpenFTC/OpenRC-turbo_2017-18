@@ -47,65 +47,17 @@ public class PeerDiscovery extends RobocolParsableBase {
     //------------------------------------------------------------------------------------------------
     // Types
     //------------------------------------------------------------------------------------------------
-
-    /**
-     * Peer type
-     */
-    public enum PeerType {
-        /*
-         * NOTE: when adding new message types, do not change existing message
-         * type values or you will break backwards capability.
-         */
-        NOT_SET(0),
-        PEER(1),
-        GROUP_OWNER(2);
-
-        private static final PeerType[] VALUES_CACHE = PeerType.values();
-        private int type;
-
-        /**
-         * Create a PeerType from a byte
-         *
-         * @param b
-         * @return PeerType
-         */
-        public static PeerType fromByte(byte b) {
-            PeerType p = NOT_SET;
-            try {
-                p = VALUES_CACHE[b];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                RobotLog.w(String.format("Cannot convert %d to Peer: %s", b, e.toString()));
-            }
-            return p;
-        }
-
-        private PeerType(int type) {
-            this.type = type;
-        }
-
-        /**
-         * Return this peer type as a byte
-         *
-         * @return peer type as byte
-         */
-        public byte asByte() {
-            return (byte) (type);
-        }
-    }
+    static final int cbBufferHistorical = 13;
 
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
-
-    private PeerType peerType;
+    static final int cbPayloadHistorical = 10;
 
     //------------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------------
-
-    public static PeerDiscovery forReceive() {
-        return new PeerDiscovery(PeerType.NOT_SET);
-    }
+    private PeerType peerType;
 
     public PeerDiscovery(PeerDiscovery.PeerType peerType) {
         this.peerType = peerType;
@@ -115,16 +67,15 @@ public class PeerDiscovery extends RobocolParsableBase {
     // Operations
     //------------------------------------------------------------------------------------------------
 
+    public static PeerDiscovery forReceive() {
+        return new PeerDiscovery(PeerType.NOT_SET);
+    }
+
     /**
      * @return the peer type
      */
     public PeerType getPeerType() {
         return peerType;
-    }
-
-    @Override
-    public MsgType getRobocolMsgType() {
-        return RobocolParsable.MsgType.PEER_DISCOVERY;
     }
 
     // Historically, PeerDiscovery had the following serialization format:
@@ -148,8 +99,10 @@ public class PeerDiscovery extends RobocolParsableBase {
     //  2 bytes   sequence number (big endian)
     //  6 bytes   unused payload (ignored on reception)
 
-    static final int cbBufferHistorical = 13;
-    static final int cbPayloadHistorical = 10;
+    @Override
+    public MsgType getRobocolMsgType() {
+        return RobocolParsable.MsgType.PEER_DISCOVERY;
+    }
 
     @Override
     public byte[] toByteArray() throws RobotCoreException {
@@ -203,5 +156,50 @@ public class PeerDiscovery extends RobocolParsableBase {
     @Override
     public String toString() {
         return String.format("Peer Discovery - peer type: %s", peerType.name());
+    }
+
+    /**
+     * Peer type
+     */
+    public enum PeerType {
+        /*
+         * NOTE: when adding new message types, do not change existing message
+         * type values or you will break backwards capability.
+         */
+        NOT_SET(0),
+        PEER(1),
+        GROUP_OWNER(2);
+
+        private static final PeerType[] VALUES_CACHE = PeerType.values();
+        private int type;
+
+        PeerType(int type) {
+            this.type = type;
+        }
+
+        /**
+         * Create a PeerType from a byte
+         *
+         * @param b
+         * @return PeerType
+         */
+        public static PeerType fromByte(byte b) {
+            PeerType p = NOT_SET;
+            try {
+                p = VALUES_CACHE[b];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                RobotLog.w(String.format("Cannot convert %d to Peer: %s", b, e.toString()));
+            }
+            return p;
+        }
+
+        /**
+         * Return this peer type as a byte
+         *
+         * @return peer type as byte
+         */
+        public byte asByte() {
+            return (byte) (type);
+        }
     }
 }

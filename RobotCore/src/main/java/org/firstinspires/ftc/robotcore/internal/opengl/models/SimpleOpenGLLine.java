@@ -52,18 +52,15 @@ public class SimpleOpenGLLine {
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected FloatBuffer vertexBuffer;
-
     protected static final int coordinatesPerVertex = 3;
     protected static final float defaultCoordinates[] =
             {
                     0.0f, 0.0f, 0.0f,
                     1.0f, 0.0f, 0.0f
             };
-
     protected final int vertexCount = defaultCoordinates.length / coordinatesPerVertex;
     protected final int vertexStride = coordinatesPerVertex * 4; // 4 bytes per float
-
+    protected FloatBuffer vertexBuffer;
     // Set color with red, green, blue and alpha (opacity) values
     protected float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 

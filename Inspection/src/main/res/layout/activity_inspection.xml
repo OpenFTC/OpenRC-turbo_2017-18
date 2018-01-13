@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/entire_screen"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context="org.firstinspires.inspection.InspectionActivity"
               android:focusable="true"
-              android:id="@+id/entire_screen"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              tools:context="org.firstinspires.inspection.InspectionActivity">
 
     <!-- black bar on top -->
     <RelativeLayout
@@ -17,42 +17,42 @@
 
         <ImageView
             android:id="@+id/robotIcon"
-            android:src="@drawable/icon_robotcontroller"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
+            android:layout_margin="1dp"
             android:adjustViewBounds="true"
-            android:layout_margin="1dp"/>
+            android:src="@drawable/icon_robotcontroller"/>
 
         <TextView
             android:id="@+id/textDeviceName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/textWhite"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:padding="8dp"
-            android:textStyle="bold"
-            android:gravity="center_vertical"
-            android:foregroundGravity="center_vertical"
-            android:textSize="24sp"
-            android:text="@string/titleInspectionReportRC"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/robotIcon"
-            android:layout_toStartOf="@+id/menu_buttons"/>
+            android:layout_toStartOf="@+id/menu_buttons"
+            android:foregroundGravity="center_vertical"
+            android:gravity="center_vertical"
+            android:padding="8dp"
+            android:text="@string/titleInspectionReportRC"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?attr/textWhite"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
 
         <ImageButton
             android:id="@+id/menu_buttons"
-            android:contentDescription="menu_buttons"
-            android:scaleType="fitXY"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_menu"
-            android:background="@android:color/transparent"
-            android:padding="15dp"
-            android:adjustViewBounds="true"
             android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"/>
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:contentDescription="menu_buttons"
+            android:padding="15dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_menu"/>
     </RelativeLayout>
     <!-- end of black bar -->
 
@@ -70,11 +70,11 @@
             android:layout_height="fill_parent"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
+            android:orientation="vertical"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:orientation="vertical">
+            android:paddingTop="@dimen/activity_vertical_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -163,9 +163,9 @@
                     android:id="@+id/batteryLevel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:visibility="visible"
-                    android:layout_weight="0"/>
+                    android:visibility="visible"/>
             </LinearLayout>
 
             <LinearLayout
@@ -419,8 +419,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="left"
                 android:text="OpenRC is a modified version of the SDK. For more information, see the About screen."
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textStyle="bold"/>
 
 
             <LinearLayout
@@ -434,8 +434,8 @@
                     android:id="@+id/textOpenRCVersionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="OpenRC Version:"
                     android:layout_weight="1"
+                    android:text="OpenRC Version:"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <TextView
@@ -449,9 +449,9 @@
             <Space
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginBottom="2dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="2dp"/>
+                android:layout_weight="1"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -466,8 +466,8 @@
                     android:id="@+id/textView9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
                     android:layout_marginTop="25dp"
+                    android:gravity="center_horizontal"
                     android:text="Original inspection software courtesy of Team HazMat 9277 &amp; 10650"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
             </LinearLayout>

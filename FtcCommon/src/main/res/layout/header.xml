@@ -40,53 +40,53 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <LinearLayout
         android:id="@+id/backgroundLightHolder"
-        android:visibility="gone"
-        android:background="?attr/backgroundLight"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"/>
+        android:background="?attr/backgroundLight"
+        android:orientation="horizontal"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/backgroundMediumHolder"
-        android:visibility="gone"
-        android:background="?attr/backgroundMedium"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"/>
+        android:background="?attr/backgroundMedium"
+        android:orientation="horizontal"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/backgroundDarkGrayHolder"
-        android:visibility="gone"
-        android:background="@color/background_dark_gray"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"/>
+        android:background="@color/background_dark_gray"
+        android:orientation="horizontal"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/idActiveConfigHeader"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:background="?attr/backgroundDark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="?attr/backgroundDark"
+        android:orientation="horizontal"
+        android:paddingBottom="2dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="2dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/activeConfigCaption"
             android:layout_weight="1"
-            android:textColor="?attr/textWhite"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:text="@string/activeConfigCaption"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/textWhite"/>
 
         <TextView
             android:id="@+id/idActiveConfigName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/textWhite"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/textWhite"/>
 
     </LinearLayout>
 

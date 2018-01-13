@@ -72,43 +72,16 @@ public class USBScanManager {
     public static final String TAG = FtcConfigurationActivity.TAG;
 
     public static final int msWaitDefault = 4000;
-
+    protected final Object remoteScannedDevicesLock = new Object();
+    protected final Map<String, LynxModuleDiscoveryState> lynxModuleDiscoveryStateMap = new ConcurrentHashMap<String, LynxModuleDiscoveryState>();  // concurrency is paranoia
     protected Context context;
     protected boolean isRemoteConfig;
     protected ExecutorService executorService = null;
     protected ThreadPool.Singleton<ScannedDevices> scanningSingleton = new ThreadPool.Singleton<ScannedDevices>();
     protected DeviceManager deviceManager;
     protected NextLock scanResultsSequence;
-    protected final Object remoteScannedDevicesLock = new Object();
     protected ScannedDevices remoteScannedDevices;
     protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    protected final Map<String, LynxModuleDiscoveryState> lynxModuleDiscoveryStateMap = new ConcurrentHashMap<String, LynxModuleDiscoveryState>();  // concurrency is paranoia
-
-    protected class LynxModuleDiscoveryState {
-        protected SerialNumber serialNumber;
-        protected LynxModuleMetaList remoteLynxModules;
-        protected NextLock lynxDiscoverySequence = new NextLock();
-        protected final Object remoteLynxDiscoveryLock = new Object();
-        protected ThreadPool.Singleton<LynxModuleMetaList> lynxDiscoverySingleton = new ThreadPool.Singleton<LynxModuleMetaList>();
-
-        protected LynxModuleDiscoveryState(SerialNumber serialNumber) {
-            this.serialNumber = serialNumber;
-            this.remoteLynxModules = new LynxModuleMetaList(serialNumber);
-            startExecutorService();
-        }
-
-        protected void startExecutorService() {
-            ExecutorService executorService = USBScanManager.this.executorService;
-            if (executorService != null) {
-                this.lynxDiscoverySingleton.reset();
-                this.lynxDiscoverySingleton.setService(executorService);
-            }
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     public USBScanManager(Context context, boolean isRemoteConfig) throws RobotCoreException {
         this.context = context;
@@ -119,6 +92,10 @@ public class USBScanManager {
             deviceManager = new HardwareDeviceManager(context, null);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     public void startExecutorService() {
         this.executorService = ThreadPool.newCachedThreadPool("USBScanManager");
@@ -136,21 +113,17 @@ public class USBScanManager {
         this.executorService = null;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Accessors
-    //----------------------------------------------------------------------------------------------
-
     public ExecutorService getExecutorService() {
         return this.executorService;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Accessors
+    //----------------------------------------------------------------------------------------------
+
     public DeviceManager getDeviceManager() {
         return this.deviceManager;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Lynx Module discovery
-    //----------------------------------------------------------------------------------------------
 
     LynxModuleDiscoveryState getDiscoveryState(SerialNumber serialNumber) {
         synchronized (lynxModuleDiscoveryStateMap) {
@@ -162,6 +135,10 @@ public class USBScanManager {
             return result;
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Lynx Module discovery
+    //----------------------------------------------------------------------------------------------
 
     public ThreadPool.SingletonResult<LynxModuleMetaList> startLynxModuleEnumerationIfNecessary(final SerialNumber serialNumber) {
         final LynxModuleDiscoveryState discoveryState = getDiscoveryState(serialNumber);
@@ -210,10 +187,6 @@ public class USBScanManager {
         });
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Scanning
-    //----------------------------------------------------------------------------------------------
-
     public ThreadPool.SingletonResult<ScannedDevices> startDeviceScanIfNecessary() {
         return scanningSingleton.submit(msWaitDefault, new Callable<ScannedDevices>() {
             @Override
@@ -250,6 +223,10 @@ public class USBScanManager {
             }
         });
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Scanning
+    //----------------------------------------------------------------------------------------------
 
     public
     @NonNull
@@ -301,5 +278,27 @@ public class USBScanManager {
             discoveryState.lynxDiscoverySequence.advanceNext();
         }
         RobotLog.vv(TAG, "...handleCommandDiscoverLynxModulesResponse()");
+    }
+
+    protected class LynxModuleDiscoveryState {
+        protected final Object remoteLynxDiscoveryLock = new Object();
+        protected SerialNumber serialNumber;
+        protected LynxModuleMetaList remoteLynxModules;
+        protected NextLock lynxDiscoverySequence = new NextLock();
+        protected ThreadPool.Singleton<LynxModuleMetaList> lynxDiscoverySingleton = new ThreadPool.Singleton<LynxModuleMetaList>();
+
+        protected LynxModuleDiscoveryState(SerialNumber serialNumber) {
+            this.serialNumber = serialNumber;
+            this.remoteLynxModules = new LynxModuleMetaList(serialNumber);
+            startExecutorService();
+        }
+
+        protected void startExecutorService() {
+            ExecutorService executorService = USBScanManager.this.executorService;
+            if (executorService != null) {
+                this.lynxDiscoverySingleton.reset();
+                this.lynxDiscoverySingleton.setService(executorService);
+            }
+        }
     }
 }

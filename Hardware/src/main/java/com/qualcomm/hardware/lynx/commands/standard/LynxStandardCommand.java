@@ -65,6 +65,10 @@ public abstract class LynxStandardCommand<RESPONSE extends LynxMessage> extends 
     public static final int COMMAND_NUMBER_FIRST = COMMAND_NUMBER_ACK;
     public static final int COMMAND_NUMBER_LAST = COMMAND_NUMBER_DISCOVERY;
 
+    public LynxStandardCommand(LynxModule module) {
+        super(module);
+    }
+
     public static boolean isStandardPacketId(int packetId) {
         return isStandardCommandNumber(packetId) || isStandardResponseNumber(packetId);
     }
@@ -73,16 +77,12 @@ public abstract class LynxStandardCommand<RESPONSE extends LynxMessage> extends 
         return COMMAND_NUMBER_FIRST <= packetId && packetId <= COMMAND_NUMBER_LAST;
     }
 
-    public static boolean isStandardResponseNumber(int packetId) {
-        return (LynxResponse.RESPONSE_BIT & packetId) != 0 && isStandardCommandNumber(packetId & ~LynxResponse.RESPONSE_BIT);
-    }
-
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxStandardCommand(LynxModule module) {
-        super(module);
+    public static boolean isStandardResponseNumber(int packetId) {
+        return (LynxResponse.RESPONSE_BIT & packetId) != 0 && isStandardCommandNumber(packetId & ~LynxResponse.RESPONSE_BIT);
     }
 
     //----------------------------------------------------------------------------------------------

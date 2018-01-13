@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.hardware.TimestampedI2cData;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryInternal;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryInternal;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
@@ -286,6 +286,26 @@ public abstract class LinearOpMode extends OpMode {
         }
     }
 
+    @Override
+    public void internalPostInitLoop() {
+        // Do NOT call super, as that updates telemetry unilaterally
+        if (telemetry instanceof TelemetryInternal) {
+            ((TelemetryInternal) telemetry).tryUpdateIfDirty();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Telemetry management
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void internalPostLoop() {
+        // Do NOT call super, as that updates telemetry unilaterally
+        if (telemetry instanceof TelemetryInternal) {
+            ((TelemetryInternal) telemetry).tryUpdateIfDirty();
+        }
+    }
+
     protected class LinearOpModeHelper implements Runnable {
 
         protected RuntimeException exception = null;
@@ -347,26 +367,6 @@ public abstract class LinearOpMode extends OpMode {
 
         public boolean isShutdown() {
             return isShutdown;
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Telemetry management
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void internalPostInitLoop() {
-        // Do NOT call super, as that updates telemetry unilaterally
-        if (telemetry instanceof TelemetryInternal) {
-            ((TelemetryInternal) telemetry).tryUpdateIfDirty();
-        }
-    }
-
-    @Override
-    public void internalPostLoop() {
-        // Do NOT call super, as that updates telemetry unilaterally
-        if (telemetry instanceof TelemetryInternal) {
-            ((TelemetryInternal) telemetry).tryUpdateIfDirty();
         }
     }
 }

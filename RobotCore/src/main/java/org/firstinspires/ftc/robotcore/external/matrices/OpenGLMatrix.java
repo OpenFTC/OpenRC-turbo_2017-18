@@ -100,15 +100,6 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
         }
     }
 
-    @Override
-    public MatrixF emptyMatrix(int numRows, int numCols) {
-        if (numRows == 4 && numCols == 4) {
-            return new OpenGLMatrix();
-        } else {
-            return new GeneralMatrixF(numRows, numCols);
-        }
-    }
-
     /**
      * Creates a matrix for rotation by the indicated angle around the indicated vector.
      */
@@ -136,6 +127,15 @@ public class OpenGLMatrix extends ColumnMajorMatrixF {
 
     public static OpenGLMatrix identityMatrix() {
         return new OpenGLMatrix();
+    }
+
+    @Override
+    public MatrixF emptyMatrix(int numRows, int numCols) {
+        if (numRows == 4 && numCols == 4) {
+            return new OpenGLMatrix();
+        } else {
+            return new GeneralMatrixF(numRows, numCols);
+        }
     }
 
     //----------------------------------------------------------------------------------------------

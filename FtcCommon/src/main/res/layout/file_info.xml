@@ -3,8 +3,8 @@
               android:id="@+id/file_info_layout"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
               android:animateLayoutChanges="true"
+              android:orientation="vertical"
               android:paddingBottom="@dimen/activity_vertical_margin"
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin"
@@ -14,8 +14,8 @@
         android:id="@+id/file_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stretchColumns="1"
-        android:shrinkColumns="0">
+        android:shrinkColumns="0"
+        android:stretchColumns="1">
 
         <TableRow
             android:id="@+id/table_header"
@@ -24,27 +24,27 @@
             android:padding="5dip">
 
             <LinearLayout
-                android:orientation="vertical"
+                android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearLayout"
+                android:orientation="vertical"
                 >
 
                 <TextView
                     android:id="@+id/filename_editText"
-                    android:textSize="20sp"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:maxLength="200"
-                    android:text="@string/filename_editText">
+                    android:text="@string/filename_editText"
+                    android:textSize="20sp">
                 </TextView>
 
                 <TextView
                     android:id="@+id/configIsReadOnlyFeedback"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
                     android:text="@string/readOnlyConfigFeedback"
+                    android:textSize="12sp"
                     />
 
                 <LinearLayout
@@ -59,27 +59,27 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="3dp"
-                        android:textSize="16sp"
+                        android:onClick="onFileEditButtonPressed"
                         android:text="@string/file_edit_button"
-                        android:onClick="onFileEditButtonPressed"/>
+                        android:textSize="16sp"/>
 
                     <Button
                         android:id="@+id/file_activate_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="3dp"
-                        android:textSize="16sp"
+                        android:onClick="onFileActivateButtonPressed"
                         android:text="@string/file_activate_button"
-                        android:onClick="onFileActivateButtonPressed"/>
+                        android:textSize="16sp"/>
 
                     <Button
                         android:id="@+id/file_delete_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="3dp"
-                        android:textSize="16sp"
+                        android:onClick="onFileDeleteButtonPressed"
                         android:text="@string/file_delete_button"
-                        android:onClick="onFileDeleteButtonPressed"/>
+                        android:textSize="16sp"/>
                 </LinearLayout>
             </LinearLayout>
         </TableRow>

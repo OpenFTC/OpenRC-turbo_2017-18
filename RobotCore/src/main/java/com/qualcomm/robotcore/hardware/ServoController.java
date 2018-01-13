@@ -40,13 +40,6 @@ package com.qualcomm.robotcore.hardware;
 public interface ServoController extends HardwareDevice {
 
     /**
-     * PWM Status - is pwm enabled?
-     */
-    enum PwmStatus {
-        ENABLED, DISABLED, MIXED
-    }
-
-    /**
      * Enables all of the servos connected to this controller
      */
     void pwmEnable();
@@ -78,4 +71,11 @@ public interface ServoController extends HardwareDevice {
      * @return position, scaled from 0.0 to 1.0
      */
     double getServoPosition(int servo);
+
+    /**
+     * PWM Status - is pwm enabled?
+     */
+    enum PwmStatus {
+        ENABLED, DISABLED, MIXED
+    }
 }

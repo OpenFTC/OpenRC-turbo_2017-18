@@ -49,22 +49,16 @@ public class RobotUsbManagerCombining implements RobotUsbManager {
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected class ManagerInfo {
-        public RobotUsbManager manager;
-        public int scanCount;
-    }
-
     protected List<ManagerInfo> managers;
     protected Map<SerialNumber, ManagerInfo> enumeratedSerialNumbers;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public RobotUsbManagerCombining() {
         this.managers = new ArrayList<ManagerInfo>();
         this.enumeratedSerialNumbers = new ConcurrentHashMap<SerialNumber, ManagerInfo>();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     public void addManager(RobotUsbManager manager) {
         ManagerInfo info = new ManagerInfo();
@@ -72,10 +66,6 @@ public class RobotUsbManagerCombining implements RobotUsbManager {
         info.scanCount = 0;
         this.managers.add(info);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // RobotUsbManager
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized int scanForDevices() throws RobotCoreException {
@@ -86,6 +76,10 @@ public class RobotUsbManagerCombining implements RobotUsbManager {
         }
         return result;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // RobotUsbManager
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized int getScanCount() {
@@ -133,5 +127,10 @@ public class RobotUsbManagerCombining implements RobotUsbManager {
             }
         }
         throw new RobotCoreException("Combiner unable to open device with serialNumber = " + serialNumber.toString());
+    }
+
+    protected class ManagerInfo {
+        public RobotUsbManager manager;
+        public int scanCount;
     }
 }

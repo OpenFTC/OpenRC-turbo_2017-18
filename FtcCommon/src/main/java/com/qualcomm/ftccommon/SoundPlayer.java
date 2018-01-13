@@ -67,11 +67,6 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
     public static final boolean DEBUG = false;
 
     protected static SoundPlayer theInstance = new SoundPlayer(3, 6);
-
-    public static SoundPlayer getInstance() {
-        return theInstance;
-    }
-
     protected SoundPool soundPool;
     protected
     @RawRes
@@ -84,11 +79,6 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
     protected SharedPreferences sharedPreferences;
     protected float soundOnLevel = 1.0f;
     protected float soundOffLevel = 0.0f;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Instantiates a new sound player.
      *
@@ -108,6 +98,14 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         //
         startup();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public static SoundPlayer getInstance() {
+        return theInstance;
     }
 
     public void close() {

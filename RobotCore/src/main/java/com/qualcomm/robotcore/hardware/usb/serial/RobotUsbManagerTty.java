@@ -41,11 +41,10 @@ import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDeviceImplBase;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
-
-import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
-
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
+
+import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,13 +72,36 @@ public class RobotUsbManagerTty implements RobotUsbManager {
         serialNumberEmbedded = LynxConstants.SERIAL_NUMBER_EMBEDDED;
     }
 
-    Object getLock() {
-        return RobotUsbManagerTty.class;
+    private static File findSerialDevTty() {
+        // Older versions of Dragonboard software have the serial port named “/dev/ttyHS0”, while new
+        // versions have the name “/dev/ttyHS4”. Try that guy explicitly, first.
+        File result = new File("/dev/ttyHS4");
+        if (result.exists()) {
+            RobotLog.vv(RobotUsbDeviceTty.TAG, "using serial tty=" + result.getAbsolutePath());
+            return result;
+        }
+
+        // If we can't find that guy, that'd be odd, but let's just see who we *can* find
+        // and hope for the best.
+        for (int i = 0; i <= 255; i++) // per AOSP\kernel\Documentation\devicetree\bindings\tty\serial\msm_serial_hs.txt
+        {
+            String path = "/dev/ttyHS" + i;
+            result = new File(path);
+            if (result.exists()) {
+                RobotLog.vv(RobotUsbDeviceTty.TAG, "using serial tty=" + result.getAbsolutePath());
+                return result;
+            }
+        }
+        throw new RuntimeException("unable to locate Lynx serial /dev/ttyHSx");
     }
 
     //----------------------------------------------------------------------------------------------
     // RobotUsbManager
     //----------------------------------------------------------------------------------------------
+
+    Object getLock() {
+        return RobotUsbManagerTty.class;
+    }
 
     @Override
     public int scanForDevices() throws RobotCoreException {
@@ -111,6 +133,10 @@ public class RobotUsbManagerTty implements RobotUsbManager {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
         synchronized (getLock()) {
@@ -136,33 +162,6 @@ public class RobotUsbManagerTty implements RobotUsbManager {
             }
             return null;
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
-    private static File findSerialDevTty() {
-        // Older versions of Dragonboard software have the serial port named “/dev/ttyHS0”, while new
-        // versions have the name “/dev/ttyHS4”. Try that guy explicitly, first.
-        File result = new File("/dev/ttyHS4");
-        if (result.exists()) {
-            RobotLog.vv(RobotUsbDeviceTty.TAG, "using serial tty=" + result.getAbsolutePath());
-            return result;
-        }
-
-        // If we can't find that guy, that'd be odd, but let's just see who we *can* find
-        // and hope for the best.
-        for (int i = 0; i <= 255; i++) // per AOSP\kernel\Documentation\devicetree\bindings\tty\serial\msm_serial_hs.txt
-        {
-            String path = "/dev/ttyHS" + i;
-            result = new File(path);
-            if (result.exists()) {
-                RobotLog.vv(RobotUsbDeviceTty.TAG, "using serial tty=" + result.getAbsolutePath());
-                return result;
-            }
-        }
-        throw new RuntimeException("unable to locate Lynx serial /dev/ttyHSx");
     }
 
 }

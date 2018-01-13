@@ -33,9 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.qualcomm.robotcore.hardware;
 
-import static org.firstinspires.ftc.robotcore.internal.system.Assert.assertFalse;
-import static org.firstinspires.ftc.robotcore.internal.system.Assert.assertTrue;
-
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -56,6 +53,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static org.firstinspires.ftc.robotcore.internal.system.Assert.assertFalse;
+import static org.firstinspires.ftc.robotcore.internal.system.Assert.assertTrue;
+
 /**
  * {@link I2cDeviceSynchImpl} is a utility class that makes it easy to read or write data to
  * an instance of {@link I2cDevice}. Its functionality is exposed through the {@link I2cDeviceSynch}
@@ -72,6 +72,13 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     // State
     //----------------------------------------------------------------------------------------------
 
+    protected static final int dibCacheOverhead = 4;       // this many bytes at start of writeCache are system overhead
+    protected static final int msCallbackLockWaitQuantum = 60;      // arbitrary, but long enough that we don't hit it in common usage, only in shutdown situations
+    protected static final int msCallbackLockAbandon = 500;         // if we don't see a callback in this amount of time, then something seriously has gone wrong
+    protected final Object engagementLock = new Object();
+    protected final Object concurrentClientLock = new Object(); // the lock we use to serialize against concurrent clients of us. Can't acquire this AFTER the callback lock.
+    protected final Object callbackLock = new Object(); // the lock we use to synchronize with our callback.
+    protected final WriteCacheStatus writeCacheStatus;           // what we know about the (payload) contents of writeCache
     protected I2cAddr i2cAddr;                   // the address we communicate with on the I2C bus
     protected I2cDevice i2cDevice;                 // the device we are talking to
     protected boolean isI2cDeviceOwned;          // do we own the i2cDevice, or are we simply its client
@@ -79,14 +86,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     protected boolean isControllerLegacy;        // is the controller a legacy module?
     protected HardwareDeviceHealthImpl hardwareDeviceHealth; // keeps track of whether we are healthy or not
     protected RobotUsbModule robotUsbModule;            // if the controller is a RobotUsbModule, then then him cast to this type
-
     protected boolean isHooked;                   // whether we are connected to the underling device or not
     protected boolean isEngaged;                  // user's hooking *intent*
     protected AtomicInteger readerWriterPreventionCount;// used to be able to prevent new readers and writers
     protected ReadWriteLock readerWriterGate;           // used to to drain extant readers and writers. We ought not to need this (concurrentClientLock ought to suffice), but it certainly works.
     protected AtomicInteger readerWriterCount;          // for debugging
     protected boolean isClosing;                  // are we in the process of closing this device synch
-
     protected Callback callback;                   // the callback object on which we actually receive callbacks
     protected boolean loggingEnabled;             // whether we are to log to Logcat or not
     protected String loggingTag;                 // what we annotate our logging with
@@ -94,21 +99,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     @Nullable
     String name;                       // optional user recognizable name of this device
     protected ElapsedTime timeSinceLastHeartbeat;     // keeps track of our need for doing heartbeats
-
     protected TimeWindow readCacheTimeWindow;        // timestamps written here when read cache segment is updated
     protected byte[] readCache;                  // the buffer into which reads are retrieved
     protected byte[] writeCache;                 // the buffer that we write from
-    protected static final int dibCacheOverhead = 4;       // this many bytes at start of writeCache are system overhead
     protected Lock readCacheLock;              // lock we must hold to look at readCache
     protected Lock writeCacheLock;             // lock we must old to look at writeCache
-    protected static final int msCallbackLockWaitQuantum = 60;      // arbitrary, but long enough that we don't hit it in common usage, only in shutdown situations
-    protected static final int msCallbackLockAbandon = 500;         // if we don't see a callback in this amount of time, then something seriously has gone wrong
     protected boolean isWriteCoalescingEnabled;            // are we allowed to coalesce adjacent writes, or must we issue them in order separately?
-
-    protected final Object engagementLock = new Object();
-    protected final Object concurrentClientLock = new Object(); // the lock we use to serialize against concurrent clients of us. Can't acquire this AFTER the callback lock.
-    protected final Object callbackLock = new Object(); // the lock we use to synchronize with our callback.
-
     protected boolean disableReadWindows;         // if true, then setReadWindow is effectively disabled. this is an internal debugging aid only.
     protected volatile ReadWindow readWindow;                 // the set of registers to look at when we are in read mode. May be null, indicating no read needed
     protected volatile ReadWindow readWindowActuallyRead;     // the read window that was really read. readWindow will be a (possibly non-proper) subset of this
@@ -117,105 +113,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     protected volatile boolean hasReadWindowChanged;       // whether regWindow has changed since the hw cycle loop last took note
     protected volatile long nanoTimeReadCacheValid;     // the time on the System.nanoTime() clock at which the read cache was last set as valid
     protected volatile READ_CACHE_STATUS readCacheStatus;            // what we know about the contents of readCache
-    protected final WriteCacheStatus writeCacheStatus;           // what we know about the (payload) contents of writeCache
     protected volatile CONTROLLER_PORT_MODE controllerPortMode;        // what we know about the controller's read vs write status on the port we use
     protected volatile int iregWriteFirst;             // when writeCacheStatus is DIRTY, this is where we want to write
     protected volatile int cregWrite;
     protected volatile int msHeartbeatInterval;        // time between heartbeats; zero is 'none necessary'
     protected volatile HeartbeatAction heartbeatAction;            // the action to take when a heartbeat is needed. May be null.
     protected volatile ExecutorService heartbeatExecutor;          // used to schedule heartbeats when we need to read from the outside
-
-    protected class WriteCacheStatus {
-        private volatile WRITE_CACHE_STATUS status = WRITE_CACHE_STATUS.IDLE;
-        private volatile long nanoTimeIdle = 0;
-
-        public void setStatus(WRITE_CACHE_STATUS status) {
-            synchronized (callback) {
-                boolean wasIdle = this.status == WRITE_CACHE_STATUS.IDLE;
-                this.status = status;
-                boolean isIdle = this.status == WRITE_CACHE_STATUS.IDLE;
-                if (!wasIdle && isIdle) {
-                    this.nanoTimeIdle = System.nanoTime();
-                }
-            }
-        }
-
-        public void initStatus(WRITE_CACHE_STATUS status) {
-            synchronized (callback) {
-                this.status = status;
-                this.nanoTimeIdle = 0;
-            }
-        }
-
-        public WRITE_CACHE_STATUS getStatus() {
-            return status;
-        }
-
-        /**
-         * Waits for the write cache to become idle. But that doesn't come within a totally unreasonable
-         * amount of time, we're going to assume that our ReadWriteRunnable thread is either stuck or
-         * is dead, and we're going to get out of here.
-         *
-         * @return the time on the nanotime clock clock at which the idle transition occurred
-         */
-        public long waitForIdle() throws InterruptedException   // TODO: TimeoutException would be a better choice
-        {
-            synchronized (callbackLock) {
-                ElapsedTime timer = null;
-                while (getWriteCacheStatus() != WRITE_CACHE_STATUS.IDLE) {
-                    if (timer == null) {
-                        timer = new ElapsedTime();
-                    }
-                    if (timer.milliseconds() > msCallbackLockAbandon) {
-                        throw new InterruptedException();
-                    }
-                    callbackLock.wait(msCallbackLockWaitQuantum);
-                }
-                return nanoTimeIdle;
-            }
-        }
-
-    }
-
-    /* Keeps track of what we know about about the state of 'readCache' */
-    protected enum READ_CACHE_STATUS {
-        IDLE,                 // the read cache is quiescent; it doesn't contain valid data
-        SWITCHINGTOREADMODE,  // a request to switch to read mode has been made (used in Legacy Module only)
-        QUEUED,               // an I2C read has been queued, but we've not yet seen valid data
-        QUEUE_COMPLETED,      // a transient state only ever seen within the callback
-        VALID_ONLYONCE,       // read cache data has valid data but can only be read once
-        VALID_QUEUED;         // read cache has valid data AND a read has been queued
-
-        boolean isValid() {
-            return this == VALID_QUEUED || this == VALID_ONLYONCE;
-        }
-
-        boolean isQueued() {
-            return this == QUEUED || this == VALID_QUEUED;
-        }
-    }
-
-    /* Keeps track about what we know about the state of 'writeCache' */
-    protected enum WRITE_CACHE_STATUS {
-        IDLE,               // write cache is quiescent
-        DIRTY,              // write cache has changed bits that need to be pushed to module
-        QUEUED,             // write cache is currently being written to module, not yet returned
-    }
-
-    /* Keeps track of what we know about the state of the controller's read vs write modality on our port */
-    protected enum CONTROLLER_PORT_MODE {
-        UNKNOWN,             // we don't know anything about the controller
-        WRITE,               // the controller is in write mode
-        SWITCHINGTOREADMODE, // the controller is transitioning to read mode: at the next
-        // portIsReady() callback, it will be there (used in Legacy Module only)
-        READ                 // the port is in read mode, and can accept reads on the port data
-    }
-
-    ;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Instantiate an {@link I2cDeviceSynchImpl} instance on the indicated {@link I2cDevice}
@@ -235,7 +138,6 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
      */
     public I2cDeviceSynchImpl(I2cDevice i2cDevice, I2cAddr i2cAddr, boolean isI2cDeviceOwned) {
         this.loggingTag = String.format("%s:i2cSynch(%s)", RobotLog.TAG, i2cDevice.getConnectionInfo());
-        ;
         this.i2cAddr = i2cAddr;
 
         this.i2cDevice = i2cDevice;
@@ -282,6 +184,13 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         this(i2cDevice, I2cAddr.zero(), isI2cDeviceOwned);
     }
 
+    protected static byte[] concatenateByteArrays(byte[] left, byte[] right) {
+        byte[] result = new byte[left.length + right.length];
+        System.arraycopy(left, 0, result, 0, left.length);
+        System.arraycopy(right, 0, result, left.length, right.length);
+        return result;
+    }
+
     void attachToController()
     // All the state that we maintain that is tied to the state of our controller
     {
@@ -293,6 +202,10 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
 
         resetControllerState();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     void resetControllerState() {
         this.nanoTimeReadCacheValid = 0;
@@ -309,9 +222,9 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     }
 
     @Override
-    @Deprecated
-    public void setI2cAddr(I2cAddr newAddress) {
-        setI2cAddress(newAddress);
+    public I2cAddr getI2cAddress() {
+        // Note: locking on engagementLock here is tempting, but will cause deadlock in shutdowns
+        return this.i2cAddr;
     }
 
     @Override
@@ -331,15 +244,15 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     }
 
     @Override
-    public I2cAddr getI2cAddress() {
-        // Note: locking on engagementLock here is tempting, but will cause deadlock in shutdowns
-        return this.i2cAddr;
+    @Deprecated
+    public I2cAddr getI2cAddr() {
+        return getI2cAddress();
     }
 
     @Override
     @Deprecated
-    public I2cAddr getI2cAddr() {
-        return getI2cAddress();
+    public void setI2cAddr(I2cAddr newAddress) {
+        setI2cAddress(newAddress);
     }
 
     @Override
@@ -543,10 +456,6 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         enableReadsAndWrites();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // HardwareDevice
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public Manufacturer getManufacturer() {
         return this.controller.getManufacturer();
@@ -559,6 +468,10 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     public String getConnectionInfo() {
         return this.i2cDevice.getConnectionInfo();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //----------------------------------------------------------------------------------------------
 
     public int getVersion() {
         return this.i2cDevice.getVersion();
@@ -582,34 +495,14 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // HardwareDeviceHealth
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void setHealthStatus(HealthStatus status) {
-        hardwareDeviceHealth.setHealthStatus(status);
-    }
-
     @Override
     public HealthStatus getHealthStatus() {
         return hardwareDeviceHealth.getHealthStatus();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    /*
-     * Sets the set of I2C device registers that we wish to read.
-     */
     @Override
-    public void setReadWindow(ReadWindow newWindow) {
-        synchronized (this.concurrentClientLock) {
-            if (!this.disableReadWindows) {
-                setReadWindowInternal(newWindow);
-            }
-        }
+    public void setHealthStatus(HealthStatus status) {
+        hardwareDeviceHealth.setHealthStatus(status);
     }
 
     protected void setReadWindowInternal(ReadWindow newWindow) {
@@ -625,6 +518,10 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
             }
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // HardwareDeviceHealth
+    //----------------------------------------------------------------------------------------------
 
     /* locks must be externally taken */
     protected void assignReadWindow(ReadWindow newWindow) {
@@ -642,6 +539,22 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         synchronized (this.concurrentClientLock) {
             synchronized (this.callbackLock) {
                 return this.readWindow;
+            }
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    /*
+     * Sets the set of I2C device registers that we wish to read.
+     */
+    @Override
+    public void setReadWindow(ReadWindow newWindow) {
+        synchronized (this.concurrentClientLock) {
+            if (!this.disableReadWindows) {
+                setReadWindowInternal(newWindow);
             }
         }
     }
@@ -913,13 +826,6 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         }
     }
 
-    protected static byte[] concatenateByteArrays(byte[] left, byte[] right) {
-        byte[] result = new byte[left.length + right.length];
-        System.arraycopy(left, 0, result, 0, left.length);
-        System.arraycopy(right, 0, result, left.length, right.length);
-        return result;
-    }
-
     @Override
     public void waitForWriteCompletions(I2cWaitControl waitControl) {
         try {
@@ -957,12 +863,12 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         }
     }
 
-    protected void setWriteCacheStatus(WRITE_CACHE_STATUS status) {
-        this.writeCacheStatus.setStatus(status);
-    }
-
     protected WRITE_CACHE_STATUS getWriteCacheStatus() {
         return this.writeCacheStatus.getStatus();
+    }
+
+    protected void setWriteCacheStatus(WRITE_CACHE_STATUS status) {
+        this.writeCacheStatus.setStatus(status);
     }
 
     protected void initWriteCacheStatus(WRITE_CACHE_STATUS status) {
@@ -1011,15 +917,6 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     }
 
     @Override
-    public void setUserConfiguredName(@Nullable String name) {
-        synchronized (this.concurrentClientLock) {
-            synchronized (this.callbackLock) {
-                this.name = name;
-            }
-        }
-    }
-
-    @Override
     @Nullable
     public String getUserConfiguredName() {
         synchronized (this.concurrentClientLock) {
@@ -1030,10 +927,10 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     }
 
     @Override
-    public void setLogging(boolean enabled) {
+    public void setUserConfiguredName(@Nullable String name) {
         synchronized (this.concurrentClientLock) {
             synchronized (this.callbackLock) {
-                this.loggingEnabled = enabled;
+                this.name = name;
             }
         }
     }
@@ -1048,10 +945,10 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     }
 
     @Override
-    public void setLoggingTag(String loggingTag) {
+    public void setLogging(boolean enabled) {
         synchronized (this.concurrentClientLock) {
             synchronized (this.callbackLock) {
-                this.loggingTag = loggingTag + "I2C";
+                this.loggingEnabled = enabled;
             }
         }
     }
@@ -1061,6 +958,15 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
         synchronized (this.concurrentClientLock) {
             synchronized (this.callbackLock) {
                 return this.loggingTag;
+            }
+        }
+    }
+
+    @Override
+    public void setLoggingTag(String loggingTag) {
+        synchronized (this.concurrentClientLock) {
+            synchronized (this.callbackLock) {
+                this.loggingTag = loggingTag + "I2C";
             }
         }
     }
@@ -1084,19 +990,19 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
     }
 
     @Override
-    public void setHeartbeatAction(HeartbeatAction action) {
+    public HeartbeatAction getHeartbeatAction() {
         synchronized (this.concurrentClientLock) {
             synchronized (this.callbackLock) {
-                this.heartbeatAction = action;
+                return this.heartbeatAction;
             }
         }
     }
 
     @Override
-    public HeartbeatAction getHeartbeatAction() {
+    public void setHeartbeatAction(HeartbeatAction action) {
         synchronized (this.concurrentClientLock) {
             synchronized (this.callbackLock) {
-                return this.heartbeatAction;
+                this.heartbeatAction = action;
             }
         }
     }
@@ -1126,6 +1032,92 @@ public final class I2cDeviceSynchImpl extends I2cDeviceSynchReadHistoryImpl impl
 
     protected void log(int verbosity, String format, Object... args) {
         log(verbosity, String.format(format, args));
+    }
+
+    /* Keeps track of what we know about about the state of 'readCache' */
+    protected enum READ_CACHE_STATUS {
+        IDLE,                 // the read cache is quiescent; it doesn't contain valid data
+        SWITCHINGTOREADMODE,  // a request to switch to read mode has been made (used in Legacy Module only)
+        QUEUED,               // an I2C read has been queued, but we've not yet seen valid data
+        QUEUE_COMPLETED,      // a transient state only ever seen within the callback
+        VALID_ONLYONCE,       // read cache data has valid data but can only be read once
+        VALID_QUEUED;         // read cache has valid data AND a read has been queued
+
+        boolean isValid() {
+            return this == VALID_QUEUED || this == VALID_ONLYONCE;
+        }
+
+        boolean isQueued() {
+            return this == QUEUED || this == VALID_QUEUED;
+        }
+    }
+
+    /* Keeps track about what we know about the state of 'writeCache' */
+    protected enum WRITE_CACHE_STATUS {
+        IDLE,               // write cache is quiescent
+        DIRTY,              // write cache has changed bits that need to be pushed to module
+        QUEUED,             // write cache is currently being written to module, not yet returned
+    }
+
+    /* Keeps track of what we know about the state of the controller's read vs write modality on our port */
+    protected enum CONTROLLER_PORT_MODE {
+        UNKNOWN,             // we don't know anything about the controller
+        WRITE,               // the controller is in write mode
+        SWITCHINGTOREADMODE, // the controller is transitioning to read mode: at the next
+        // portIsReady() callback, it will be there (used in Legacy Module only)
+        READ                 // the port is in read mode, and can accept reads on the port data
+    }
+
+    protected class WriteCacheStatus {
+        private volatile WRITE_CACHE_STATUS status = WRITE_CACHE_STATUS.IDLE;
+        private volatile long nanoTimeIdle = 0;
+
+        public void initStatus(WRITE_CACHE_STATUS status) {
+            synchronized (callback) {
+                this.status = status;
+                this.nanoTimeIdle = 0;
+            }
+        }
+
+        public WRITE_CACHE_STATUS getStatus() {
+            return status;
+        }
+
+        public void setStatus(WRITE_CACHE_STATUS status) {
+            synchronized (callback) {
+                boolean wasIdle = this.status == WRITE_CACHE_STATUS.IDLE;
+                this.status = status;
+                boolean isIdle = this.status == WRITE_CACHE_STATUS.IDLE;
+                if (!wasIdle && isIdle) {
+                    this.nanoTimeIdle = System.nanoTime();
+                }
+            }
+        }
+
+        /**
+         * Waits for the write cache to become idle. But that doesn't come within a totally unreasonable
+         * amount of time, we're going to assume that our ReadWriteRunnable thread is either stuck or
+         * is dead, and we're going to get out of here.
+         *
+         * @return the time on the nanotime clock clock at which the idle transition occurred
+         */
+        public long waitForIdle() throws InterruptedException   // TODO: TimeoutException would be a better choice
+        {
+            synchronized (callbackLock) {
+                ElapsedTime timer = null;
+                while (getWriteCacheStatus() != WRITE_CACHE_STATUS.IDLE) {
+                    if (timer == null) {
+                        timer = new ElapsedTime();
+                    }
+                    if (timer.milliseconds() > msCallbackLockAbandon) {
+                        throw new InterruptedException();
+                    }
+                    callbackLock.wait(msCallbackLockWaitQuantum);
+                }
+                return nanoTimeIdle;
+            }
+        }
+
     }
 
     protected class Callback implements I2cController.I2cPortReadyCallback, I2cController.I2cPortReadyBeginEndNotifications, RobotArmingStateNotifier.Callback {

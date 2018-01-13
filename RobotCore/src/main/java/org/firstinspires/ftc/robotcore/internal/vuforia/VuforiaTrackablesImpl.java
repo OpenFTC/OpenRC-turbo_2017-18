@@ -74,6 +74,11 @@ public class VuforiaTrackablesImpl extends AbstractList<VuforiaTrackable> implem
     }
 
     @Override
+    public synchronized String getName() {
+        return this.name;
+    }
+
+    @Override
     public synchronized void setName(String name) {
         this.name = name;
         for (VuforiaTrackableImpl trackable : this.trackables) {
@@ -81,11 +86,6 @@ public class VuforiaTrackablesImpl extends AbstractList<VuforiaTrackable> implem
                 trackable.setName(name);
             }
         }
-    }
-
-    @Override
-    public synchronized String getName() {
-        return this.name;
     }
 
     //------------------------------------------------------------------------------------------

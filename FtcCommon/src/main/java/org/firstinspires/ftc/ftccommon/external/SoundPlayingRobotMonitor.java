@@ -43,9 +43,9 @@ import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.robot.RobotStatus;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 /**
  * {@link SoundPlayingRobotMonitor} is an implementation of {@link RobotStateMonitor} that
@@ -57,14 +57,6 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     //----------------------------------------------------------------------------------------------
 
     protected static final boolean DEBUG = false;
-    protected Context context;
-    protected RobotState robotState = RobotState.UNKNOWN;
-    protected RobotStatus robotStatus = RobotStatus.UNKNOWN;
-    protected NetworkStatus networkStatus = NetworkStatus.UNKNOWN;
-    protected PeerStatus peerStatus = PeerStatus.UNKNOWN;
-    protected String errorMessage = null;
-    protected String warningMessage = null;
-
     // Identity of the sounds played by this monitor. Users can change these
     // instance variables in order to cause different sounds to be played.
     public
@@ -82,6 +74,13 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor {
     public
     @RawRes
     int soundError = R.raw.errormessage;
+    protected Context context;
+    protected RobotState robotState = RobotState.UNKNOWN;
+    protected RobotStatus robotStatus = RobotStatus.UNKNOWN;
+    protected NetworkStatus networkStatus = NetworkStatus.UNKNOWN;
+    protected PeerStatus peerStatus = PeerStatus.UNKNOWN;
+    protected String errorMessage = null;
+    protected String warningMessage = null;
 
     //----------------------------------------------------------------------------------------------
     // Construction

@@ -45,21 +45,6 @@ import java.util.Map;
 public interface DeviceManager {
 
     /**
-     * Enum of known USB Device Types (Note that the MR .AAR library has an internal copy of this)
-     */
-    enum DeviceType {
-        FTDI_USB_UNKNOWN_DEVICE,
-        MODERN_ROBOTICS_USB_UNKNOWN_DEVICE,
-        MODERN_ROBOTICS_USB_DC_MOTOR_CONTROLLER,
-        MODERN_ROBOTICS_USB_SERVO_CONTROLLER,
-        MODERN_ROBOTICS_USB_LEGACY_MODULE,
-        MODERN_ROBOTICS_USB_DEVICE_INTERFACE_MODULE,
-        MODERN_ROBOTICS_USB_SENSOR_MUX,   // does this really exist? probably not
-        LYNX_USB_DEVICE,
-        UNKNOWN_DEVICE
-    }
-
-    /**
      * Get a listing of all Modern Robotics devices connected.
      * <p>
      * This method will attempt to open all USB devices that are using an FTDI USB chipset. It will
@@ -384,4 +369,19 @@ public interface DeviceManager {
      * @return an LED
      */
     LED createLED(DigitalChannelController controller, int channel, String name);
+
+    /**
+     * Enum of known USB Device Types (Note that the MR .AAR library has an internal copy of this)
+     */
+    enum DeviceType {
+        FTDI_USB_UNKNOWN_DEVICE,
+        MODERN_ROBOTICS_USB_UNKNOWN_DEVICE,
+        MODERN_ROBOTICS_USB_DC_MOTOR_CONTROLLER,
+        MODERN_ROBOTICS_USB_SERVO_CONTROLLER,
+        MODERN_ROBOTICS_USB_LEGACY_MODULE,
+        MODERN_ROBOTICS_USB_DEVICE_INTERFACE_MODULE,
+        MODERN_ROBOTICS_USB_SENSOR_MUX,   // does this really exist? probably not
+        LYNX_USB_DEVICE,
+        UNKNOWN_DEVICE
+    }
 }

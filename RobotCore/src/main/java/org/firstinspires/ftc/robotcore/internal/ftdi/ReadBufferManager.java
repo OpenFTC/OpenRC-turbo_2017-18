@@ -41,13 +41,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Consumer;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.collections.ArrayRunQueueLong;
 import org.firstinspires.ftc.robotcore.internal.collections.CircularByteBuffer;
 import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
 import org.firstinspires.ftc.robotcore.internal.collections.MarkedItemQueue;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -67,7 +67,6 @@ public class ReadBufferManager extends FtConstants {
     public static final String TAG = "ReadBufferManager";
 
     private final FtDeviceManagerParams mParams;
-    private Deadline mReadDeadline;
     private final int mAvailableInBuffersCapacity;
     private final int mAvailableOutBuffersCapacity;
     private final ArrayList<BulkPacketBufferIn> mAvailableInBuffers;   // finite capacity
@@ -79,6 +78,7 @@ public class ReadBufferManager extends FtConstants {
     private final CircularByteBuffer mCircularBuffer;
     private final MarkedItemQueue mMarkedItemQueue;
     private final ArrayRunQueueLong mTimestamps;
+    private Deadline mReadDeadline;
     private boolean mReadBulkInDataInterruptRequested;
     private volatile Thread mReadBulkInDataThread;
     private volatile boolean mProcessBulkInDataCallInFlight;
@@ -234,15 +234,8 @@ public class ReadBufferManager extends FtConstants {
         }
     }
 
-    private class RecentPacketEvicted implements Consumer<BulkPacketBuffer> {
-        @Override
-        public void accept(BulkPacketBuffer bulkPacketBuffer) {
-            if (bulkPacketBuffer instanceof BulkPacketBufferIn) {
-                offerAvailableBufferIn((BulkPacketBufferIn) bulkPacketBuffer);
-            } else {
-                offerAvailableBufferOut((BulkPacketBufferOut) bulkPacketBuffer);
-            }
-        }
+    public boolean getDebugRetainBuffers() {
+        return mDebugRetainBuffers;
     }
 
     public void setDebugRetainBuffers(boolean retainRecentBuffers) {
@@ -252,10 +245,6 @@ public class ReadBufferManager extends FtConstants {
                 mRetainedBuffers.clear();
             }
         }
-    }
-
-    public boolean getDebugRetainBuffers() {
-        return mDebugRetainBuffers;
     }
 
     public boolean retainRecentBuffer(BulkPacketBuffer buffer) {
@@ -299,10 +288,6 @@ public class ReadBufferManager extends FtConstants {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // I/O
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Called on {@link ReadBufferWorker} thread
      */
@@ -342,6 +327,10 @@ public class ReadBufferManager extends FtConstants {
             }
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // I/O
+    //----------------------------------------------------------------------------------------------
 
     /**
      * called on {@link ReadBufferWorker} thread
@@ -625,6 +614,17 @@ public class ReadBufferManager extends FtConstants {
             // If there's any reader out there, wake them up and wait until they leave
             wakeReadBulkInData();
             spinWaitNoReadBulkInData();
+        }
+    }
+
+    private class RecentPacketEvicted implements Consumer<BulkPacketBuffer> {
+        @Override
+        public void accept(BulkPacketBuffer bulkPacketBuffer) {
+            if (bulkPacketBuffer instanceof BulkPacketBufferIn) {
+                offerAvailableBufferIn((BulkPacketBufferIn) bulkPacketBuffer);
+            } else {
+                offerAvailableBufferOut((BulkPacketBufferOut) bulkPacketBuffer);
+            }
         }
     }
 }

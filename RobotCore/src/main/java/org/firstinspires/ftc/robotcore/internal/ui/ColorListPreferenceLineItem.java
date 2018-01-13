@@ -75,13 +75,13 @@ public class ColorListPreferenceLineItem extends LinearLayout implements Checkab
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void setChecked(boolean checked) {
-        getCheckedTextView().setChecked(checked);
+    public boolean isChecked() {
+        return getCheckedTextView().isChecked();
     }
 
     @Override
-    public boolean isChecked() {
-        return getCheckedTextView().isChecked();
+    public void setChecked(boolean checked) {
+        getCheckedTextView().setChecked(checked);
     }
 
     @Override

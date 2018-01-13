@@ -33,9 +33,9 @@ package com.qualcomm.ftccommon;
 
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -113,6 +113,11 @@ public class CommandList extends RobotCoreCommandList {
 
     public static final String CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES = "CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES";
     public static final String CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP = "CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP";
+    public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES";
+    public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP";
+    public static final String CMD_LYNX_FIRMWARE_UPDATE = "CMD_LYNX_FIRMWARE_UPDATE";
+    public static final String CMD_LYNX_FIRMWARE_UPDATE_RESP = "CMD_LYNX_FIRMWARE_UPDATE_RESP";
+    public static final String CMD_LYNX_ADDRESS_CHANGE = "CMD_LYNX_ADDRESS_CHANGE";
 
     public static class LynxFirmwareImagesResp {
         /**
@@ -124,92 +129,82 @@ public class CommandList extends RobotCoreCommandList {
          */
         ArrayList<FWImage> firmwareImages = new ArrayList<FWImage>();
 
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
         public static LynxFirmwareImagesResp deserialize(String serialized) {
             return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareImagesResp.class);
         }
-    }
 
-    public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES";
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+    }
 
     public static class USBAccessibleLynxModulesRequest {
         public boolean includeModuleNumbers = false;
 
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
         public static USBAccessibleLynxModulesRequest deserialize(String serialized) {
             return SimpleGson.getInstance().fromJson(serialized, USBAccessibleLynxModulesRequest.class);
         }
-    }
 
-    public static final String CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP = "CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP";
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+    }
 
     public static class USBAccessibleLynxModulesResp {
         ArrayList<USBAccessibleLynxModule> modules = new ArrayList<USBAccessibleLynxModule>();
 
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
         public static USBAccessibleLynxModulesResp deserialize(String serialized) {
             return SimpleGson.getInstance().fromJson(serialized, USBAccessibleLynxModulesResp.class);
         }
-    }
 
-    public static final String CMD_LYNX_FIRMWARE_UPDATE = "CMD_LYNX_FIRMWARE_UPDATE";
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+    }
 
     public static class LynxFirmwareUpdate {
 
         SerialNumber serialNumber;
         FWImage firmwareImageFile;
 
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
         public static LynxFirmwareUpdate deserialize(String serialized) {
             return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareUpdate.class);
         }
-    }
 
-    public static final String CMD_LYNX_FIRMWARE_UPDATE_RESP = "CMD_LYNX_FIRMWARE_UPDATE_RESP";
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+    }
 
     public static class LynxFirmwareUpdateResp {
 
         boolean success;
 
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
         public static LynxFirmwareUpdateResp deserialize(String serialized) {
             return SimpleGson.getInstance().fromJson(serialized, LynxFirmwareUpdateResp.class);
         }
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
     }
 
-    public static final String CMD_LYNX_ADDRESS_CHANGE = "CMD_LYNX_ADDRESS_CHANGE";
-
     public static class LynxAddressChangeRequest {
+
+        ArrayList<AddressChange> modulesToChange;
+
+        public static LynxAddressChangeRequest deserialize(String serialized) {
+            return SimpleGson.getInstance().fromJson(serialized, LynxAddressChangeRequest.class);
+        }
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
 
         public static class AddressChange {
             SerialNumber serialNumber;
             int oldAddress;
             int newAddress;
-        }
-
-        ArrayList<AddressChange> modulesToChange;
-
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
-        public static LynxAddressChangeRequest deserialize(String serialized) {
-            return SimpleGson.getInstance().fromJson(serialized, LynxAddressChangeRequest.class);
         }
     }
 }

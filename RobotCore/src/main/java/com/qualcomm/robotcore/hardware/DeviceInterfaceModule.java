@@ -43,19 +43,19 @@ public interface DeviceInterfaceModule extends DigitalChannelController, AnalogI
     int getDigitalInputStateByte();
 
     /**
+     * Get the digital IO control byte
+     *
+     * @return control byte
+     */
+    byte getDigitalIOControlByte();
+
+    /**
      * If a particular bit is set to one, the corresponding channel pin will be in output mode.
      * Else it will be in input mode.
      *
      * @param input - the desired setting for each channel pin.
      */
     void setDigitalIOControlByte(byte input);
-
-    /**
-     * Get the digital IO control byte
-     *
-     * @return control byte
-     */
-    byte getDigitalIOControlByte();
 
     /**
      * If a a particular control field bit is set to one, the channel pin will be in output mode and

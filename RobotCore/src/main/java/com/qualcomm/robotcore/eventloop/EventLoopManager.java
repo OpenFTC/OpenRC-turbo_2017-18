@@ -31,11 +31,9 @@
 package com.qualcomm.robotcore.eventloop;
 
 import android.content.Context;
-import android.hardware.usb.UsbDevice;
 import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.EventLoopManagerClient;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -49,13 +47,11 @@ import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.wifi.NetworkConnection;
 import com.qualcomm.robotcore.wifi.NetworkType;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
@@ -63,7 +59,7 @@ import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.SendOnceRunnable;
 import org.firstinspires.ftc.robotcore.internal.network.SocketConnect;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
-//modified for turbo: removed webserver import
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.net.InetAddress;
 import java.util.Set;
@@ -71,6 +67,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
+//modified for turbo: removed webserver import
 
 /**
  * Event Loop Manager
@@ -85,68 +83,48 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
     // Types
     //------------------------------------------------------------------------------------------------
 
-    /**
-     * Callback to monitor when event loop changes state
-     */
-    public interface EventLoopMonitor {
-        void onStateChange(@NonNull RobotState state);
-
-        void onTelemetryTransmitted();
-
-        void onPeerConnected(boolean peerLikelyChanged);
-
-        void onPeerDisconnected();
-    }
+    public static final String TAG = "EventLoopManager";
 
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
-
-    public static final String TAG = "EventLoopManager";
-    private static final boolean DEBUG = false;
-    private static final int HEARTBEAT_WAIT_DELAY = 500; // in milliseconds
-    private static final int MAX_COMMAND_CACHE = 8;
-
     // We use strings that are unlikely to inadvertently collide with user-specified telemetry keys
     public static final String SYSTEM_NONE_KEY = "$System$None$";
     public static final String SYSTEM_ERROR_KEY = "$System$Error$";
     public static final String SYSTEM_WARNING_KEY = "$System$Warning$";
     public static final String ROBOT_BATTERY_LEVEL_KEY = "$Robot$Battery$Level$";
     public static final String RC_BATTERY_STATUS_KEY = "$RobotController$Battery$Status$";
-
+    private static final boolean DEBUG = false;
+    private static final int HEARTBEAT_WAIT_DELAY = 500; // in milliseconds
+    private static final int MAX_COMMAND_CACHE = 8;
     /**
      * If no heartbeat is received in this amount of time, forceable shut down the robot
      */
     private static final double SECONDS_UNTIL_FORCED_SHUTDOWN = 2.0;
     private final EventLoop idleEventLoop;
+    private final Object eventLoopLock = new Object();
+    private final Gamepad gamepads[] = {new Gamepad(), new Gamepad()};
+    private final Set<SyncdDevice> syncdDevices = new CopyOnWriteArraySet<SyncdDevice>();
+    private final Command[] commandRecvCache = new Command[MAX_COMMAND_CACHE];
+    private final Object refreshSystemTelemetryLock = new Object();
+    private final @NonNull
+    Context context;
+    private final @NonNull
+    EventLoopManagerClient eventLoopManagerClient;
     public RobotState state = RobotState.NOT_STARTED;
     protected boolean isPeerConnected = false;
     private ExecutorService executorEventLoop = ThreadPool.newSingleThreadExecutor("executorEventLoop");
     private ElapsedTime lastHeartbeatReceived = new ElapsedTime();
     private EventLoop eventLoop = null;
-    private final Object eventLoopLock = new Object();
-    private final Gamepad gamepads[] = {new Gamepad(), new Gamepad()};
     private Heartbeat heartbeat = new Heartbeat();
     private EventLoopMonitor callback = null;
-    private final Set<SyncdDevice> syncdDevices = new CopyOnWriteArraySet<SyncdDevice>();
-    private final Command[] commandRecvCache = new Command[MAX_COMMAND_CACHE];
     private int commandRecvCachePosition = 0;
     private InetAddress remoteAddr;
-    private final Object refreshSystemTelemetryLock = new Object();
     private String lastSystemTelemetryMessage = null;
     private String lastSystemTelemetryKey = null;
     private long lastSystemTelemetryNanoTime = 0;
-    private final @NonNull
-    Context context;
-    private final @NonNull
-    EventLoopManagerClient eventLoopManagerClient;
     private AppUtil appUtil = AppUtil.getInstance();
     private NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
-
-    //------------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------------
-
     /**
      * Constructor
      */
@@ -156,6 +134,17 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         this.idleEventLoop = idleEventLoop;
         this.eventLoop = idleEventLoop;
         changeState(RobotState.NOT_STARTED);
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     * return any event loop monitor previously set
+     */
+    public EventLoopMonitor getMonitor() {
+        return callback;
     }
 
     //------------------------------------------------------------------------------------------------
@@ -174,19 +163,33 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
     }
 
     /**
-     * return any event loop monitor previously set
-     */
-    public EventLoopMonitor getMonitor() {
-        return callback;
-    }
-
-    /**
      * Get the current event loop
      *
      * @return current event loop
      */
     public EventLoop getEventLoop() {
         return eventLoop;
+    }
+
+    /**
+     * Replace the current event loop with a new event loop
+     *
+     * @param eventLoop new event loop
+     * @throws RobotCoreException if event loop fails to init
+     */
+    public void setEventLoop(@NonNull EventLoop eventLoop) throws RobotCoreException {
+
+        // cancel the old event loop
+        stopEventLoop();
+
+        synchronized (eventLoopLock) {
+            // assign the new event loop
+            this.eventLoop = eventLoop;
+            RobotLog.vv(RobocolDatagram.TAG, "eventLoop=%s", this.eventLoop.getClass().getSimpleName());
+        }
+
+        // start the new event loop
+        startEventLoop();
     }
 
     /**
@@ -241,120 +244,6 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         return CallbackResult.NOT_HANDLED;  // if we said 'handled', that would suppress dispatch by packet type, always, which is pointless
     }
 
-    /*
-     * Responsible for calling loop on the assigned event loop
-     */
-    private class EventLoopRunnable implements Runnable {
-        @Override
-        public void run() {
-            ThreadPool.logThreadLifeCycle("opmode loop()", new Runnable() {
-                @Override
-                public void run() {
-
-                    try {
-                        ElapsedTime loopTime = new ElapsedTime();
-                        final double MIN_THROTTLE = 0.0010; // in seconds
-                        final long THROTTLE_RESOLUTION = 5; // in milliseconds
-
-                        while (!Thread.currentThread().isInterrupted()) {
-
-                            while (loopTime.time() < MIN_THROTTLE) {
-                                // don't go faster than throttle allows
-                                Thread.sleep(THROTTLE_RESOLUTION);
-                            }
-                            loopTime.reset();
-
-                            // Send any pending errors or warnings to other apps
-                            EventLoopManager.this.refreshSystemTelemetry();
-
-                            if (lastHeartbeatReceived.startTime() == 0.0) {
-                                // We haven't received a heartbeat so slow the whole thing down
-                                // Note that the actual disconnect is detected in the lower network layer
-                                Thread.sleep(HEARTBEAT_WAIT_DELAY);
-                            }
-
-                            // see if any devices have abnormally shutdown. if they have, then remember that
-                            // they've detached.
-                            for (SyncdDevice device : syncdDevices) {
-                                SyncdDevice.ShutdownReason shutdownReason = device.getShutdownReason();
-                                if (shutdownReason != SyncdDevice.ShutdownReason.NORMAL) {
-                                    RobotLog.v("event loop: device has shutdown abnormally: %s", shutdownReason);
-                                    RobotUsbModule robotUsbModule = device.getOwner();
-                                    if (robotUsbModule != null) {
-                                        RobotLog.vv(TAG, "event loop: detaching device %s", robotUsbModule.getSerialNumber());
-                                        synchronized (eventLoopLock) {
-                                            eventLoop.handleUsbModuleDetach(robotUsbModule);
-
-                                            // If we're to automatically attempt an reopen, do that in a little bit so
-                                            // as to give the system a chance to settle down a bit to recover from, e.g.,
-                                            // a big ESD zap. At this point, the delay is more theoretically needed than
-                                            // practically demonstrated as required.
-                                            if (shutdownReason == SyncdDevice.ShutdownReason.ABNORMAL_ATTEMPT_REOPEN) {
-                                                RobotLog.vv(TAG, "event loop: auto-reattaching device %s", robotUsbModule.getSerialNumber());
-                                                eventLoop.pendUsbDeviceAttachment(robotUsbModule.getSerialNumber(), SyncdDevice.msAbnormalReopenInterval, TimeUnit.MILLISECONDS);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            // conversely, if any devices have attached, now is a good time for the eventLoop to process them
-                            synchronized (eventLoopLock) {
-                                eventLoop.processedRecentlyAttachedUsbDevices();
-                            }
-
-                            // run the event loop
-                            try {
-                                synchronized (eventLoopLock) {
-                                    eventLoop.loop();
-                                }
-                            } catch (Exception e) {
-                                // we should catch everything, since we don't know what the event loop might throw
-                                RobotLog.ee(TAG, e, "Event loop threw an exception");
-
-                                // display error message. it will get reported to DS in the RobotCoreException handler below
-                                String errorMsg = e.getClass().getSimpleName() + (e.getMessage() != null ? " - " + e.getMessage() : "");
-                                RobotLog.setGlobalErrorMsg("User code threw an uncaught exception: " + errorMsg);
-                                throw new RobotCoreException("EventLoop Exception in loop(): %s", errorMsg);
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        // interrupted: exit this loop
-                        RobotLog.v("EventLoopRunnable interrupted");
-                        Thread.currentThread().interrupt(); // pass on interrupt to caller
-                        changeState(RobotState.STOPPED);
-                    } catch (CancellationException e) {
-                        // interrupted, then cancel thrown: exit this loop
-                        RobotLog.v("EventLoopRunnable cancelled");
-                        changeState(RobotState.STOPPED);
-                    } catch (RobotCoreException e) {
-                        RobotLog.v("RobotCoreException in EventLoopManager: " + e.getMessage());
-                        changeState(RobotState.EMERGENCY_STOP);
-
-                        EventLoopManager.this.refreshSystemTelemetry();
-                    }
-
-                    // after loop finishes, close all the devices and tear down the event loop.
-                    try {
-                        // We synchronize on the eventLoopLock so that we won't try to start or stop the event
-                        // loop while it's busy processing a command, lest unexpected concurrency errors occur
-                        synchronized (eventLoopLock) {
-                            eventLoop.teardown();
-                        }
-                    } catch (Exception e) {
-                        RobotLog.ww(TAG, e, "Caught exception during looper teardown: " + e.toString());
-
-                        EventLoopManager.this.refreshSystemTelemetry();
-                    }
-                }
-            });
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // Misc
-    //------------------------------------------------------------------------------------------------
-
     /**
      * Forces an immediate refresh of the system telemetry
      */
@@ -362,6 +251,10 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         lastSystemTelemetryNanoTime = 0;
         refreshSystemTelemetry();
     }
+
+    //------------------------------------------------------------------------------------------------
+    // Misc
+    //------------------------------------------------------------------------------------------------
 
     /**
      * Do our best to maintain synchrony of the system error / warning state between applications
@@ -508,27 +401,6 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
     }
 
     /**
-     * Replace the current event loop with a new event loop
-     *
-     * @param eventLoop new event loop
-     * @throws RobotCoreException if event loop fails to init
-     */
-    public void setEventLoop(@NonNull EventLoop eventLoop) throws RobotCoreException {
-
-        // cancel the old event loop
-        stopEventLoop();
-
-        synchronized (eventLoopLock) {
-            // assign the new event loop
-            this.eventLoop = eventLoop;
-            RobotLog.vv(RobocolDatagram.TAG, "eventLoop=%s", this.eventLoop.getClass().getSimpleName());
-        }
-
-        // start the new event loop
-        startEventLoop();
-    }
-
-    /**
      * Send telemetry data
      * <p>
      * Send the telemetry data, and then clear the sent data
@@ -624,10 +496,6 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         networkConnectionHandler.sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_ROBOT_STATE, Integer.toString(state.asByte())));
     }
 
-  /*
-   * Event processing methods
-   */
-
     @Override
     public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
         if (DEBUG) {
@@ -675,6 +543,10 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         heartbeat = currentHeartbeat;
         return CallbackResult.HANDLED;
     }
+
+  /*
+   * Event processing methods
+   */
 
     @Override
     public void peerConnected(boolean peerLikelyChanged) {
@@ -728,7 +600,6 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         return CallbackResult.HANDLED;
     }
 
-
     @Override
     public CallbackResult commandEvent(Command command) throws RobotCoreException {
         // called on RecvRunnable.run() thread
@@ -771,5 +642,128 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         telemetry.setTag(tag);
         telemetry.addData(tag, msg);
         sendTelemetryData(telemetry);
+    }
+
+    /**
+     * Callback to monitor when event loop changes state
+     */
+    public interface EventLoopMonitor {
+        void onStateChange(@NonNull RobotState state);
+
+        void onTelemetryTransmitted();
+
+        void onPeerConnected(boolean peerLikelyChanged);
+
+        void onPeerDisconnected();
+    }
+
+    /*
+     * Responsible for calling loop on the assigned event loop
+     */
+    private class EventLoopRunnable implements Runnable {
+        @Override
+        public void run() {
+            ThreadPool.logThreadLifeCycle("opmode loop()", new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        ElapsedTime loopTime = new ElapsedTime();
+                        final double MIN_THROTTLE = 0.0010; // in seconds
+                        final long THROTTLE_RESOLUTION = 5; // in milliseconds
+
+                        while (!Thread.currentThread().isInterrupted()) {
+
+                            while (loopTime.time() < MIN_THROTTLE) {
+                                // don't go faster than throttle allows
+                                Thread.sleep(THROTTLE_RESOLUTION);
+                            }
+                            loopTime.reset();
+
+                            // Send any pending errors or warnings to other apps
+                            EventLoopManager.this.refreshSystemTelemetry();
+
+                            if (lastHeartbeatReceived.startTime() == 0.0) {
+                                // We haven't received a heartbeat so slow the whole thing down
+                                // Note that the actual disconnect is detected in the lower network layer
+                                Thread.sleep(HEARTBEAT_WAIT_DELAY);
+                            }
+
+                            // see if any devices have abnormally shutdown. if they have, then remember that
+                            // they've detached.
+                            for (SyncdDevice device : syncdDevices) {
+                                SyncdDevice.ShutdownReason shutdownReason = device.getShutdownReason();
+                                if (shutdownReason != SyncdDevice.ShutdownReason.NORMAL) {
+                                    RobotLog.v("event loop: device has shutdown abnormally: %s", shutdownReason);
+                                    RobotUsbModule robotUsbModule = device.getOwner();
+                                    if (robotUsbModule != null) {
+                                        RobotLog.vv(TAG, "event loop: detaching device %s", robotUsbModule.getSerialNumber());
+                                        synchronized (eventLoopLock) {
+                                            eventLoop.handleUsbModuleDetach(robotUsbModule);
+
+                                            // If we're to automatically attempt an reopen, do that in a little bit so
+                                            // as to give the system a chance to settle down a bit to recover from, e.g.,
+                                            // a big ESD zap. At this point, the delay is more theoretically needed than
+                                            // practically demonstrated as required.
+                                            if (shutdownReason == SyncdDevice.ShutdownReason.ABNORMAL_ATTEMPT_REOPEN) {
+                                                RobotLog.vv(TAG, "event loop: auto-reattaching device %s", robotUsbModule.getSerialNumber());
+                                                eventLoop.pendUsbDeviceAttachment(robotUsbModule.getSerialNumber(), SyncdDevice.msAbnormalReopenInterval, TimeUnit.MILLISECONDS);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // conversely, if any devices have attached, now is a good time for the eventLoop to process them
+                            synchronized (eventLoopLock) {
+                                eventLoop.processedRecentlyAttachedUsbDevices();
+                            }
+
+                            // run the event loop
+                            try {
+                                synchronized (eventLoopLock) {
+                                    eventLoop.loop();
+                                }
+                            } catch (Exception e) {
+                                // we should catch everything, since we don't know what the event loop might throw
+                                RobotLog.ee(TAG, e, "Event loop threw an exception");
+
+                                // display error message. it will get reported to DS in the RobotCoreException handler below
+                                String errorMsg = e.getClass().getSimpleName() + (e.getMessage() != null ? " - " + e.getMessage() : "");
+                                RobotLog.setGlobalErrorMsg("User code threw an uncaught exception: " + errorMsg);
+                                throw new RobotCoreException("EventLoop Exception in loop(): %s", errorMsg);
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        // interrupted: exit this loop
+                        RobotLog.v("EventLoopRunnable interrupted");
+                        Thread.currentThread().interrupt(); // pass on interrupt to caller
+                        changeState(RobotState.STOPPED);
+                    } catch (CancellationException e) {
+                        // interrupted, then cancel thrown: exit this loop
+                        RobotLog.v("EventLoopRunnable cancelled");
+                        changeState(RobotState.STOPPED);
+                    } catch (RobotCoreException e) {
+                        RobotLog.v("RobotCoreException in EventLoopManager: " + e.getMessage());
+                        changeState(RobotState.EMERGENCY_STOP);
+
+                        EventLoopManager.this.refreshSystemTelemetry();
+                    }
+
+                    // after loop finishes, close all the devices and tear down the event loop.
+                    try {
+                        // We synchronize on the eventLoopLock so that we won't try to start or stop the event
+                        // loop while it's busy processing a command, lest unexpected concurrency errors occur
+                        synchronized (eventLoopLock) {
+                            eventLoop.teardown();
+                        }
+                    } catch (Exception e) {
+                        RobotLog.ww(TAG, e, "Caught exception during looper teardown: " + e.toString());
+
+                        EventLoopManager.this.refreshSystemTelemetry();
+                    }
+                }
+            });
+        }
     }
 }

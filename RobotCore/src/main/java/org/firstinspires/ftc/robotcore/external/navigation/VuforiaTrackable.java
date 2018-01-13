@@ -43,6 +43,15 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
  */
 public interface VuforiaTrackable {
     /**
+     * Returns the current listener associated with this trackable.
+     *
+     * @return the current listener associated with this trackable.
+     * @see #setListener(Listener)
+     * @see VuforiaTrackableDefaultListener
+     */
+    Listener getListener();
+
+    /**
      * Sets an object that will receive notifications as the {@link VuforiaTrackable}
      * is tracked and is not tracked. If no listener is provided, then a default listener
      * is used.
@@ -56,13 +65,12 @@ public interface VuforiaTrackable {
     void setListener(@Nullable Listener listener);
 
     /**
-     * Returns the current listener associated with this trackable.
+     * Returns the location of the trackable in the FTC field.
      *
-     * @return the current listener associated with this trackable.
-     * @see #setListener(Listener)
-     * @see VuforiaTrackableDefaultListener
+     * @return the location of the trackable in the FTC field.
+     * @see #setLocation(OpenGLMatrix)
      */
-    Listener getListener();
+    OpenGLMatrix getLocation();
 
     /**
      * Sets the location of the trackable in the FTC field (ie: world) coordinate system.
@@ -76,12 +84,12 @@ public interface VuforiaTrackable {
     void setLocation(OpenGLMatrix location);
 
     /**
-     * Returns the location of the trackable in the FTC field.
+     * Retreives user data previously associated with this trackable object.
      *
-     * @return the location of the trackable in the FTC field.
-     * @see #setLocation(OpenGLMatrix)
+     * @return user data previously associated with this trackable object.
+     * @see #setUserData(Object)
      */
-    OpenGLMatrix getLocation();
+    Object getUserData();
 
     /**
      * Sets user data to be associated with this trackable object. The SDK does not internally
@@ -94,29 +102,12 @@ public interface VuforiaTrackable {
     void setUserData(Object object);
 
     /**
-     * Retreives user data previously associated with this trackable object.
-     *
-     * @return user data previously associated with this trackable object.
-     * @see #setUserData(Object)
-     */
-    Object getUserData();
-
-    /**
      * Returns the {@link VuforiaTrackables} of which this {@link VuforiaTrackable} is a member
      *
      * @return the {@link VuforiaTrackables} of which this {@link VuforiaTrackable} is a member
      * @see VuforiaTrackables
      */
     VuforiaTrackables getTrackables();
-
-    /**
-     * Sets a user-determined name associated with this trackable. This is mostly useful for debugging.
-     *
-     * @param name a user-determined name
-     * @see #getName()
-     * @see #setUserData(Object)
-     */
-    void setName(String name);
 
     /**
      * Returns the user-determined name associated with this trackable.
@@ -126,6 +117,15 @@ public interface VuforiaTrackable {
      * @see VuforiaTrackables#setName(String)
      */
     String getName();
+
+    /**
+     * Sets a user-determined name associated with this trackable. This is mostly useful for debugging.
+     *
+     * @param name a user-determined name
+     * @see #getName()
+     * @see #setUserData(Object)
+     */
+    void setName(String name);
 
     /**
      * Returns the parent trackable with which this trackable is associated, if any.

@@ -35,8 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.ftdi.eeprom;
 
-import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceIOException;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
+import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceIOException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 /**

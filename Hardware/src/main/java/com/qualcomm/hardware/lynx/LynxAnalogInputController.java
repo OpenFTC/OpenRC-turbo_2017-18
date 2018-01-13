@@ -52,23 +52,21 @@ public class LynxAnalogInputController extends LynxController implements AnalogI
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxAnalogInputController";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     public static final int apiPortFirst = 0;
     public static final int apiPortLast = apiPortFirst + LynxConstants.NUMBER_OF_ANALOG_INPUTS - 1;
+    public LynxAnalogInputController(final Context context, final LynxModule module)
+            throws RobotCoreException, InterruptedException {
+        super(context, module);
+        this.finishConstruction();
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxAnalogInputController(final Context context, final LynxModule module)
-            throws RobotCoreException, InterruptedException {
-        super(context, module);
-        this.finishConstruction();
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
     //----------------------------------------------------------------------------------------------

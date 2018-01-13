@@ -42,6 +42,14 @@ import java.util.List;
  */
 public interface VuforiaTrackables extends List<VuforiaTrackable> {
     /**
+     * Returns the user-specified name for this trackables.
+     *
+     * @return the user-specified name for this trackables.
+     * @see #setName(String)
+     */
+    String getName();
+
+    /**
      * Sets the name for this {@link VuforiaTrackables} and any of its contained
      * trackables which do not already have a user-specified name
      *
@@ -49,14 +57,6 @@ public interface VuforiaTrackables extends List<VuforiaTrackable> {
      * @see #getName()
      */
     void setName(String name);
-
-    /**
-     * Returns the user-specified name for this trackables.
-     *
-     * @return the user-specified name for this trackables.
-     * @see #setName(String)
-     */
-    String getName();
 
     /**
      * Activates this trackables so that its localizer is actively seeking the presence

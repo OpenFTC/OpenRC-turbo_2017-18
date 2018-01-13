@@ -2,7 +2,7 @@
 <resources>
 
     <declare-styleable name="ColorListPreference">
-        <attr format="reference" name="colors"/>
+        <attr name="colors" format="reference"/>
     </declare-styleable>
 
     <style name="AppBaseTheme" parent="android:Theme.Light">

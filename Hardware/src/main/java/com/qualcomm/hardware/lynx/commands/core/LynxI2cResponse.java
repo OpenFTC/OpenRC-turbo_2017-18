@@ -58,6 +58,26 @@ public abstract class LynxI2cResponse extends LynxDekaInterfaceResponse {
     // Status
     //----------------------------------------------------------------------------------------------
 
+    public static boolean isAddressAcknowledged(byte status) {
+        return (status & (1 << 0)) == 0;
+    }
+
+    public static boolean isDataAcknowledged(byte status) {
+        return (status & (1 << 1)) == 0;
+    }
+
+    public static boolean isArbitrationLost(byte status) {
+        return (status & (1 << 2)) != 0;
+    }
+
+    public static boolean isClockTimeout(byte status) {
+        return (status & (1 << 3)) != 0;
+    }
+
+    public static boolean isStatusOk(byte status) {
+        return (status & 0x0F) == 0;
+    }
+
     public byte getI2cStatus() {
         return this.i2cStatus;
     }
@@ -86,25 +106,5 @@ public abstract class LynxI2cResponse extends LynxDekaInterfaceResponse {
         if (getI2cStatus() != 0) {
             RobotLog.v("addr=%s data=%s arb=%s clock=%s", isAddressAcknowledged(), isDataAcknowledged(), isArbitrationLost(), isClockTimeout());
         }
-    }
-
-    public static boolean isAddressAcknowledged(byte status) {
-        return (status & (1 << 0)) == 0;
-    }
-
-    public static boolean isDataAcknowledged(byte status) {
-        return (status & (1 << 1)) == 0;
-    }
-
-    public static boolean isArbitrationLost(byte status) {
-        return (status & (1 << 2)) != 0;
-    }
-
-    public static boolean isClockTimeout(byte status) {
-        return (status & (1 << 3)) != 0;
-    }
-
-    public static boolean isStatusOk(byte status) {
-        return (status & 0x0F) == 0;
     }
 }

@@ -49,28 +49,26 @@ public abstract class RobocolParsableBase implements RobocolParsable {
     // State
     //----------------------------------------------------------------------------------------------
 
+    // Interval between retransmissions of a given one parsable
+    protected static final long nanotimeTransmitInterval = 200L * ElapsedTime.MILLIS_IN_NANO;
+    protected static AtomicInteger nextSequenceNumber = new AtomicInteger();
     protected int sequenceNumber;
     protected long nanotimeTransmit;
 
-    // Interval between retransmissions of a given one parsable
-    protected static final long nanotimeTransmitInterval = 200L * ElapsedTime.MILLIS_IN_NANO;
-
-    protected static AtomicInteger nextSequenceNumber = new AtomicInteger();
-
-    /**
-     * A utility function that helps us separate driver station from robot controller packets
-     */
-    public static void initializeSequenceNumber(int sequenceNumber) {
-        nextSequenceNumber = new AtomicInteger(sequenceNumber);
+    public RobocolParsableBase() {
+        setSequenceNumber();
+        nanotimeTransmit = 0;
     }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RobocolParsableBase() {
-        setSequenceNumber();
-        nanotimeTransmit = 0;
+    /**
+     * A utility function that helps us separate driver station from robot controller packets
+     */
+    public static void initializeSequenceNumber(int sequenceNumber) {
+        nextSequenceNumber = new AtomicInteger(sequenceNumber);
     }
 
     //----------------------------------------------------------------------------------------------

@@ -68,14 +68,6 @@ public class ModernRoboticsMotorControllerParamsState implements Serializable, C
         this.d = params.D();
     }
 
-    public ModernRoboticsMotorControllerParamsState clone() {
-        try {
-            return (ModernRoboticsMotorControllerParamsState) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("internal error: Parameters not cloneable");
-        }
-    }
-
     public static ModernRoboticsMotorControllerParamsState fromByteArray(byte[] controllerData) {
         ModernRoboticsMotorControllerParamsState result = new ModernRoboticsMotorControllerParamsState();
         result.ratio = TypeConversion.unsignedByteToInt(controllerData[0]);
@@ -83,6 +75,14 @@ public class ModernRoboticsMotorControllerParamsState implements Serializable, C
         result.i = TypeConversion.unsignedByteToInt(controllerData[2]);
         result.d = TypeConversion.unsignedByteToInt(controllerData[3]);
         return result;
+    }
+
+    public ModernRoboticsMotorControllerParamsState clone() {
+        try {
+            return (ModernRoboticsMotorControllerParamsState) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("internal error: Parameters not cloneable");
+        }
     }
 
     public byte[] toByteArray() {

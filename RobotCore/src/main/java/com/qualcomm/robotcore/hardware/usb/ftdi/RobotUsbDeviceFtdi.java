@@ -38,9 +38,9 @@ import com.qualcomm.robotcore.hardware.usb.RobotUsbDeviceImplBase;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceManager;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbDeviceClosedException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbFTDIException;
@@ -53,34 +53,28 @@ public class RobotUsbDeviceFtdi extends RobotUsbDeviceImplBase implements RobotU
 
     public static final String TAG = "RobotUsbDeviceFtdi";
     public static boolean DEBUG = false;
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
     private FtDevice device;
     private int cbus_mask = 0;
     private int cbus_outputs = 0;
-
     public RobotUsbDeviceFtdi(FtDevice device, SerialNumber serialNumber) {
         super(serialNumber);
         this.device = device;
         this.firmwareVersion = new FirmwareVersion();
     }
 
-    protected interface RunnableWithRobotUsbCommException {
-        void run() throws RobotUsbException;
-    }
-
     @Override
-    public void setDebugRetainBuffers(boolean retain) {
-        device.setDebugRetainBuffers(retain);
+    public String getTag() {
+        return TAG;
     }
 
     @Override
     public boolean getDebugRetainBuffers() {
         return device.getDebugRetainBuffers();
+    }
+
+    @Override
+    public void setDebugRetainBuffers(boolean retain) {
+        device.setDebugRetainBuffers(retain);
     }
 
     @Override
@@ -215,17 +209,17 @@ public class RobotUsbDeviceFtdi extends RobotUsbDeviceImplBase implements RobotU
         return result;
     }
 
-    //------------------------------------------------------------------------------------------------
-    // FTDI cbus control logic
-    //  APIs modeled after https://github.com/lsgunth/pyft232/blob/master/ft232/d2xx.py
-    //------------------------------------------------------------------------------------------------
-
     public boolean supportsCbusBitbang() {
         // This should undoubtedly check the FTDI device type and reason thereon.
         // For the moment, we only use this with the FTDI chip in the Lynx Module,
         // which we know will work (it uses a FT230XQ-R)
         return true;
     }
+
+    //------------------------------------------------------------------------------------------------
+    // FTDI cbus control logic
+    //  APIs modeled after https://github.com/lsgunth/pyft232/blob/master/ft232/d2xx.py
+    //------------------------------------------------------------------------------------------------
 
     public void cbus_setup(int mask, int init) throws InterruptedException, RobotUsbException {
         cbus_mask = mask & 0x0f;
@@ -254,6 +248,10 @@ public class RobotUsbDeviceFtdi extends RobotUsbDeviceImplBase implements RobotU
         if (!device.setBitMode((byte) mask, (byte) mode)) {
             throw new RobotUsbUnspecifiedException("setBitMode(0x%02x 0x02x) failed", mask, mode);
         }
+    }
+
+    protected interface RunnableWithRobotUsbCommException {
+        void run() throws RobotUsbException;
     }
 
 }

@@ -65,35 +65,25 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
     //------------------------------------------------------------------------------------------------
 
     public final static String TAG = "MRLegacyModule";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     /**
      * The maximum voltage that can be read by our ADC
      */
     public static final double MAX_ANALOG_INPUT_VOLTAGE = 5.0;
-
     /**
      * Enable DEBUG_LOGGING logging
      */
     public static final boolean DEBUG_LOGGING = false;
-
     /*
      * const values used by this class
      */
     public static final int MONITOR_LENGTH = 0x0d;
     public static final byte START_ADDRESS = 0x03;
-
     public static final byte NUMBER_OF_PORTS = ModernRoboticsConstants.NUMBER_OF_LEGACY_MODULE_PORTS;
     public static final byte I2C_ACTION_FLAG = (byte) 0xff;
     public static final byte I2C_NO_ACTION_FLAG = (byte) 0x00;
     public static final byte SIZE_ANALOG_BUFFER = 2;
     public static final byte SIZE_I2C_BUFFER = 27;
     public static final byte SIZE_OF_PORT_BUFFER = 32;
-
     /*
      * const values used by legacy module
      */
@@ -104,14 +94,12 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
     public static final byte NXT_MODE_DIGITAL_1 = (byte) 0x08;
     public static final byte NXT_MODE_READ = (byte) 0x80;
     public static final byte NXT_MODE_WRITE = (byte) 0x00;
-
     public static final byte BUFFER_FLAG_S0 = (byte) 0x01;
     public static final byte BUFFER_FLAG_S1 = (byte) 0x02;
     public static final byte BUFFER_FLAG_S2 = (byte) 0x04;
     public static final byte BUFFER_FLAG_S3 = (byte) 0x08;
     public static final byte BUFFER_FLAG_S4 = (byte) 0x10;
     public static final byte BUFFER_FLAG_S5 = (byte) 0x20;
-
     /*
      * memory addresses used by controller
      */
@@ -128,7 +116,6 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
     public static final int ADDRESS_I2C_PORT_S3 = 0x70;
     public static final int ADDRESS_I2C_PORT_S4 = 0x90;
     public static final int ADDRESS_I2C_PORT_S5 = 0xb0;
-
     /*
      * memory offsets used by this controller
      */
@@ -138,7 +125,6 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
     public static final byte OFFSET_I2C_PORT_MEMORY_LENGTH = 0x3;
     public static final byte OFFSET_I2C_PORT_MEMORY_BUFFER = 0x4;
     public static final byte OFFSET_I2C_PORT_FLAG = 0x1f;
-
     /*
      * map of analog ports to memory addresses
      */
@@ -150,7 +136,6 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
             ADDRESS_ANALOG_PORT_S4,
             ADDRESS_ANALOG_PORT_S5
     };
-
     /*
    * map of NXT ports to memory addresses
    */
@@ -162,7 +147,6 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
             ADDRESS_I2C_PORT_S4,
             ADDRESS_I2C_PORT_S5
     };
-
     /*
      * map of buffer flags
      */
@@ -174,7 +158,6 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
             BUFFER_FLAG_S4,
             BUFFER_FLAG_S5
     };
-
     /*
      * map of digital lines
      */
@@ -182,7 +165,6 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
             NXT_MODE_DIGITAL_0,
             NXT_MODE_DIGITAL_1
     };
-
     /*
      * list of ports that can enable 9v, sorted least to greatest
      */
@@ -190,28 +172,19 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
             4,
             5
     };
-
     // segment where only the action flag is written
     private static final int SEGMENT_OFFSET_PORT_FLAG_ONLY = NUMBER_OF_PORTS;
-
     // do not perform I2C writes slower than this
     private static final double MIN_I2C_WRITE_RATE = 2.000; // in seconds
-
     // The legacy module runs on a 25ms loop. We need to make sure that on
     // average we do not send commands to it at a faster rate. Since it takes
     // about 10ms to send a command, adding 15ms delay should do it.
     private static final int LEGACY_MODULE_FORCE_IO_DELAY = 15; // in milliseconds
-
+    protected final byte[] lastI2cPortModes = new byte[NUMBER_OF_PORTS];
     private final ReadWriteRunnableSegment[] segments = new ReadWriteRunnableSegment[NUMBER_OF_PORTS + SEGMENT_OFFSET_PORT_FLAG_ONLY];
 
     // tracks which ports have a registered callback
     private final I2cPortReadyCallback[] portReadyCallback = new I2cPortReadyCallback[NUMBER_OF_PORTS];
-    protected final byte[] lastI2cPortModes = new byte[NUMBER_OF_PORTS];
-
-    //------------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------------
-
     /**
      * Use ModernRoboticsUsbDeviceManager to create an instance of this class
      */
@@ -224,6 +197,15 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
                 return new ReadWriteRunnableStandard(context, serialNumber, device, MONITOR_LENGTH, START_ADDRESS, DEBUG_LOGGING);
             }
         });
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
     @Override

@@ -46,12 +46,12 @@ import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.ThreadPool;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.StartResult;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
@@ -65,18 +65,12 @@ public abstract class InspectionActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "InspectionActivity";
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
+    protected static final int RC_MIN_VERSIONCODE = 21;
+    protected static final int DS_MIN_VERSIONCODE = 21;
     private static final String goodMark = "\u2713";    // a check mark
     private static final String badMark = "X";
     private static final String notApplicable = "N/A";
-
     private final boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
-
     TextView widiName, widiConnected, wifiEnabled, batteryLevel, osVersion, airplaneMode, bluetooth, wifiConnected, appsStatus;
     TextView txtManufacturer, txtModel, txtAppVersion;
     TextView txtIsRCInstalled, txtIsDSInstalled, txtIsCCInstalled;
@@ -89,8 +83,10 @@ public abstract class InspectionActivity extends ThemedActivity {
     DeviceNameManager nameManager;
     StartResult nameManagerStartResult;
 
-    protected static final int RC_MIN_VERSIONCODE = 21;
-    protected static final int DS_MIN_VERSIONCODE = 21;
+    @Override
+    public String getTag() {
+        return TAG;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Life cycle

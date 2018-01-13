@@ -58,36 +58,23 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected abstract String getTag();
-
     public static boolean DEBUG = false;
-
     protected final Context context;
     protected final SerialNumber serialNumber;
     protected final EventLoopManager eventLoopManager;
     protected final OpenRobotUsbDevice openRobotUsbDevice;
     protected final AtomicInteger referenceCount;
-    protected RobotUsbDevice robotUsbDevice;
-
-    protected ARMINGSTATE armingState;
     protected final Object armingLock = new Object();
     protected final WeakReferenceSet<Callback> registeredCallbacks = new WeakReferenceSet<>();
     protected final Object warningMessageLock = new Object();
+    protected RobotUsbDevice robotUsbDevice;
+    protected ARMINGSTATE armingState;
     protected int warningMessageSuppressionCount;
-
     /**
      * The (first) warning message generating during an arm() attempt. This is auto-cleared when
      * arm() is called; if other issues can contribute to warnings, they should be dealt with separately
      */
     protected String warningMessage;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    public interface OpenRobotUsbDevice {
-        RobotUsbDevice open() throws RobotCoreException, InterruptedException;
-    }
 
     public ArmableUsbDevice(Context context, SerialNumber serialNumber, EventLoopManager manager, OpenRobotUsbDevice openRobotUsbDevice) {
         this.context = context;
@@ -101,30 +88,36 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         this.warningMessage = "";
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    protected abstract String getTag();
+
     protected void finishConstruction() {
         RobotLog.registerGlobalWarningSource(this);
+    }
+
+    public Context getContext() {
+        return this.context;
     }
 
     //----------------------------------------------------------------------------------------------
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public Context getContext() {
-        return this.context;
-    }
-
     public RobotUsbDevice getRobotUsbDevice() {
         return this.robotUsbDevice;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // RobotUsbModule
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public SerialNumber getSerialNumber() {
         return serialNumber;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // RobotUsbModule
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void registerCallback(Callback callback, boolean doInitialCallback) {
@@ -139,16 +132,16 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         registeredCallbacks.remove(callback);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // GlobalWarningSource
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public String getGlobalWarning() {
         synchronized (this.warningMessageLock) {
             return this.warningMessageSuppressionCount > 0 ? "" : composeGlobalWarning();
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // GlobalWarningSource
+    //----------------------------------------------------------------------------------------------
 
     /**
      * subclass hook for more complicated warning message structure
@@ -199,10 +192,6 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Internal arming and disarming
-    //----------------------------------------------------------------------------------------------
-
     protected void armDevice() throws RobotCoreException, InterruptedException {
         synchronized (armingLock) {
             // An arming attempt clears any extant warning
@@ -246,6 +235,10 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Internal arming and disarming
+    //----------------------------------------------------------------------------------------------
+
     protected void pretendDevice() throws RobotCoreException, InterruptedException {
         synchronized (armingLock) {
             // Make a pretend device
@@ -263,14 +256,14 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
 
     protected abstract void disarmDevice() throws InterruptedException;
 
-    //----------------------------------------------------------------------------------------------
-    // Arming and disarming
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public ARMINGSTATE getArmingState() {
         return this.armingState;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Arming and disarming
+    //----------------------------------------------------------------------------------------------
 
     protected ARMINGSTATE setArmingState(ARMINGSTATE state) {
         ARMINGSTATE prev = this.armingState;
@@ -292,7 +285,6 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
     protected boolean isPretending() {
         return this.armingState == ARMINGSTATE.PRETENDING;
     }
-
 
     @Override
     public void arm() throws RobotCoreException, InterruptedException {
@@ -459,7 +451,6 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         }
     }
 
-
     /**
      * close(), proper, must be idempotent. Note: we don't expect clients to use BOTH ref counting AND explicit close()
      */
@@ -531,6 +522,10 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
      */
     protected void doCloseFromOther() throws RobotCoreException, InterruptedException {
         this.disarm();
+    }
+
+    public interface OpenRobotUsbDevice {
+        RobotUsbDevice open() throws RobotCoreException, InterruptedException;
     }
 
 }

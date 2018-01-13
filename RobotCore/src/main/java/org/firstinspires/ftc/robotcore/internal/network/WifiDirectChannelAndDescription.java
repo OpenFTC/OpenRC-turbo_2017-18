@@ -48,6 +48,12 @@ public class WifiDirectChannelAndDescription implements Comparable<WifiDirectCha
     protected String description;
     protected int channel;
 
+    public WifiDirectChannelAndDescription(String displayNameAndChannel) {
+        String[] strings = displayNameAndChannel.split("\\|");
+        this.description = strings[0];
+        this.channel = Integer.parseInt(strings[1]);
+    }
+
     public static List<WifiDirectChannelAndDescription> load() {
         String[] strings = AppUtil.getDefContext().getResources().getStringArray(R.array.wifi_direct_channels);
         List<WifiDirectChannelAndDescription> itemsList = new ArrayList<WifiDirectChannelAndDescription>();
@@ -64,12 +70,6 @@ public class WifiDirectChannelAndDescription implements Comparable<WifiDirectCha
             }
         }
         return AppUtil.getDefContext().getString(R.string.unknown_wifi_direct_channel);
-    }
-
-    public WifiDirectChannelAndDescription(String displayNameAndChannel) {
-        String[] strings = displayNameAndChannel.split("\\|");
-        this.description = strings[0];
-        this.channel = Integer.parseInt(strings[1]);
     }
 
     public int getChannel() {

@@ -48,15 +48,6 @@ public class MediaTransferProtocolMonitorService extends StartableService {
 
     public static final String TAG = "MTPMonitorService";
 
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public MediaTransferProtocolMonitorService() {
         super(new Supplier<Closeable>() {
             @Override
@@ -66,6 +57,15 @@ public class MediaTransferProtocolMonitorService extends StartableService {
                 return result;
             }
         });
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
 }

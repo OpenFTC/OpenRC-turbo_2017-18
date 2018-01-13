@@ -58,16 +58,6 @@ public class VectorF {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    /**
-     * Creates a new vector of the indicated length. The vector will contain zeros.
-     *
-     * @param length the length of the new vector to return
-     * @return the newly created vector
-     */
-    public static VectorF length(int length) {
-        return new VectorF(new float[length]);
-    }
-
     public VectorF(float[] data) {
         this.data = data;
     }
@@ -98,9 +88,24 @@ public class VectorF {
         this.data[3] = w;
     }
 
+    /**
+     * Creates a new vector of the indicated length. The vector will contain zeros.
+     *
+     * @param length the length of the new vector to return
+     * @return the newly created vector
+     */
+    public static VectorF length(int length) {
+        return new VectorF(new float[length]);
+    }
+
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
+
+    @SuppressLint("DefaultLocale")
+    protected static RuntimeException dimensionsError(int length) {
+        return new IllegalArgumentException(String.format("vector dimensions are incorrect: length=%d", length));
+    }
 
     @Const
     public float[] getData() {
@@ -122,6 +127,10 @@ public class VectorF {
         this.data[index] = value;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Transformation matrix operations
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -137,7 +146,7 @@ public class VectorF {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Transformation matrix operations
+    // Matrix Operations
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -161,10 +170,6 @@ public class VectorF {
             throw dimensionsError();
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Matrix Operations
-    //----------------------------------------------------------------------------------------------
 
     @Const
     public float magnitude() {
@@ -275,6 +280,10 @@ public class VectorF {
         return result;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
+
     @NonConst
     public void multiply(float scale) {
         for (int i = 0; i < this.length(); i++) {
@@ -282,16 +291,7 @@ public class VectorF {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
     protected RuntimeException dimensionsError() {
         return dimensionsError(this.length());
-    }
-
-    @SuppressLint("DefaultLocale")
-    protected static RuntimeException dimensionsError(int length) {
-        return new IllegalArgumentException(String.format("vector dimensions are incorrect: length=%d", length));
     }
 }

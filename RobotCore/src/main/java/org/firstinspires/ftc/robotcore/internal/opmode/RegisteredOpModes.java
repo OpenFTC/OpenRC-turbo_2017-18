@@ -40,16 +40,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Supplier;
-//modified for turbo: removed file watcher imports
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+//modified for turbo: removed file watcher imports
 
 /**
  * {@link RegisteredOpModes} is the owner of a set of currently-registered OpModes.
@@ -62,22 +61,20 @@ public class RegisteredOpModes implements OpModeManager {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "RegisteredOpModes";
-
-    protected static class InstanceHolder {
-        public static final RegisteredOpModes theInstance = new RegisteredOpModes();
-    }
-
-    public static RegisteredOpModes getInstance() {
-        return InstanceHolder.theInstance;
-    }
-
     protected final Object opModesLock = new Object();
+    protected final List<InstanceOpModeRegistrar> instanceOpModeRegistrars = new ArrayList<InstanceOpModeRegistrar>();
     protected boolean opModesAreLocked = false;
     protected Map<String, OpModeMetaAndClass> opModeClasses = new LinkedHashMap<String, OpModeMetaAndClass>();
     protected Map<String, OpModeMetaAndInstance> opModeInstances = new LinkedHashMap<String, OpModeMetaAndInstance>();
     protected volatile boolean opmodesAreRegistered = false;
 
-    protected final List<InstanceOpModeRegistrar> instanceOpModeRegistrars = new ArrayList<InstanceOpModeRegistrar>();
+    public RegisteredOpModes() {
+        //modified for turbo: removed file monitoring code for blocks and OnBot
+    }
+
+    public static RegisteredOpModes getInstance() {
+        return InstanceHolder.theInstance;
+    }
 
     // modified for turbo: removed file watcher objects for OnBot and Blockly
 
@@ -85,8 +82,10 @@ public class RegisteredOpModes implements OpModeManager {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RegisteredOpModes() {
-        //modified for turbo: removed file monitoring code for blocks and OnBot
+    public void addInstanceOpModeRegistrar(InstanceOpModeRegistrar register) {
+        synchronized (instanceOpModeRegistrars) {
+            instanceOpModeRegistrars.add(register);
+        }
     }
 
     // modified for turbo: removed "change management" section with public methods for monitoring new opmodes
@@ -94,12 +93,6 @@ public class RegisteredOpModes implements OpModeManager {
     //----------------------------------------------------------------------------------------------
     // OpMode management
     //----------------------------------------------------------------------------------------------
-
-    public void addInstanceOpModeRegistrar(InstanceOpModeRegistrar register) {
-        synchronized (instanceOpModeRegistrars) {
-            instanceOpModeRegistrars.add(register);
-        }
-    }
 
     public void registerAllOpModes(final OpModeRegister userOpmodeRegister) {
         lockOpModesWhile(new Runnable() {
@@ -263,10 +256,6 @@ public class RegisteredOpModes implements OpModeManager {
         return opModeClasses.containsKey(meta.name) || opModeInstances.containsKey(meta.name);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Registration and unregistration
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Registers an OpMode <em>class</em> with the name by which it should be known in the driver station.
      *
@@ -276,6 +265,10 @@ public class RegisteredOpModes implements OpModeManager {
     public void register(String name, Class opMode) {
         register(new OpModeMeta(name), opMode);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Registration and unregistration
+    //----------------------------------------------------------------------------------------------
 
     public void register(final OpModeMeta meta, final Class opMode) {
         lockOpModesWhile(new Runnable() {
@@ -327,6 +320,10 @@ public class RegisteredOpModes implements OpModeManager {
                 Assert.assertFalse(isOpmodeRegistered(meta));
             }
         });
+    }
+
+    protected static class InstanceHolder {
+        public static final RegisteredOpModes theInstance = new RegisteredOpModes();
     }
 
 }

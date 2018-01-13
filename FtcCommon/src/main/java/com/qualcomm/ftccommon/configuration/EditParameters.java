@@ -155,14 +155,6 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
         this.maxItemCount = maxItemCount;
     }
 
-    private void setItems(Class<ITEM_T> itemClass, List<ITEM_T> list) {
-        this.itemClass = itemClass;
-        this.currentItems = list;
-        for (DeviceConfiguration item : list) {
-            Assert.assertTrue(itemClass.isInstance(item));
-        }
-    }
-
     public EditParameters(EditActivity editActivity) {
         this.isConfigDirty = editActivity.currentCfgFile.isDirty();
     }
@@ -170,146 +162,15 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
     public EditParameters() {
     }
 
-    //------------------------------------------------------------------------------------------
-    // Accessors
-    //------------------------------------------------------------------------------------------
-
-    public DeviceConfiguration getConfiguration() {
-        return this.configuration;
-    }
-
-    public List<ITEM_T> getCurrentItems() {
-        return this.currentItems == null ? new LinkedList<ITEM_T>() : this.currentItems;
-    }
-
-    public Class<ITEM_T> getItemClass() {
-        Assert.assertNotNull(this.itemClass);
-        return this.itemClass;
-    }
-
-    public int getMaxItemCount() {
-        if (this.currentItems == null) {
-            return this.maxItemCount;
-        } else {
-            return Math.max(this.maxItemCount, this.currentItems.size());
-        }
-    }
-
-    public boolean isGrowable() {
-        return this.growable;
-    }
-
-    public void setGrowable(boolean growable) {
-        this.growable = growable;
-    }
-
-    public
-    @NonNull
-    ScannedDevices getScannedDevices() {
-        return this.scannedDevices;
-    }
-
-    public void setScannedDevices(@NonNull ScannedDevices devices) {
-        this.scannedDevices = devices;
-    }
-
-    public void setInitialPortNumber(int initialPortNumber) {
-        this.initialPortNumber = initialPortNumber;
-    }
-
-    public int getInitialPortNumber() {
-        return this.initialPortNumber;
-    }
-
-    public RobotConfigMap getRobotConfigMap() {
-        return this.robotConfigMap;
-    }
-
-    public void setRobotConfigMap(RobotConfigMap robotConfigMap) {
-        this.robotConfigMap = robotConfigMap;
-        this.haveRobotConfigMapParameter = true;
-    }
-
-    public boolean haveRobotConfigMapParameter() {
-        return this.haveRobotConfigMapParameter;
-    }
-
-    public
-    @NonNull
-    List<RobotConfigFile> getExtantRobotConfigurations() {
-        return this.extantRobotConfigurations;
-    }
-
-    public void setExtantRobotConfigurations(List<RobotConfigFile> configurations) {
-        this.extantRobotConfigurations = configurations;
-    }
-
-    public ConfigurationType[] getConfigurationTypes() {
-        return this.configurationTypes;
-    }
-
-    public void setConfigurationTypes(ConfigurationType[] configurationTypes) {
-        this.configurationTypes = configurationTypes;
-    }
-
-    public RobotConfigFile getCurrentCfgFile() {
-        return this.currentCfgFile;
-    }
-
-    public void setCurrentCfgFile(RobotConfigFile currentCfgFile) {
-        this.currentCfgFile = currentCfgFile;
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Operations
-    //------------------------------------------------------------------------------------------
-
-    public void putIntent(Intent intent) {
-        intent.putExtras(this.toBundle());
-    }
-
-    public Bundle toBundle() {
-        Bundle result = new Bundle();
-
-        if (this.configuration != null) {
-            result.putSerializable("configuration", this.configuration);
-        }
-        if (this.scannedDevices != null && this.scannedDevices.size() > 0) {
-            result.putSerializable("scannedDevices", this.scannedDevices);
-        }
-        if (this.robotConfigMap != null && this.robotConfigMap.size() > 0) {
-            result.putSerializable("robotConfigMap", this.robotConfigMap);
-        }
-        if (this.extantRobotConfigurations != null && this.extantRobotConfigurations.size() > 0) {
-            result.putString("extantRobotConfigurations", RobotConfigFileManager.serializeXMLConfigList(extantRobotConfigurations));
-        }
-        if (this.configurationTypes != null) {
-            result.putSerializable("configurationTypes", this.configurationTypes);
-        }
-        if (this.currentCfgFile != null) {
-            result.putString("currentCfgFile", RobotConfigFileManager.serializeConfig(this.currentCfgFile));
-        }
-        result.putBoolean("haveRobotConfigMap", this.haveRobotConfigMapParameter);
-        result.putInt("initialPortNumber", this.initialPortNumber);
-        result.putInt("maxItemCount", this.maxItemCount);
-        result.putBoolean("growable", this.growable);
-        result.putBoolean("isConfigDirty", this.isConfigDirty);
-        if (this.itemClass != null) {
-            result.putString("itemClass", this.itemClass.getCanonicalName());
-        }
-        if (this.currentItems != null) {
-            for (int i = 0; i < currentItems.size(); i++) {
-                result.putSerializable(String.valueOf(i), currentItems.get(i));
-            }
-        }
-        return result;
-    }
-
     public static
     @NonNull
     <RESULT_ITEM extends DeviceConfiguration> EditParameters<RESULT_ITEM> fromIntent(EditActivity editActivity, Intent intent) {
         return fromBundle(editActivity, intent.getExtras());
     }
+
+    //------------------------------------------------------------------------------------------
+    // Accessors
+    //------------------------------------------------------------------------------------------
 
     public static
     @NonNull
@@ -371,6 +232,145 @@ public class EditParameters<ITEM_T extends DeviceConfiguration> implements Seria
             editActivity.currentCfgFile.markDirty();
         }
 
+        return result;
+    }
+
+    private void setItems(Class<ITEM_T> itemClass, List<ITEM_T> list) {
+        this.itemClass = itemClass;
+        this.currentItems = list;
+        for (DeviceConfiguration item : list) {
+            Assert.assertTrue(itemClass.isInstance(item));
+        }
+    }
+
+    public DeviceConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    public List<ITEM_T> getCurrentItems() {
+        return this.currentItems == null ? new LinkedList<ITEM_T>() : this.currentItems;
+    }
+
+    public Class<ITEM_T> getItemClass() {
+        Assert.assertNotNull(this.itemClass);
+        return this.itemClass;
+    }
+
+    public int getMaxItemCount() {
+        if (this.currentItems == null) {
+            return this.maxItemCount;
+        } else {
+            return Math.max(this.maxItemCount, this.currentItems.size());
+        }
+    }
+
+    public boolean isGrowable() {
+        return this.growable;
+    }
+
+    public void setGrowable(boolean growable) {
+        this.growable = growable;
+    }
+
+    public
+    @NonNull
+    ScannedDevices getScannedDevices() {
+        return this.scannedDevices;
+    }
+
+    public void setScannedDevices(@NonNull ScannedDevices devices) {
+        this.scannedDevices = devices;
+    }
+
+    public int getInitialPortNumber() {
+        return this.initialPortNumber;
+    }
+
+    public void setInitialPortNumber(int initialPortNumber) {
+        this.initialPortNumber = initialPortNumber;
+    }
+
+    public RobotConfigMap getRobotConfigMap() {
+        return this.robotConfigMap;
+    }
+
+    public void setRobotConfigMap(RobotConfigMap robotConfigMap) {
+        this.robotConfigMap = robotConfigMap;
+        this.haveRobotConfigMapParameter = true;
+    }
+
+    public boolean haveRobotConfigMapParameter() {
+        return this.haveRobotConfigMapParameter;
+    }
+
+    public
+    @NonNull
+    List<RobotConfigFile> getExtantRobotConfigurations() {
+        return this.extantRobotConfigurations;
+    }
+
+    public void setExtantRobotConfigurations(List<RobotConfigFile> configurations) {
+        this.extantRobotConfigurations = configurations;
+    }
+
+    public ConfigurationType[] getConfigurationTypes() {
+        return this.configurationTypes;
+    }
+
+    public void setConfigurationTypes(ConfigurationType[] configurationTypes) {
+        this.configurationTypes = configurationTypes;
+    }
+
+    //------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------
+
+    public RobotConfigFile getCurrentCfgFile() {
+        return this.currentCfgFile;
+    }
+
+    public void setCurrentCfgFile(RobotConfigFile currentCfgFile) {
+        this.currentCfgFile = currentCfgFile;
+    }
+
+    public void putIntent(Intent intent) {
+        intent.putExtras(this.toBundle());
+    }
+
+    public Bundle toBundle() {
+        Bundle result = new Bundle();
+
+        if (this.configuration != null) {
+            result.putSerializable("configuration", this.configuration);
+        }
+        if (this.scannedDevices != null && this.scannedDevices.size() > 0) {
+            result.putSerializable("scannedDevices", this.scannedDevices);
+        }
+        if (this.robotConfigMap != null && this.robotConfigMap.size() > 0) {
+            result.putSerializable("robotConfigMap", this.robotConfigMap);
+        }
+        if (this.extantRobotConfigurations != null && this.extantRobotConfigurations.size() > 0) {
+            result.putString("extantRobotConfigurations", RobotConfigFileManager.serializeXMLConfigList(extantRobotConfigurations));
+        }
+        if (this.configurationTypes != null) {
+            result.putSerializable("configurationTypes", this.configurationTypes);
+        }
+        if (this.currentCfgFile != null) {
+            result.putString("currentCfgFile", RobotConfigFileManager.serializeConfig(this.currentCfgFile));
+        }
+        result.putBoolean("haveRobotConfigMap", this.haveRobotConfigMapParameter);
+        result.putInt("initialPortNumber", this.initialPortNumber);
+        result.putInt("maxItemCount", this.maxItemCount);
+        result.putBoolean("growable", this.growable);
+        result.putBoolean("isConfigDirty", this.isConfigDirty);
+        if (this.itemClass != null) {
+            result.putString("itemClass", this.itemClass.getCanonicalName());
+        }
+        if (this.currentItems != null) {
+            for (int i = 0; i < currentItems.size(); i++) {
+                result.putSerializable(String.valueOf(i), currentItems.get(i));
+            }
+        }
         return result;
     }
 }

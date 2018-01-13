@@ -41,16 +41,14 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressLint("DefaultLocale")
 public class ReadWriteRunnableSegment {
 
+    final Lock lockRead;
+    final Lock lockWrite;
+    final private byte[] bufferRead;
+    final private byte[] bufferWrite;
     private int key;
     private int address;
     private boolean retryOnReadFailure;
     private TimeWindow timeWindow;
-
-    final Lock lockRead;
-    final private byte[] bufferRead;
-
-    final Lock lockWrite;
-    final private byte[] bufferWrite;
 
     public ReadWriteRunnableSegment(int key, int address, int size) {
         this.key = key;
@@ -91,12 +89,12 @@ public class ReadWriteRunnableSegment {
         return bufferWrite;
     }
 
-    public void setRetryOnReadFailure(boolean retryOnReadFailure) {
-        this.retryOnReadFailure = retryOnReadFailure;
-    }
-
     public boolean getRetryOnReadFailure() {
         return this.retryOnReadFailure;
+    }
+
+    public void setRetryOnReadFailure(boolean retryOnReadFailure) {
+        this.retryOnReadFailure = retryOnReadFailure;
     }
 
     public TimeWindow getTimeWindow() {

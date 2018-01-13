@@ -145,41 +145,37 @@ public class AppUtil {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "AppUtil";
+    private
+    @NonNull
+    Application application;
+    private LifeCycleMonitor lifeCycleMonitor;
+    private Activity rootActivity;
 
-    private static class InstanceHolder {
-        public static AppUtil theInstance = new AppUtil();
+    //----------------------------------------------------------------------------------------------
+    // State
+    //----------------------------------------------------------------------------------------------
+    private Activity currentActivity;
+    private ProgressDialog currentProgressDialog;
+    private Random random;
+    private Map<String, DialogContext> dialogContextMap = new ConcurrentHashMap<>();
+
+    protected AppUtil() {
     }
 
     public static AppUtil getInstance() {
         return InstanceHolder.theInstance;
     }
 
-    public static Context getDefContext() {
-        return getInstance().getApplication();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
-
-    private
-    @NonNull
-    Application application;
-    private LifeCycleMonitor lifeCycleMonitor;
-    private Activity rootActivity;
-    private Activity currentActivity;
-    private ProgressDialog currentProgressDialog;
-    private Random random;
-
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public static void onApplicationStart(@NonNull Application application) {
-        getInstance().initialize(application);
+    public static Context getDefContext() {
+        return getInstance().getApplication();
     }
 
-    protected AppUtil() {
+    public static void onApplicationStart(@NonNull Application application) {
+        getInstance().initialize(application);
     }
 
     protected void initialize(@NonNull Application application) {
@@ -685,35 +681,6 @@ public class AppUtil {
     // https://developer.android.com/guide/topics/ui/dialogs.html
     //----------------------------------------------------------------------------------------------
 
-    public enum DialogFlavor {ALERT, CONFIRM, PROMPT}
-
-    private Map<String, DialogContext> dialogContextMap = new ConcurrentHashMap<>();
-
-    public static class DialogContext {
-        public enum Outcome {UNKNOWN, CANCELLED, CONFIRMED}
-
-        public final CountDownLatch dismissed = new CountDownLatch(1);
-
-        protected final String uuidString;
-        protected AlertDialog dialog;
-        protected boolean isArmed = true;
-        protected Outcome outcome = Outcome.UNKNOWN;
-        protected CharSequence textResult = null;
-        protected EditText input = null;
-
-        public DialogContext(String uuidString) {
-            this.uuidString = uuidString;
-        }
-
-        public Outcome getOutcome() {
-            return outcome;
-        }
-
-        public CharSequence getText() {
-            return textResult;
-        }
-    }
-
     public DialogContext showAlertDialog(UILocation uiLocation, String title, String message) {
         return showAlertDialog(uiLocation, getActivity(), title, message);
     }
@@ -880,10 +847,6 @@ public class AppUtil {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Toast
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Displays a toast message to the user. May be called from any thread.
      */
@@ -898,6 +861,10 @@ public class AppUtil {
     public void showToast(UILocation uiLocation, Context context, String msg) {
         showToast(uiLocation, getActivity(), context, msg);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Toast
+    //----------------------------------------------------------------------------------------------
 
     public void showToast(UILocation uiLocation, final Activity activity, Context context, String msg) {
         showToast(uiLocation, activity, context, msg, Toast.LENGTH_SHORT);
@@ -923,10 +890,6 @@ public class AppUtil {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Activities
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Returns the contextually running {@link Activity}
      *
@@ -950,6 +913,93 @@ public class AppUtil {
             rootActivity = currentActivity;
             RobotLog.vv(TAG, "rootActivity=%s", rootActivity.getClass().getSimpleName());
         }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Activities
+    //----------------------------------------------------------------------------------------------
+
+    public SimpleDateFormat getIso8601DateFormat() {
+        // From https://en.wikipedia.org/wiki/ISO_8601
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter;
+    }
+
+    public RuntimeException unreachable() {
+        return unreachable(TAG);
+    }
+
+    public RuntimeException unreachable(Throwable throwable) {
+        return unreachable(TAG, throwable);
+    }
+
+    public RuntimeException unreachable(String tag) {
+        return failFast(tag, "internal error: this code is unreachable");
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Date and time
+    //----------------------------------------------------------------------------------------------
+
+    public RuntimeException unreachable(String tag, Throwable throwable) {
+        return failFast(tag, throwable, "internal error: this code is unreachable");
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // System
+    //----------------------------------------------------------------------------------------------
+
+    public RuntimeException failFast(String tag, String format, Object... args) {
+        String message = String.format(format, args);
+        return failFast(tag, message);
+    }
+
+    public RuntimeException failFast(String tag, String message) {
+        RobotLog.ee(tag, message);
+        exitApplication(-1);
+        return new RuntimeException("keep compiler happy");
+    }
+
+    public RuntimeException failFast(String tag, Throwable throwable, String format, Object... args) {
+        String message = String.format(format, args);
+        return failFast(tag, throwable, message);
+    }
+
+    public RuntimeException failFast(String tag, Throwable throwable, String message) {
+        RobotLog.ee(tag, throwable, message);
+        exitApplication(-1);
+        return new RuntimeException("keep compiler happy", throwable);
+    }
+
+    public enum DialogFlavor {ALERT, CONFIRM, PROMPT}
+
+    private static class InstanceHolder {
+        public static AppUtil theInstance = new AppUtil();
+    }
+
+    public static class DialogContext {
+        public final CountDownLatch dismissed = new CountDownLatch(1);
+        protected final String uuidString;
+        protected AlertDialog dialog;
+        protected boolean isArmed = true;
+        protected Outcome outcome = Outcome.UNKNOWN;
+        protected CharSequence textResult = null;
+        protected EditText input = null;
+
+        public DialogContext(String uuidString) {
+            this.uuidString = uuidString;
+        }
+
+        public Outcome getOutcome() {
+            return outcome;
+        }
+
+        public CharSequence getText() {
+            return textResult;
+        }
+
+        public enum Outcome {UNKNOWN, CANCELLED, CONFIRMED}
     }
 
     /**
@@ -993,59 +1043,6 @@ public class AppUtil {
                 rootActivity = null;
             }
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Date and time
-    //----------------------------------------------------------------------------------------------
-
-    public SimpleDateFormat getIso8601DateFormat() {
-        // From https://en.wikipedia.org/wiki/ISO_8601
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return formatter;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // System
-    //----------------------------------------------------------------------------------------------
-
-    public RuntimeException unreachable() {
-        return unreachable(TAG);
-    }
-
-    public RuntimeException unreachable(Throwable throwable) {
-        return unreachable(TAG, throwable);
-    }
-
-    public RuntimeException unreachable(String tag) {
-        return failFast(tag, "internal error: this code is unreachable");
-    }
-
-    public RuntimeException unreachable(String tag, Throwable throwable) {
-        return failFast(tag, throwable, "internal error: this code is unreachable");
-    }
-
-    public RuntimeException failFast(String tag, String format, Object... args) {
-        String message = String.format(format, args);
-        return failFast(tag, message);
-    }
-
-    public RuntimeException failFast(String tag, String message) {
-        RobotLog.ee(tag, message);
-        exitApplication(-1);
-        return new RuntimeException("keep compiler happy");
-    }
-
-    public RuntimeException failFast(String tag, Throwable throwable, String format, Object... args) {
-        String message = String.format(format, args);
-        return failFast(tag, throwable, message);
-    }
-
-    public RuntimeException failFast(String tag, Throwable throwable, String message) {
-        RobotLog.ee(tag, throwable, message);
-        exitApplication(-1);
-        return new RuntimeException("keep compiler happy", throwable);
     }
 
 }

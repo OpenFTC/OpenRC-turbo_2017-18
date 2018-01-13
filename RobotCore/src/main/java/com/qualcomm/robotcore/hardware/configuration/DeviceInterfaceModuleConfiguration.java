@@ -47,12 +47,12 @@ public class DeviceInterfaceModuleConfiguration extends ControllerConfiguration<
         super(name, serialNumber, BuiltInConfigurationType.DEVICE_INTERFACE_MODULE);
     }
 
-    public void setPwmOutputs(List<DeviceConfiguration> pwmDevices) {
-        this.pwmOutputs = pwmDevices;
-    }
-
     public List<DeviceConfiguration> getPwmOutputs() {
         return pwmOutputs;
+    }
+
+    public void setPwmOutputs(List<DeviceConfiguration> pwmDevices) {
+        this.pwmOutputs = pwmDevices;
     }
 
     public List<DeviceConfiguration> getI2cDevices() {

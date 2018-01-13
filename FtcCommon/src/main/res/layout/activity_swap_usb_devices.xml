@@ -2,12 +2,12 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context=".configuration.EditSwapUsbDevices"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              tools:context=".configuration.EditSwapUsbDevices">
 
     <include
-        layout="@layout/header"
-        android:id="@+id/included_header"/>
+        android:id="@+id/included_header"
+        layout="@layout/header"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,10 +39,10 @@
         <!-- an anchor for pop-up feedback text when we need same -->
         <LinearLayout
             android:id="@+id/feedbackAnchor"
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:orientation="horizontal"/>
 
         <include layout="@layout/red_line"/>
 
@@ -53,11 +53,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:text="@string/captionAvailableSwapDevices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
+                android:text="@string/captionAvailableSwapDevices"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
 
         </RelativeLayout>
 
@@ -75,10 +75,10 @@
             <!-- also used for orange text placement -->
             <LinearLayout
                 android:id="@+id/orange_end_of_list_anchor"
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:orientation="horizontal"/>
 
         </LinearLayout>
     </LinearLayout>

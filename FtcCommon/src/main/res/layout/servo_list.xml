@@ -31,8 +31,8 @@
             <include layout="@layout/banner_parent"/>
 
             <TableLayout
-                android:id="@+id/tableLayout"
                 xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/tableLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

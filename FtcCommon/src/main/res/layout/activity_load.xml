@@ -2,34 +2,34 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".configuration.FtcLoadFileActivity"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:context=".configuration.FtcLoadFileActivity">
 
     <include
-        layout="@layout/header"
-        android:id="@+id/included_header"/>
+        android:id="@+id/included_header"
+        layout="@layout/header"/>
 
     <LinearLayout
-        android:layout_below="@id/included_header"
-        android:layout_above="@+id/load_bottom"
         android:id="@+id/holds_buttons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/load_bottom"
+        android:layout_below="@id/included_header"
+        android:orientation="vertical"
         android:paddingBottom="8dp"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="5dp"
-        android:orientation="vertical">
+        android:paddingTop="5dp">
 
         <Button
             android:id="@+id/new_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/buttonNameNew"
-            android:textSize="16sp"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:onClick="onNewButtonPressed"/>
+            android:onClick="onNewButtonPressed"
+            android:text="@string/buttonNameNew"
+            android:textSize="16sp"/>
 
         <!-- red line -->
         <View
@@ -40,8 +40,8 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="0"
-            android:shrinkColumns="0">
+            android:shrinkColumns="0"
+            android:stretchColumns="0">
 
             <TableRow
                 android:id="@+id/files_holder"
@@ -49,23 +49,23 @@
                 android:layout_height="match_parent">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:text="@string/availableConfigListCaption"
+                        android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
+                        android:text="@string/availableConfigListCaption"
                         android:textSize="14sp"
-                        android:id="@+id/textView"/>
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/readOnlyExplanation"
-                        android:text="@string/readOnlyExplanation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/readOnlyExplanation"
                         android:textSize="12sp"/>
                 </LinearLayout>
 
@@ -77,9 +77,9 @@
         </TableLayout>
 
         <ScrollView
-            android:fillViewport="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/inclusionlayout"
@@ -91,22 +91,22 @@
 
         <LinearLayout
             android:id="@+id/empty_filelist"
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:orientation="horizontal"/>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/load_bottom"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:orientation="vertical"
         android:paddingBottom="8dp"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:paddingTop="5dp">
 
         <!-- red line -->
         <View
@@ -115,20 +115,20 @@
             android:background="?attr/lineBright"/>
 
         <RelativeLayout
+            android:id="@+id/configureFromTemplateArea"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/configureFromTemplateArea"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/configureFromTemplate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:onClick="onConfigureFromTemplatePressed"
-                android:text="@string/configureFromTemplate"/>
+                android:text="@string/configureFromTemplate"
+                android:textSize="15sp"/>
 
             <include
                 layout="@layout/info_button"

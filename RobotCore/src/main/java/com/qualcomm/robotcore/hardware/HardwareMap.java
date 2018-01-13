@@ -61,16 +61,16 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     // State
     //------------------------------------------------------------------------------------------------
 
+    private static final String LOG_FORMAT = "%-50s %-30s %s";
+    public final List<DeviceMapping<? extends HardwareDevice>> allDeviceMappings;
+    public final Context appContext;
     public DeviceMapping<DcMotorController> dcMotorController = new DeviceMapping<DcMotorController>(DcMotorController.class);
     public DeviceMapping<DcMotor> dcMotor = new DeviceMapping<DcMotor>(DcMotor.class);
-
     public DeviceMapping<ServoController> servoController = new DeviceMapping<ServoController>(ServoController.class);
     public DeviceMapping<Servo> servo = new DeviceMapping<Servo>(Servo.class);
     public DeviceMapping<CRServo> crservo = new DeviceMapping<CRServo>(CRServo.class);
-
     public DeviceMapping<LegacyModule> legacyModule = new DeviceMapping<LegacyModule>(LegacyModule.class);
     public DeviceMapping<TouchSensorMultiplexer> touchSensorMultiplexer = new DeviceMapping<TouchSensorMultiplexer>(TouchSensorMultiplexer.class);
-
     public DeviceMapping<DeviceInterfaceModule> deviceInterfaceModule = new DeviceMapping<DeviceInterfaceModule>(DeviceInterfaceModule.class);
     public DeviceMapping<AnalogInput> analogInput = new DeviceMapping<AnalogInput>(AnalogInput.class);
     public DeviceMapping<DigitalChannel> digitalChannel = new DeviceMapping<DigitalChannel>(DigitalChannel.class);
@@ -82,7 +82,6 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     public DeviceMapping<AnalogOutput> analogOutput = new DeviceMapping<AnalogOutput>(AnalogOutput.class);
     public DeviceMapping<ColorSensor> colorSensor = new DeviceMapping<ColorSensor>(ColorSensor.class);
     public DeviceMapping<LED> led = new DeviceMapping<LED>(LED.class);
-
     public DeviceMapping<AccelerationSensor> accelerationSensor = new DeviceMapping<AccelerationSensor>(AccelerationSensor.class);
     public DeviceMapping<CompassSensor> compassSensor = new DeviceMapping<CompassSensor>(CompassSensor.class);
     public DeviceMapping<GyroSensor> gyroSensor = new DeviceMapping<GyroSensor>(GyroSensor.class);
@@ -90,17 +89,16 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     public DeviceMapping<LightSensor> lightSensor = new DeviceMapping<LightSensor>(LightSensor.class);
     public DeviceMapping<UltrasonicSensor> ultrasonicSensor = new DeviceMapping<UltrasonicSensor>(UltrasonicSensor.class);
     public DeviceMapping<VoltageSensor> voltageSensor = new DeviceMapping<VoltageSensor>(VoltageSensor.class);
-
     protected Map<String, List<HardwareDevice>> allDevicesMap = new ConcurrentHashMap<String, List<HardwareDevice>>();  // concurrency is paranoia
     protected List<HardwareDevice> allDevicesList = null;   // cache for iteration
-    protected Map<HardwareDevice, Set<String>> deviceNames = new ConcurrentHashMap<HardwareDevice, Set<String>>(); // concurrency is paranoia
-
-    public final List<DeviceMapping<? extends HardwareDevice>> allDeviceMappings;
-
-    public final Context appContext;
 
     //------------------------------------------------------------------------------------------------
     // Construction
+    //------------------------------------------------------------------------------------------------
+    protected Map<HardwareDevice, Set<String>> deviceNames = new ConcurrentHashMap<HardwareDevice, Set<String>>(); // concurrency is paranoia
+
+    //------------------------------------------------------------------------------------------------
+    // Retrieval
     //------------------------------------------------------------------------------------------------
 
     public HardwareMap(Context appContext) {
@@ -138,10 +136,6 @@ public class HardwareMap implements Iterable<HardwareDevice> {
         this.allDeviceMappings.add(this.ultrasonicSensor);
         this.allDeviceMappings.add(this.voltageSensor);
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Retrieval
-    //------------------------------------------------------------------------------------------------
 
     /**
      * Retrieves the (first) device with the indicated name which is also an instance of the
@@ -320,6 +314,10 @@ public class HardwareMap implements Iterable<HardwareDevice> {
         return allDevicesList.size();
     }
 
+    //------------------------------------------------------------------------------------------------
+    // Types
+    //------------------------------------------------------------------------------------------------
+
     /**
      * Returns an iterator of all the devices in the HardwareMap.
      *
@@ -333,8 +331,23 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     }
 
     //------------------------------------------------------------------------------------------------
-    // Types
+    // Utility
     //------------------------------------------------------------------------------------------------
+
+    public void logDevices() {
+        RobotLog.i("========= Device Information ===================================================");
+        RobotLog.i(String.format(LOG_FORMAT, "Type", "Name", "Connection"));
+
+        for (Map.Entry<String, List<HardwareDevice>> entry : allDevicesMap.entrySet()) {
+            List<HardwareDevice> list = entry.getValue();
+            for (HardwareDevice d : list) {
+                String conn = d.getConnectionInfo();
+                String name = entry.getKey();
+                String type = d.getDeviceName();
+                RobotLog.i(String.format(LOG_FORMAT, type, name, conn));
+            }
+        }
+    }
 
     /**
      * A DeviceMapping contains a subcollection of the devices registered in a {@link HardwareMap}
@@ -454,27 +467,6 @@ public class HardwareMap implements Iterable<HardwareDevice> {
          */
         public int size() {
             return map.size();
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // Utility
-    //------------------------------------------------------------------------------------------------
-
-    private static final String LOG_FORMAT = "%-50s %-30s %s";
-
-    public void logDevices() {
-        RobotLog.i("========= Device Information ===================================================");
-        RobotLog.i(String.format(LOG_FORMAT, "Type", "Name", "Connection"));
-
-        for (Map.Entry<String, List<HardwareDevice>> entry : allDevicesMap.entrySet()) {
-            List<HardwareDevice> list = entry.getValue();
-            for (HardwareDevice d : list) {
-                String conn = d.getConnectionInfo();
-                String name = entry.getKey();
-                String type = d.getDeviceName();
-                RobotLog.i(String.format(LOG_FORMAT, type, name, conn));
-            }
         }
     }
 }

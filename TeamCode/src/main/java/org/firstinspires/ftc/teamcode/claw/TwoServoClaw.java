@@ -46,7 +46,7 @@ public class TwoServoClaw extends Claw {
         return claw1;
     }
 
-    public void setClaw1(OneServoClaw claw1) {
+    private void setClaw1(OneServoClaw claw1) {
         this.claw1 = claw1;
     }
 
@@ -54,7 +54,7 @@ public class TwoServoClaw extends Claw {
         return claw2;
     }
 
-    public void setClaw2(OneServoClaw claw2) {
+    private void setClaw2(OneServoClaw claw2) {
         this.claw2 = claw2;
     }
 }

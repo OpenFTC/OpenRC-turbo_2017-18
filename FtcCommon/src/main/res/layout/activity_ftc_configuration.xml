@@ -2,12 +2,12 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context=".configuration.FtcConfigurationActivity"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              tools:context=".configuration.FtcConfigurationActivity">
 
     <include
-        layout="@layout/header"
-        android:id="@+id/included_header"/>
+        android:id="@+id/included_header"
+        layout="@layout/header"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -74,18 +74,18 @@
             android:text="@string/saveButton_text"/>
 
         <TextView
-            android:paddingBottom="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="3dp"
             android:text="@string/rescanButton_text"/>
 
         <!-- an anchor for pop-up feedback text when we need same -->
         <LinearLayout
             android:id="@+id/feedbackAnchorDuplicateNames"
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:orientation="horizontal"/>
 
         <include layout="@layout/red_line"/>
 
@@ -96,37 +96,37 @@
             android:orientation="horizontal">
 
             <TextView
-                android:text="@string/captionAvailableUsbDevices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
+                android:text="@string/captionAvailableUsbDevices"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
 
             <!-- see comment above -->
             <Button
                 android:id="@+id/devices_info_btn"
-                android:onClick="onDevicesInfoButtonPressed"
+                android:layout_width="20dp"
 
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/button_shape"
+                android:onClick="onDevicesInfoButtonPressed"
+                android:shadowColor="@color/info_shadow"
+                android:shadowDx="0"
+                android:shadowDy="0"
+
+                android:shadowRadius="5"
                 android:text="i"
                 android:textColor="?attr/textWhite"
                 android:textSize="12sp"
                 android:textStyle="bold"
-
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_alignParentEnd="true"
-
-                android:background="@drawable/button_shape"
-                android:shadowColor="@color/info_shadow"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="5"
                 />
 
         </RelativeLayout>
@@ -145,10 +145,10 @@
             <!-- also used for feedback text placement -->
             <LinearLayout
                 android:id="@+id/feedbackAnchor"
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:orientation="horizontal"/>
 
         </FrameLayout>
     </LinearLayout>

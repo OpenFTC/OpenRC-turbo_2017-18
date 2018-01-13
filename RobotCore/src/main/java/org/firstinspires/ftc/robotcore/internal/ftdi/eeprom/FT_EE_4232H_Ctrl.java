@@ -302,18 +302,10 @@ public class FT_EE_4232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data2x06 = (short) (data[6] & 4);
-                if (data2x06 == 4) {
-                    eeprom.AL_SlowSlew = true;
-                } else {
-                    eeprom.AL_SlowSlew = false;
-                }
+                eeprom.AL_SlowSlew = data2x06 == 4;
 
                 short data3x06 = (short) (data[6] & 8);
-                if (data3x06 == 8) {
-                    eeprom.AL_SchmittInput = true;
-                } else {
-                    eeprom.AL_SchmittInput = false;
-                }
+                eeprom.AL_SchmittInput = data3x06 == 8;
 
                 short data45x06 = (short) ((data[6] & 48) >> 4);
                 switch (data45x06) {
@@ -331,18 +323,10 @@ public class FT_EE_4232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data6x06 = (short) (data[6] & 64);
-                if (data6x06 == 64) {
-                    eeprom.AH_SlowSlew = true;
-                } else {
-                    eeprom.AH_SlowSlew = false;
-                }
+                eeprom.AH_SlowSlew = data6x06 == 64;
 
                 short data7x06 = (short) (data[6] & 128);
-                if (data7x06 == 128) {
-                    eeprom.AH_SchmittInput = true;
-                } else {
-                    eeprom.AH_SchmittInput = false;
-                }
+                eeprom.AH_SchmittInput = data7x06 == 128;
 
                 short data89X06 = (short) ((data[6] & 768) >> 8);
                 switch (data89X06) {
@@ -360,18 +344,10 @@ public class FT_EE_4232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data10x06 = (short) (data[6] & 1024);
-                if (data10x06 == 1024) {
-                    eeprom.BL_SlowSlew = true;
-                } else {
-                    eeprom.BL_SlowSlew = false;
-                }
+                eeprom.BL_SlowSlew = data10x06 == 1024;
 
                 short data11x06 = (short) (data[6] & 2048);
-                if (data11x06 == 2048) {
-                    eeprom.BL_SchmittInput = true;
-                } else {
-                    eeprom.BL_SchmittInput = false;
-                }
+                eeprom.BL_SchmittInput = data11x06 == 2048;
 
                 short data1213X06 = (short) ((data[6] & 12288) >> 12);
                 switch (data1213X06) {
@@ -389,18 +365,10 @@ public class FT_EE_4232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data14x06 = (short) (data[6] & 16384);
-                if (data14x06 == 16384) {
-                    eeprom.BH_SlowSlew = true;
-                } else {
-                    eeprom.BH_SlowSlew = false;
-                }
+                eeprom.BH_SlowSlew = data14x06 == 16384;
 
                 short data15x06 = (short) (data[6] & '耀');
-                if (data15x06 == '耀') {
-                    eeprom.BH_SchmittInput = true;
-                } else {
-                    eeprom.BH_SchmittInput = false;
-                }
+                eeprom.BH_SchmittInput = data15x06 == '耀';
 
                 short datax0B = (short) ((data[11] & 24) >> 3);
                 if (datax0B < 4) {

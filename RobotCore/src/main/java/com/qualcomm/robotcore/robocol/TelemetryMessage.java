@@ -47,8 +47,19 @@ import java.util.Map.Entry;
 public class TelemetryMessage extends RobocolParsableBase {
 
     public static final String DEFAULT_TAG = "TELEMETRY_DATA";
+    static final int cbTimestamp = 8;
+    static final int cbSorted = 1;
+    static final int cbRobotState = 1;
+    static final int cbTagLen = 1;
+    public final static int cbTagMax = (1 << (cbTagLen * 8)) - 1;
+    static final int cbCountLen = 1;
+    public final static int cCountMax = (1 << (cbCountLen * 8)) - 1;
+    static final int cbKeyLen = 2;
+    public final static int cbKeyMax = (1 << (cbKeyLen * 8)) - 1;
+    static final int cbValueLen = 2;
+    public final static int cbValueMax = (1 << (cbValueLen * 8)) - 1;
+    static final int cbFloat = 4;
     private static final Charset CHARSET = Charset.forName("UTF-8");
-
     private final Map<String, String> dataStrings = new LinkedHashMap<String, String>();  // linked so as to preserve addition order as iteration order
     private final Map<String, Float> dataNumbers = new LinkedHashMap<String, Float>();
     private String tag = "";     // an empty tag is treated as the default tag
@@ -62,6 +73,42 @@ public class TelemetryMessage extends RobocolParsableBase {
 
     public TelemetryMessage(byte[] byteArray) throws RobotCoreException {
         fromByteArray(byteArray);
+    }
+
+    static void putCount(ByteBuffer buffer, int count) {
+        buffer.put((byte) count);
+    }
+
+    static int getCount(ByteBuffer buffer) {
+        return TypeConversion.unsignedByteToInt(buffer.get());
+    }
+
+    static void putTagLen(ByteBuffer buffer, int cbTag) {
+        buffer.put((byte) cbTag);
+    }
+
+    static int getTagLen(ByteBuffer buffer) {
+        return TypeConversion.unsignedByteToInt(buffer.get());
+    }
+
+    static void putKeyLen(ByteBuffer buffer, int cbKey) {
+        buffer.putShort((short) cbKey);
+    }
+
+    static int getKeyLen(ByteBuffer buffer) {
+        return TypeConversion.unsignedShortToInt(buffer.getShort());
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Sizing
+    //------------------------------------------------------------------------------------------------
+
+    static void putValueLen(ByteBuffer buffer, int cbValue) {
+        putKeyLen(buffer, cbValue);
+    }
+
+    static int getValueLen(ByteBuffer buffer) {
+        return getKeyLen(buffer);
     }
 
     /**
@@ -103,18 +150,6 @@ public class TelemetryMessage extends RobocolParsableBase {
     }
 
     /**
-     * Set the optional tag value.
-     * <p>
-     * Setting this to an empty string is equal to setting this to the default value.
-     *
-     * @param tag tag this telemetry data
-     * @see #DEFAULT_TAG
-     */
-    public synchronized void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    /**
      * Get the optional tag value
      *
      * @return tag
@@ -125,6 +160,18 @@ public class TelemetryMessage extends RobocolParsableBase {
         }
 
         return tag;
+    }
+
+    /**
+     * Set the optional tag value.
+     * <p>
+     * Setting this to an empty string is equal to setting this to the default value.
+     *
+     * @param tag tag this telemetry data
+     * @see #DEFAULT_TAG
+     */
+    public synchronized void setTag(String tag) {
+        this.tag = tag;
     }
 
     /**
@@ -347,56 +394,6 @@ public class TelemetryMessage extends RobocolParsableBase {
 
             dataNumbers.put(key, val);
         }
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // Sizing
-    //------------------------------------------------------------------------------------------------
-
-    static final int cbTimestamp = 8;
-    static final int cbSorted = 1;
-    static final int cbRobotState = 1;
-    static final int cbTagLen = 1;
-    static final int cbCountLen = 1;
-    static final int cbKeyLen = 2;
-    static final int cbValueLen = 2;
-    static final int cbFloat = 4;
-
-    public final static int cbTagMax = (1 << (cbTagLen * 8)) - 1;
-    public final static int cCountMax = (1 << (cbCountLen * 8)) - 1;
-    public final static int cbKeyMax = (1 << (cbKeyLen * 8)) - 1;
-    public final static int cbValueMax = (1 << (cbValueLen * 8)) - 1;
-
-    static void putCount(ByteBuffer buffer, int count) {
-        buffer.put((byte) count);
-    }
-
-    static int getCount(ByteBuffer buffer) {
-        return TypeConversion.unsignedByteToInt(buffer.get());
-    }
-
-    static void putTagLen(ByteBuffer buffer, int cbTag) {
-        buffer.put((byte) cbTag);
-    }
-
-    static int getTagLen(ByteBuffer buffer) {
-        return TypeConversion.unsignedByteToInt(buffer.get());
-    }
-
-    static void putKeyLen(ByteBuffer buffer, int cbKey) {
-        buffer.putShort((short) cbKey);
-    }
-
-    static int getKeyLen(ByteBuffer buffer) {
-        return TypeConversion.unsignedShortToInt(buffer.getShort());
-    }
-
-    static void putValueLen(ByteBuffer buffer, int cbValue) {
-        putKeyLen(buffer, cbValue);
-    }
-
-    static int getValueLen(ByteBuffer buffer) {
-        return getKeyLen(buffer);
     }
 
     private int countMessageBytes() {

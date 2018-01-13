@@ -56,10 +56,9 @@ public class Heartbeat extends RobocolParsableBase {
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
-
+    public long t0, t1, t2;    // for time synchronization, a la Network Time Protocol
     private long timestamp;
     private RobotState robotState;
-    public long t0, t1, t2;    // for time synchronization, a la Network Time Protocol
 
     //------------------------------------------------------------------------------------------------
     // Construction

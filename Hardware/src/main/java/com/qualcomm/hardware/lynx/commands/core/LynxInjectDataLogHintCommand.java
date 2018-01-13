@@ -73,6 +73,15 @@ public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxA
     // Accessing
     //----------------------------------------------------------------------------------------------
 
+    public
+    @NonNull
+    String getHintText() {
+        if (this.payload != null) {
+            return new String(this.payload, charset);
+        }
+        return "";
+    }
+
     public void setHintText(@NonNull String text) {
         // Each char encodes as AT LEAST one byte, so truncate if we need to
         if (text.length() > cbMaxText) {
@@ -87,15 +96,6 @@ public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxA
             }
             text = text.substring(0, text.length() - 1);
         }
-    }
-
-    public
-    @NonNull
-    String getHintText() {
-        if (this.payload != null) {
-            return new String(this.payload, charset);
-        }
-        return "";
     }
 
     //----------------------------------------------------------------------------------------------

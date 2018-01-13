@@ -59,10 +59,6 @@ public class CallbackLooper {
     // It's useful to have a default, but at times others may want their own, too
     protected static CallbackLooper defaultInstance;
 
-    public static CallbackLooper getDefault() {
-        return defaultInstance;
-    }
-
     static {
         defaultInstance = new CallbackLooper();
         defaultInstance.start();
@@ -72,16 +68,19 @@ public class CallbackLooper {
     protected Looper looper;
     protected Handler handler;
     protected Thread thread;
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public CallbackLooper() {
         executorService = null;
         looper = null;
         handler = null;
         thread = null;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public static CallbackLooper getDefault() {
+        return defaultInstance;
     }
 
     //----------------------------------------------------------------------------------------------

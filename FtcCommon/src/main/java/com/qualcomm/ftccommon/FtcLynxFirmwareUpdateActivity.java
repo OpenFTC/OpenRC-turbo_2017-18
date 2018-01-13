@@ -43,12 +43,12 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList.FWImage;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
@@ -72,12 +72,6 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcLynxFirmwareUpdateActivity";
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
     protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     protected RecvLoopRunnable.RecvLoopCallback recvLoopCallback = new ReceiveLoopCallback();
     protected boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
@@ -85,14 +79,9 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity {
     protected FWImage firmwareImageFile = new FWImage(new File(""), false);
     protected List<USBAccessibleLynxModule> modulesToUpdate = new ArrayList<USBAccessibleLynxModule>();
     protected boolean enableUpdateButton = true;
-
     protected BlockingQueue<CommandList.LynxFirmwareImagesResp> availableLynxImages = new ArrayBlockingQueue<CommandList.LynxFirmwareImagesResp>(1);
     protected BlockingQueue<CommandList.USBAccessibleLynxModulesResp> availableLynxModules = new ArrayBlockingQueue<CommandList.USBAccessibleLynxModulesResp>(1);
     protected BlockingQueue<CommandList.LynxFirmwareUpdateResp> availableFWUpdateResps = new ArrayBlockingQueue<CommandList.LynxFirmwareUpdateResp>(1);
-
-    //----------------------------------------------------------------------------------------------
-    // Initialization
-    //----------------------------------------------------------------------------------------------
 
     public static void initializeDirectories() {
         // Create the director for lynx fw updates, and populate with a descriptive readme
@@ -104,6 +93,15 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity {
         // logically has nothing to do with firmware updating per se.
         message = AppUtil.getDefContext().getString(R.string.robotControllerAppUpdateReadme);
         ReadWriteFile.writeFile(AppUtil.RC_APP_UPDATE_DIR, "readme.txt", message);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Initialization
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -222,33 +220,6 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity {
     // Receive loop
     //----------------------------------------------------------------------------------------------
 
-    protected class ReceiveLoopCallback extends RecvLoopRunnable.DegenerateCallback {
-        @Override
-        public CallbackResult commandEvent(Command command) throws RobotCoreException {
-            switch (command.getName()) {
-                case CommandList.CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP:
-                    CommandList.USBAccessibleLynxModulesResp serialNumbers = CommandList.USBAccessibleLynxModulesResp.deserialize(command.getExtra());
-                    availableLynxModules.offer(serialNumbers);
-                    return CallbackResult.HANDLED;
-
-                case CommandList.CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP:
-                    CommandList.LynxFirmwareImagesResp candidates = CommandList.LynxFirmwareImagesResp.deserialize(command.getExtra());
-                    availableLynxImages.offer(candidates);
-                    return CallbackResult.HANDLED;
-
-                case CommandList.CMD_LYNX_FIRMWARE_UPDATE_RESP:
-                    CommandList.LynxFirmwareUpdateResp params = CommandList.LynxFirmwareUpdateResp.deserialize(command.getExtra());
-                    availableFWUpdateResps.offer(params);
-                    return CallbackResult.HANDLED;
-            }
-            return super.commandEvent(command);
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
     protected CommandList.LynxFirmwareImagesResp getCandidateLynxFirmwareImages() {
         CommandList.LynxFirmwareImagesResp result = new CommandList.LynxFirmwareImagesResp();
 
@@ -259,6 +230,10 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity {
         RobotLog.vv(TAG, "found %d lynx firmware images", result.firmwareImages.size());
         return result;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
 
     protected List<USBAccessibleLynxModule> getLynxModulesForFirmwareUpdate() {
         CommandList.USBAccessibleLynxModulesRequest request = new CommandList.USBAccessibleLynxModulesRequest();
@@ -298,5 +273,28 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity {
             Thread.currentThread().interrupt();
         }
         return defaultResponse;
+    }
+
+    protected class ReceiveLoopCallback extends RecvLoopRunnable.DegenerateCallback {
+        @Override
+        public CallbackResult commandEvent(Command command) throws RobotCoreException {
+            switch (command.getName()) {
+                case CommandList.CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP:
+                    CommandList.USBAccessibleLynxModulesResp serialNumbers = CommandList.USBAccessibleLynxModulesResp.deserialize(command.getExtra());
+                    availableLynxModules.offer(serialNumbers);
+                    return CallbackResult.HANDLED;
+
+                case CommandList.CMD_GET_CANDIDATE_LYNX_FIRMWARE_IMAGES_RESP:
+                    CommandList.LynxFirmwareImagesResp candidates = CommandList.LynxFirmwareImagesResp.deserialize(command.getExtra());
+                    availableLynxImages.offer(candidates);
+                    return CallbackResult.HANDLED;
+
+                case CommandList.CMD_LYNX_FIRMWARE_UPDATE_RESP:
+                    CommandList.LynxFirmwareUpdateResp params = CommandList.LynxFirmwareUpdateResp.deserialize(command.getExtra());
+                    availableFWUpdateResps.offer(params);
+                    return CallbackResult.HANDLED;
+            }
+            return super.commandEvent(command);
+        }
     }
 }

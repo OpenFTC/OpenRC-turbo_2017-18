@@ -34,8 +34,8 @@ import android.net.wifi.WifiManager;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterDS;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 /**
  * Static class to fix configuration issues with wifi direct

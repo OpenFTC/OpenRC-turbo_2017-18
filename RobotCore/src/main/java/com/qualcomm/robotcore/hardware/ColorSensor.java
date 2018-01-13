@@ -82,11 +82,6 @@ public interface ColorSensor extends HardwareDevice {
     void enableLed(boolean enable);
 
     /**
-     * Set the I2C address to a new value.
-     */
-    void setI2cAddress(I2cAddr newAddress);
-
-    /**
      * Get the current I2C Address of this object.
      * Not necessarily the same as the I2C address of the actual device.
      * <p>
@@ -95,5 +90,10 @@ public interface ColorSensor extends HardwareDevice {
      * @return current I2C address
      */
     I2cAddr getI2cAddress();
+
+    /**
+     * Set the I2C address to a new value.
+     */
+    void setI2cAddress(I2cAddr newAddress);
 
 }

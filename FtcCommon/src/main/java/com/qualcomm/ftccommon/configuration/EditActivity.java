@@ -57,8 +57,8 @@ import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 
 import java.util.ArrayList;
@@ -78,12 +78,6 @@ public abstract class EditActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "EditActivity";
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
     protected Context context;
     protected AppUtil appUtil = AppUtil.getInstance();
     protected boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
@@ -107,12 +101,62 @@ public abstract class EditActivity extends ThemedActivity {
     @NonNull
     ScannedDevices scannedDevices = new ScannedDevices();
     protected List<RobotConfigFile> extantRobotConfigurations = new LinkedList<RobotConfigFile>();
+    /**
+     * The listener that controls the behavior when an item in the spinner is selected.
+     */
+    protected AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View spinnerItem, int pos, long l) {
+            ConfigurationTypeAndDisplayName selected = (ConfigurationTypeAndDisplayName) parent.getItemAtPosition(pos);
+            View itemView = itemViewFromSpinnerItem(spinnerItem);
+            if (selected.configurationType == BuiltInConfigurationType.NOTHING) {
+                clearDevice(itemView);
+            } else {
+                changeDevice(itemView, selected.configurationType);
+            }
+        }
+
+        protected View itemViewFromSpinnerItem(View spinnerItem) {
+            // TODO: this is fragile.
+            //view is SpinnerItem
+            //view.getParent is Spinner
+            //view.getparent.getparent is the RelativeLayout around the Spinner
+            //view.getparent.getparent.getparent is the item view around the whole item, usually a TableRow
+            ViewParent spinner = spinnerItem.getParent();      // RobotLog.v("spinner class =%s", spinner.getClass().getSimpleName());
+            ViewParent spinnerParent = spinner.getParent();          // RobotLog.v("relativeLayout class =%s", spinnerParent.getClass().getSimpleName());
+            ViewParent spinnerParentParent = spinnerParent.getParent();    // RobotLog.v("linearLayout class =%s", spinnerParentParent.getClass().getSimpleName());
+
+            View itemView = (View) spinnerParentParent;
+            return itemView;
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+        }
+    };
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     public EditActivity() {
+    }
+
+    public static String formatSerialNumber(Context context, ControllerConfiguration controllerConfiguration) {
+        String result = controllerConfiguration.getSerialNumber().toString(context);
+        if (controllerConfiguration.getSerialNumber().isFake()) {
+            return result;
+        } else {
+            if (!controllerConfiguration.isKnownToBeAttached()) {
+                result = result + context.getString(R.string.serialNumberNotAttached);
+            }
+            return result;
+        }
+    }
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
     @Override
@@ -132,6 +176,10 @@ public abstract class EditActivity extends ThemedActivity {
         this.robotConfigFileManager.updateActiveConfigHeader(this.currentCfgFile);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
     protected void deserialize(EditParameters parameters) {
         this.scannedDevices = parameters.getScannedDevices();
         this.extantRobotConfigurations = parameters.getExtantRobotConfigurations();
@@ -142,6 +190,10 @@ public abstract class EditActivity extends ThemedActivity {
         }
         deserializeConfigMap(parameters);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Launching and finishing
+    //----------------------------------------------------------------------------------------------
 
     protected void deserializeConfigMap(EditParameters parameters) {
         this.robotConfigMap = new RobotConfigMap(parameters.getRobotConfigMap());   // copy for isolation
@@ -155,17 +207,9 @@ public abstract class EditActivity extends ThemedActivity {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
     protected RobotConfigMap getRobotConfigMap() {
         return this.robotConfigMap == null ? new RobotConfigMap() : this.robotConfigMap;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Launching and finishing
-    //----------------------------------------------------------------------------------------------
 
     protected void handleLaunchEdit(RequestCode requestCode, Class launchClass, List<DeviceConfiguration> currentItems) {
         handleLaunchEdit(requestCode, launchClass, new EditParameters<DeviceConfiguration>(this, DeviceConfiguration.class, currentItems));
@@ -185,18 +229,6 @@ public abstract class EditActivity extends ThemedActivity {
         setResult(RESULT_OK, editIntent);
         RobotLog.v("%s: starting activity %s code=%d", this.getClass().getSimpleName(), editIntent.getComponent().getShortClassName(), requestCode.value);
         startActivityForResult(editIntent, requestCode.value);
-    }
-
-    public static String formatSerialNumber(Context context, ControllerConfiguration controllerConfiguration) {
-        String result = controllerConfiguration.getSerialNumber().toString(context);
-        if (controllerConfiguration.getSerialNumber().isFake()) {
-            return result;
-        } else {
-            if (!controllerConfiguration.isKnownToBeAttached()) {
-                result = result + context.getString(R.string.serialNumberNotAttached);
-            }
-            return result;
-        }
     }
 
     protected void finishCancel() {
@@ -231,95 +263,16 @@ public abstract class EditActivity extends ThemedActivity {
         RobotLog.v("%s: activity result: code=%d result=%d", this.getClass().getSimpleName(), requestCodeValue, resultCode);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Text watchers
+    //----------------------------------------------------------------------------------------------
+
     protected void logBackPressed() {
         RobotLog.v("%s: backPressed received", this.getClass().getSimpleName());
     }
 
     //----------------------------------------------------------------------------------------------
-    // Text watchers
-    //----------------------------------------------------------------------------------------------
-
-    protected class SetNameTextWatcher implements TextWatcher {
-        private final DeviceConfiguration deviceConfiguration;
-
-        protected SetNameTextWatcher(DeviceConfiguration deviceConfiguration) {
-            this.deviceConfiguration = deviceConfiguration;
-        }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void afterTextChanged(Editable editable) {
-            String text = editable.toString();
-            deviceConfiguration.setName(text);
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
     // List Management: display names + type
-    //----------------------------------------------------------------------------------------------
-
-    protected static class DisplayNameAndInteger implements Comparable<DisplayNameAndInteger> {
-        public final String displayName;
-        public final int value;
-
-        public DisplayNameAndInteger(String displayName, int value) {
-            this.displayName = displayName;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.displayName;
-        }
-
-        @Override
-        public int compareTo(DisplayNameAndInteger another) {
-            return this.displayName.compareTo(another.displayName);
-        }
-    }
-
-    protected static class DisplayNameAndRequestCode implements Comparable<DisplayNameAndRequestCode> {
-        public final String displayName;
-        public final RequestCode requestCode;
-
-        public DisplayNameAndRequestCode(String combined)
-        // Example combined: "PWM Devices|EDIT_PWM_PORT"
-        {
-            String[] parts = combined.split("\\|");
-            this.displayName = parts[0];
-            this.requestCode = RequestCode.fromString(parts[1]);
-        }
-
-        public DisplayNameAndRequestCode(String displayName, RequestCode requestCode) {
-            this.displayName = displayName;
-            this.requestCode = requestCode;
-        }
-
-        public static DisplayNameAndRequestCode[] fromArray(String[] strings) {
-            DisplayNameAndRequestCode[] result = new DisplayNameAndRequestCode[strings.length];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = new DisplayNameAndRequestCode(strings[i]);
-            }
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return this.displayName;
-        }
-
-        @Override
-        public int compareTo(DisplayNameAndRequestCode another) {
-            return this.displayName.compareTo(another.displayName);
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // ConfigurationType management
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -342,6 +295,10 @@ public abstract class EditActivity extends ThemedActivity {
         return getString(R.string.noDeviceAttached);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // ConfigurationType management
+    //----------------------------------------------------------------------------------------------
+
     public String nameOf(DeviceConfiguration config) {
         return nameOf(config.getName());
     }
@@ -356,43 +313,6 @@ public abstract class EditActivity extends ThemedActivity {
     public String displayNameOfConfigurationType(ConfigurationType.DisplayNameFlavor flavor, ConfigurationType type) {
         return type.getDisplayName(flavor, this);
     }
-
-    // Localization technique from http://www.katr.com/article_android_spinner01.php
-    protected class ConfigurationTypeAndDisplayName implements Comparable<ConfigurationTypeAndDisplayName> {
-        public final ConfigurationType.DisplayNameFlavor flavor;
-        public final ConfigurationType configurationType;
-        public final String displayName;
-        public final Comparator<ConfigurationType> comparator;
-
-        public ConfigurationTypeAndDisplayName(ConfigurationType.DisplayNameFlavor flavor, ConfigurationType configurationType, @Nullable Comparator<ConfigurationType> comparator) {
-            this.flavor = flavor;
-            this.configurationType = configurationType;
-            this.displayName = displayNameOfConfigurationType(this.flavor, configurationType);
-            this.comparator = comparator;
-        }
-
-        @Override
-        public String toString() {
-            return this.displayName;
-        }
-
-        @Override
-        public int compareTo(@NonNull ConfigurationTypeAndDisplayName another) {
-            // Compare first by the comparator if we have one
-            if (comparator != null) {
-                int result = comparator.compare(this.configurationType, another.configurationType);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            // Otherwise, just compare by display names
-            return this.displayName.compareTo(another.displayName);
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Spinner support for those classes that use spinners
-    //----------------------------------------------------------------------------------------------
 
     protected void localizeConfigTypeSpinner(ConfigurationType.DisplayNameFlavor flavor, Spinner spinner)
     // Localize the strings in the spinner. What's there now is the string form of the BuiltInConfigurationType
@@ -418,6 +338,10 @@ public abstract class EditActivity extends ThemedActivity {
     protected void localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor flavor, Spinner spinner, List<ConfigurationType> types) {
         localizeConfigTypeSpinnerTypes(flavor, spinner, types, null);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Spinner support for those classes that use spinners
+    //----------------------------------------------------------------------------------------------
 
     protected void localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor flavor, Spinner spinner, List<ConfigurationType> types, @Nullable Comparator<ConfigurationType> comparator)
     // Localize the strings in the spinner
@@ -477,40 +401,6 @@ public abstract class EditActivity extends ThemedActivity {
         return BuiltInConfigurationType.NOTHING;
     }
 
-    /**
-     * The listener that controls the behavior when an item in the spinner is selected.
-     */
-    protected AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View spinnerItem, int pos, long l) {
-            ConfigurationTypeAndDisplayName selected = (ConfigurationTypeAndDisplayName) parent.getItemAtPosition(pos);
-            View itemView = itemViewFromSpinnerItem(spinnerItem);
-            if (selected.configurationType == BuiltInConfigurationType.NOTHING) {
-                clearDevice(itemView);
-            } else {
-                changeDevice(itemView, selected.configurationType);
-            }
-        }
-
-        protected View itemViewFromSpinnerItem(View spinnerItem) {
-            // TODO: this is fragile.
-            //view is SpinnerItem
-            //view.getParent is Spinner
-            //view.getparent.getparent is the RelativeLayout around the Spinner
-            //view.getparent.getparent.getparent is the item view around the whole item, usually a TableRow
-            ViewParent spinner = spinnerItem.getParent();      // RobotLog.v("spinner class =%s", spinner.getClass().getSimpleName());
-            ViewParent spinnerParent = spinner.getParent();          // RobotLog.v("relativeLayout class =%s", spinnerParent.getClass().getSimpleName());
-            ViewParent spinnerParentParent = spinnerParent.getParent();    // RobotLog.v("linearLayout class =%s", spinnerParentParent.getClass().getSimpleName());
-
-            View itemView = (View) spinnerParentParent;
-            return itemView;
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-        }
-    };
-
     protected void clearDevice(View itemView) {
         // subclasses using spinners to provide something useful
     }
@@ -518,10 +408,6 @@ public abstract class EditActivity extends ThemedActivity {
     protected void changeDevice(View itemView, ConfigurationType type) {
         // subclasses using spinners to provide something useful
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Networking
-    //----------------------------------------------------------------------------------------------
 
     /**
      * When doing remote config and we get notice that the config has changed, we need to
@@ -539,5 +425,117 @@ public abstract class EditActivity extends ThemedActivity {
         // main driver station screen: once the config edit screen dismisses, the file load screen
         // should be seen to be updated too.
         return CallbackResult.HANDLED_CONTINUE;
+    }
+
+    protected static class DisplayNameAndInteger implements Comparable<DisplayNameAndInteger> {
+        public final String displayName;
+        public final int value;
+
+        public DisplayNameAndInteger(String displayName, int value) {
+            this.displayName = displayName;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+
+        @Override
+        public int compareTo(DisplayNameAndInteger another) {
+            return this.displayName.compareTo(another.displayName);
+        }
+    }
+
+    protected static class DisplayNameAndRequestCode implements Comparable<DisplayNameAndRequestCode> {
+        public final String displayName;
+        public final RequestCode requestCode;
+
+        public DisplayNameAndRequestCode(String combined)
+        // Example combined: "PWM Devices|EDIT_PWM_PORT"
+        {
+            String[] parts = combined.split("\\|");
+            this.displayName = parts[0];
+            this.requestCode = RequestCode.fromString(parts[1]);
+        }
+
+        public DisplayNameAndRequestCode(String displayName, RequestCode requestCode) {
+            this.displayName = displayName;
+            this.requestCode = requestCode;
+        }
+
+        public static DisplayNameAndRequestCode[] fromArray(String[] strings) {
+            DisplayNameAndRequestCode[] result = new DisplayNameAndRequestCode[strings.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = new DisplayNameAndRequestCode(strings[i]);
+            }
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+
+        @Override
+        public int compareTo(DisplayNameAndRequestCode another) {
+            return this.displayName.compareTo(another.displayName);
+        }
+    }
+
+    protected class SetNameTextWatcher implements TextWatcher {
+        private final DeviceConfiguration deviceConfiguration;
+
+        protected SetNameTextWatcher(DeviceConfiguration deviceConfiguration) {
+            this.deviceConfiguration = deviceConfiguration;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+            String text = editable.toString();
+            deviceConfiguration.setName(text);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Networking
+    //----------------------------------------------------------------------------------------------
+
+    // Localization technique from http://www.katr.com/article_android_spinner01.php
+    protected class ConfigurationTypeAndDisplayName implements Comparable<ConfigurationTypeAndDisplayName> {
+        public final ConfigurationType.DisplayNameFlavor flavor;
+        public final ConfigurationType configurationType;
+        public final String displayName;
+        public final Comparator<ConfigurationType> comparator;
+
+        public ConfigurationTypeAndDisplayName(ConfigurationType.DisplayNameFlavor flavor, ConfigurationType configurationType, @Nullable Comparator<ConfigurationType> comparator) {
+            this.flavor = flavor;
+            this.configurationType = configurationType;
+            this.displayName = displayNameOfConfigurationType(this.flavor, configurationType);
+            this.comparator = comparator;
+        }
+
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+
+        @Override
+        public int compareTo(@NonNull ConfigurationTypeAndDisplayName another) {
+            // Compare first by the comparator if we have one
+            if (comparator != null) {
+                int result = comparator.compare(this.configurationType, another.configurationType);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            // Otherwise, just compare by display names
+            return this.displayName.compareTo(another.displayName);
+        }
     }
 }

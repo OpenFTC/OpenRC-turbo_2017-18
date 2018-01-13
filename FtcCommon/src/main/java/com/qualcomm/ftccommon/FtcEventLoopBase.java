@@ -138,7 +138,6 @@ import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectGroupName;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectPersistentGroupManager;
-//modified for turbo: removed OnBotJavaManager import
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.stellaris.FlashLoaderManager;
 import org.firstinspires.ftc.robotcore.internal.stellaris.FlashLoaderProtocolException;
@@ -146,7 +145,6 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
-//modified for turbo: removed webserver import
 import org.firstinspires.inspection.InspectionState;
 
 import java.io.File;
@@ -160,6 +158,9 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
+//modified for turbo: removed OnBotJavaManager import
+//modified for turbo: removed webserver import
+
 /**
  * {@link FtcEventLoopBase} is an abstract base that handles defines core event processing
  * logic that's available whether or not a Robot is currently extant or not
@@ -171,7 +172,8 @@ public abstract class FtcEventLoopBase implements EventLoop {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcEventLoop";
-
+    protected final OpModeRegister userOpmodeRegister;
+    protected final RegisteredOpModes registeredOpModes;
     protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     protected Activity activityContext;
     protected RobotConfigFileManager robotCfgFileMgr;
@@ -179,9 +181,6 @@ public abstract class FtcEventLoopBase implements EventLoop {
     protected boolean runningOnDriverStation = false;
     //modified for turbo: removed programmingModeController variable
     protected USBScanManager usbScanManager;
-    protected final OpModeRegister userOpmodeRegister;
-
-    protected final RegisteredOpModes registeredOpModes;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -533,61 +532,6 @@ public abstract class FtcEventLoopBase implements EventLoop {
         return null;
     }
 
-    /**
-     * abstracts whether we've got a live LynxUsbDeviceImpl or we just opened something locally ourselves.
-     */
-    protected static class LynxUsbDeviceContainer {
-        protected final LynxUsbDeviceImpl lynxUsbDevice;
-        protected final RobotUsbDevice robotUsbDevice;
-
-        public LynxUsbDeviceContainer(@NonNull LynxUsbDeviceImpl lynxUsbDevice) {
-            this.lynxUsbDevice = lynxUsbDevice;
-            this.robotUsbDevice = null;
-        }
-
-        public LynxUsbDeviceContainer(@NonNull RobotUsbDevice robotUsbDevice) {
-            this.lynxUsbDevice = null;
-            this.robotUsbDevice = robotUsbDevice;
-        }
-
-        public void close() {
-            try {
-                if (robotUsbDevice != null) {
-                    robotUsbDevice.requestReadInterrupt(true);
-                    robotUsbDevice.close();
-                }
-            } catch (RuntimeException e) {
-                RobotLog.ee(TAG, e, "RuntimeException in LynxUsbDeviceContainer.close");
-            }
-        }
-
-        public void disengage() {
-            if (lynxUsbDevice != null) {
-                lynxUsbDevice.disengage();
-            }
-        }
-
-        public void engage() {
-            if (lynxUsbDevice != null) {
-                lynxUsbDevice.engage();
-            }
-        }
-
-        public RobotUsbDevice getRobotUsbDevice() {
-            if (lynxUsbDevice != null) {
-                return lynxUsbDevice.getRobotUsbDevice();
-            }
-            return robotUsbDevice;
-        }
-
-        public SerialNumber getSerialNumber() {
-            if (lynxUsbDevice != null) {
-                return lynxUsbDevice.getSerialNumber();
-            }
-            return robotUsbDevice.getSerialNumber();
-        }
-    }
-
     protected List<USBAccessibleLynxModule> getUSBAccessibleLynxDevices(boolean includeModuleAddresses) throws RobotCoreException {
         RobotLog.vv(TAG, "getUSBAccessibleLynxDevices()...");
 
@@ -827,6 +771,61 @@ public abstract class FtcEventLoopBase implements EventLoop {
             AppUtil.getInstance().showToast(UILocation.BOTH, AppUtil.getDefContext().getString(R.string.toastDisconnectedFromWifiDirect));
         } else {
             AppUtil.getInstance().showToast(UILocation.BOTH, AppUtil.getDefContext().getString(R.string.toastErrorDisconnectingFromWifiDirect));
+        }
+    }
+
+    /**
+     * abstracts whether we've got a live LynxUsbDeviceImpl or we just opened something locally ourselves.
+     */
+    protected static class LynxUsbDeviceContainer {
+        protected final LynxUsbDeviceImpl lynxUsbDevice;
+        protected final RobotUsbDevice robotUsbDevice;
+
+        public LynxUsbDeviceContainer(@NonNull LynxUsbDeviceImpl lynxUsbDevice) {
+            this.lynxUsbDevice = lynxUsbDevice;
+            this.robotUsbDevice = null;
+        }
+
+        public LynxUsbDeviceContainer(@NonNull RobotUsbDevice robotUsbDevice) {
+            this.lynxUsbDevice = null;
+            this.robotUsbDevice = robotUsbDevice;
+        }
+
+        public void close() {
+            try {
+                if (robotUsbDevice != null) {
+                    robotUsbDevice.requestReadInterrupt(true);
+                    robotUsbDevice.close();
+                }
+            } catch (RuntimeException e) {
+                RobotLog.ee(TAG, e, "RuntimeException in LynxUsbDeviceContainer.close");
+            }
+        }
+
+        public void disengage() {
+            if (lynxUsbDevice != null) {
+                lynxUsbDevice.disengage();
+            }
+        }
+
+        public void engage() {
+            if (lynxUsbDevice != null) {
+                lynxUsbDevice.engage();
+            }
+        }
+
+        public RobotUsbDevice getRobotUsbDevice() {
+            if (lynxUsbDevice != null) {
+                return lynxUsbDevice.getRobotUsbDevice();
+            }
+            return robotUsbDevice;
+        }
+
+        public SerialNumber getSerialNumber() {
+            if (lynxUsbDevice != null) {
+                return lynxUsbDevice.getSerialNumber();
+            }
+            return robotUsbDevice.getSerialNumber();
         }
     }
 }

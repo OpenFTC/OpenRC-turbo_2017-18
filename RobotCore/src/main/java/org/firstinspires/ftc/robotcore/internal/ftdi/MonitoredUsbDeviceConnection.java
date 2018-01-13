@@ -68,55 +68,46 @@ public class MonitoredUsbDeviceConnection {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "MonitoredUsbDeviceConnection";
-
+    protected final static DebuggableReentrantLock usbWriteLock = new DebuggableReentrantLock();
     protected final
     @NonNull
     FtDevice ftDevice;
     protected final
     @NonNull
     UsbDeviceConnection delegate;
+
+    // protected    Set<UsbInterface>               interfacesClaimed = new HashSet<UsbInterface>();
     protected final
     @NonNull
     String serialNumber;
-
-    // protected    Set<UsbInterface>               interfacesClaimed = new HashSet<UsbInterface>();
-
     protected final WatchdogMonitor monitor = new WatchdogMonitor();
     protected int msUsbWriteDurationMax = 200;
     protected int msUsbWriteLockAcquire = 250;  // finger in the wind
-    protected final static DebuggableReentrantLock usbWriteLock = new DebuggableReentrantLock();
-
-    protected enum FailureType {UNKNOWN, WRITE, CONTROL_TRANSFER}
-
-    ;
     protected Callable<RobotUsbException> failureAction;
     protected FailureType failureType = FailureType.UNKNOWN;
-
     protected Callable<RobotUsbException> bulkTransferAction;
     protected UsbEndpoint endpoint;
     protected byte[] buffer;
     protected int offset;
     protected int length;
     protected int timeout;
-
     protected Callable<RobotUsbException> controlTransferAction;
     protected int requestType;
     protected int request;
     protected int value;
     protected int index;
     protected int callResult;
-
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public MonitoredUsbDeviceConnection(@NonNull FtDevice ftDevice, @NonNull UsbDeviceConnection delegate) {
         this.ftDevice = ftDevice;
         this.delegate = delegate;
         this.serialNumber = delegate.getSerial();
         initializeMonitoring();
     }
+
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     public void close() {
         // Assert.assertTrue(interfacesClaimed.isEmpty());
@@ -125,13 +116,13 @@ public class MonitoredUsbDeviceConnection {
         monitor.close(false);   // false since we might be closing the FtDevice due while on failureAction (see XYZZY below): it will soon terminate anyway
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Monitoring
-    //----------------------------------------------------------------------------------------------
-
     private boolean acquireUsbWriteLock() throws InterruptedException {
         return (usbWriteLock.tryLock() || usbWriteLock.tryLock(msUsbWriteLockAcquire, TimeUnit.MILLISECONDS));
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Monitoring
+    //----------------------------------------------------------------------------------------------
 
     private void releaseUsbWriteLock() {
         usbWriteLock.unlock();
@@ -153,7 +144,6 @@ public class MonitoredUsbDeviceConnection {
             @Override
             public RobotUsbException call() {
                 callResult = delegate.controlTransfer(requestType, request, value, index, buffer, offset, length, timeout);
-                ;
                 return null;
             }
         };
@@ -200,16 +190,16 @@ public class MonitoredUsbDeviceConnection {
         return new RobotUsbWriteLockException("unable to acquire usb write lock after %d ms%s", msUsbWriteLockAcquire, threadMessage);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Delegation
-    //----------------------------------------------------------------------------------------------
-
     public boolean claimInterface(UsbInterface intf, boolean force) {
         // Assert.assertFalse(interfacesClaimed.contains(intf));
         boolean result = delegate.claimInterface(intf, force);
         // if (result) interfacesClaimed.add(intf);
         return result;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Delegation
+    //----------------------------------------------------------------------------------------------
 
     public boolean releaseInterface(UsbInterface intf) {
         // Assert.assertTrue(interfacesClaimed.contains(intf));
@@ -318,4 +308,6 @@ public class MonitoredUsbDeviceConnection {
             }
         }
     }
+
+    protected enum FailureType {UNKNOWN, WRITE, CONTROL_TRANSFER}
 }

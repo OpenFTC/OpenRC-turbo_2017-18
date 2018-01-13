@@ -60,10 +60,6 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
         deviceControllers = new ArrayList<ControllerConfiguration>();
     }
 
-    public List<ControllerConfiguration> getDeviceControllers() {
-        return deviceControllers;
-    }
-
     public static XmlPullParser xmlPullParserFromReader(Reader reader) {
         XmlPullParserFactory factory;
         XmlPullParser parser = null;
@@ -76,6 +72,10 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
             e.printStackTrace();
         }
         return parser;
+    }
+
+    public List<ControllerConfiguration> getDeviceControllers() {
+        return deviceControllers;
     }
 
     public List<ControllerConfiguration> parse(Reader reader) throws RobotCoreException {

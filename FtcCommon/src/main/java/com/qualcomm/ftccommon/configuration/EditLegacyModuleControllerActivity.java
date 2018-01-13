@@ -61,24 +61,21 @@ import java.util.ArrayList;
 
 public class EditLegacyModuleControllerActivity extends EditUSBDeviceActivity {
 
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     public static final RequestCode requestCode = RequestCode.EDIT_LEGACY_MODULE;
-
     private static boolean DEBUG = false;
-
     private EditText controller_name;
     private ArrayList<DeviceConfiguration> devices = new ArrayList<DeviceConfiguration>();
-
     private View info_port0;
     private View info_port1;
     private View info_port2;
     private View info_port3;
     private View info_port4;
     private View info_port5;
+
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
 
     /**
      * In onCreate, we gather all of the linearLayout's that are associated with each port.

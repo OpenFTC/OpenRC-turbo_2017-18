@@ -44,11 +44,10 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  * @see <a href="http://www.modernroboticsinc.com/optical-distance-sensor-2">MR Optical Distance Sensor</a>
  */
 public class ModernRoboticsAnalogOpticalDistanceSensor implements OpticalDistanceSensor, AnalogSensor {
-    private final AnalogInputController analogInputController;
-    private final int physicalPort;
-
     protected static final double apiLevelMin = 0.0;
     protected static final double apiLevelMax = 1.0;
+    private final AnalogInputController analogInputController;
+    private final int physicalPort;
 
     public ModernRoboticsAnalogOpticalDistanceSensor(AnalogInputController analogInputController, int physicalPort) {
         this.analogInputController = analogInputController;

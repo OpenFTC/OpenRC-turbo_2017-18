@@ -41,11 +41,11 @@ import android.os.Build;
 
 import com.qualcomm.robotcore.util.Device;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.network.StartResult;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.util.List;
 
@@ -92,6 +92,14 @@ public class InspectionState {
     public InspectionState() {
     }
 
+    public static boolean isPackageInstalled(String packageVersion) {
+        return !packageVersion.equals(noPackageVersion);
+    }
+
+    public static InspectionState deserialize(String serialized) {
+        return SimpleGson.getInstance().fromJson(serialized, InspectionState.class);
+    }
+
     // Modified for OpenRC: If this InspectionState will be sent to the DS, show that OpenRC is installed)
     public void initializeForDs() {
         initializeLocal();
@@ -130,10 +138,6 @@ public class InspectionState {
         this.channelChangerRequired = Device.isZteSpeed()
                 && Device.useZteProvidedWifiChannelEditorOnZteSpeeds()
                 && AppUtil.getInstance().isRobotController();
-    }
-
-    public static boolean isPackageInstalled(String packageVersion) {
-        return !packageVersion.equals(noPackageVersion);
     }
 
     public boolean isRobotControllerInstalled() {
@@ -178,6 +182,10 @@ public class InspectionState {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Serialization
+    //----------------------------------------------------------------------------------------------
+
     protected boolean isAppInventorLocallyInstalled() {
         final PackageManager pm = AppUtil.getDefContext().getPackageManager();
         final List<ApplicationInfo> installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
@@ -193,15 +201,7 @@ public class InspectionState {
         return false;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Serialization
-    //----------------------------------------------------------------------------------------------
-
     public String serialize() {
         return SimpleGson.getInstance().toJson(this);
-    }
-
-    public static InspectionState deserialize(String serialized) {
-        return SimpleGson.getInstance().fromJson(serialized, InspectionState.class);
     }
 }

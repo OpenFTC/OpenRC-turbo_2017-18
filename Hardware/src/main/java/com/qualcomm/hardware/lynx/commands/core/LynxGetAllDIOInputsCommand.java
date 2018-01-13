@@ -34,8 +34,6 @@ package com.qualcomm.hardware.lynx.commands.core;
 
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.commands.LynxInterfaceResponse;
-import com.qualcomm.hardware.lynx.commands.LynxResponse;
-import com.qualcomm.robotcore.exception.RobotCoreException;
 
 /**
  * Created by bob on 2016-03-07.

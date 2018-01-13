@@ -28,8 +28,8 @@
     </ServoController>
     <LynxUsbDevice
         name="REV Hub"
-        serialNumber=""
-        parentModuleAddress="2">
+        parentModuleAddress="2"
+        serialNumber="">
         <LynxModule
             name="Expansion Hub 1"
             port="2">

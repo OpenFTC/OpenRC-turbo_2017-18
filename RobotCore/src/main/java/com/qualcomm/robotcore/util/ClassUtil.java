@@ -37,8 +37,8 @@ import android.content.res.Resources;
 import com.qualcomm.robotcore.R;
 
 import org.firstinspires.ftc.robotcore.external.Predicate;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

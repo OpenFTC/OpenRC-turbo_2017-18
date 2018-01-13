@@ -36,11 +36,6 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface CompassSensor extends HardwareDevice {
 
-    enum CompassMode {
-        MEASUREMENT_MODE,
-        CALIBRATION_MODE
-    }
-
     /**
      * Get the current direction, in degrees, in the range [0, 360). North is zero,
      * East is 90, South is 180, and West is 270.
@@ -72,5 +67,10 @@ public interface CompassSensor extends HardwareDevice {
      * @return failure
      */
     boolean calibrationFailed();
+
+    enum CompassMode {
+        MEASUREMENT_MODE,
+        CALIBRATION_MODE
+    }
 
 }

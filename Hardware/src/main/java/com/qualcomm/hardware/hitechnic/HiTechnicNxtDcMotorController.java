@@ -89,14 +89,12 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
     // Constants
     //----------------------------------------------------------------------------------------------
 
+    public final static int BUSY_THRESHOLD = 5;
     protected static final int MOTOR_FIRST = ModernRoboticsConstants.INITIAL_MOTOR_PORT;                                                // first valid motor number value
     protected static final int MOTOR_LAST = ModernRoboticsConstants.INITIAL_MOTOR_PORT + ModernRoboticsConstants.NUMBER_OF_MOTORS - 1;  // last valid motor number value
     protected static final int MOTOR_MAX = MOTOR_LAST + 1;    // first invalid motor number value
-
     protected static final I2cAddr I2C_ADDRESS = I2cAddr.create8bit(2);
-
     protected static final int OFFSET_UNUSED = -1;
-
     protected static final int CHANNEL_MODE_MASK_SELECTION = 0x03;
     protected static final int CHANNEL_MODE_MASK_LOCK = 0x04;
     protected static final int CHANNEL_MODE_MASK_REVERSE = 0x08;
@@ -104,55 +102,28 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
     protected static final int CHANNEL_MODE_MASK_EMPTY_D5 = 0x20;
     protected static final int CHANNEL_MODE_MASK_ERROR = 0x40;
     protected static final int CHANNEL_MODE_MASK_BUSY = 0x80;
-
     protected static final byte CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY_NXT = (byte) 0x0;
     protected static final byte CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT = (byte) 0x1;
     protected static final byte CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION = (byte) 0x2;
     protected static final byte CHANNEL_MODE_FLAG_SELECT_RESET = (byte) 0x3;
-
     protected static final byte[] ADDRESS_MOTOR_POWER_MAP = new byte[]{OFFSET_UNUSED, (byte) 0x45, (byte) 0x46};
     protected static final byte[] ADDRESS_MOTOR_MODE_MAP = new byte[]{OFFSET_UNUSED, (byte) 0x44, (byte) 0x47};
     protected static final byte[] ADDRESS_MOTOR_TARGET_ENCODER_VALUE_MAP = new byte[]{OFFSET_UNUSED, (byte) 0x40, (byte) 0x48};
     protected static final byte[] ADDRESS_MOTOR_CURRENT_ENCODER_VALUE_MAP = new byte[]{OFFSET_UNUSED, (byte) 0x4c, (byte) 0x50};
-
     protected static final int iRegWindowFirst = 0x40;
     protected static final int iRegWindowMax = 0x56;  // first register not included
-
     protected static final byte bPowerBrake = 0;
     protected static final byte bPowerFloat = -128;
     protected static final byte bPowerMax = 100;
     protected static final byte bPowerMin = -100;
     protected static final byte cbEncoder = 4;
-
     protected static final double apiPowerMin = -1.0;
     protected static final double apiPowerMax = 1.0;
-
-    public final static int BUSY_THRESHOLD = 5;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    static class MotorProperties {
-        // We have caches of values that we *could* read from the controller, and need to
-        // do so if the cache is invalid
-        LastKnown<Byte> lastKnownPowerByte = new LastKnown<Byte>();
-        LastKnown<Integer> lastKnownTargetPosition = new LastKnown<Integer>();
-        LastKnown<DcMotor.RunMode> lastKnownMode = new LastKnown<DcMotor.RunMode>();
-
-        // The remainder of the data is authoritative, here
-        DcMotor.ZeroPowerBehavior zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
-        boolean modeSwitchCompletionNeeded = false;
-        DcMotor.RunMode prevRunMode = null;
-        double prevPower;
-        MotorConfigurationType motorType = MotorConfigurationType.getUnspecifiedMotorType();
-    }
-
     final MotorProperties[] motors = new MotorProperties[MOTOR_MAX];
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     public HiTechnicNxtDcMotorController(final Context context, LegacyModule module, int physicalPort) {
         super(context, module, physicalPort, I2C_ADDRESS);
@@ -184,8 +155,40 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
     }
 
     //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public static DcMotor.RunMode modeFromByte(byte flag) {
+        switch (flag & CHANNEL_MODE_MASK_SELECTION) {
+            case CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY_NXT:
+                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+            case CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT:
+                return DcMotor.RunMode.RUN_USING_ENCODER;
+            case CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION:
+                return DcMotor.RunMode.RUN_TO_POSITION;
+            case CHANNEL_MODE_FLAG_SELECT_RESET:
+                return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+        }
+        return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+    }
+
+    //----------------------------------------------------------------------------------------------
     // Arming and disarming
     //----------------------------------------------------------------------------------------------
+
+    public static byte modeToByte(DcMotor.RunMode mode) {
+        switch (mode.migrate()) {
+            case RUN_USING_ENCODER:
+                return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT;
+            case RUN_WITHOUT_ENCODER:
+                return CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY_NXT;
+            case RUN_TO_POSITION:
+                return CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION;
+            case STOP_AND_RESET_ENCODER:
+                return CHANNEL_MODE_FLAG_SELECT_RESET;
+        }
+        return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT;
+    }
 
     void brakeAllAtZero() {
         for (int motor = MOTOR_FIRST; motor <= MOTOR_LAST; motor++) {
@@ -227,15 +230,15 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         floatHardware();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void doUnhook() {
         this.i2cDeviceSynch.disengage();
         forgetLastKnown();  // perhaps unneeded, but harmless
     }
-
-    //----------------------------------------------------------------------------------------------
-    // HardwareDevice
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public String getDeviceName() {
@@ -252,6 +255,10 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         return 2;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // DCMotorController
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void resetDeviceConfigurationForOpMode() {
         floatHardware();
@@ -259,10 +266,6 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         brakeAllAtZero();
         forgetLastKnown();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // DCMotorController
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized void setMotorType(int motor, MotorConfigurationType motorType) {
@@ -412,14 +415,6 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         return internalGetCachedOrQueriedRunMode(motor);
     }
 
-    DcMotor.RunMode internalGetCachedOrQueriedRunMode(int motor) {
-        DcMotor.RunMode mode = motors[motor].lastKnownMode.getNonTimedValue();
-        if (mode == null) {
-            mode = internalQueryRunMode(motor);
-        }
-        return mode;
-    }
-
     // From the HiTechnic Motor Controller specification
     //
     //      The Run to position command will cause the firmware to run the motor to make the current encoder
@@ -431,6 +426,14 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
     //      before the Busy bit will be set.
     //
     // Our task here is to work around that 50ms issue
+
+    DcMotor.RunMode internalGetCachedOrQueriedRunMode(int motor) {
+        DcMotor.RunMode mode = motors[motor].lastKnownMode.getNonTimedValue();
+        if (mode == null) {
+            mode = internalQueryRunMode(motor);
+        }
+        return mode;
+    }
 
     @Override
     public synchronized boolean isBusy(int motor) {
@@ -579,14 +582,14 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         return internalQueryMotorCurrentPosition(motor);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
+
     int internalQueryMotorCurrentPosition(int motor) {
         byte[] bytes = this.i2cDeviceSynch.read(ADDRESS_MOTOR_CURRENT_ENCODER_VALUE_MAP[motor], cbEncoder);
         return TypeConversion.byteArrayToInt(bytes, ByteOrder.BIG_ENDIAN);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
 
     protected void validateMotor(int motor) {
         if (motor < MOTOR_FIRST || motor > MOTOR_LAST) {
@@ -600,34 +603,6 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         } else {
             throw new IllegalArgumentException(String.format("illegal motor power %f; must be in interval [%f,%f]", power, apiPowerMin, apiPowerMax));
         }
-    }
-
-    public static DcMotor.RunMode modeFromByte(byte flag) {
-        switch (flag & CHANNEL_MODE_MASK_SELECTION) {
-            case CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY_NXT:
-                return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-            case CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT:
-                return DcMotor.RunMode.RUN_USING_ENCODER;
-            case CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION:
-                return DcMotor.RunMode.RUN_TO_POSITION;
-            case CHANNEL_MODE_FLAG_SELECT_RESET:
-                return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-        }
-        return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-    }
-
-    public static byte modeToByte(DcMotor.RunMode mode) {
-        switch (mode.migrate()) {
-            case RUN_USING_ENCODER:
-                return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT;
-            case RUN_WITHOUT_ENCODER:
-                return CHANNEL_MODE_FLAG_SELECT_RUN_POWER_CONTROL_ONLY_NXT;
-            case RUN_TO_POSITION:
-                return CHANNEL_MODE_FLAG_SELECT_RUN_TO_POSITION;
-            case STOP_AND_RESET_ENCODER:
-                return CHANNEL_MODE_FLAG_SELECT_RESET;
-        }
-        return CHANNEL_MODE_FLAG_SELECT_RUN_CONSTANT_SPEED_NXT;
     }
 
     protected void initPID() {
@@ -648,10 +623,6 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // VoltageSensor
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public double getVoltage() {
         try {
@@ -671,5 +642,24 @@ public final class HiTechnicNxtDcMotorController extends HiTechnicNxtController 
             // Protect our clients from somehow getting an I2c related exception
             return 0;
         }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // VoltageSensor
+    //----------------------------------------------------------------------------------------------
+
+    static class MotorProperties {
+        // We have caches of values that we *could* read from the controller, and need to
+        // do so if the cache is invalid
+        LastKnown<Byte> lastKnownPowerByte = new LastKnown<Byte>();
+        LastKnown<Integer> lastKnownTargetPosition = new LastKnown<Integer>();
+        LastKnown<DcMotor.RunMode> lastKnownMode = new LastKnown<DcMotor.RunMode>();
+
+        // The remainder of the data is authoritative, here
+        DcMotor.ZeroPowerBehavior zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
+        boolean modeSwitchCompletionNeeded = false;
+        DcMotor.RunMode prevRunMode = null;
+        double prevPower;
+        MotorConfigurationType motorType = MotorConfigurationType.getUnspecifiedMotorType();
     }
 }

@@ -59,21 +59,12 @@ public class FileObserverManager {
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public interface Listener {
-        void onEvent(int event, String path);
-    }
+    public final static String TAG = FileObserverManager.class.getSimpleName();
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    public final static String TAG = FileObserverManager.class.getSimpleName();
-
     protected final static Map<String, WeakReference<OmniscientObserver>> omnicientObservers = new HashMap<>();
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     public static FileObserver from(final String inodePath, final int mask, final Listener listener) {
         OmniscientObserver omniscientObserver = null;
@@ -99,6 +90,14 @@ public class FileObserverManager {
         }
 
         return new FakeObserver(omniscientObserver, mask, listener);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public interface Listener {
+        void onEvent(int event, String path);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -154,16 +153,14 @@ public class FileObserverManager {
         // State
         //------------------------------------------------------------------------------------------
 
-        protected final String inodePath;
-        protected final AtomicInteger startCount = new AtomicInteger(0);
-        protected final WeakReferenceSet<FakeObserver> fakeObservers = new WeakReferenceSet<>();
-
-        protected FileObserver fileObserver;
-        protected int mask;
-
         // We avoid MODIFY and ACCESS for performance reasons, but at the cost of perhaps missing events
         // we might otherwise not if we upgrade. It seems the right tradeoff.
         protected static final int defaultMask = FileObserver.ALL_EVENTS & ~(FileObserver.MODIFY | FileObserver.ACCESS);
+        protected final String inodePath;
+        protected final AtomicInteger startCount = new AtomicInteger(0);
+        protected final WeakReferenceSet<FakeObserver> fakeObservers = new WeakReferenceSet<>();
+        protected FileObserver fileObserver;
+        protected int mask;
 
         //------------------------------------------------------------------------------------------
         // Construction

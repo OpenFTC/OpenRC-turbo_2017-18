@@ -43,18 +43,15 @@ public class OpModeMeta {
     // Types and constants
     //----------------------------------------------------------------------------------------------
 
-    public enum Flavor {AUTONOMOUS, TELEOP}
-
     // arbitrary, but unlikely to be used by users. Sorts early
     public static final String DefaultGroup = "$$$$$$$";
+    public final
+    @NonNull
+    Flavor flavor;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    public final
-    @NonNull
-    Flavor flavor;
     public final
     @NonNull
     String group;
@@ -62,13 +59,13 @@ public class OpModeMeta {
     @NonNull
     String name;
 
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public OpModeMeta() {
         this("");
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     public OpModeMeta(@NonNull String name) {
         this(name, Flavor.TELEOP);
@@ -96,10 +93,6 @@ public class OpModeMeta {
         return new OpModeMeta(base.name, base.flavor, group);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Formatting
-    //----------------------------------------------------------------------------------------------
-
     // Format as name for convenient use in dialogs
     @Override
     public String toString() {
@@ -107,7 +100,7 @@ public class OpModeMeta {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Comparison
+    // Formatting
     //----------------------------------------------------------------------------------------------
 
     // Equate only by name for convenient use in legacy code here
@@ -120,8 +113,14 @@ public class OpModeMeta {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Comparison
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public int hashCode() {
         return this.name.hashCode();
     }
+
+    public enum Flavor {AUTONOMOUS, TELEOP}
 }

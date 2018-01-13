@@ -68,38 +68,39 @@ public class DeviceNameManager extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_name";
-
-    public String getTag() {
-        return TAG;
-    }
-
     @SuppressLint("StaticFieldLeak")
     protected static final DeviceNameManager theInstance = new DeviceNameManager();
-
-    public static DeviceNameManager getInstance() {
-        return theInstance;
-    }
-
+    /**
+     * From android.provider.Settings: the WiFi peer-to-peer device name
+     */
+    protected static final String WIFI_P2P_DEVICE_NAME = "wifi_p2p_device_name";
+    protected final Object callbackLock = new Object();
     protected Context context;
     protected SharedPreferences sharedPreferences;
     protected PreferencesHelper preferencesHelper;
-    protected final Object callbackLock = new Object();
     protected SharedPreferencesListener sharedPreferencesListener = new SharedPreferencesListener();
     protected String defaultMadeUpDeviceName = null;
     protected String wifiDirectName = null;
     protected WifiAgentCallback wifiAgentCallback = new WifiAgentCallback();
     protected CallbackRegistrar<Callback> callbacks = new CallbackRegistrar<Callback>();
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public DeviceNameManager() {
         super(WifiDirectAgent.getInstance());
         context = AppUtil.getInstance().getApplication();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferencesHelper = new PreferencesHelper(TAG, sharedPreferences);
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesListener);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public static DeviceNameManager getInstance() {
+        return theInstance;
+    }
+
+    public String getTag() {
+        return TAG;
     }
 
     @Override
@@ -122,22 +123,14 @@ public class DeviceNameManager extends WifiStartStoppable {
         return uniquifier;
     }
 
-    @Override
-    protected void doStop() {
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener);
-        stopWifiDirect();
-    }
-
     //----------------------------------------------------------------------------------------------
     // Public API
     //----------------------------------------------------------------------------------------------
 
-    /**
-     * Instances of {@link Callback} can be used to inform interested parties when the
-     * name of the device is changed.
-     */
-    public interface Callback {
-        void onDeviceNameChanged(String newDeviceName);
+    @Override
+    protected void doStop() {
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener);
+        stopWifiDirect();
     }
 
     public void registerCallback(Callback callback) {
@@ -199,20 +192,6 @@ public class DeviceNameManager extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
     // Internal name management
     //----------------------------------------------------------------------------------------------
-
-    /**
-     * Used to keep track of how our sense of the device name relates to what the system thinks.
-     * Right now we only synchronized to the WifiDirect name, but in theory, we could synchronize
-     * to something else, if we chose.
-     */
-    protected enum DeviceNameTracking {
-        UNINITIALIZED, AWAITING_WIFIDIRECT, WIFIDIRECT
-    }
-
-    /**
-     * From android.provider.Settings: the WiFi peer-to-peer device name
-     */
-    protected static final String WIFI_P2P_DEVICE_NAME = "wifi_p2p_device_name";
 
     public synchronized void initializeDeviceNameIfNecessary() {
         // Get from Wifi Direct if we're just starting out: ask nicely,
@@ -285,56 +264,6 @@ public class DeviceNameManager extends WifiStartStoppable {
         preferencesHelper.writeStringPrefIfDifferent(context.getString(R.string.pref_device_name), deviceName);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Preferences
-    //----------------------------------------------------------------------------------------------
-
-    protected class SharedPreferencesListener implements SharedPreferences.OnSharedPreferenceChangeListener {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals(context.getString(R.string.pref_device_name))) {
-                // Did the name *really* change? We use a second property, only ever written here,
-                // to find out. This helps us avoid loops in the tracking dependencies
-                //
-                final String newDeviceName = internalGetDeviceName();
-                if (preferencesHelper.writeStringPrefIfDifferent(context.getString(R.string.pref_device_name_old), newDeviceName)) {
-                    RobotLog.vv(TAG, "deviceName pref changed: now=%s", newDeviceName);
-
-                    // keep the wifi direct name in sync if they're supposed to be locked
-                    if (getDeviceNameTracking() == DeviceNameTracking.WIFIDIRECT) {
-                        setWifiDirectDeviceName(newDeviceName);
-                    }
-
-                    // tell anyone else who's interested too
-                    callbacks.callbacksDo(new Consumer<Callback>() {
-                        @Override
-                        public void accept(Callback callback) {
-                            callback.onDeviceNameChanged(newDeviceName);
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Wifi Direct
-    //----------------------------------------------------------------------------------------------
-
-    protected class WifiAgentCallback implements WifiDirectAgent.Callback {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            // WIFI_P2P_THIS_DEVICE_CHANGED_ACTION is a sticky broadcast, so we get usually
-            // get this quickly once we register. But see above!
-            if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-                WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
-                internalRememberWifiDirectName(wifiP2pDevice.deviceName);
-            }
-        }
-    }
-
     protected void internalRememberWifiDirectName(@NonNull String wifiDirectName) {
         RobotLog.vv(TAG, "remembering wifiDirectName: %s...", wifiDirectName);
         synchronized (callbackLock) {
@@ -370,10 +299,18 @@ public class DeviceNameManager extends WifiStartStoppable {
         return wifiDirectAgent.start(wifiDirectAgentStarted);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Preferences
+    //----------------------------------------------------------------------------------------------
+
     protected void stopWifiDirect() {
         wifiDirectAgent.stop(wifiDirectAgentStarted);
         wifiDirectAgent.unregisterCallback(wifiAgentCallback);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Wifi Direct
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Waits a good long while, but not forever, for the wifi direct name to be initialized
@@ -443,5 +380,64 @@ public class DeviceNameManager extends WifiStartStoppable {
             }
         }
         RobotLog.vv(TAG, "...setWifiDirectDeviceName(%s)", deviceName);
+    }
+
+    /**
+     * Used to keep track of how our sense of the device name relates to what the system thinks.
+     * Right now we only synchronized to the WifiDirect name, but in theory, we could synchronize
+     * to something else, if we chose.
+     */
+    protected enum DeviceNameTracking {
+        UNINITIALIZED, AWAITING_WIFIDIRECT, WIFIDIRECT
+    }
+
+    /**
+     * Instances of {@link Callback} can be used to inform interested parties when the
+     * name of the device is changed.
+     */
+    public interface Callback {
+        void onDeviceNameChanged(String newDeviceName);
+    }
+
+    protected class SharedPreferencesListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(context.getString(R.string.pref_device_name))) {
+                // Did the name *really* change? We use a second property, only ever written here,
+                // to find out. This helps us avoid loops in the tracking dependencies
+                //
+                final String newDeviceName = internalGetDeviceName();
+                if (preferencesHelper.writeStringPrefIfDifferent(context.getString(R.string.pref_device_name_old), newDeviceName)) {
+                    RobotLog.vv(TAG, "deviceName pref changed: now=%s", newDeviceName);
+
+                    // keep the wifi direct name in sync if they're supposed to be locked
+                    if (getDeviceNameTracking() == DeviceNameTracking.WIFIDIRECT) {
+                        setWifiDirectDeviceName(newDeviceName);
+                    }
+
+                    // tell anyone else who's interested too
+                    callbacks.callbacksDo(new Consumer<Callback>() {
+                        @Override
+                        public void accept(Callback callback) {
+                            callback.onDeviceNameChanged(newDeviceName);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    protected class WifiAgentCallback implements WifiDirectAgent.Callback {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            // WIFI_P2P_THIS_DEVICE_CHANGED_ACTION is a sticky broadcast, so we get usually
+            // get this quickly once we register. But see above!
+            if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
+                WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+                internalRememberWifiDirectName(wifiP2pDevice.deviceName);
+            }
+        }
     }
 }

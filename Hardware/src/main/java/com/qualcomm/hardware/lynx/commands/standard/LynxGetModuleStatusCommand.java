@@ -34,7 +34,6 @@ package com.qualcomm.hardware.lynx.commands.standard;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.commands.LynxResponse;
-import com.qualcomm.robotcore.exception.RobotCoreException;
 
 /**
  * Created by bob on 2016-03-06.
@@ -64,20 +63,20 @@ public class LynxGetModuleStatusCommand extends LynxStandardCommand<LynxGetModul
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public boolean getClearStatusAfterResponse() {
-        return this.clearStatusAfterResponse;
+    public static int getStandardCommandNumber() {
+        return COMMAND_NUMBER_GET_MODULE_STATUS;
     }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return COMMAND_NUMBER_GET_MODULE_STATUS;
-    }
-
     public static Class<? extends LynxResponse> getResponseClass() {
         return LynxGetModuleStatusResponse.class;
+    }
+
+    public boolean getClearStatusAfterResponse() {
+        return this.clearStatusAfterResponse;
     }
 
     @Override

@@ -94,37 +94,12 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
     public static final double apiPowerLast = 1.0;
 
     public static final String TAG = "LynxMotor";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     protected static boolean DEBUG = false;
-
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
-
-    protected class MotorProperties {
-        // We have caches of values that we *could* read from the controller, and need to
-        // do so if the cache is invalid
-        LastKnown<Double> lastKnownPower = new LastKnown<Double>();
-        LastKnown<Integer> lastKnownTargetPosition = new LastKnown<Integer>();
-        LastKnown<DcMotor.RunMode> lastKnownMode = new LastKnown<DcMotor.RunMode>();
-        LastKnown<DcMotor.ZeroPowerBehavior> lastKnownZeroPowerBehavior = new LastKnown<DcMotor.ZeroPowerBehavior>();
-        LastKnown<Boolean> lastKnownEnable = new LastKnown<Boolean>();
-
-        // The remainder of the data is authoritative, here
-        MotorConfigurationType motorType = MotorConfigurationType.getUnspecifiedMotorType();
-        Map<DcMotor.RunMode, ExpansionHubMotorControllerParamsState> desiredPIDParams = new ConcurrentHashMap<DcMotor.RunMode, ExpansionHubMotorControllerParamsState>();
-    }
-
     // this is indexed from zero, not 1 as it is in the legacy and modern motor controllers
     protected final MotorProperties[] motors = new MotorProperties[LynxConstants.NUMBER_OF_MOTORS];
 
     //----------------------------------------------------------------------------------------------
-    // Construction
+    // State
     //----------------------------------------------------------------------------------------------
 
     public LynxDcMotorController(final Context context, final LynxModule module)
@@ -135,6 +110,15 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         }
         this.finishConstruction();
     }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void initializeHardware() throws RobotCoreException, InterruptedException {
@@ -149,14 +133,14 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         reportPIDControlLoopCoefficients();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Arming and disarming
-    //----------------------------------------------------------------------------------------------
-
     @Override
     protected void doHook() {
         forgetLastKnown();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Arming and disarming
+    //----------------------------------------------------------------------------------------------
 
     @Override
     protected void doUnhook() {
@@ -174,17 +158,13 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // HardwareDevice interface
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public String getDeviceName() {
         return this.context.getString(R.string.lynxDcMotorControllerDisplayName);
     }
 
     //----------------------------------------------------------------------------------------------
-    // DcMotorControllerEx interface
+    // HardwareDevice interface
     //----------------------------------------------------------------------------------------------
 
     @Override
@@ -193,6 +173,10 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         motor -= apiMotorFirst;
         internalSetMotorEnable(motor, true);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // DcMotorControllerEx interface
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized void setMotorDisable(int motor) {
@@ -237,16 +221,16 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         return LynxUsbUtil.makePlaceholderValue(true);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // DcMotorController interface
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public synchronized MotorConfigurationType getMotorType(int motor) {
         this.validateMotor(motor);
         motor -= apiMotorFirst;
         return motors[motor].motorType;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // DcMotorController interface
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized void setMotorType(int motor, MotorConfigurationType motorType) {
@@ -712,16 +696,16 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
         return LynxUsbUtil.makePlaceholderValue(new PIDCoefficients());
     }
 
-    //------------------------------------------------------------------------------------------------
-    // Utility
-    //------------------------------------------------------------------------------------------------
-
     @Override
     public void floatHardware() {
         for (int motor = apiMotorFirst; motor <= apiMotorLast; motor++) {
             setMotorPowerFloat(motor);
         }
     }
+
+    //------------------------------------------------------------------------------------------------
+    // Utility
+    //------------------------------------------------------------------------------------------------
 
     private void runWithoutEncoders() {
         for (int motor = apiMotorFirst; motor <= apiMotorLast; motor++) {
@@ -760,5 +744,19 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
 
     protected int getModuleAddress() {
         return this.getModule().getModuleAddress();
+    }
+
+    protected class MotorProperties {
+        // We have caches of values that we *could* read from the controller, and need to
+        // do so if the cache is invalid
+        LastKnown<Double> lastKnownPower = new LastKnown<Double>();
+        LastKnown<Integer> lastKnownTargetPosition = new LastKnown<Integer>();
+        LastKnown<DcMotor.RunMode> lastKnownMode = new LastKnown<DcMotor.RunMode>();
+        LastKnown<DcMotor.ZeroPowerBehavior> lastKnownZeroPowerBehavior = new LastKnown<DcMotor.ZeroPowerBehavior>();
+        LastKnown<Boolean> lastKnownEnable = new LastKnown<Boolean>();
+
+        // The remainder of the data is authoritative, here
+        MotorConfigurationType motorType = MotorConfigurationType.getUnspecifiedMotorType();
+        Map<DcMotor.RunMode, ExpansionHubMotorControllerParamsState> desiredPIDParams = new ConcurrentHashMap<DcMotor.RunMode, ExpansionHubMotorControllerParamsState>();
     }
 }

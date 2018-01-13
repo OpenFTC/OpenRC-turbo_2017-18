@@ -19,70 +19,6 @@ public class RecvLoopRunnable implements Runnable {
 
     public static final String TAG = RobocolDatagram.TAG;
     public static boolean DEBUG = false;
-
-    public interface RecvLoopCallback {
-        CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException;
-
-        CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException;
-
-        CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException;
-
-        CallbackResult commandEvent(Command command) throws RobotCoreException;
-
-        CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException;
-
-        CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException;
-
-        CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException;
-
-        CallbackResult reportGlobalError(String error, boolean recoverable);
-    }
-
-    /**
-     * A degenerate implementation so that individual callbacks need not themselves implement a bunch of trivial methods
-     */
-    public static class DegenerateCallback implements RecvLoopCallback {
-        @Override
-        public CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult commandEvent(Command command) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException {
-            return CallbackResult.NOT_HANDLED;
-        }
-
-        @Override
-        public CallbackResult reportGlobalError(String error, boolean recoverable) {
-            return CallbackResult.NOT_HANDLED;
-        }
-    }
-
     protected ElapsedTime lastRecvPacket;
     protected ElapsedTime packetProcessingTimer;
     protected ElapsedTime commandProcessingTimer;
@@ -90,7 +26,6 @@ public class RecvLoopRunnable implements Runnable {
     protected RobocolDatagramSocket socket;
     protected RecvLoopCallback callback;
     protected LinkedBlockingDeque<Command> commandsToProcess = new LinkedBlockingDeque<Command>();
-
     public RecvLoopRunnable(RecvLoopCallback callback, @NonNull RobocolDatagramSocket socket, @Nullable ElapsedTime lastRecvPacket) {
         this.callback = callback;
         this.socket = socket;
@@ -103,39 +38,6 @@ public class RecvLoopRunnable implements Runnable {
 
     public void setCallback(RecvLoopCallback callback) {
         this.callback = callback;
-    }
-
-    public class CommandProcessor implements Runnable {
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    // Wait for a command to appear, then process it
-                    Command command = commandsToProcess.takeFirst();
-                    commandProcessingTimer.reset();
-                    //
-                    if (DEBUG) {
-                        RobotLog.vv(TAG, "command=%s...", command.getName());
-                    }
-                    callback.commandEvent(command);
-                    if (DEBUG) {
-                        RobotLog.vv(TAG, "...command=%s", command.getName());
-                    }
-                    //
-                    double seconds = commandProcessingTimer.seconds();
-                    if (seconds > sProcessingTimerReportingThreshold) {
-                        RobotLog.ee(TAG, "command processing took %.3f s: command=%s", seconds, command.getName());
-                    }
-                } catch (InterruptedException e) {
-                    // Just get out of here
-                    return;
-                } catch (RobotCoreException | RuntimeException e) {
-                    // Report the error, but stay alive
-                    RobotLog.ee(TAG, e, "exception in %s", Thread.currentThread().getName());
-                    callback.reportGlobalError(e.getMessage(), false);
-                }
-            }
-        }
     }
 
     public void injectReceivedCommand(Command cmd) {
@@ -225,5 +127,101 @@ public class RecvLoopRunnable implements Runnable {
                 RobotLog.vv(TAG, "interrupted; %s returning", Thread.currentThread().getName());
             }
         });
+    }
+
+    public interface RecvLoopCallback {
+        CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException;
+
+        CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException;
+
+        CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException;
+
+        CallbackResult commandEvent(Command command) throws RobotCoreException;
+
+        CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException;
+
+        CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException;
+
+        CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException;
+
+        CallbackResult reportGlobalError(String error, boolean recoverable);
+    }
+
+    /**
+     * A degenerate implementation so that individual callbacks need not themselves implement a bunch of trivial methods
+     */
+    public static class DegenerateCallback implements RecvLoopCallback {
+        @Override
+        public CallbackResult packetReceived(RobocolDatagram packet) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult peerDiscoveryEvent(RobocolDatagram packet) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult heartbeatEvent(RobocolDatagram packet, long tReceived) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult commandEvent(Command command) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult telemetryEvent(RobocolDatagram packet) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult emptyEvent(RobocolDatagram packet) throws RobotCoreException {
+            return CallbackResult.NOT_HANDLED;
+        }
+
+        @Override
+        public CallbackResult reportGlobalError(String error, boolean recoverable) {
+            return CallbackResult.NOT_HANDLED;
+        }
+    }
+
+    public class CommandProcessor implements Runnable {
+        @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // Wait for a command to appear, then process it
+                    Command command = commandsToProcess.takeFirst();
+                    commandProcessingTimer.reset();
+                    //
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "command=%s...", command.getName());
+                    }
+                    callback.commandEvent(command);
+                    if (DEBUG) {
+                        RobotLog.vv(TAG, "...command=%s", command.getName());
+                    }
+                    //
+                    double seconds = commandProcessingTimer.seconds();
+                    if (seconds > sProcessingTimerReportingThreshold) {
+                        RobotLog.ee(TAG, "command processing took %.3f s: command=%s", seconds, command.getName());
+                    }
+                } catch (InterruptedException e) {
+                    // Just get out of here
+                    return;
+                } catch (RobotCoreException | RuntimeException e) {
+                    // Report the error, but stay alive
+                    RobotLog.ee(TAG, e, "exception in %s", Thread.currentThread().getName());
+                    callback.reportGlobalError(e.getMessage(), false);
+                }
+            }
+        }
     }
 }

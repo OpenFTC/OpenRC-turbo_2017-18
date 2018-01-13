@@ -48,18 +48,18 @@ public class EditPortListSpinnerActivity<ITEM_T extends DeviceConfiguration> ext
     // State
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     protected int idItemSpinner;
+
+    protected EditPortListSpinnerActivity() {
+    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected EditPortListSpinnerActivity() {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
     }
 
     @Override

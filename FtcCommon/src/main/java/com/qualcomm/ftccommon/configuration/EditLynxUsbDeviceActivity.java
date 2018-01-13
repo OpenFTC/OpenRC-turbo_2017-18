@@ -51,16 +51,22 @@ import java.util.List;
  * {@link EditUSBDeviceActivity} handles the configuration of the modules within a Lynx USB device.
  */
 public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity {
+    public static final RequestCode requestCode = RequestCode.EDIT_LYNX_USB_DEVICE;
+    private LynxUsbDeviceConfiguration lynxUsbDeviceConfiguration;
+    private EditText textLynxUsbDeviceName;
+    private DisplayNameAndInteger[] listKeys;
+    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            DisplayNameAndInteger key = listKeys[position];
+            handleLaunchEdit(EditLynxModuleActivity.requestCode, EditLynxModuleActivity.class, lynxUsbDeviceConfiguration.getModules().get(key.value));
+        }
+    };
+
     @Override
     public String getTag() {
         return this.getClass().getSimpleName();
     }
-
-    public static final RequestCode requestCode = RequestCode.EDIT_LYNX_USB_DEVICE;
-
-    private LynxUsbDeviceConfiguration lynxUsbDeviceConfiguration;
-    private EditText textLynxUsbDeviceName;
-    private DisplayNameAndInteger[] listKeys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,14 +110,6 @@ public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity {
         super.onStart();
     }
 
-    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            DisplayNameAndInteger key = listKeys[position];
-            handleLaunchEdit(EditLynxModuleActivity.requestCode, EditLynxModuleActivity.class, lynxUsbDeviceConfiguration.getModules().get(key.value));
-        }
-    };
-
     @Override
     protected void onActivityResult(int requestCodeValue, int resultCode, Intent data) {
         logActivityResult(requestCodeValue, resultCode, data);
@@ -126,7 +124,7 @@ public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity {
                 if (newModule != null) {
                     // Replace that configuration in the module list
                     for (int i = 0; i < lynxUsbDeviceConfiguration.getModules().size(); i++) {
-                        LynxModuleConfiguration existingModule = (LynxModuleConfiguration) lynxUsbDeviceConfiguration.getModules().get(i);
+                        LynxModuleConfiguration existingModule = lynxUsbDeviceConfiguration.getModules().get(i);
                         if (existingModule.getModuleAddress() == newModule.getModuleAddress()) {
                             lynxUsbDeviceConfiguration.getModules().set(i, newModule);
                             break;

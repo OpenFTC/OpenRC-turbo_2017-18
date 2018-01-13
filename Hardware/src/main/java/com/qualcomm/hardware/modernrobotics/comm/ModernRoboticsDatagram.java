@@ -80,6 +80,77 @@ public abstract class ModernRoboticsDatagram {
         Arrays.fill(data, CB_HEADER, data.length, (byte) 0);
     }
 
+    public int getAllocatedPayload() {
+        return data.length - CB_HEADER;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
+    public boolean isRead() {
+        return (data[IB_FUNCTION] & 0x80) != 0;
+    }
+
+    public void setRead(int function) {
+        data[IB_FUNCTION] = (byte) (0x80 | (function & 0x7F));
+    }
+
+    public boolean isWrite() {
+        return !isRead();
+    }
+
+    public void setWrite(int function) {
+        data[IB_FUNCTION] = (byte) (function & 0x7F);
+    }
+
+    public void setRead() {
+        setRead(getFunction());
+    }
+
+    public void setWrite() {
+        setWrite(getFunction());
+    }
+
+    public int getFunction() {
+        return data[IB_FUNCTION] & 0x7F;
+    }
+
+    public void setFunction(int function) {
+        data[IB_FUNCTION] = (byte) ((data[IB_FUNCTION] & 0x80) | (function & 0x7F));
+    }
+
+    public int getAddress() {
+        return TypeConversion.unsignedByteToInt(data[IB_ADDRESS]);
+    }
+
+    public void setAddress(int address) {
+        if (address < 0 || address > 255) {
+            throw new IllegalArgumentException(String.format("address=%d; must be unsigned byte", address));
+        }
+        data[IB_ADDRESS] = (byte) address;
+    }
+
+    public void setPayload(byte[] payload) {
+        setPayloadLength(payload.length);
+        System.arraycopy(payload, 0, data, CB_HEADER, payload.length);
+    }
+
+    public int getPayloadLength() {
+        return TypeConversion.unsignedByteToInt(data[IB_LENGTH]);
+    }
+
+    public void setPayloadLength(int length) {
+        if (length < 0 || length > 255) {
+            throw new IllegalArgumentException(String.format("length=%d; must be unsigned byte", length));
+        }
+        data[IB_LENGTH] = (byte) length;
+    }
+
+    public boolean isFailure() {
+        return data[IB_FUNCTION] == (byte) 0xFF && data[IB_ADDRESS] == (byte) 0xFF;
+    }
+
     public static class AllocationContext<DATAGRAM_TYPE extends ModernRoboticsDatagram> {
         protected AtomicReference<DATAGRAM_TYPE> cacheHeaderOnly0 = new AtomicReference<DATAGRAM_TYPE>(null);
         protected AtomicReference<DATAGRAM_TYPE> cacheHeaderOnly1 = new AtomicReference<DATAGRAM_TYPE>(null);
@@ -144,76 +215,5 @@ public abstract class ModernRoboticsDatagram {
                 }
             }
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
-    public int getAllocatedPayload() {
-        return data.length - CB_HEADER;
-    }
-
-    public boolean isRead() {
-        return (data[IB_FUNCTION] & 0x80) != 0;
-    }
-
-    public boolean isWrite() {
-        return !isRead();
-    }
-
-    public void setRead(int function) {
-        data[IB_FUNCTION] = (byte) (0x80 | (function & 0x7F));
-    }
-
-    public void setWrite(int function) {
-        data[IB_FUNCTION] = (byte) (function & 0x7F);
-    }
-
-    public void setRead() {
-        setRead(getFunction());
-    }
-
-    public void setWrite() {
-        setWrite(getFunction());
-    }
-
-    public int getFunction() {
-        return data[IB_FUNCTION] & 0x7F;
-    }
-
-    public void setFunction(int function) {
-        data[IB_FUNCTION] = (byte) ((data[IB_FUNCTION] & 0x80) | (function & 0x7F));
-    }
-
-    public int getAddress() {
-        return TypeConversion.unsignedByteToInt(data[IB_ADDRESS]);
-    }
-
-    public void setAddress(int address) {
-        if (address < 0 || address > 255) {
-            throw new IllegalArgumentException(String.format("address=%d; must be unsigned byte", address));
-        }
-        data[IB_ADDRESS] = (byte) address;
-    }
-
-    public void setPayload(byte[] payload) {
-        setPayloadLength(payload.length);
-        System.arraycopy(payload, 0, data, CB_HEADER, payload.length);
-    }
-
-    public int getPayloadLength() {
-        return TypeConversion.unsignedByteToInt(data[IB_LENGTH]);
-    }
-
-    public void setPayloadLength(int length) {
-        if (length < 0 || length > 255) {
-            throw new IllegalArgumentException(String.format("length=%d; must be unsigned byte", length));
-        }
-        data[IB_LENGTH] = (byte) length;
-    }
-
-    public boolean isFailure() {
-        return data[IB_FUNCTION] == (byte) 0xFF && data[IB_ADDRESS] == (byte) 0xFF;
     }
 }

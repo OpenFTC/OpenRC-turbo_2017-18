@@ -9,8 +9,6 @@ countries.
 
 package org.firstinspires.ftc.robotcore.internal.opengl.models;
 
-import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
-
 import java.nio.Buffer;
 
 public class Teapot extends MeshObject {

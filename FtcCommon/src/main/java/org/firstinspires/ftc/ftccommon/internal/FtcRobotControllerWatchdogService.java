@@ -57,6 +57,94 @@ public class FtcRobotControllerWatchdogService extends Service {
 
     public static final String TAG = "FtcRobotControllerWatchdogService";
 
+    public static boolean isFtcRobotControllerActivity(Activity activity) {
+        return activity != null && isFtcRobotControllerActivity(activity.getClass());
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public static boolean isFtcRobotControllerActivity(Class clazz) {
+        return clazz == ActivityFinder.launchActivityClass;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
+    public static boolean shouldAutoLaunchRobotController() {
+        boolean result = false;
+
+        if (AppUtil.getInstance().isRobotController()) {
+            // We only *ever* autorun in the embedded, headless lynx case
+            if (LynxConstants.isRevControlHub()) {
+                // But we might be asked to pretend we're not there
+                if (!LynxConstants.disableDragonboard()) {
+                    // We examine the policy flag
+                    if (LynxConstants.autorunRobotController()) {
+                        result = true;
+                    }
+                }
+            }
+        }
+
+        RobotLog.vv(TAG, "shouldAutoLauchRobotController() result=%s", result);
+        return result;
+    }
+
+    public static void launchRobotController(Context context) {
+        RobotLog.vv(TAG, "launchRobotController()");
+        Intent openApp = new Intent(context, ActivityFinder.launchActivityClass);
+        openApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    // nb: task != process
+        context.startActivity(openApp);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Life Cycle
+    //----------------------------------------------------------------------------------------------
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null; // we're not this kind of service: we're a 'startable' one, not a 'bindable' one
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        RobotLog.vv(TAG, "onCreate()");
+    }
+
+    /**
+     * On restart after crash, intent is always null; when the RC activity starts us, it's never null
+     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        RobotLog.vv(TAG, "onStartCommand() intent=%s flags=0x%x startId=%d", intent, flags, startId);
+        if (AppUtil.getInstance().isRobotController()) {
+            boolean autoStart = shouldAutoLaunchRobotController();
+            if (null == intent && autoStart) {
+                launchRobotController(this);
+            }
+            return autoStart ? START_STICKY : START_NOT_STICKY;
+        } else {
+            RobotLog.dd(TAG, "onStartCommand(): running on DS: shutting down");
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RobotLog.vv(TAG, "onDestroy()");
+    }
+
     // Use of nested class defers initialization (and so class lookup) until activity class is actually referenced
     protected static class ActivityFinder {
         // This is the actual concrete class which should be launched to (re)start the robot controller
@@ -89,94 +177,6 @@ public class FtcRobotControllerWatchdogService extends Service {
 
             return result;
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null; // we're not this kind of service: we're a 'startable' one, not a 'bindable' one
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
-    public static boolean isFtcRobotControllerActivity(Activity activity) {
-        return activity != null && isFtcRobotControllerActivity(activity.getClass());
-    }
-
-    public static boolean isFtcRobotControllerActivity(Class clazz) {
-        return clazz == ActivityFinder.launchActivityClass;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Life Cycle
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        RobotLog.vv(TAG, "onCreate()");
-    }
-
-    /**
-     * On restart after crash, intent is always null; when the RC activity starts us, it's never null
-     */
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        RobotLog.vv(TAG, "onStartCommand() intent=%s flags=0x%x startId=%d", intent, flags, startId);
-        if (AppUtil.getInstance().isRobotController()) {
-            boolean autoStart = shouldAutoLaunchRobotController();
-            if (null == intent && autoStart) {
-                launchRobotController(this);
-            }
-            return autoStart ? START_STICKY : START_NOT_STICKY;
-        } else {
-            RobotLog.dd(TAG, "onStartCommand(): running on DS: shutting down");
-            stopSelf();
-            return START_NOT_STICKY;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        RobotLog.vv(TAG, "onDestroy()");
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    public static boolean shouldAutoLaunchRobotController() {
-        boolean result = false;
-
-        if (AppUtil.getInstance().isRobotController()) {
-            // We only *ever* autorun in the embedded, headless lynx case
-            if (LynxConstants.isRevControlHub()) {
-                // But we might be asked to pretend we're not there
-                if (!LynxConstants.disableDragonboard()) {
-                    // We examine the policy flag
-                    if (LynxConstants.autorunRobotController()) {
-                        result = true;
-                    }
-                }
-            }
-        }
-
-        RobotLog.vv(TAG, "shouldAutoLauchRobotController() result=%s", result);
-        return result;
-    }
-
-    public static void launchRobotController(Context context) {
-        RobotLog.vv(TAG, "launchRobotController()");
-        Intent openApp = new Intent(context, ActivityFinder.launchActivityClass);
-        openApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    // nb: task != process
-        context.startActivity(openApp);
     }
 
 }

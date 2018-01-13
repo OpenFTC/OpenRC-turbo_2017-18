@@ -6,42 +6,42 @@
         >
 
         <PreferenceScreen
-            android:title="@string/prefedit_change_wifi_channel"
+            android:key="@string/pref_launch_wifi_channel_edit"
             android:summary="@string/prefedit_edit_wifi_channel_summary"
-            android:key="@string/pref_launch_wifi_channel_edit">
+            android:title="@string/prefedit_change_wifi_channel">
             <intent
-                android:targetPackage="@string/packageName"
                 android:targetClass="com.qualcomm.ftccommon.FtcWifiDirectChannelSelectorActivity"
+                android:targetPackage="@string/packageName"
                 />
         </PreferenceScreen>
 
         <PreferenceScreen
-            android:title="@string/prefedit_remembered_groups"
+            android:key="@string/pref_launch_wifi_remembered_groups_edit"
             android:summary="@string/prefedit_clear_remembered_groups_summary"
-            android:key="@string/pref_launch_wifi_remembered_groups_edit">
+            android:title="@string/prefedit_remembered_groups">
             <intent
-                android:targetPackage="@string/packageName"
                 android:targetClass="com.qualcomm.ftccommon.FtcWifiDirectRememberedGroupsActivity"
+                android:targetPackage="@string/packageName"
                 />
         </PreferenceScreen>
 
         <PreferenceScreen
-            android:title="@string/titleLynxFirmwareUpdate"
+            android:key="@string/pref_launch_lynx_firmware_update"
             android:summary="@string/summaryLynxFirmwareUpdate"
-            android:key="@string/pref_launch_lynx_firmware_update">
+            android:title="@string/titleLynxFirmwareUpdate">
             <intent
-                android:targetPackage="@string/packageName"
                 android:targetClass="com.qualcomm.ftccommon.FtcLynxFirmwareUpdateActivity"
+                android:targetPackage="@string/packageName"
                 />
         </PreferenceScreen>
 
         <PreferenceScreen
-            android:title="@string/titleLynxModuleAddressUpdate"
+            android:key="@string/pref_launch_lynx_address_update"
             android:summary="@string/summaryLynxAddressUpdate"
-            android:key="@string/pref_launch_lynx_address_update">
+            android:title="@string/titleLynxModuleAddressUpdate">
             <intent
-                android:targetPackage="@string/packageName"
                 android:targetClass="com.qualcomm.ftccommon.FtcLynxModuleAddressUpdateActivity"
+                android:targetPackage="@string/packageName"
                 />
         </PreferenceScreen>
 

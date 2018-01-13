@@ -48,10 +48,6 @@ public enum RobotState {
         this.robotState = (byte) state;
     }
 
-    public byte asByte() {
-        return (byte) robotState;
-    }
-
     public static RobotState fromByte(int b) {
         for (RobotState robotState : RobotState.values()) {
             if (robotState.robotState == b) {
@@ -59,6 +55,10 @@ public enum RobotState {
             }
         }
         return UNKNOWN;
+    }
+
+    public byte asByte() {
+        return (byte) robotState;
     }
 
     public String toString(Context context) {

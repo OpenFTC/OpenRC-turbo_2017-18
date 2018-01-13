@@ -34,45 +34,18 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 public class MatrixI2cTransaction {
 
-    enum I2cTransactionState {
-        QUEUED,
-        PENDING_I2C_READ,
-        PENDING_I2C_WRITE,
-        PENDING_READ_DONE,
-        DONE
-    }
-
-    /*
-     * The property to read/write.
-     */
-    enum I2cTransactionProperty {
-        PROPERTY_MODE,
-        PROPERTY_TARGET,
-        PROPERTY_SPEED,
-        PROPERTY_BATTERY,
-        PROPERTY_POSITION,
-        PROPERTY_MOTOR_BATCH,
-        PROPERTY_SERVO,
-        PROPERTY_SERVO_ENABLE,
-        PROPERTY_START,
-        PROPERTY_TIMEOUT
-    }
-
     public byte motor;
     public byte servo;
     public I2cTransactionProperty property;
     public int value;
     public boolean write;
-
     /*
      * For the batched property
      */
     public byte speed;
     public int target;
     public byte mode;
-
     public I2cTransactionState state;
-
     /*
      * Generic read
      */
@@ -150,11 +123,35 @@ public class MatrixI2cTransaction {
         if (property == I2cTransactionProperty.PROPERTY_MOTOR_BATCH) {
             return "Matrix motor transaction: " + property + " motor " + motor + " write " + write + " speed " + speed + " target " + target + " mode " + mode;
         } else if (property == I2cTransactionProperty.PROPERTY_SERVO) {
-            return "Matrix servo transaction: " + property + " servo " + servo + " write " + write + " change rate " + speed + " target " + (int) target;
+            return "Matrix servo transaction: " + property + " servo " + servo + " write " + write + " change rate " + speed + " target " + target;
         } else if (property == I2cTransactionProperty.PROPERTY_SERVO_ENABLE) {
             return "Matrix servo transaction: " + property + " servo " + servo + " write " + write + " value " + value;
         } else {
             return "Matrix motor transaction: " + property + " motor " + motor + " write " + write + " value " + value;
         }
+    }
+
+    enum I2cTransactionState {
+        QUEUED,
+        PENDING_I2C_READ,
+        PENDING_I2C_WRITE,
+        PENDING_READ_DONE,
+        DONE
+    }
+
+    /*
+     * The property to read/write.
+     */
+    enum I2cTransactionProperty {
+        PROPERTY_MODE,
+        PROPERTY_TARGET,
+        PROPERTY_SPEED,
+        PROPERTY_BATTERY,
+        PROPERTY_POSITION,
+        PROPERTY_MOTOR_BATCH,
+        PROPERTY_SERVO,
+        PROPERTY_SERVO_ENABLE,
+        PROPERTY_START,
+        PROPERTY_TIMEOUT
     }
 }

@@ -62,7 +62,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
     //----------------------------------------------------------------------------------------------
 
     public final static String TAG = "Vuforia";
-
+    protected final Map<VuforiaLocalizer.CameraDirection, OpenGLMatrix> poseCorrectionMatrices;
     protected VuforiaTrackable trackable;
     protected boolean newPoseAvailable;
     protected boolean newLocationAvailable;
@@ -71,7 +71,6 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
     protected VuMarkInstanceId vuMarkInstanceId = null;
     protected OpenGLMatrix phoneLocationOnRobotInverted;
     protected VuforiaLocalizer.CameraDirection cameraDirection;
-    protected final Map<VuforiaLocalizer.CameraDirection, OpenGLMatrix> poseCorrectionMatrices;
 
     //----------------------------------------------------------------------------------------------
     // Construction

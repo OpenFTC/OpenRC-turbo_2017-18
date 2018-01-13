@@ -3,9 +3,7 @@ package com.qualcomm.robotcore.robocol;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,21 +19,18 @@ public class RobocolDatagram {
     //-----------------------------------------------------------------------------------------------
 
     public static final String TAG = "Robocol";
-
-    /**
-     * the system-level packet over which we are a wrapper
-     */
-    private DatagramPacket packet;
-
-    /**
-     * If non-null, then this buffer should be salvaged on finalization
-     */
-    private byte[] receiveBuffer = null;
-
     /**
      * the place we put old receive buffers
      */
     static Queue<byte[]> receiveBuffers = new ConcurrentLinkedQueue<byte[]>();
+    /**
+     * the system-level packet over which we are a wrapper
+     */
+    private DatagramPacket packet;
+    /**
+     * If non-null, then this buffer should be salvaged on finalization
+     */
+    private byte[] receiveBuffer = null;
 
     //-----------------------------------------------------------------------------------------------
     // Construction
@@ -59,6 +54,10 @@ public class RobocolDatagram {
         setData(message);
     }
 
+    protected RobocolDatagram() {
+        this.packet = null;
+    }
+
     /**
      * Returns a RobocolDatagram suitable for use in socket receives. We pay particular attention
      * here to avoiding allocating too many buffers, fearing an impact on the GC, as the buffers
@@ -78,10 +77,6 @@ public class RobocolDatagram {
         result.packet = packet;
         result.receiveBuffer = buffer;
         return result;
-    }
-
-    protected RobocolDatagram() {
-        this.packet = null;
     }
 
     //-----------------------------------------------------------------------------------------------

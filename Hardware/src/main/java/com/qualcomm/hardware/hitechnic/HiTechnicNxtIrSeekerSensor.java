@@ -129,13 +129,18 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
     }
 
     @Override
+    public double getSignalDetectedThreshold() {
+        return signalDetectedThreshold;
+    }
+
+    @Override
     public void setSignalDetectedThreshold(double threshold) {
         signalDetectedThreshold = threshold;
     }
 
     @Override
-    public double getSignalDetectedThreshold() {
-        return signalDetectedThreshold;
+    public Mode getMode() {
+        return mode;
     }
 
     @Override
@@ -147,11 +152,6 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
 
         this.mode = mode;
         writeModeSwitch();
-    }
-
-    @Override
-    public Mode getMode() {
-        return mode;
     }
 
     @Override
@@ -239,14 +239,14 @@ public class HiTechnicNxtIrSeekerSensor extends I2cControllerPortDeviceImpl impl
     }
 
     @Override
-    public void setI2cAddress(I2cAddr newAddress) {
-        // Necessary because of legacy considerations
-        throw new UnsupportedOperationException("This method is not supported.");
+    public I2cAddr getI2cAddress() {
+        return I2C_ADDRESS;
     }
 
     @Override
-    public I2cAddr getI2cAddress() {
-        return I2C_ADDRESS;
+    public void setI2cAddress(I2cAddr newAddress) {
+        // Necessary because of legacy considerations
+        throw new UnsupportedOperationException("This method is not supported.");
     }
 
     private void writeModeSwitch() {

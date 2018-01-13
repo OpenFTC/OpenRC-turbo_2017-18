@@ -122,7 +122,7 @@ public class WriteXMLFileHandler {
         serializer.ignorableWhitespace("\n");
         indent++;
 
-        DeviceInterfaceModuleConfiguration deviceInterfaceModuleConfiguration = (DeviceInterfaceModuleConfiguration) controller;
+        DeviceInterfaceModuleConfiguration deviceInterfaceModuleConfiguration = controller;
 
         for (DeviceConfiguration device : deviceInterfaceModuleConfiguration.getPwmOutputs()) {
             buildDeviceNameAndPort(device);

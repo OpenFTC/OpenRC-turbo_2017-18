@@ -32,13 +32,13 @@ package com.qualcomm.hardware.modernrobotics;
 
 import android.content.Context;
 
+import com.qualcomm.hardware.ArmableUsbDevice;
 import com.qualcomm.hardware.modernrobotics.comm.ModernRoboticsUsbUtil;
-import com.qualcomm.hardware.modernrobotics.comm.RobotUsbDevicePretendModernRobotics;
 import com.qualcomm.hardware.modernrobotics.comm.ReadWriteRunnable;
 import com.qualcomm.hardware.modernrobotics.comm.ReadWriteRunnableStandard;
+import com.qualcomm.hardware.modernrobotics.comm.RobotUsbDevicePretendModernRobotics;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.hardware.ArmableUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
@@ -57,17 +57,13 @@ public abstract class ModernRoboticsUsbDevice extends ArmableUsbDevice implement
     // State
     //------------------------------------------------------------------------------------------------
 
+    protected final CreateReadWriteRunnable createReadWriteRunnable;
     protected ExecutorService readWriteService;
     protected volatile ReadWriteRunnable readWriteRunnable;
-    protected final CreateReadWriteRunnable createReadWriteRunnable;
 
     //------------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------------
-
-    public interface CreateReadWriteRunnable {
-        ReadWriteRunnable create(RobotUsbDevice device) throws RobotCoreException, InterruptedException;
-    }
 
     public ModernRoboticsUsbDevice(Context context, SerialNumber serialNumber, EventLoopManager manager, OpenRobotUsbDevice openRobotUsbDevice, CreateReadWriteRunnable createReadWriteRunnable)
             throws RobotCoreException, InterruptedException {
@@ -78,6 +74,11 @@ public abstract class ModernRoboticsUsbDevice extends ArmableUsbDevice implement
         this.readWriteService = null;
 
         this.finishConstruction();
+    }
+
+    private static void logAndThrow(String errMsg) throws RobotCoreException {
+        System.err.println(errMsg);
+        throw new RobotCoreException(errMsg);
     }
 
     public void initializeHardware() {
@@ -326,8 +327,7 @@ public abstract class ModernRoboticsUsbDevice extends ArmableUsbDevice implement
         // no implementation by default
     }
 
-    private static void logAndThrow(String errMsg) throws RobotCoreException {
-        System.err.println(errMsg);
-        throw new RobotCoreException(errMsg);
+    public interface CreateReadWriteRunnable {
+        ReadWriteRunnable create(RobotUsbDevice device) throws RobotCoreException, InterruptedException;
     }
 }

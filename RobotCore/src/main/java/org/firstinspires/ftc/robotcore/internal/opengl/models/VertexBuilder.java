@@ -8,16 +8,16 @@
  ***/
 package org.firstinspires.ftc.robotcore.internal.opengl.models;
 
-import static android.opengl.GLES20.GL_TRIANGLE_FAN;
-import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
-import static android.opengl.GLES20.glDrawArrays;
+import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Circle;
+import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Cylinder;
+import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Point3;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Circle;
-import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Cylinder;
-import org.firstinspires.ftc.robotcore.internal.opengl.models.Geometry.Point3;
+import static android.opengl.GLES20.GL_TRIANGLE_FAN;
+import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
+import static android.opengl.GLES20.glDrawArrays;
 
 public class VertexBuilder {
     //----------------------------------------------------------------------------------------------
@@ -84,24 +84,6 @@ public class VertexBuilder {
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public interface DrawCommand {
-        void draw();
-    }
-
-    public static class GeneratedData {
-        public final float[] vertexData;
-        public final List<DrawCommand> drawList;
-
-        GeneratedData(float[] vertexData, List<DrawCommand> drawList) {
-            this.vertexData = vertexData;
-            this.drawList = drawList;
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Implementation
-    //----------------------------------------------------------------------------------------------
-
     private static int sizeOfCircleInVertices(int numPoints) {
         return 1 + (numPoints + 1);
     }
@@ -109,6 +91,10 @@ public class VertexBuilder {
     private static int sizeOfOpenCylinderInVertices(int numPoints) {
         return (numPoints + 1) * 2;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Implementation
+    //----------------------------------------------------------------------------------------------
 
     private void appendCircle(Circle circle, int numPoints, boolean forward) {
         final int startVertex = offset / coordinatesPerVertex;
@@ -169,5 +155,19 @@ public class VertexBuilder {
 
     private GeneratedData build() {
         return new GeneratedData(vertexData, drawList);
+    }
+
+    public interface DrawCommand {
+        void draw();
+    }
+
+    public static class GeneratedData {
+        public final float[] vertexData;
+        public final List<DrawCommand> drawList;
+
+        GeneratedData(float[] vertexData, List<DrawCommand> drawList) {
+            this.vertexData = vertexData;
+            this.drawList = drawList;
+        }
     }
 }

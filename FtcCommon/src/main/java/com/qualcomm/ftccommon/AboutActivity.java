@@ -93,13 +93,13 @@ import java.util.zip.ZipFile;
 
 public class AboutActivity extends ThemedActivity {
 
+    NetworkConnection networkConnection = null;
+    NetworkType networkType;
+
     @Override
     public String getTag() {
         return this.getClass().getSimpleName();
     }
-
-    NetworkConnection networkConnection = null;
-    NetworkType networkType;
 
     @Override
     protected void onStart() {

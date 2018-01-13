@@ -53,6 +53,13 @@ public class PWMOutputImpl implements PWMOutput {
     }
 
     /**
+     * Get the pulse width output time for this port
+     */
+    public int getPulseWidthOutputTime() {
+        return controller.getPulseWidthOutputTime(port);
+    }
+
+    /**
      * Set the pulse width output time for this port. Typically set to a value between
      * 750 and 2,250 to control a servo.
      *
@@ -63,10 +70,10 @@ public class PWMOutputImpl implements PWMOutput {
     }
 
     /**
-     * Get the pulse width output time for this port
+     * Get the pulse width output
      */
-    public int getPulseWidthOutputTime() {
-        return controller.getPulseWidthOutputTime(port);
+    public int getPulseWidthPeriod() {
+        return controller.getPulseWidthPeriod(port);
     }
 
     /**
@@ -76,13 +83,6 @@ public class PWMOutputImpl implements PWMOutput {
      */
     public void setPulseWidthPeriod(int period) {
         controller.setPulseWidthPeriod(port, period);
-    }
-
-    /**
-     * Get the pulse width output
-     */
-    public int getPulseWidthPeriod() {
-        return controller.getPulseWidthPeriod(port);
     }
 
     @Override

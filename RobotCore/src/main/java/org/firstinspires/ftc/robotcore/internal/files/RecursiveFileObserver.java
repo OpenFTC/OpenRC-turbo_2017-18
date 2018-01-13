@@ -103,21 +103,6 @@ public class RecursiveFileObserver {
     @NonNull
     final Listener listener;
 
-    public interface Listener {
-        /**
-         * @param file the absolute path to the file on which the event occurred
-         */
-        void onEvent(int event, File file);
-    }
-
-    public enum Mode {
-        RECURSIVE, NONRECURSVIVE;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public RecursiveFileObserver(File file, int mask, Mode mode, @NonNull Listener listener) {
         this(file.getAbsolutePath(), mask, mode, listener);
     }
@@ -130,8 +115,12 @@ public class RecursiveFileObserver {
     }
 
     //----------------------------------------------------------------------------------------------
-    // FileObserver implementation
+    // Construction
     //----------------------------------------------------------------------------------------------
+
+    protected static boolean isWatchableDirectory(File file) {
+        return file.isDirectory() && !file.getName().equals(".") && !file.getName().equals("..");
+    }
 
     public void startWatching() {
         Stack<String> stack = new Stack<>();
@@ -156,6 +145,10 @@ public class RecursiveFileObserver {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // FileObserver implementation
+    //----------------------------------------------------------------------------------------------
+
     public void stopWatching() {
         synchronized (observers) {
             for (SingleDirOrFileObserver observer : observers.values()) {
@@ -163,6 +156,43 @@ public class RecursiveFileObserver {
             }
             observers.clear();
         }
+    }
+
+    protected void startWatching(boolean isRoot, String path) {
+        synchronized (observers) {
+            stopWatching(path);
+            SingleDirOrFileObserver observer = new SingleDirOrFileObserver(isRoot, path);
+            observer.startWatching();
+            observers.put(path, observer);
+        }
+    }
+
+    protected void stopWatching(String path) {
+        synchronized (observers) {
+            SingleDirOrFileObserver observer = observers.remove(path);
+            if (observer != null) {
+                observer.stopWatching();
+            }
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // internal implementation
+    //----------------------------------------------------------------------------------------------
+
+    protected void notify(int event, File file) {
+        listener.onEvent(event & FileObserver.ALL_EVENTS, file);
+    }
+
+    public enum Mode {
+        RECURSIVE, NONRECURSVIVE
+    }
+
+    public interface Listener {
+        /**
+         * @param file the absolute path to the file on which the event occurred
+         */
+        void onEvent(int event, File file);
     }
 
     protected class FileObserverListener implements FileObserverManager.Listener {
@@ -176,36 +206,6 @@ public class RecursiveFileObserver {
             }
             RecursiveFileObserver.this.notify(event, file);
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // internal implementation
-    //----------------------------------------------------------------------------------------------
-
-    protected void startWatching(boolean isRoot, String path) {
-        synchronized (observers) {
-            stopWatching(path);
-            SingleDirOrFileObserver observer = new SingleDirOrFileObserver(isRoot, path);
-            observer.startWatching();
-            observers.put(path, observer);
-        }
-    }
-
-    protected static boolean isWatchableDirectory(File file) {
-        return file.isDirectory() && !file.getName().equals(".") && !file.getName().equals("..");
-    }
-
-    protected void stopWatching(String path) {
-        synchronized (observers) {
-            SingleDirOrFileObserver observer = observers.remove(path);
-            if (observer != null) {
-                observer.stopWatching();
-            }
-        }
-    }
-
-    protected void notify(int event, File file) {
-        listener.onEvent(event & FileObserver.ALL_EVENTS, file);
     }
 
     protected class SingleDirOrFileObserver implements FileObserverManager.Listener {

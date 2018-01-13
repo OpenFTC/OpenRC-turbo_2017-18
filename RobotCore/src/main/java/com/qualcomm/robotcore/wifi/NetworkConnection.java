@@ -38,30 +38,15 @@ import java.net.InetAddress;
 
 public abstract class NetworkConnection {
 
-    public enum Event {
-        DISCOVERING_PEERS,
-        PEERS_AVAILABLE,
-        GROUP_CREATED,
-        CONNECTING,
-        CONNECTED_AS_PEER,
-        CONNECTED_AS_GROUP_OWNER,
-        DISCONNECTED,
-        CONNECTION_INFO_AVAILABLE,
-        AP_CREATED,
-        ERROR,
-        UNKNOWN
-    }
-
-    public enum ConnectStatus {
-        NOT_CONNECTED,
-        CONNECTING,
-        CONNECTED,
-        GROUP_OWNER,
-        ERROR
-    }
-
-    public interface NetworkConnectionCallback {
-        CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event);
+    /**
+     * Return true if the device name is valid. A valid device name is greater
+     * than 0 characters and contains only alphanumeric or punctuation characters
+     * only.
+     *
+     * @return true if device name is valid
+     */
+    public static boolean isDeviceNameValid(String deviceName) {
+        return deviceName.matches("^\\p{Print}+$");
     }
 
     public abstract NetworkType getNetworkType();
@@ -100,14 +85,29 @@ public abstract class NetworkConnection {
 
     public abstract WifiDirectAssistant.ConnectStatus getConnectStatus();
 
-    /**
-     * Return true if the device name is valid. A valid device name is greater
-     * than 0 characters and contains only alphanumeric or punctuation characters
-     * only.
-     *
-     * @return true if device name is valid
-     */
-    public static boolean isDeviceNameValid(String deviceName) {
-        return deviceName.matches("^\\p{Print}+$");
+    public enum Event {
+        DISCOVERING_PEERS,
+        PEERS_AVAILABLE,
+        GROUP_CREATED,
+        CONNECTING,
+        CONNECTED_AS_PEER,
+        CONNECTED_AS_GROUP_OWNER,
+        DISCONNECTED,
+        CONNECTION_INFO_AVAILABLE,
+        AP_CREATED,
+        ERROR,
+        UNKNOWN
+    }
+
+    public enum ConnectStatus {
+        NOT_CONNECTED,
+        CONNECTING,
+        CONNECTED,
+        GROUP_OWNER,
+        ERROR
+    }
+
+    public interface NetworkConnectionCallback {
+        CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event);
     }
 }

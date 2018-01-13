@@ -96,17 +96,12 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
     // State
     //----------------------------------------------------------------------------------------------
 
-    public final int NAVX_WRITE_COMMAND_BIT = 0x80;
-
+    public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create7bit(0x32);
     // the register set on this device is large enough that we need two read widows to cover common reads
     protected static final I2cDeviceSynch.ReadMode readMode = I2cDeviceSynch.ReadMode.REPEAT;
     protected static final I2cDeviceSynch.ReadWindow lowerWindow = newWindow(Register.SENSOR_STATUS_L, Register.LINEAR_ACC_Z_H);
     protected static final I2cDeviceSynch.ReadWindow upperWindow = newWindow(Register.GYRO_X_L, Register.MAG_Z_H);
-
-    protected static I2cDeviceSynch.ReadWindow newWindow(Register regFirst, Register regMax) {
-        return new I2cDeviceSynch.ReadWindow(regFirst.bVal, regMax.bVal - regFirst.bVal, readMode);
-    }
-
+    public final int NAVX_WRITE_COMMAND_BIT = 0x80;
     protected float gyroScaleFactor;
 
     //----------------------------------------------------------------------------------------------
@@ -120,6 +115,10 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
         this.registerArmingStateCallback(true);
         this.deviceClient.engage();
+    }
+
+    protected static I2cDeviceSynch.ReadWindow newWindow(Register regFirst, Register regMax) {
+        return new I2cDeviceSynch.ReadWindow(regFirst.bVal, regMax.bVal - regFirst.bVal, readMode);
     }
 
     protected void setReadWindow() {
@@ -153,13 +152,13 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
         return String.format("Kauai Labs navX-Micro Gyro %s", getFirmwareVersion());
     }
 
-    public RobotUsbDevice.FirmwareVersion getFirmwareVersion() {
-        return new RobotUsbDevice.FirmwareVersion(read8(Register.FW_VER_MAJOR), read8(Register.FW_VER_MINOR));
-    }
-
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
+
+    public RobotUsbDevice.FirmwareVersion getFirmwareVersion() {
+        return new RobotUsbDevice.FirmwareVersion(read8(Register.FW_VER_MAJOR), read8(Register.FW_VER_MINOR));
+    }
 
     protected void ensureReadWindow(I2cDeviceSynch.ReadWindow needed)
     // We optimize small windows into larger ones if we can
@@ -199,12 +198,16 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
         this.deviceClient.write8(NAVX_WRITE_COMMAND_BIT | reg.bVal, value);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Device-specific functionality
+    //----------------------------------------------------------------------------------------------
+
     public void writeShort(Register reg, short value) {
         this.deviceClient.write(NAVX_WRITE_COMMAND_BIT | reg.bVal, TypeConversion.shortToByteArray(value, ByteOrder.LITTLE_ENDIAN));
     }
 
     //----------------------------------------------------------------------------------------------
-    // Device-specific functionality
+    // Gyroscope & IntegratingGyroscope interface
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -221,10 +224,6 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
         boolean complete = (calibrationStatus & CalibrationStatus.IMU_CAL_MASK.bVal) == CalibrationStatus.IMU_CAL_COMPLETE.bVal;
         return !complete;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Gyroscope & IntegratingGyroscope interface
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public Set<Axis> getAngularVelocityAxes() {
@@ -258,6 +257,10 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
                 .toAngleUnit(angleUnit);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // I2cAddrConfig interface
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public AngularVelocity getAngularVelocity(AngleUnit unit) {
         TimestampedData data = this.deviceClient.readTimeStamped(Register.GYRO_X_L.bVal, 3 * 2/*sizeof short*/);
@@ -269,15 +272,6 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
         return new AngularVelocity(AngleUnit.DEGREES, xDegPerSec, yDegPerSec, zDegPerSec, data.nanoTime).toAngleUnit(unit);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // I2cAddrConfig interface
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void setI2cAddress(I2cAddr newAddress) {
-        this.deviceClient.setI2cAddress(newAddress);
-    }
-
     @Override
     public I2cAddr getI2cAddress() {
         return this.deviceClient.getI2cAddress();
@@ -287,34 +281,9 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
     // Constants
     //----------------------------------------------------------------------------------------------
 
-    public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create7bit(0x32);
-
-    public static class Parameters implements Cloneable {
-        /**
-         * The desired update rate for the sensor, in Hz
-         */
-        public int updateRate = 50;
-
-        /**
-         * Returns the update rate actually used with these parameters. The only update rates that
-         * can actually be realized are those evenly divisible by the internal sample clock,
-         * which is 200Hz. Thus, the actual rate may be higher than the requested rate.
-         * For example, a request of 58Hz will result in 200 / (200 / 58) = 200/3 == 66Hz.
-         *
-         * @return the actual update rate used, in Hz
-         */
-        public int realizedUpdateRate() {
-            final int hzInternalSampleClock = 200;
-            return hzInternalSampleClock / (hzInternalSampleClock / updateRate);
-        }
-
-        public Parameters clone() {
-            try {
-                return (Parameters) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException("internal error: Parameters can't be cloned");
-            }
-        }
+    @Override
+    public void setI2cAddress(I2cAddr newAddress) {
+        this.deviceClient.setI2cAddress(newAddress);
     }
 
     /**
@@ -588,6 +557,12 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
                         RESET_DISP_X.bVal | RESET_DISP_Y.bVal | RESET_DISP_Z.bVal |
                         RESET_YAW.bVal);
 
+        public byte bVal;
+
+        IntegrationControl(int value) {
+            this.bVal = (byte) value;
+        }
+
         public byte bitor(IntegrationControl integrationControl) {
             return (byte) (this.bVal | integrationControl.bVal);
         }
@@ -595,11 +570,33 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
         public byte bitor(byte bVal) {
             return (byte) (this.bVal | bVal);
         }
+    }
 
-        public byte bVal;
+    public static class Parameters implements Cloneable {
+        /**
+         * The desired update rate for the sensor, in Hz
+         */
+        public int updateRate = 50;
 
-        IntegrationControl(int value) {
-            this.bVal = (byte) value;
+        /**
+         * Returns the update rate actually used with these parameters. The only update rates that
+         * can actually be realized are those evenly divisible by the internal sample clock,
+         * which is 200Hz. Thus, the actual rate may be higher than the requested rate.
+         * For example, a request of 58Hz will result in 200 / (200 / 58) = 200/3 == 66Hz.
+         *
+         * @return the actual update rate used, in Hz
+         */
+        public int realizedUpdateRate() {
+            final int hzInternalSampleClock = 200;
+            return hzInternalSampleClock / (hzInternalSampleClock / updateRate);
+        }
+
+        public Parameters clone() {
+            try {
+                return (Parameters) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException("internal error: Parameters can't be cloned");
+            }
         }
     }
 

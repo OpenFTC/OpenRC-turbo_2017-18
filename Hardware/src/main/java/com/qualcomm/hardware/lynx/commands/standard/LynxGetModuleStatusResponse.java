@@ -66,6 +66,10 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse {
         super(module);
     }
 
+    public static int getStandardCommandNumber() {
+        return LynxGetModuleStatusCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -80,6 +84,10 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse {
         return String.format("LynxGetModuleStatusResponse(status=0x%02x alerts=0x%02x%s)", status, motorAlerts, message);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Accessors
+    //----------------------------------------------------------------------------------------------
+
     protected void appendBit(StringBuilder builder, int bit, String message) {
         if (testBitsOn(bit)) {
             if (builder.length() > 0) {
@@ -88,10 +96,6 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse {
             builder.append(message);
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessors
-    //----------------------------------------------------------------------------------------------
 
     public boolean isKeepAliveTimeout() {
         return testBitsOn(bitKeepAliveTimeout);
@@ -131,18 +135,14 @@ public class LynxGetModuleStatusResponse extends LynxStandardResponse {
         return (getMotorAlerts() & bit) == bit;
     }
 
-    public boolean isMotorBridgeOverTemp(int motorZ) {
-        LynxConstants.validateMotorZ(motorZ);
-        int bit = (1 << (motorZ + 4));
-        return (getMotorAlerts() & bit) == bit;
-    }
-
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return LynxGetModuleStatusCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
+    public boolean isMotorBridgeOverTemp(int motorZ) {
+        LynxConstants.validateMotorZ(motorZ);
+        int bit = (1 << (motorZ + 4));
+        return (getMotorAlerts() & bit) == bit;
     }
 
     @Override

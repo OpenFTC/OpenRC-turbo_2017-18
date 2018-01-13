@@ -41,25 +41,6 @@ import com.qualcomm.robotcore.util.SerialNumber;
 public interface DigitalChannelController extends HardwareDevice {
 
     /**
-     * Digital channel mode - input or output
-     *
-     * @deprecated use {@link DigitalChannel.Mode} instead
-     */
-    @Deprecated
-    enum Mode {
-        INPUT, OUTPUT;
-
-        public DigitalChannel.Mode migrate() {
-            switch (this) {
-                case INPUT:
-                    return DigitalChannel.Mode.INPUT;
-                default:
-                    return DigitalChannel.Mode.OUTPUT;
-            }
-        }
-    }
-
-    /**
      * Serial Number
      *
      * @return return the USB serial number of this device
@@ -107,4 +88,23 @@ public interface DigitalChannelController extends HardwareDevice {
      * @param state   true to set; false to unset
      */
     void setDigitalChannelState(int channel, boolean state);
+
+    /**
+     * Digital channel mode - input or output
+     *
+     * @deprecated use {@link DigitalChannel.Mode} instead
+     */
+    @Deprecated
+    enum Mode {
+        INPUT, OUTPUT;
+
+        public DigitalChannel.Mode migrate() {
+            switch (this) {
+                case INPUT:
+                    return DigitalChannel.Mode.INPUT;
+                default:
+                    return DigitalChannel.Mode.OUTPUT;
+            }
+        }
+    }
 }

@@ -50,17 +50,11 @@ import java.util.List;
 
 public class EditMatrixControllerActivity extends EditActivity {
 
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
     public static final RequestCode requestCode = RequestCode.EDIT_MATRIX_CONTROLLER;
     private MatrixControllerConfiguration matrixControllerConfigurationConfig;
     private List<MotorConfiguration> motors;
     private List<ServoConfiguration> servos;
     private EditText controller_name;
-
     private View info_port1;
     private View info_port2;
     private View info_port3;
@@ -69,6 +63,11 @@ public class EditMatrixControllerActivity extends EditActivity {
     private View info_port6;
     private View info_port7;
     private View info_port8;
+
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

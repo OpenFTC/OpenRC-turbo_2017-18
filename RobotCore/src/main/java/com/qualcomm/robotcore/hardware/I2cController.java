@@ -47,29 +47,11 @@ public interface I2cController extends HardwareDevice {
     byte I2C_BUFFER_START_ADDRESS = 0x4;
 
     /**
-     * Callback interface for I2C port ready notifications
-     */
-    interface I2cPortReadyCallback {
-        void portIsReady(int port);
-    }
-
-    /**
-     * A callback interface through which a client can learn when portIsReady callbacks
-     * begin and then later end.
-     */
-    interface I2cPortReadyBeginEndNotifications {
-        void onPortIsReadyCallbacksBegin(int port) throws InterruptedException;
-
-        void onPortIsReadyCallbacksEnd(int port) throws InterruptedException;
-    }
-
-    /**
      * Serial Number
      *
      * @return return the USB serial number of this device
      */
     SerialNumber getSerialNumber();
-
 
     /**
      * Enable read mode for a particular I2C device
@@ -276,7 +258,6 @@ public interface I2cController extends HardwareDevice {
      */
     void deregisterForPortReadyCallback(int port);
 
-
     /**
      * Registers to be notification when portIsReady callbacks begin or cease
      *
@@ -332,4 +313,21 @@ public interface I2cController extends HardwareDevice {
      */
     @Deprecated
     void writeI2cPortFlagOnlyToModule(int port);
+
+    /**
+     * Callback interface for I2C port ready notifications
+     */
+    interface I2cPortReadyCallback {
+        void portIsReady(int port);
+    }
+
+    /**
+     * A callback interface through which a client can learn when portIsReady callbacks
+     * begin and then later end.
+     */
+    interface I2cPortReadyBeginEndNotifications {
+        void onPortIsReadyCallbacksBegin(int port) throws InterruptedException;
+
+        void onPortIsReadyCallbacksEnd(int port) throws InterruptedException;
+    }
 }

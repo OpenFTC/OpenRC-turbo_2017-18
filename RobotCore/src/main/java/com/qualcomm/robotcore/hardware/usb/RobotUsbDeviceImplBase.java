@@ -52,20 +52,12 @@ public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice {
     // State
     //----------------------------------------------------------------------------------------------
 
-    public abstract String getTag();
-
     // contains all the devices currently opened for ALL different kinds of RobotUsbDevice's
     protected static final ConcurrentHashMap<SerialNumber, RobotUsbDevice> extantDevices = new ConcurrentHashMap<SerialNumber, RobotUsbDevice>();
     protected static final ConcurrentHashMap<SerialNumber, DeviceManager.DeviceType> deviceTypes = new ConcurrentHashMap<SerialNumber, DeviceManager.DeviceType>();
-
     protected final SerialNumber serialNumber;
     protected DeviceManager.DeviceType deviceType;
     protected FirmwareVersion firmwareVersion = new FirmwareVersion();
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     protected RobotUsbDeviceImplBase(SerialNumber serialNumber) {
         this.serialNumber = serialNumber;
 
@@ -78,12 +70,8 @@ public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice {
         extantDevices.put(serialNumber, this);
     }
 
-    protected void removeFromExtantDevices() {
-        extantDevices.remove(this.serialNumber);
-    }
-
     //----------------------------------------------------------------------------------------------
-    // Accessing
+    // Construction
     //----------------------------------------------------------------------------------------------
 
     public static Collection<RobotUsbDevice> getExtantDevices() {
@@ -94,6 +82,10 @@ public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice {
         return extantDevices.containsKey(serialNumber);
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
     public static
     @NonNull
     DeviceManager.DeviceType getDeviceType(SerialNumber serialNumber) {
@@ -101,21 +93,27 @@ public abstract class RobotUsbDeviceImplBase implements RobotUsbDevice {
         return result == null ? DeviceManager.DeviceType.UNKNOWN_DEVICE : result;
     }
 
+    public abstract String getTag();
+
+    protected void removeFromExtantDevices() {
+        extantDevices.remove(this.serialNumber);
+    }
+
     //----------------------------------------------------------------------------------------------
     // RobotUsbDevice
     //----------------------------------------------------------------------------------------------
+
+    @NonNull
+    @Override
+    public synchronized DeviceManager.DeviceType getDeviceType() {
+        return this.deviceType;
+    }
 
     @Override
     public synchronized void setDeviceType(@NonNull DeviceManager.DeviceType deviceType) {
         // RobotLog.vv(getTag(), "setDeviceType(%s,%s)", serialNumber, deviceType);
         this.deviceType = deviceType;
         deviceTypes.put(this.serialNumber, deviceType);
-    }
-
-    @NonNull
-    @Override
-    public synchronized DeviceManager.DeviceType getDeviceType() {
-        return this.deviceType;
     }
 
     @NonNull

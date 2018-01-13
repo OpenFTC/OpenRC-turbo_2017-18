@@ -51,37 +51,14 @@ public class VuMarkInstanceId {
     // Types
     //----------------------------------------------------------------------------------------------
 
-    /**
-     * {@link Type} indicates the type of data that was found in the {@link InstanceId}
-     * from which this data was decoded.
-     *
-     * @see #getType()
-     */
-    public enum Type {
-        UNKNOWN,
-        NUMERIC,
-        STRING,
-        DATA;
-    }
+    protected Type type;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    protected Type type;
     protected int numericValue;
     protected String stringValue;
     protected byte[] dataValue;
-
-    @Override
-    public String toString() {
-        return "VuMarkInstanceId(" + this.getType() + ", " + this.getValue() + ")";
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public VuMarkInstanceId(InstanceId instanceId) {
         this.type = typeFrom(instanceId);
         switch (this.type) {
@@ -104,6 +81,10 @@ public class VuMarkInstanceId {
         return bytes;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     protected static Type typeFrom(InstanceId instanceId) {
         switch (instanceId.getDataType()) {
             case InstanceId.ID_DATA_TYPE.STRING:
@@ -117,9 +98,10 @@ public class VuMarkInstanceId {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Comparison
-    //----------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return "VuMarkInstanceId(" + this.getType() + ", " + this.getValue() + ")";
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -139,6 +121,10 @@ public class VuMarkInstanceId {
         return false;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Comparison
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public int hashCode() {
         switch (this.getType()) {
@@ -152,13 +138,13 @@ public class VuMarkInstanceId {
         return super.hashCode();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
     public Type getType() {
         return type;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
 
     int getNumericValue() {
         return numericValue;
@@ -183,5 +169,18 @@ public class VuMarkInstanceId {
             default:
                 return null;
         }
+    }
+
+    /**
+     * {@link Type} indicates the type of data that was found in the {@link InstanceId}
+     * from which this data was decoded.
+     *
+     * @see #getType()
+     */
+    public enum Type {
+        UNKNOWN,
+        NUMERIC,
+        STRING,
+        DATA
     }
 }

@@ -160,6 +160,14 @@ public class DcMotorImpl implements DcMotor {
         return controller;
     }
 
+    /**
+     * Get the direction
+     *
+     * @return direction
+     */
+    public Direction getDirection() {
+        return direction;
+    }
 
     /**
      * Set the direction
@@ -171,38 +179,12 @@ public class DcMotorImpl implements DcMotor {
     }
 
     /**
-     * Get the direction
-     *
-     * @return direction
-     */
-    public Direction getDirection() {
-        return direction;
-    }
-
-    /**
      * Get port number
      *
      * @return portNumber
      */
     public int getPortNumber() {
         return portNumber;
-    }
-
-    /**
-     * Set the current motor power
-     *
-     * @param power from -1.0 to 1.0
-     */
-    synchronized public void setPower(double power) {
-        // Power must be positive when in RUN_TO_POSITION mode : in that mode, the
-        // *direction* of rotation is controlled instead by the relative positioning
-        // of the current and target positions.
-        if (getMode() == RunMode.RUN_TO_POSITION) {
-            power = Math.abs(power);
-        } else {
-            power = adjustPower(power);
-        }
-        internalSetPower(power);
     }
 
     protected void internalSetPower(double power) {
@@ -225,6 +207,23 @@ public class DcMotorImpl implements DcMotor {
     }
 
     /**
+     * Set the current motor power
+     *
+     * @param power from -1.0 to 1.0
+     */
+    synchronized public void setPower(double power) {
+        // Power must be positive when in RUN_TO_POSITION mode : in that mode, the
+        // *direction* of rotation is controlled instead by the relative positioning
+        // of the current and target positions.
+        if (getMode() == RunMode.RUN_TO_POSITION) {
+            power = Math.abs(power);
+        } else {
+            power = adjustPower(power);
+        }
+        internalSetPower(power);
+    }
+
+    /**
      * Is the motor busy?
      *
      * @return true if the motor is busy
@@ -234,13 +233,13 @@ public class DcMotorImpl implements DcMotor {
     }
 
     @Override
-    public synchronized void setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior) {
-        controller.setMotorZeroPowerBehavior(portNumber, zeroPowerBehavior);
+    public synchronized ZeroPowerBehavior getZeroPowerBehavior() {
+        return controller.getMotorZeroPowerBehavior(portNumber);
     }
 
     @Override
-    public synchronized ZeroPowerBehavior getZeroPowerBehavior() {
-        return controller.getMotorZeroPowerBehavior(portNumber);
+    public synchronized void setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior) {
+        controller.setMotorZeroPowerBehavior(portNumber, zeroPowerBehavior);
     }
 
     /**
@@ -261,17 +260,6 @@ public class DcMotorImpl implements DcMotor {
         return getZeroPowerBehavior() == ZeroPowerBehavior.FLOAT && getPower() == 0.0;
     }
 
-    /**
-     * Set the motor target position, using an integer. If this motor has been set to REVERSE,
-     * the passed-in "position" value will be multiplied by -1.
-     *
-     * @param position range from Integer.MIN_VALUE to Integer.MAX_VALUE
-     */
-    synchronized public void setTargetPosition(int position) {
-        position = adjustPosition(position);
-        internalSetTargetPosition(position);
-    }
-
     protected void internalSetTargetPosition(int position) {
         controller.setMotorTargetPosition(portNumber, position);
     }
@@ -285,6 +273,17 @@ public class DcMotorImpl implements DcMotor {
     synchronized public int getTargetPosition() {
         int position = controller.getMotorTargetPosition(portNumber);
         return adjustPosition(position);
+    }
+
+    /**
+     * Set the motor target position, using an integer. If this motor has been set to REVERSE,
+     * the passed-in "position" value will be multiplied by -1.
+     *
+     * @param position range from Integer.MIN_VALUE to Integer.MAX_VALUE
+     */
+    synchronized public void setTargetPosition(int position) {
+        position = adjustPosition(position);
+        internalSetTargetPosition(position);
     }
 
     /**
@@ -315,16 +314,6 @@ public class DcMotorImpl implements DcMotor {
         return motorType.getOrientation() == Rotation.CCW ? direction.inverted() : direction;
     }
 
-    /**
-     * Set the current mode
-     *
-     * @param mode run mode
-     */
-    synchronized public void setMode(RunMode mode) {
-        mode = mode.migrate();
-        internalSetMode(mode);
-    }
-
     protected void internalSetMode(RunMode mode) {
         controller.setMotorMode(portNumber, mode);
     }
@@ -336,5 +325,15 @@ public class DcMotorImpl implements DcMotor {
      */
     public RunMode getMode() {
         return controller.getMotorMode(portNumber);
+    }
+
+    /**
+     * Set the current mode
+     *
+     * @param mode run mode
+     */
+    synchronized public void setMode(RunMode mode) {
+        mode = mode.migrate();
+        internalSetMode(mode);
     }
 }

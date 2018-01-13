@@ -60,12 +60,12 @@ import com.qualcomm.robotcore.util.TypeConversion;
 import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.util.WeakReferenceSet;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.hardware.DragonboardLynxDragonboardIsPresentPin;
 import org.firstinspires.ftc.robotcore.internal.hardware.DragonboardLynxProgrammingPin;
 import org.firstinspires.ftc.robotcore.internal.hardware.DragonboardLynxResetPin;
 import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbDeviceClosedException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbFTDIException;
@@ -89,56 +89,40 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxUsb";
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
-    public static boolean DEBUG_LOG_MESSAGES = false;
-    public static boolean DEBUG_LOG_DATAGRAMS = false;
-    public static boolean DEBUG_LOG_DATAGRAMS_FINISH = false;
-    public static boolean DEBUG_LOG_DATAGRAMS_LOCK = false;
-
-    protected static long randSeed = System.nanoTime();
+    protected static final WeakReferenceSet<LynxUsbDeviceImpl> extantDevices = new WeakReferenceSet<LynxUsbDeviceImpl>();
+    protected static final LynxCommExceptionHandler exceptionHandler = new LynxCommExceptionHandler(TAG);
+    // The lynx hw schematic puts the reset and prog lines on particular pins, CBUS0 and CBUS1 respectively
+    protected final static int cbusNReset = 0x01;
+    protected final static int cbusNProg = 0x02;
+    protected final static int cbusMask = cbusNReset | cbusNProg;
+    protected final static int cbusNeitherAsserted = cbusNReset | cbusNProg;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-
-    protected static final WeakReferenceSet<LynxUsbDeviceImpl> extantDevices = new WeakReferenceSet<LynxUsbDeviceImpl>();
-    protected static final LynxCommExceptionHandler exceptionHandler = new LynxCommExceptionHandler(TAG);
-
+    protected final static int cbusBothAsserted = 0;
+    protected final static int cbusProgAsserted = cbusNReset;
+    protected final static int cbusResetAsserted = cbusNProg;
+    protected final static int msNetworkTransmissionLockAcquisitionTimeMax = 500;
+    protected final static int msCbusWiggle = 75;       // more of a guess than anything
+    protected final static int msResetRecovery = 200;      // more of a guess than anything
+    public static boolean DEBUG_LOG_MESSAGES = false;
+    public static boolean DEBUG_LOG_DATAGRAMS = false;
+    public static boolean DEBUG_LOG_DATAGRAMS_FINISH = false;
+    public static boolean DEBUG_LOG_DATAGRAMS_LOCK = false;
+    protected static long randSeed = System.nanoTime();
     protected final ConcurrentHashMap<Integer, LynxModule> knownModules;               // module address -> module
     protected final ConcurrentHashMap<Integer, LynxModule> knownModulesChanging;       // module address -> module
     protected final ConcurrentHashMap<Integer, LynxModuleMeta> discoveredModules;       // like knownModules, but different
     protected final ConcurrentHashMap<Integer, String> missingModules;             // module address -> module name
     protected final MessageKeyedLock networkTransmissionLock;
+    protected final Object engageLock = new Object();  // must hold to access isEngaged
     protected ExecutorService incomingDatagramPoller;
     protected boolean resetAttempted;
     protected boolean hasShutdownAbnormally;
     protected boolean isSystemSynthetic;
     protected boolean isEngaged;
     protected boolean wasPollingWhenEngaged;
-    protected final Object engageLock = new Object();  // must hold to access isEngaged
-
-    // The lynx hw schematic puts the reset and prog lines on particular pins, CBUS0 and CBUS1 respectively
-    protected final static int cbusNReset = 0x01;
-    protected final static int cbusNProg = 0x02;
-    protected final static int cbusMask = cbusNReset | cbusNProg;
-    protected final static int cbusNeitherAsserted = cbusNReset | cbusNProg;
-    protected final static int cbusBothAsserted = 0;
-    protected final static int cbusProgAsserted = cbusNReset;
-    protected final static int cbusResetAsserted = cbusNProg;
-
-    protected final static int msNetworkTransmissionLockAcquisitionTimeMax = 500;
-    protected final static int msCbusWiggle = 75;       // more of a guess than anything
-    protected final static int msResetRecovery = 200;      // more of a guess than anything
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Use {@link #findOrCreateAndArm(Context, SerialNumber, EventLoopManager, OpenRobotUsbDevice)} instead
      */
@@ -161,6 +145,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
 
         finishConstruction();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Either finds an already-open device with the indicated serial number and returns same, as-is,
@@ -185,6 +173,162 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
     }
 
+    /**
+     * A simple, cursory test to see whether we can get access to the cbus FTDI functionality.
+     * Currently not very robust
+     */
+    protected static RobotUsbDeviceFtdi accessCBus(RobotUsbDevice robotUsbDevice) {
+        if (robotUsbDevice instanceof RobotUsbDeviceFtdi) {
+            RobotUsbDeviceFtdi deviceFtdi = (RobotUsbDeviceFtdi) robotUsbDevice;
+            if (deviceFtdi.supportsCbusBitbang()) {
+                return deviceFtdi;
+            }
+        }
+        RobotLog.ee(TAG, "accessCBus() unexpectedly failed; ignoring");
+        return null;
+    }
+
+    /**
+     * Issues a hardware reset to the lynx module.
+     */
+    public static void resetDevice(RobotUsbDevice robotUsbDevice) {
+        RobotLog.vv(LynxModule.TAG, "resetDevice() serial=%s", robotUsbDevice.getSerialNumber());
+
+        int msDelay = msCbusWiggle;
+        try {
+            if (LynxConstants.isEmbeddedSerialNumber(robotUsbDevice.getSerialNumber())) {
+                boolean prevState = DragonboardLynxDragonboardIsPresentPin.getInstance().getState();
+                RobotLog.vv(LynxModule.TAG, "resetting embedded usb device: isPresent: was=%s", prevState);
+
+                // Make sure we're 'present'. Our reset pin won't operate unless we are
+                if (!prevState) {
+                    DragonboardLynxDragonboardIsPresentPin.getInstance().setState(true);
+                    Thread.sleep(msDelay);
+                }
+
+                DragonboardLynxResetPin.getInstance().setState(true);
+                Thread.sleep(msDelay);
+
+                DragonboardLynxResetPin.getInstance().setState(false);
+                Thread.sleep(msDelay);
+
+                // ALWAYS remain 'present' unless we're explicitly configured not to
+                if (LynxConstants.isRevControlHub() && LynxConstants.disableDragonboard()) {
+                    DragonboardLynxDragonboardIsPresentPin.getInstance().setState(false);
+                    Thread.sleep(msDelay);
+                }
+            } else {
+                RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
+                if (deviceFtdi != null) {
+                    // Initialize with both lines deasserted
+                    deviceFtdi.cbus_setup(cbusMask, cbusNeitherAsserted);
+                    Thread.sleep(msDelay);
+
+                    // Assert reset
+                    deviceFtdi.cbus_write(cbusResetAsserted);
+                    Thread.sleep(msDelay);
+
+                    // Deassert reset
+                    deviceFtdi.cbus_write(cbusNeitherAsserted);
+                }
+            }
+
+            // give the board a chance to recover
+            Thread.sleep(msResetRecovery); // totally a finger in the wind
+        } catch (InterruptedException | RobotUsbException e) {
+            exceptionHandler.handleException(e);
+        }
+    }
+
+    /**
+     * If we are a USB-attached Lynx, then cause us to enter firmware update mode
+     */
+    public static void enterFirmwareUpdateModeUSB(RobotUsbDevice robotUsbDevice) {
+        RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeUSB() serial=%s", robotUsbDevice.getSerialNumber());
+
+        RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
+        if (deviceFtdi != null) {
+            try {
+                int msDelay = msCbusWiggle;
+
+                // Initialize with both lines deasserted
+                deviceFtdi.cbus_setup(cbusMask, cbusNeitherAsserted);
+                Thread.sleep(msDelay);
+
+                // Assert nProg
+                deviceFtdi.cbus_write(cbusProgAsserted);
+                Thread.sleep(msDelay);
+
+                // Assert nProg and nReset
+                deviceFtdi.cbus_write(cbusBothAsserted);
+                Thread.sleep(msDelay);
+
+                // Deassert nReset
+                deviceFtdi.cbus_write(cbusProgAsserted);
+                Thread.sleep(msDelay);
+
+                // Deassert nProg
+                deviceFtdi.cbus_write(cbusNeitherAsserted);
+                Thread.sleep(msResetRecovery);
+            } catch (InterruptedException | RobotUsbException e) {
+                exceptionHandler.handleException(e);
+            }
+        }
+    }
+
+    /**
+     * If we are a Dragonboard/Lynx combo, then this causes the combo-Lynx to enter firmware update * mode.
+     * We will be updating the firmware using the 'serial' connection, not the USB connection. So
+     * after this function exits, the Dragonboad must be asserting its presence.
+     */
+    public static void enterFirmwareUpdateModeDragonboardCombo() {
+        RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeDragonboardCombo()");
+
+        if (LynxConstants.isRevControlHub()) {
+            try {
+                int msDelay = msCbusWiggle;
+
+                boolean prevState = DragonboardLynxDragonboardIsPresentPin.getInstance().getState();
+                RobotLog.vv(LynxModule.TAG, "fw update embedded usb device: isPresent: was=%s", prevState);
+
+                // Assert Dragonboard presence to ensure we can manipulate the programming and reset lines
+                if (!prevState) {
+                    DragonboardLynxDragonboardIsPresentPin.getInstance().setState(true);
+                    Thread.sleep(msDelay);
+                }
+
+                // Assert programming
+                DragonboardLynxProgrammingPin.getInstance().setState(true);
+                Thread.sleep(msDelay);
+
+                // Assert reset
+                DragonboardLynxResetPin.getInstance().setState(true);
+                Thread.sleep(msDelay);
+
+                // Deassert reset
+                DragonboardLynxResetPin.getInstance().setState(false);
+                Thread.sleep(msDelay);
+
+                // Deassert programming
+                DragonboardLynxProgrammingPin.getInstance().setState(false);
+                Thread.sleep(msDelay);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        } else {
+            RobotLog.ee(TAG, "enterFirmwareUpdateModeDragonboardCombo() issued on non-combo; ignoring");
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     @Override
     public LynxUsbDeviceImpl getDelegationTarget() {
         return this;
@@ -199,10 +343,6 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     public void setSystemSynthetic(boolean systemSynthetic) {
         this.isSystemSynthetic = systemSynthetic;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // HardwareDevice
-    //----------------------------------------------------------------------------------------------
 
     @Override
     protected void doClose() {
@@ -221,6 +361,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     public Manufacturer getManufacturer() {
         return Manufacturer.Lynx;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // SyncdDevice
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public String getDeviceName() {
@@ -242,7 +386,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     }
 
     //----------------------------------------------------------------------------------------------
-    // SyncdDevice
+    // Arming and disarming
     //----------------------------------------------------------------------------------------------
 
     @Override
@@ -257,18 +401,14 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     }
 
     @Override
-    public void setOwner(RobotUsbModule owner) {
-        // ignored
-    }
-
-    @Override
     public RobotUsbModule getOwner() {
         return this;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Arming and disarming
-    //----------------------------------------------------------------------------------------------
+    @Override
+    public void setOwner(RobotUsbModule owner) {
+        // ignored
+    }
 
     @Override
     public synchronized void engage() {
@@ -349,6 +489,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void disarmDevice() throws InterruptedException {
         synchronized (armingLock) {
@@ -376,6 +520,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void doCloseFromArmed() throws RobotCoreException, InterruptedException {
         failSafe();
@@ -395,10 +543,6 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public void failSafe() {
         for (LynxModule module : getKnownModules()) {
@@ -411,10 +555,6 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
 
     protected Collection<LynxModule> getKnownModules() {
         synchronized (this.knownModules) {
@@ -514,6 +654,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Transmitting and receiving
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void removeConfiguredModule(LynxModule module) {
         synchronized (this.knownModules) {
@@ -596,10 +740,6 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Transmitting and receiving
-    //----------------------------------------------------------------------------------------------
 
     protected void resetNetworkTransmissionLock() throws InterruptedException {
         this.networkTransmissionLock.reset();
@@ -706,6 +846,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         // Do this last so as to make LynxModule.retransmitDatagrams() interlock more robust
         message.noteHasBeenTransmitted();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Firmware control
+    //----------------------------------------------------------------------------------------------
 
     protected void shutdownAbnormally() {
         this.hasShutdownAbnormally = true;
@@ -865,157 +1009,6 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
 
             return null;
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Firmware control
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * A simple, cursory test to see whether we can get access to the cbus FTDI functionality.
-     * Currently not very robust
-     */
-    protected static RobotUsbDeviceFtdi accessCBus(RobotUsbDevice robotUsbDevice) {
-        if (robotUsbDevice instanceof RobotUsbDeviceFtdi) {
-            RobotUsbDeviceFtdi deviceFtdi = (RobotUsbDeviceFtdi) robotUsbDevice;
-            if (deviceFtdi.supportsCbusBitbang()) {
-                return deviceFtdi;
-            }
-        }
-        RobotLog.ee(TAG, "accessCBus() unexpectedly failed; ignoring");
-        return null;
-    }
-
-    /**
-     * Issues a hardware reset to the lynx module.
-     */
-    public static void resetDevice(RobotUsbDevice robotUsbDevice) {
-        RobotLog.vv(LynxModule.TAG, "resetDevice() serial=%s", robotUsbDevice.getSerialNumber());
-
-        int msDelay = msCbusWiggle;
-        try {
-            if (LynxConstants.isEmbeddedSerialNumber(robotUsbDevice.getSerialNumber())) {
-                boolean prevState = DragonboardLynxDragonboardIsPresentPin.getInstance().getState();
-                RobotLog.vv(LynxModule.TAG, "resetting embedded usb device: isPresent: was=%s", prevState);
-
-                // Make sure we're 'present'. Our reset pin won't operate unless we are
-                if (!prevState) {
-                    DragonboardLynxDragonboardIsPresentPin.getInstance().setState(true);
-                    Thread.sleep(msDelay);
-                }
-
-                DragonboardLynxResetPin.getInstance().setState(true);
-                Thread.sleep(msDelay);
-
-                DragonboardLynxResetPin.getInstance().setState(false);
-                Thread.sleep(msDelay);
-
-                // ALWAYS remain 'present' unless we're explicitly configured not to
-                if (LynxConstants.isRevControlHub() && LynxConstants.disableDragonboard()) {
-                    DragonboardLynxDragonboardIsPresentPin.getInstance().setState(false);
-                    Thread.sleep(msDelay);
-                }
-            } else {
-                RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
-                if (deviceFtdi != null) {
-                    // Initialize with both lines deasserted
-                    deviceFtdi.cbus_setup(cbusMask, cbusNeitherAsserted);
-                    Thread.sleep(msDelay);
-
-                    // Assert reset
-                    deviceFtdi.cbus_write(cbusResetAsserted);
-                    Thread.sleep(msDelay);
-
-                    // Deassert reset
-                    deviceFtdi.cbus_write(cbusNeitherAsserted);
-                }
-            }
-
-            // give the board a chance to recover
-            Thread.sleep(msResetRecovery); // totally a finger in the wind
-        } catch (InterruptedException | RobotUsbException e) {
-            exceptionHandler.handleException(e);
-        }
-    }
-
-    /**
-     * If we are a USB-attached Lynx, then cause us to enter firmware update mode
-     */
-    public static void enterFirmwareUpdateModeUSB(RobotUsbDevice robotUsbDevice) {
-        RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeUSB() serial=%s", robotUsbDevice.getSerialNumber());
-
-        RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
-        if (deviceFtdi != null) {
-            try {
-                int msDelay = msCbusWiggle;
-
-                // Initialize with both lines deasserted
-                deviceFtdi.cbus_setup(cbusMask, cbusNeitherAsserted);
-                Thread.sleep(msDelay);
-
-                // Assert nProg
-                deviceFtdi.cbus_write(cbusProgAsserted);
-                Thread.sleep(msDelay);
-
-                // Assert nProg and nReset
-                deviceFtdi.cbus_write(cbusBothAsserted);
-                Thread.sleep(msDelay);
-
-                // Deassert nReset
-                deviceFtdi.cbus_write(cbusProgAsserted);
-                Thread.sleep(msDelay);
-
-                // Deassert nProg
-                deviceFtdi.cbus_write(cbusNeitherAsserted);
-                Thread.sleep(msResetRecovery);
-            } catch (InterruptedException | RobotUsbException e) {
-                exceptionHandler.handleException(e);
-            }
-        }
-    }
-
-    /**
-     * If we are a Dragonboard/Lynx combo, then this causes the combo-Lynx to enter firmware update * mode.
-     * We will be updating the firmware using the 'serial' connection, not the USB connection. So
-     * after this function exits, the Dragonboad must be asserting its presence.
-     */
-    public static void enterFirmwareUpdateModeDragonboardCombo() {
-        RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeDragonboardCombo()");
-
-        if (LynxConstants.isRevControlHub()) {
-            try {
-                int msDelay = msCbusWiggle;
-
-                boolean prevState = DragonboardLynxDragonboardIsPresentPin.getInstance().getState();
-                RobotLog.vv(LynxModule.TAG, "fw update embedded usb device: isPresent: was=%s", prevState);
-
-                // Assert Dragonboard presence to ensure we can manipulate the programming and reset lines
-                if (!prevState) {
-                    DragonboardLynxDragonboardIsPresentPin.getInstance().setState(true);
-                    Thread.sleep(msDelay);
-                }
-
-                // Assert programming
-                DragonboardLynxProgrammingPin.getInstance().setState(true);
-                Thread.sleep(msDelay);
-
-                // Assert reset
-                DragonboardLynxResetPin.getInstance().setState(true);
-                Thread.sleep(msDelay);
-
-                // Deassert reset
-                DragonboardLynxResetPin.getInstance().setState(false);
-                Thread.sleep(msDelay);
-
-                // Deassert programming
-                DragonboardLynxProgrammingPin.getInstance().setState(false);
-                Thread.sleep(msDelay);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        } else {
-            RobotLog.ee(TAG, "enterFirmwareUpdateModeDragonboardCombo() issued on non-combo; ignoring");
         }
     }
 }

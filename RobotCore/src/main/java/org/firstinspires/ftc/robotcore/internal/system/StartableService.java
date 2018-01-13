@@ -56,18 +56,18 @@ public abstract class StartableService extends Service {
     // State
     //----------------------------------------------------------------------------------------------
 
-    public abstract String getTag();
-
     protected final Supplier<Closeable> instantiator;
     protected Closeable instance;
+
+    protected StartableService(Supplier<Closeable> instantiator) {
+        this.instantiator = instantiator;
+    }
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------
 
-    protected StartableService(Supplier<Closeable> instantiator) {
-        this.instantiator = instantiator;
-    }
+    public abstract String getTag();
 
     @Override
     public void onCreate() {
@@ -137,7 +137,6 @@ public abstract class StartableService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         RobotLog.vv(getTag(), "onTaskRemoved()");
-        ;
     }
 
 }

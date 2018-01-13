@@ -71,14 +71,14 @@ public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice {
     }
 
     @Override
-    public void setDeviceType(@NonNull DeviceManager.DeviceType deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    @Override
     @NonNull
     public DeviceManager.DeviceType getDeviceType() {
         return this.deviceType;
+    }
+
+    @Override
+    public void setDeviceType(@NonNull DeviceManager.DeviceType deviceType) {
+        this.deviceType = deviceType;
     }
 
     @Override
@@ -96,13 +96,13 @@ public class RobotUsbDevicePretendModernRobotics implements RobotUsbDevice {
     }
 
     @Override
-    public void setDebugRetainBuffers(boolean retain) {
-        this.debugRetainBuffers = retain;
+    public boolean getDebugRetainBuffers() {
+        return this.debugRetainBuffers;
     }
 
     @Override
-    public boolean getDebugRetainBuffers() {
-        return this.debugRetainBuffers;
+    public void setDebugRetainBuffers(boolean retain) {
+        this.debugRetainBuffers = retain;
     }
 
     @Override

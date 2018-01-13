@@ -67,20 +67,20 @@ public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfi
         super(name, new ArrayList<DeviceConfiguration>(), new SerialNumber(), BuiltInConfigurationType.LYNX_MODULE);
     }
 
-    public void setModuleAddress(int moduleAddress) {
-        this.setPort(moduleAddress);
-    }
-
     public int getModuleAddress() {
         return this.getPort();
     }
 
-    public void setParent(boolean isParent) {
-        this.isParent = isParent;
+    public void setModuleAddress(int moduleAddress) {
+        this.setPort(moduleAddress);
     }
 
     public boolean isParent() {
         return this.isParent;
+    }
+
+    public void setParent(boolean isParent) {
+        this.isParent = isParent;
     }
 
     public List<ServoConfiguration> getServos() {

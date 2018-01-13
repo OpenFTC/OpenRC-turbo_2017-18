@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
-           xmlns:altova="http://www.altova.com/xml-schema-extensions" elementFormDefault="qualified"
-           attributeFormDefault="unqualified" vc:minVersion="1.1">
+<xs:schema xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified" vc:minVersion="1.1">
     <xs:element name="Robot">
         <xs:annotation>
             <xs:documentation>name is only allowed in resource-based configurations
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
-            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:sequence maxOccurs="unbounded" minOccurs="0">
                 <xs:choice>
                     <xs:element name="MotorController" type="USBMotorController"/>
                     <xs:element name="ServoController" type="USBServoController"/>
@@ -60,7 +60,7 @@
     <xs:complexType name="USBMotorController">
         <xs:complexContent>
             <xs:extension base="USBController">
-                <xs:sequence minOccurs="0" maxOccurs="2">
+                <xs:sequence maxOccurs="2" minOccurs="0">
                     <xs:element name="Motor" type="Motor"/>
                 </xs:sequence>
             </xs:extension>
@@ -69,7 +69,7 @@
     <xs:complexType name="USBServoController">
         <xs:complexContent>
             <xs:extension base="USBController">
-                <xs:sequence minOccurs="0" maxOccurs="6">
+                <xs:sequence maxOccurs="6" minOccurs="0">
                     <xs:choice>
                         <xs:element name="Servo" type="Servo"/>
                         <xs:element name="ContinuousRotationServo" type="ContinuousRotationServo"/>
@@ -81,7 +81,7 @@
     <xs:complexType name="USBLegacyModuleController">
         <xs:complexContent>
             <xs:extension base="USBController">
-                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:sequence maxOccurs="unbounded" minOccurs="0">
                     <xs:choice>
                         <xs:element name="Compass" type="Compass"/>
                         <xs:element name="LightSensor" type="LightSensor"/>
@@ -103,7 +103,7 @@
     <xs:complexType name="USBDeviceIntervaceModuleController">
         <xs:complexContent>
             <xs:extension base="USBController">
-                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:choice maxOccurs="unbounded" minOccurs="0">
                     <xs:group ref="CDIMAnalogInputChoices"/>
                     <xs:group ref="CDIMDigitalDeviceChoices"/>
                     <xs:group ref="CDIMI2cChoices"/>
@@ -188,7 +188,7 @@
     <xs:complexType name="MotorController">
         <xs:complexContent>
             <xs:extension base="PortDevice">
-                <xs:sequence minOccurs="0" maxOccurs="2">
+                <xs:sequence maxOccurs="2" minOccurs="0">
                     <xs:element name="Motor" type="Motor"/>
                 </xs:sequence>
             </xs:extension>
@@ -197,7 +197,7 @@
     <xs:complexType name="ServoController">
         <xs:complexContent>
             <xs:extension base="PortDevice">
-                <xs:sequence minOccurs="0" maxOccurs="6">
+                <xs:sequence maxOccurs="6" minOccurs="0">
                     <xs:choice>
                         <xs:element name="Servo" type="Servo"/>
                         <xs:element name="ContinuousRotationServo" type="ContinuousRotationServo"/>
@@ -215,7 +215,7 @@
         <xs:complexContent>
             <xs:extension base="PortDevice">
                 <xs:sequence>
-                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:choice maxOccurs="unbounded" minOccurs="0">
                         <xs:element name="Motor" type="Motor"/>
                         <xs:element name="Servo" type="Servo"/>
                     </xs:choice>
