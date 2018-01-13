@@ -72,6 +72,16 @@ public class HardwareDeviceHealthImpl implements HardwareDeviceHealth {
     //----------------------------------------------------------------------------------------------
 
     @Override
+    public void setHealthStatus(HealthStatus status) {
+        synchronized (this) {
+            // Once closed, don't accidentally go back
+            if (this.healthStatus != HealthStatus.CLOSED) {
+                this.healthStatus = status;
+            }
+        }
+    }
+
+    @Override
     public HealthStatus getHealthStatus() {
         synchronized (this) {
             if (this.override != null) {
@@ -85,16 +95,6 @@ public class HardwareDeviceHealthImpl implements HardwareDeviceHealth {
                 }
             }
             return this.healthStatus;
-        }
-    }
-
-    @Override
-    public void setHealthStatus(HealthStatus status) {
-        synchronized (this) {
-            // Once closed, don't accidentally go back
-            if (this.healthStatus != HealthStatus.CLOSED) {
-                this.healthStatus = status;
-            }
         }
     }
 }

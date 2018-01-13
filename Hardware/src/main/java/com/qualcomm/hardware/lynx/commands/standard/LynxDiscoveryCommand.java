@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx.commands.standard;
 
+import com.qualcomm.hardware.lynx.LynxUnsupportedCommandNumberException;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxNackException;
-import com.qualcomm.hardware.lynx.LynxUnsupportedCommandNumberException;
 
 /**
  * Performs discovery respecting half-duplex aspect of EIA485 communications link. This message is
@@ -73,10 +73,6 @@ public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually
     //----------------------------------------------------------------------------------------------
     // Transmission
     //----------------------------------------------------------------------------------------------
-
-    public static int getStandardCommandNumber() {
-        return COMMAND_NUMBER_DISCOVERY;
-    }
 
     @Override
     public int getDestModuleAddress() {
@@ -123,13 +119,17 @@ public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually
         // TODO discovery doesn't lock (REVIEW)
     }
 
+    @Override
+    public void releaseNetworkLock() throws InterruptedException {
+        // TODO discovery doesn't lock (REVIEW)
+    }
+
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void releaseNetworkLock() throws InterruptedException {
-        // TODO discovery doesn't lock (REVIEW)
+    public static int getStandardCommandNumber() {
+        return COMMAND_NUMBER_DISCOVERY;
     }
 
     @Override

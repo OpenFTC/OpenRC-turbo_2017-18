@@ -92,21 +92,33 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
     //----------------------------------------------------------------------------------------------
 
     public final static String TAG = "MRServoController";
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     /**
      * Enable DEBUG_LOGGING logging
      */
     public static final boolean DEBUG_LOGGING = false;
+
     /*
      * const values used by this class
      */
     public static final int MONITOR_LENGTH = 0x09;
+    protected static final int SERVO_FIRST = ModernRoboticsConstants.INITIAL_SERVO_PORT;
+    protected static final int SERVO_LAST = ModernRoboticsConstants.INITIAL_SERVO_PORT + ModernRoboticsConstants.NUMBER_OF_SERVOS - 1;
+
     /*
      * const values used by controller
      */
     public static final byte PWM_ENABLE = (byte) 0x00;
     public static final byte PWM_ENABLE_WITHOUT_TIMEOUT = (byte) 0xaa;
     public static final byte PWM_DISABLE = (byte) 0xff;
+
     public static final byte START_ADDRESS = 0x40;
+
     /*
      * memory addresses used by controller
      */
@@ -117,7 +129,9 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
     public static final int ADDRESS_CHANNEL5 = 0x46;
     public static final int ADDRESS_CHANNEL6 = 0x47;
     public static final int ADDRESS_PWM = 0x48;
+
     public static final int ADDRESS_UNUSED = -1;
+
     /*
      * map of servo channels to memory addresses
      */
@@ -130,18 +144,23 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
             ADDRESS_CHANNEL5,
             ADDRESS_CHANNEL6
     };
-    protected static final int SERVO_FIRST = ModernRoboticsConstants.INITIAL_SERVO_PORT;
-    protected static final int SERVO_LAST = ModernRoboticsConstants.INITIAL_SERVO_PORT + ModernRoboticsConstants.NUMBER_OF_SERVOS - 1;
+
     protected static final double apiPositionMin = Servo.MIN_POSITION;
     protected static final double apiPositionMax = Servo.MAX_POSITION;
     protected static final double servoPositionMin = 0.0;
     protected static final double servoPositionMax = 255.0;
-    protected LastKnown<Double>[] commandedServoPositions;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
+
+    protected LastKnown<Double>[] commandedServoPositions;
     protected LastKnown<Boolean> lastKnownPwmEnabled;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     /*
      * Use HardwareDeviceManager to create an instance of this class
      *
@@ -161,15 +180,6 @@ public final class ModernRoboticsUsbServoController extends ModernRoboticsUsbCon
 
         this.commandedServoPositions = LastKnown.createArray(ADDRESS_CHANNEL_MAP.length);
         this.lastKnownPwmEnabled = new LastKnown<Boolean>();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    protected String getTag() {
-        return TAG;
     }
 
     @Override

@@ -45,6 +45,59 @@ import com.qualcomm.robotcore.util.RobotLog;
  */
 public class WifiAssistant {
 
+    /**
+     * Wifi Event
+     */
+    public enum WifiState {
+        CONNECTED, NOT_CONNECTED;
+    }
+
+    /**
+     * Interface for callback methods
+     */
+    public interface WifiAssistantCallback {
+
+        /**
+         * Callback - called when wifi connects / disconnects
+         *
+         * @param event WifiEvent
+         */
+        public void wifiEventCallback(WifiState event);
+    }
+
+    private static class WifiStateBroadcastReceiver extends BroadcastReceiver {
+        private WifiState state = null;
+        private final WifiAssistantCallback callback;
+
+        public WifiStateBroadcastReceiver(WifiAssistantCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                if (info.isConnected()) {
+                    notify(WifiState.CONNECTED);
+                } else {
+                    notify(WifiState.NOT_CONNECTED);
+                }
+            }
+        }
+
+        private void notify(WifiState newState) {
+            if (state == newState) {
+                return; // nothing to do
+            }
+
+            state = newState;
+            if (callback != null) {
+                callback.wifiEventCallback(state);
+            }
+        }
+    }
+
     private final IntentFilter intentFilter;
     private final Context context;
     private final WifiStateBroadcastReceiver receiver;
@@ -83,59 +136,6 @@ public class WifiAssistant {
      */
     public void disable() {
         context.unregisterReceiver(receiver);
-    }
-
-    /**
-     * Wifi Event
-     */
-    public enum WifiState {
-        CONNECTED, NOT_CONNECTED
-    }
-
-    /**
-     * Interface for callback methods
-     */
-    public interface WifiAssistantCallback {
-
-        /**
-         * Callback - called when wifi connects / disconnects
-         *
-         * @param event WifiEvent
-         */
-        void wifiEventCallback(WifiState event);
-    }
-
-    private static class WifiStateBroadcastReceiver extends BroadcastReceiver {
-        private final WifiAssistantCallback callback;
-        private WifiState state = null;
-
-        public WifiStateBroadcastReceiver(WifiAssistantCallback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-                NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                if (info.isConnected()) {
-                    notify(WifiState.CONNECTED);
-                } else {
-                    notify(WifiState.NOT_CONNECTED);
-                }
-            }
-        }
-
-        private void notify(WifiState newState) {
-            if (state == newState) {
-                return; // nothing to do
-            }
-
-            state = newState;
-            if (callback != null) {
-                callback.wifiEventCallback(state);
-            }
-        }
     }
 
 

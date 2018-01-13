@@ -43,11 +43,13 @@ public class DragonboardLynxDragonboardIsPresentPin extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxDragonboardIsPresentPin";
-    protected static final DragonboardLynxDragonboardIsPresentPin theInstance = new DragonboardLynxDragonboardIsPresentPin();
 
-    protected DragonboardLynxDragonboardIsPresentPin() {
-        super(19, true, Active.LOW);
+    @Override
+    protected String getTag() {
+        return TAG;
     }
+
+    protected static final DragonboardLynxDragonboardIsPresentPin theInstance = new DragonboardLynxDragonboardIsPresentPin();
 
     public static DragonboardLynxDragonboardIsPresentPin getInstance() {
         return theInstance;
@@ -57,8 +59,7 @@ public class DragonboardLynxDragonboardIsPresentPin extends DragonboardGPIOPin {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    protected String getTag() {
-        return TAG;
+    protected DragonboardLynxDragonboardIsPresentPin() {
+        super(19, true, Active.LOW);
     }
 }

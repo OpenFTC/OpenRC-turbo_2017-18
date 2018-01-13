@@ -70,11 +70,28 @@ public class LynxDatagram {
      * Two particular bytes identify the start of a valid Controller Module data packet
      */
     public static final byte[] frameBytes = new byte[]{0x44, 0x4b};
+
+    /**
+     * Does the indicated data begin with the framing bytes?
+     */
+    public static boolean beginsWithFraming(byte[] data) {
+        return data.length >= frameBytes.length && data[0] == frameBytes[0] && data[1] == frameBytes[1];
+    }
+
+    public static boolean beginsWithFraming(ByteBuffer buffer) {
+        return buffer.get() == frameBytes[0] && buffer.get() == frameBytes[1];
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // State
+    //----------------------------------------------------------------------------------------------
+
     /**
      * The Packet Length byte indicates the total size of the transmission, including Frame
      * Bytes and Checksum.
      */
     private short packetLength;
+
     /**
      * Every Controller Module in a system, regardless of where in the physical network topology it
      * is located, has a unique Module Address number. There may be up to 254 such modules (numbered
@@ -82,10 +99,8 @@ public class LynxDatagram {
      */
     private byte destModuleAddress;
 
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
     private byte sourceModuleAddress;
+
     /**
      * The Message Number is incremented for each new transmission from Host or Controller Module.
      * If an ACK is not received for any transmission within 100ms, the message should be re-transmitted
@@ -94,28 +109,37 @@ public class LynxDatagram {
      * bounded and provide for a reasonably prompt recovery from a transient failure.
      */
     private byte messageNumber;
+
     private byte referenceNumber;
+
     /**
      * This field indicates the purpose of the message. Any given packet type may or may not have
      * Payload Data. Response messages will have the same Command Number as the request command with
      * the addition of the 15th bit set.
      */
     private short packetId;
+
     /**
      * If a Command Code has Payload Data, that data is presented in this field
      */
     private byte[] payloadData;
+
     /**
      * A simple 8-bit (overflowing) checksum of the message packet bytes exclusive of the Frame
      * Bytes and the Checksum field itself.
      */
     private byte checksum;
+
     /**
      * If non-null, then this is the time window over which the payload of the datagram was received
      */
     private
     @Nullable
     TimeWindow payloadTimeWindow;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     public LynxDatagram() {
         this.destModuleAddress = 0;
@@ -140,33 +164,11 @@ public class LynxDatagram {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * Does the indicated data begin with the framing bytes?
-     */
-    public static boolean beginsWithFraming(byte[] data) {
-        return data.length >= frameBytes.length && data[0] == frameBytes[0] && data[1] == frameBytes[1];
-    }
-
-    public static boolean beginsWithFraming(ByteBuffer buffer) {
-        return buffer.get() == frameBytes[0] && buffer.get() == frameBytes[1];
-    }
-
-    //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public static int getFixedPacketLength() {
-        return 11;
-    }
-
-    private static byte checksumBytes(byte result, byte[] data) {
-        for (int ib = 0; ib < data.length; ib++) {
-            result += data[ib];
-        }
-        return result;
+    public void setPayloadTimeWindow(TimeWindow payloadTimeWindow) {
+        this.payloadTimeWindow = payloadTimeWindow;
     }
 
     public
@@ -175,16 +177,16 @@ public class LynxDatagram {
         return payloadTimeWindow == null ? new TimeWindow() : payloadTimeWindow;
     }
 
-    public void setPayloadTimeWindow(TimeWindow payloadTimeWindow) {
-        this.payloadTimeWindow = payloadTimeWindow;
-    }
-
     public int getPacketLength() {
         return TypeConversion.unsignedShortToInt(this.packetLength);
     }
 
     public void setPacketLength(int value) {
         this.packetLength = (byte) value;
+    }
+
+    public static int getFixedPacketLength() {
+        return 11;
     }
 
     public int updatePacketLength() {
@@ -270,6 +272,13 @@ public class LynxDatagram {
         result += this.referenceNumber;
         result = checksumBytes(result, TypeConversion.shortToByteArray(this.packetId, LYNX_ENDIAN));
         result = checksumBytes(result, this.payloadData);
+        return result;
+    }
+
+    private static byte checksumBytes(byte result, byte[] data) {
+        for (int ib = 0; ib < data.length; ib++) {
+            result += data[ib];
+        }
         return result;
     }
 

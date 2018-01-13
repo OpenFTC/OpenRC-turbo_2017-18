@@ -54,15 +54,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:id="@+id/action_blocks"
         android:orderInCategory="400"
         android:showAsAction="never"
-        android:title="@string/blocks_menu_item"
-        android:visible="false"/>
+        android:visible="false"
+        android:title="@string/blocks_menu_item"/>
 
     <item
         android:id="@+id/action_programming_mode"
         android:orderInCategory="500"
         android:showAsAction="never"
-        android:title="@string/programming_mode_menu_item"
-        android:visible="false"/>
+        android:visible="false"
+        android:title="@string/programming_mode_menu_item"/>
 
     <item
         android:id="@+id/action_program_and_manage"
@@ -78,14 +78,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <item
         android:id="@+id/action_about"
-        android:icon="@android:drawable/ic_menu_info_details"
         android:orderInCategory="999"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:title="@string/about_menu_item"/>
 
     <item
         android:id="@+id/action_exit_app"
-        android:icon="@android:drawable/ic_menu_info_details"
         android:orderInCategory="1000"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:title="@string/exit_menu_item"/>
 
 </menu>

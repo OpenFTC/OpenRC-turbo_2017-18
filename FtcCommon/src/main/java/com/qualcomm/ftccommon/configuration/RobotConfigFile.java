@@ -38,8 +38,8 @@ import android.support.annotation.XmlRes;
 import com.google.gson.JsonSyntaxException;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -59,13 +59,27 @@ import java.util.Collection;
 @SuppressWarnings("WeakerAccess")
 public class RobotConfigFile {
 
+    public enum FileLocation {
+        NONE,
+        LOCAL_STORAGE,
+        RESOURCE,
+    }
+
+    ;
+
     private final static String LOGGER_TAG = "RobotConfigFile";
+
     private String name;
     private
     @XmlRes
     int resourceId;
     private FileLocation location;
     private boolean isDirty;
+
+    public static RobotConfigFile noConfig(RobotConfigFileManager configFileManager) {
+        return new RobotConfigFile(configFileManager, configFileManager.noConfig);
+    }
+
     public RobotConfigFile(RobotConfigFileManager configFileManager, String name) {
         this.name = RobotConfigFileManager.stripFileNameExtension(name);
         this.resourceId = 0;
@@ -78,31 +92,6 @@ public class RobotConfigFile {
         this.resourceId = resourceId;
         this.location = FileLocation.RESOURCE;
         this.isDirty = false;
-    }
-
-    public static RobotConfigFile noConfig(RobotConfigFileManager configFileManager) {
-        return new RobotConfigFile(configFileManager, configFileManager.noConfig);
-    }
-
-    /*
-     * Gson will return null if the string is "null", and it will throw an exception if it
-     * can't parse the json into the appropriate object.  In both cases, we will return a new,
-     * empty RobotConfigFile.  Otherwise return the parsed object.
-     */
-    public static
-    @NonNull
-    RobotConfigFile fromString(RobotConfigFileManager configFileManager, String serializedForm) {
-        try {
-            RobotConfigFile file = SimpleGson.getInstance().fromJson(serializedForm, RobotConfigFile.class);
-            if (file == null) {
-                return noConfig(configFileManager);
-            } else {
-                return file;
-            }
-        } catch (JsonSyntaxException e) {
-            RobotLog.ee(LOGGER_TAG, "Could not parse the stored config file data from shared settings");
-            return noConfig(configFileManager);
-        }
     }
 
     public boolean isReadOnly() {
@@ -212,9 +201,24 @@ public class RobotConfigFile {
         return SimpleGson.getInstance().toJson(this);
     }
 
-    public enum FileLocation {
-        NONE,
-        LOCAL_STORAGE,
-        RESOURCE,
+    /*
+     * Gson will return null if the string is "null", and it will throw an exception if it
+     * can't parse the json into the appropriate object.  In both cases, we will return a new,
+     * empty RobotConfigFile.  Otherwise return the parsed object.
+     */
+    public static
+    @NonNull
+    RobotConfigFile fromString(RobotConfigFileManager configFileManager, String serializedForm) {
+        try {
+            RobotConfigFile file = SimpleGson.getInstance().fromJson(serializedForm, RobotConfigFile.class);
+            if (file == null) {
+                return noConfig(configFileManager);
+            } else {
+                return file;
+            }
+        } catch (JsonSyntaxException e) {
+            RobotLog.ee(LOGGER_TAG, "Could not parse the stored config file data from shared settings");
+            return noConfig(configFileManager);
+        }
     }
 }

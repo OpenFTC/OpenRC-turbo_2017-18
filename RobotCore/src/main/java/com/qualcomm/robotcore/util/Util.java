@@ -43,8 +43,9 @@ import java.util.Random;
  */
 public class Util {
 
-    public static final String LOWERCASE_ALPHA_NUM_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
     public static String ASCII_RECORD_SEPARATOR = "\u001e";
+
+    public static final String LOWERCASE_ALPHA_NUM_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
 
     /**
      * Get a random string of characters of specified length from a specified character set.

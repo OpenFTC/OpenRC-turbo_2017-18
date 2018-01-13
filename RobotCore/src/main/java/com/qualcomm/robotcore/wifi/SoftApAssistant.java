@@ -55,29 +55,28 @@ import java.util.List;
 
 public class SoftApAssistant extends NetworkConnection {
 
-    private final static String NETWORK_SSID_FILE = "FTC_RobotController_SSID.txt";
-    private final static String NETWORK_PASSWORD_FILE = "FTC_RobotController_password.txt";
     private static SoftApAssistant softApAssistant = null;
-    private static IntentFilter intentFilter;
-    private static String DEFAULT_PASSWORD = "password";
-    private static String DEFAULT_SSID = "FTC-1234";
+
     private final List<ScanResult> scanResults = new ArrayList<ScanResult>();
+
     private final WifiManager wifiManager;
-    String ssid = DEFAULT_SSID;
-    String password = DEFAULT_PASSWORD;
     private Context context = null;
     private Event lastEvent = null;
+
+    private static IntentFilter intentFilter;
     private BroadcastReceiver receiver;
+
+    private static String DEFAULT_PASSWORD = "password";
+    private static String DEFAULT_SSID = "FTC-1234";
+
+    String ssid = DEFAULT_SSID;
+    String password = DEFAULT_PASSWORD;
+
+    private final static String NETWORK_SSID_FILE = "FTC_RobotController_SSID.txt";
+    private final static String NETWORK_PASSWORD_FILE = "FTC_RobotController_password.txt";
+
     private NetworkConnectionCallback callback = null;
 
-
-    private SoftApAssistant(Context context) {
-
-        this.context = context;
-
-        wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-    }
 
     public synchronized static SoftApAssistant getSoftApAssistant(Context context) {
         if (softApAssistant == null) {
@@ -94,6 +93,14 @@ public class SoftApAssistant extends NetworkConnection {
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
         return softApAssistant;
+    }
+
+    private SoftApAssistant(Context context) {
+
+        this.context = context;
+
+        wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
     }
 
     public List<ScanResult> getScanResults() {

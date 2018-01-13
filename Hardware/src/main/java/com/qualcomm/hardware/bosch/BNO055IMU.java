@@ -81,10 +81,6 @@ public interface BNO055IMU {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    I2cAddr I2CADDR_UNSPECIFIED = I2cAddr.zero();
-    I2cAddr I2CADDR_DEFAULT = I2cAddr.create7bit(0x28);
-    I2cAddr I2CADDR_ALTERNATE = I2cAddr.create7bit(0x29);
-
     /**
      * Initialize the sensor using the indicated set of parameters. Note that the execution of
      * this method can take a fairly long while, possibly several tens of milliseconds.
@@ -93,10 +89,6 @@ public interface BNO055IMU {
      * @return whether initialization was successful or not
      */
     boolean initialize(@NonNull Parameters parameters);
-
-    //----------------------------------------------------------------------------------------------
-    // Reading sensor output
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns the parameters which which initialization was last attempted, if any
@@ -107,11 +99,130 @@ public interface BNO055IMU {
     Parameters getParameters();
 
     /**
+     * Instances of Parameters contain data indicating how a BNO055 absolute orientation
+     * sensor is to be initialized.
+     *
+     * @see #initialize(Parameters)
+     */
+    class Parameters implements Cloneable {
+        /**
+         * the address at which the sensor resides on the I2C bus.
+         */
+        public I2cAddr i2cAddr = I2CADDR_DEFAULT;
+
+        /**
+         * the mode we wish to use the sensor in
+         */
+        public SensorMode mode = SensorMode.IMU;
+
+        /**
+         * whether to use the external or internal 32.768khz crystal. External crystal
+         * use is recommended by the BNO055 specification.
+         */
+        public boolean useExternalCrystal = true;
+
+        /**
+         * units in which temperature are measured. See Section 3.6.1 (p31) of the BNO055 specification
+         */
+        public TempUnit temperatureUnit = TempUnit.CELSIUS;
+        /**
+         * units in which angles and angular rates are measured. See Section 3.6.1 (p31) of the BNO055 specification
+         */
+        public AngleUnit angleUnit = AngleUnit.RADIANS;
+        /**
+         * units in which accelerations are measured. See Section 3.6.1 (p31) of the BNO055 specification
+         */
+        public AccelUnit accelUnit = AccelUnit.METERS_PERSEC_PERSEC;
+        /**
+         * directional convention for measureing pitch angles. See Section 3.6.1 (p31) of the BNO055 specification
+         */
+        public PitchMode pitchMode = PitchMode.ANDROID;    // Section 3.6.2
+
+        /**
+         * accelerometer range. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
+         */
+        public AccelRange accelRange = AccelRange.G4;
+        /**
+         * accelerometer bandwidth. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
+         */
+        public AccelBandwidth accelBandwidth = AccelBandwidth.HZ62_5;
+        /**
+         * accelerometer power mode. See Section 3.5.2 (p27) and Section 4.2.2 (p77) of the BNO055 specification
+         */
+        public AccelPowerMode accelPowerMode = AccelPowerMode.NORMAL;
+
+        /**
+         * gyroscope range. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
+         */
+        public GyroRange gyroRange = GyroRange.DPS2000;
+        /**
+         * gyroscope bandwidth. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
+         */
+        public GyroBandwidth gyroBandwidth = GyroBandwidth.HZ32;
+        /**
+         * gyroscope power mode. See Section 3.5.2 (p27) and Section 4.4.4 (p78) of the BNO055 specification
+         */
+        public GyroPowerMode gyroPowerMode = GyroPowerMode.NORMAL;
+
+        /**
+         * magnetometer data rate. See Section 3.5.3 (p27) and Section 4.4.3 (p77) of the BNO055 specification
+         */
+        public MagRate magRate = MagRate.HZ10;
+        /**
+         * magnetometer op mode. See Section 3.5.3 (p27) and Section 4.4.3 (p77) of the BNO055 specification
+         */
+        public MagOpMode magOpMode = MagOpMode.REGULAR;
+        /**
+         * magnetometer power mode. See Section 3.5.3 (p27) and Section 4.4.3 (p77) of the BNO055 specification
+         */
+        public MagPowerMode magPowerMode = MagPowerMode.NORMAL;
+
+        /**
+         * Calibration data with which the BNO055 should be initialized. If calibrationData is non-null,
+         * it is used. Otherwise, if calibrationDataFile is non-null, it is used. Otherwise, only the default
+         * automatic calibration of the IMU is used
+         */
+        public CalibrationData calibrationData = null;
+        public String calibrationDataFile = null;
+
+        /**
+         * the algorithm to use for integrating acceleration to produce velocity and position.
+         * If not specified, a simple but not especially effective internal algorithm will be used.
+         *
+         * @see #startAccelerationIntegration(Position, Velocity, int)
+         */
+        public AccelerationIntegrator accelerationIntegrationAlgorithm = null;
+
+        /**
+         * debugging aid: enable logging for this device?
+         */
+        public boolean loggingEnabled = false;
+        /**
+         * debugging aid: the logging tag to use when logging
+         */
+        public String loggingTag = "AdaFruitIMU";
+
+        public Parameters clone() {
+            try {
+                Parameters result = (Parameters) super.clone();
+                result.calibrationData = result.calibrationData == null ? null : result.calibrationData.clone();
+                return result;
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException("internal error: Parameters can't be cloned");
+            }
+        }
+    }
+
+    /**
      * Shut down the sensor. This doesn't do anything in the hardware device itself, but rather
      * shuts down any resources (threads, etc) that we use to communicate with it. It is rare
      * that user code has a need to call this method.
      */
     void close();
+
+    //----------------------------------------------------------------------------------------------
+    // Reading sensor output
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns the absolute orientation of the sensor as a set three angles
@@ -178,10 +289,6 @@ public interface BNO055IMU {
      */
     Temperature getTemperature();
 
-    //----------------------------------------------------------------------------------------------
-    // Position and velocity management
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Returns the magnetic field strength experienced by the sensor. See Section 3.6.5.2 of
      * the BNO055 specification.
@@ -197,6 +304,10 @@ public interface BNO055IMU {
      * @see #getAngularOrientation()
      */
     Quaternion getQuaternionOrientation();
+
+    //----------------------------------------------------------------------------------------------
+    // Position and velocity management
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns the current position of the sensor as calculated by doubly integrating the observed
@@ -244,16 +355,67 @@ public interface BNO055IMU {
      */
     void startAccelerationIntegration(Position initialPosition, Velocity initialVelocity, int msPollInterval);
 
-    //----------------------------------------------------------------------------------------------
-    // Status inquiry
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Stop the integration thread if it is currently running.
      *
      * @see #startAccelerationIntegration(Position, Velocity, int)
      */
     void stopAccelerationIntegration();
+
+    /**
+     * {@link AccelerationIntegrator} encapsulates an algorithm for integrating
+     * acceleration information over time to produce velocity and position.
+     *
+     * @see BNO055IMU
+     */
+    interface AccelerationIntegrator {
+        /**
+         * (Re)initializes the algorithm with a starting position and velocity. Any timestamps that
+         * are present in these data are not to be considered as significant. The initial acceleration
+         * should be taken as undefined; you should set it to null when this method is called.
+         *
+         * @param parameters      configuration parameters for the IMU
+         * @param initialPosition If non-null, the current sensor position is set to this value. If
+         *                        null, the current sensor position is unchanged.
+         * @param initialVelocity If non-null, the current sensor velocity is set to this value. If
+         *                        null, the current sensor velocity is unchanged.
+         * @see #update(Acceleration)
+         */
+        void initialize(@NonNull Parameters parameters, @Nullable Position initialPosition, @Nullable Velocity initialVelocity);
+
+        /**
+         * Returns the current position as calculated by the algorithm
+         *
+         * @return the current position
+         */
+        Position getPosition();
+
+        /**
+         * Returns the current velocity as calculated by the algorithm
+         *
+         * @return the current velocity
+         */
+        Velocity getVelocity();
+
+        /**
+         * Returns the current acceleration as understood by the algorithm. This is typically
+         * just the value provided in the most recent call to {@link #update(Acceleration)}, if any.
+         *
+         * @return the current acceleration, or null if the current position is undefined
+         */
+        Acceleration getAcceleration();
+
+        /**
+         * Step the algorithm as a result of the stimulus of new acceleration data.
+         *
+         * @param linearAcceleration the acceleration as just reported by the IMU
+         */
+        void update(Acceleration linearAcceleration);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Status inquiry
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns the current status of the system.
@@ -339,6 +501,33 @@ public interface BNO055IMU {
     boolean isMagnetometerCalibrated();
 
     /**
+     * See Section 3.6.4 of the BNO055 Specification.
+     */
+    class CalibrationData implements Cloneable {
+        public short dxAccel, dyAccel, dzAccel; // units are milli-g's
+        public short dxMag, dyMag, dzMag;   // units are micro telsa
+        public short dxGyro, dyGyro, dzGyro;  // units are degrees / second
+        public short radiusAccel, radiusMag;    // units are unknown
+
+        public String serialize() {
+            return SimpleGson.getInstance().toJson(this);
+        }
+
+        public static CalibrationData deserialize(String data) {
+            return SimpleGson.getInstance().fromJson(data, CalibrationData.class);
+        }
+
+        public CalibrationData clone() {
+            try {
+                CalibrationData result = (CalibrationData) super.clone();
+                return result;
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException("internal error: CalibrationData can't be cloned");
+            }
+        }
+    }
+
+    /**
      * Read calibration data from the IMU which later can be restored with writeCalibrationData().
      * This might be persistently stored, and reapplied at a later power-on.
      * <p>
@@ -399,6 +588,10 @@ public interface BNO055IMU {
     // Enumerations to make all of the above work
     //----------------------------------------------------------------------------------------------
 
+    public static final I2cAddr I2CADDR_UNSPECIFIED = I2cAddr.zero();
+    public static final I2cAddr I2CADDR_DEFAULT = I2cAddr.create7bit(0x28);
+    public static final I2cAddr I2CADDR_ALTERNATE = I2cAddr.create7bit(0x29);
+
     enum TempUnit {
         CELSIUS(0), FARENHEIT(1);
         public final byte bVal;
@@ -415,6 +608,7 @@ public interface BNO055IMU {
             }
         }
     }
+
     enum AngleUnit {
         DEGREES(0), RADIANS(1);
         public final byte bVal;
@@ -431,6 +625,7 @@ public interface BNO055IMU {
             }
         }
     }
+
     enum AccelUnit {
         METERS_PERSEC_PERSEC(0), MILLI_EARTH_GRAVITY(1);
         public final byte bVal;
@@ -593,6 +788,31 @@ public interface BNO055IMU {
                 }
             }
             return UNKNOWN;
+        }
+    }
+
+    /**
+     * @see #getCalibrationStatus()
+     */
+    class CalibrationStatus {
+        public final byte calibrationStatus;
+
+        public CalibrationStatus(int calibrationStatus) {
+            this.calibrationStatus = (byte) calibrationStatus;
+        }
+
+        public
+        @Override
+        String toString() {
+            StringBuilder result = new StringBuilder();
+            result.append(String.format(Locale.getDefault(), "s%d", (calibrationStatus >> 6) & 0x03));  // SYS calibration status
+            result.append(" ");
+            result.append(String.format(Locale.getDefault(), "g%d", (calibrationStatus >> 4) & 0x03));  // GYR calibration status
+            result.append(" ");
+            result.append(String.format(Locale.getDefault(), "a%d", (calibrationStatus >> 2) & 0x03));  // ACC calibration status
+            result.append(" ");
+            result.append(String.format(Locale.getDefault(), "m%d", (calibrationStatus >> 0) & 0x03));  // MAG calibration status
+            return result.toString();
         }
     }
 
@@ -853,224 +1073,6 @@ public interface BNO055IMU {
 
         Register(int i) {
             this.bVal = (byte) i;
-        }
-    }
-
-    /**
-     * {@link AccelerationIntegrator} encapsulates an algorithm for integrating
-     * acceleration information over time to produce velocity and position.
-     *
-     * @see BNO055IMU
-     */
-    interface AccelerationIntegrator {
-        /**
-         * (Re)initializes the algorithm with a starting position and velocity. Any timestamps that
-         * are present in these data are not to be considered as significant. The initial acceleration
-         * should be taken as undefined; you should set it to null when this method is called.
-         *
-         * @param parameters      configuration parameters for the IMU
-         * @param initialPosition If non-null, the current sensor position is set to this value. If
-         *                        null, the current sensor position is unchanged.
-         * @param initialVelocity If non-null, the current sensor velocity is set to this value. If
-         *                        null, the current sensor velocity is unchanged.
-         * @see #update(Acceleration)
-         */
-        void initialize(@NonNull Parameters parameters, @Nullable Position initialPosition, @Nullable Velocity initialVelocity);
-
-        /**
-         * Returns the current position as calculated by the algorithm
-         *
-         * @return the current position
-         */
-        Position getPosition();
-
-        /**
-         * Returns the current velocity as calculated by the algorithm
-         *
-         * @return the current velocity
-         */
-        Velocity getVelocity();
-
-        /**
-         * Returns the current acceleration as understood by the algorithm. This is typically
-         * just the value provided in the most recent call to {@link #update(Acceleration)}, if any.
-         *
-         * @return the current acceleration, or null if the current position is undefined
-         */
-        Acceleration getAcceleration();
-
-        /**
-         * Step the algorithm as a result of the stimulus of new acceleration data.
-         *
-         * @param linearAcceleration the acceleration as just reported by the IMU
-         */
-        void update(Acceleration linearAcceleration);
-    }
-
-    /**
-     * Instances of Parameters contain data indicating how a BNO055 absolute orientation
-     * sensor is to be initialized.
-     *
-     * @see #initialize(Parameters)
-     */
-    class Parameters implements Cloneable {
-        /**
-         * the address at which the sensor resides on the I2C bus.
-         */
-        public I2cAddr i2cAddr = I2CADDR_DEFAULT;
-
-        /**
-         * the mode we wish to use the sensor in
-         */
-        public SensorMode mode = SensorMode.IMU;
-
-        /**
-         * whether to use the external or internal 32.768khz crystal. External crystal
-         * use is recommended by the BNO055 specification.
-         */
-        public boolean useExternalCrystal = true;
-
-        /**
-         * units in which temperature are measured. See Section 3.6.1 (p31) of the BNO055 specification
-         */
-        public TempUnit temperatureUnit = TempUnit.CELSIUS;
-        /**
-         * units in which angles and angular rates are measured. See Section 3.6.1 (p31) of the BNO055 specification
-         */
-        public AngleUnit angleUnit = AngleUnit.RADIANS;
-        /**
-         * units in which accelerations are measured. See Section 3.6.1 (p31) of the BNO055 specification
-         */
-        public AccelUnit accelUnit = AccelUnit.METERS_PERSEC_PERSEC;
-        /**
-         * directional convention for measureing pitch angles. See Section 3.6.1 (p31) of the BNO055 specification
-         */
-        public PitchMode pitchMode = PitchMode.ANDROID;    // Section 3.6.2
-
-        /**
-         * accelerometer range. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
-         */
-        public AccelRange accelRange = AccelRange.G4;
-        /**
-         * accelerometer bandwidth. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
-         */
-        public AccelBandwidth accelBandwidth = AccelBandwidth.HZ62_5;
-        /**
-         * accelerometer power mode. See Section 3.5.2 (p27) and Section 4.2.2 (p77) of the BNO055 specification
-         */
-        public AccelPowerMode accelPowerMode = AccelPowerMode.NORMAL;
-
-        /**
-         * gyroscope range. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
-         */
-        public GyroRange gyroRange = GyroRange.DPS2000;
-        /**
-         * gyroscope bandwidth. See Section 3.5.2 (p27) and Table 3-4 (p21) of the BNO055 specification
-         */
-        public GyroBandwidth gyroBandwidth = GyroBandwidth.HZ32;
-        /**
-         * gyroscope power mode. See Section 3.5.2 (p27) and Section 4.4.4 (p78) of the BNO055 specification
-         */
-        public GyroPowerMode gyroPowerMode = GyroPowerMode.NORMAL;
-
-        /**
-         * magnetometer data rate. See Section 3.5.3 (p27) and Section 4.4.3 (p77) of the BNO055 specification
-         */
-        public MagRate magRate = MagRate.HZ10;
-        /**
-         * magnetometer op mode. See Section 3.5.3 (p27) and Section 4.4.3 (p77) of the BNO055 specification
-         */
-        public MagOpMode magOpMode = MagOpMode.REGULAR;
-        /**
-         * magnetometer power mode. See Section 3.5.3 (p27) and Section 4.4.3 (p77) of the BNO055 specification
-         */
-        public MagPowerMode magPowerMode = MagPowerMode.NORMAL;
-
-        /**
-         * Calibration data with which the BNO055 should be initialized. If calibrationData is non-null,
-         * it is used. Otherwise, if calibrationDataFile is non-null, it is used. Otherwise, only the default
-         * automatic calibration of the IMU is used
-         */
-        public CalibrationData calibrationData = null;
-        public String calibrationDataFile = null;
-
-        /**
-         * the algorithm to use for integrating acceleration to produce velocity and position.
-         * If not specified, a simple but not especially effective internal algorithm will be used.
-         *
-         * @see #startAccelerationIntegration(Position, Velocity, int)
-         */
-        public AccelerationIntegrator accelerationIntegrationAlgorithm = null;
-
-        /**
-         * debugging aid: enable logging for this device?
-         */
-        public boolean loggingEnabled = false;
-        /**
-         * debugging aid: the logging tag to use when logging
-         */
-        public String loggingTag = "AdaFruitIMU";
-
-        public Parameters clone() {
-            try {
-                Parameters result = (Parameters) super.clone();
-                result.calibrationData = result.calibrationData == null ? null : result.calibrationData.clone();
-                return result;
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException("internal error: Parameters can't be cloned");
-            }
-        }
-    }
-
-    /**
-     * See Section 3.6.4 of the BNO055 Specification.
-     */
-    class CalibrationData implements Cloneable {
-        public short dxAccel, dyAccel, dzAccel; // units are milli-g's
-        public short dxMag, dyMag, dzMag;   // units are micro telsa
-        public short dxGyro, dyGyro, dzGyro;  // units are degrees / second
-        public short radiusAccel, radiusMag;    // units are unknown
-
-        public static CalibrationData deserialize(String data) {
-            return SimpleGson.getInstance().fromJson(data, CalibrationData.class);
-        }
-
-        public String serialize() {
-            return SimpleGson.getInstance().toJson(this);
-        }
-
-        public CalibrationData clone() {
-            try {
-                CalibrationData result = (CalibrationData) super.clone();
-                return result;
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException("internal error: CalibrationData can't be cloned");
-            }
-        }
-    }
-
-    /**
-     * @see #getCalibrationStatus()
-     */
-    class CalibrationStatus {
-        public final byte calibrationStatus;
-
-        public CalibrationStatus(int calibrationStatus) {
-            this.calibrationStatus = (byte) calibrationStatus;
-        }
-
-        public
-        @Override
-        String toString() {
-            StringBuilder result = new StringBuilder();
-            result.append(String.format(Locale.getDefault(), "s%d", (calibrationStatus >> 6) & 0x03));  // SYS calibration status
-            result.append(" ");
-            result.append(String.format(Locale.getDefault(), "g%d", (calibrationStatus >> 4) & 0x03));  // GYR calibration status
-            result.append(" ");
-            result.append(String.format(Locale.getDefault(), "a%d", (calibrationStatus >> 2) & 0x03));  // ACC calibration status
-            result.append(" ");
-            result.append(String.format(Locale.getDefault(), "m%d", (calibrationStatus >> 0) & 0x03));  // MAG calibration status
-            return result.toString();
         }
     }
 }

@@ -61,17 +61,29 @@ public class LynxServoController extends LynxController implements ServoControll
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxServoController";
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     public static final int apiServoFirst = LynxConstants.INITIAL_SERVO_PORT;
     public static final int apiServoLast = apiServoFirst + LynxConstants.NUMBER_OF_SERVO_CHANNELS - 1;
     public static final double apiPositionFirst = 0.0;
     public static final double apiPositionLast = 1.0;
-    protected final LastKnown<Double>[] lastKnownCommandedPosition;
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
+
+    protected final LastKnown<Double>[] lastKnownCommandedPosition;
     protected final LastKnown<Boolean>[] lastKnownEnabled;
     protected PwmControl.PwmRange[] pwmRanges;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public LynxServoController(final Context context, final LynxModule module)
             throws RobotCoreException, InterruptedException {
         super(context, module);
@@ -85,15 +97,6 @@ public class LynxServoController extends LynxController implements ServoControll
         }
 
         this.finishConstruction();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    protected String getTag() {
-        return TAG;
     }
 
     @Override

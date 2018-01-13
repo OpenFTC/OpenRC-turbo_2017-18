@@ -83,10 +83,6 @@ public class Command extends RobocolParsableBase implements Comparable<Command>,
         fromByteArray(byteArray);
     }
 
-    public static long generateTimestamp() {
-        return System.nanoTime();
-    }
-
     /**
      * The receiver should call this method before sending this command back to the sender
      */
@@ -261,5 +257,9 @@ public class Command extends RobocolParsableBase implements Comparable<Command>,
     @Override
     public int compare(Command c1, Command c2) {
         return c1.compareTo(c2);
+    }
+
+    public static long generateTimestamp() {
+        return System.nanoTime();
     }
 }

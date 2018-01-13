@@ -130,15 +130,6 @@ public class ServoImpl implements Servo {
     }
 
     /**
-     * Get the direction
-     *
-     * @return direction
-     */
-    public Direction getDirection() {
-        return direction;
-    }
-
-    /**
      * Set the direction
      *
      * @param direction direction
@@ -148,12 +139,37 @@ public class ServoImpl implements Servo {
     }
 
     /**
+     * Get the direction
+     *
+     * @return direction
+     */
+    public Direction getDirection() {
+        return direction;
+    }
+
+    /**
      * Get Channel
      *
      * @return channel
      */
     public int getPortNumber() {
         return portNumber;
+    }
+
+    /**
+     * Commands the servo to move to a designated position. This method initiates the movement;
+     * the servo will arrive at the commanded position at some later time.
+     *
+     * @param position the commanded servo position. Should be in the range [0.0, 1.0].
+     * @see #getPosition()
+     */
+    synchronized public void setPosition(double position) {
+        position = Range.clip(position, MIN_POSITION, MAX_POSITION);
+        if (direction == Direction.REVERSE) {
+            position = reverse(position);
+        }
+        double scaled = Range.scale(position, MIN_POSITION, MAX_POSITION, limitPositionMin, limitPositionMax);
+        internalSetPosition(scaled);
     }
 
     protected void internalSetPosition(double position) {
@@ -175,22 +191,6 @@ public class ServoImpl implements Servo {
         }
         double scaled = Range.scale(position, limitPositionMin, limitPositionMax, MIN_POSITION, MAX_POSITION);
         return Range.clip(scaled, MIN_POSITION, MAX_POSITION);
-    }
-
-    /**
-     * Commands the servo to move to a designated position. This method initiates the movement;
-     * the servo will arrive at the commanded position at some later time.
-     *
-     * @param position the commanded servo position. Should be in the range [0.0, 1.0].
-     * @see #getPosition()
-     */
-    synchronized public void setPosition(double position) {
-        position = Range.clip(position, MIN_POSITION, MAX_POSITION);
-        if (direction == Direction.REVERSE) {
-            position = reverse(position);
-        }
-        double scaled = Range.scale(position, MIN_POSITION, MAX_POSITION, limitPositionMin, limitPositionMax);
-        internalSetPosition(scaled);
     }
 
     /**

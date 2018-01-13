@@ -9,8 +9,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 
-import org.firstinspires.ftc.robotcore.internal.opmode.ClassFilter;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.opmode.ClassFilter;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -53,6 +53,27 @@ public class RobotConfigResFilter implements ClassFilter {
         clear();
     }
 
+    protected void clear() {
+        this.xmlIdCollection.clear();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public List<Integer> getXmlIds() {
+        return this.xmlIdCollection;
+    }
+
+    /*
+     * A simple method of checking to see if this xml file is a robot configuration file.
+     *
+     * Expects (e.g.) <Robot type="FirstInspires-FTC"> as the root XML element
+     */
+    private boolean isRobotConfiguration(XmlResourceParser xpp) {
+        return typeAttributeValue.equals(getRootAttribute(xpp, robotConfigRootTag, robotConfigRootTypeAttribute, null));
+    }
+
     /**
      * If the root element of the XML is the indicated tag, then returns the value of the
      * attributeName'd attribute thereof, or defaultValue if the attribute does not exist. If
@@ -78,27 +99,6 @@ public class RobotConfigResFilter implements ClassFilter {
         }
 
         return null;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    protected void clear() {
-        this.xmlIdCollection.clear();
-    }
-
-    public List<Integer> getXmlIds() {
-        return this.xmlIdCollection;
-    }
-
-    /*
-     * A simple method of checking to see if this xml file is a robot configuration file.
-     *
-     * Expects (e.g.) <Robot type="FirstInspires-FTC"> as the root XML element
-     */
-    private boolean isRobotConfiguration(XmlResourceParser xpp) {
-        return typeAttributeValue.equals(getRootAttribute(xpp, robotConfigRootTag, robotConfigRootTypeAttribute, null));
     }
 
     @Override

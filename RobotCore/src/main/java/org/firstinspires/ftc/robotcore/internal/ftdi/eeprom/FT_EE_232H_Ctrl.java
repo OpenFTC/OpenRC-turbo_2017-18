@@ -228,11 +228,23 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl {
                     eeprom.LoadD2XX = true;
                 }
 
-                eeprom.FT1248ClockPolarity = (data[0] & 256) > 0;
+                if ((data[0] & 256) > 0) {
+                    eeprom.FT1248ClockPolarity = true;
+                } else {
+                    eeprom.FT1248ClockPolarity = false;
+                }
 
-                eeprom.FT1248LSB = (data[0] & 512) > 0;
+                if ((data[0] & 512) > 0) {
+                    eeprom.FT1248LSB = true;
+                } else {
+                    eeprom.FT1248LSB = false;
+                }
 
-                eeprom.FT1248FlowControl = (data[0] & 1024) > 0;
+                if ((data[0] & 1024) > 0) {
+                    eeprom.FT1248FlowControl = true;
+                } else {
+                    eeprom.FT1248FlowControl = false;
+                }
 
                 if ((data[0] & '耀') > 0) {
                     eeprom.PowerSaveEnable = true;
@@ -257,9 +269,17 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl {
                         eeprom.AL_DriveCurrent = 3;
                 }
 
-                eeprom.AL_SlowSlew = (data[6] & 4) > 0;
+                if ((data[6] & 4) > 0) {
+                    eeprom.AL_SlowSlew = true;
+                } else {
+                    eeprom.AL_SlowSlew = false;
+                }
 
-                eeprom.AL_SchmittInput = (data[6] & 8) > 0;
+                if ((data[6] & 8) > 0) {
+                    eeprom.AL_SchmittInput = true;
+                } else {
+                    eeprom.AL_SchmittInput = false;
+                }
 
                 short data89X06 = (short) ((data[6] & 768) >> 8);
                 switch (data89X06) {
@@ -276,9 +296,17 @@ public class FT_EE_232H_Ctrl extends FT_EE_Ctrl {
                         eeprom.BL_DriveCurrent = 3;
                 }
 
-                eeprom.BL_SlowSlew = (data[6] & 1024) > 0;
+                if ((data[6] & 1024) > 0) {
+                    eeprom.BL_SlowSlew = true;
+                } else {
+                    eeprom.BL_SlowSlew = false;
+                }
 
-                eeprom.BL_SchmittInput = (data[6] & 2048) > 0;
+                if ((data[6] & 2048) > 0) {
+                    eeprom.BL_SchmittInput = true;
+                } else {
+                    eeprom.BL_SchmittInput = false;
+                }
 
                 short cbus0 = (short) (data[12] >> 0 & 15);
                 eeprom.CBus0 = (byte) cbus0;

@@ -36,8 +36,8 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.collections.CircularByteBuffer;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.collections.CircularByteBuffer;
 
 import java.io.IOException;
 import java.io.OutputStream;

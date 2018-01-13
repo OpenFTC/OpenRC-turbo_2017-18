@@ -34,9 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- see also RobotUsbDevice.getUsbIdentifiers() -->
 <resources>
     <usb-device
-        product-id="24577"
-        vendor-id="1027"/> <!-- FT232 Modern Robotics: 0x0403/0x6001 -->
+        vendor-id="1027"
+        product-id="24577"/> <!-- FT232 Modern Robotics: 0x0403/0x6001 -->
     <usb-device
-        product-id="24597"
-        vendor-id="1027"/> <!-- FT232 Lynx: 0x0403/0x6015 -->
+        vendor-id="1027"
+        product-id="24597"/> <!-- FT232 Lynx: 0x0403/0x6015 -->
 </resources>

@@ -57,32 +57,35 @@ public abstract class WifiStartStoppable {
     // Lock order: startStopLock, completionLock
     //------------------------------------------------------------------------------------------
 
-    protected final Object startStopLock = new Object();
-    protected final WifiDirectAgent wifiDirectAgent;
-    protected final StartResult wifiDirectAgentStarted = new StartResult();
-    private final ReentrantLock completionLock = new ReentrantLock();
+    public abstract String getTag();
+
     public boolean DEBUG = true;
     public boolean DEBUG_VERBOSE = false;
+
+    protected final Object startStopLock = new Object();
     protected int startCount = 0;
-    protected
-    @NonNull
-    ActionListenerFailure failureReason = ActionListenerFailure.UNKNOWN;
+    protected final WifiDirectAgent wifiDirectAgent;
+    protected final StartResult wifiDirectAgentStarted = new StartResult();
+
+    private final ReentrantLock completionLock = new ReentrantLock();
     private boolean completionSuccess = true;
     private Semaphore completionSemaphore = new Semaphore(0);
 
-    protected WifiStartStoppable(WifiDirectAgent wifiDirectAgent) {
-        this.wifiDirectAgent = wifiDirectAgent;
-    }
+    protected
+    @NonNull
+    ActionListenerFailure failureReason = ActionListenerFailure.UNKNOWN;
 
     //------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------
 
+    protected WifiStartStoppable(WifiDirectAgent wifiDirectAgent) {
+        this.wifiDirectAgent = wifiDirectAgent;
+    }
+
     protected WifiStartStoppable(int dummy) {
         this.wifiDirectAgent = (WifiDirectAgent) this;
     }
-
-    public abstract String getTag();
 
     //------------------------------------------------------------------------------------------
     // Accessing

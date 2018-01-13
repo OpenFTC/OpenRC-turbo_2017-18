@@ -56,340 +56,6 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal {
     // Types
     //----------------------------------------------------------------------------------------------
 
-    protected final Object theLock = new Object();
-    protected LineableContainer lines;
-    protected List<String> composedLines;
-    protected List<Runnable> actions;
-    protected LogImpl log;
-    protected ElapsedTime transmissionTimer;
-
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
-    protected boolean isDirty;
-    protected boolean clearOnAdd;
-    protected OpMode opMode;
-    protected boolean isAutoClear;
-    protected int msTransmissionInterval;
-    protected String captionValueSeparator;
-    protected String itemSeparator;
-
-    public TelemetryImpl(OpMode opMode) {
-        this.opMode = opMode;
-        resetTelemetryForOpMode();
-    }
-
-    protected static String getKey(int iLine) {
-        // Keys must be unique. If they start with nul, then they're not shown on the driver display.
-        // Historically, they were always shown, and sorted, so we used an *increasing sequence*
-        // of unrenderable strings.
-        return String.format("\0%c", 0x180 + iLine);
-    }
-
-    @Override
-    public void resetTelemetryForOpMode() {
-        this.lines = new LineableContainer();
-        this.composedLines = new ArrayList<String>();
-        this.actions = new LinkedList<Runnable>();
-        this.log = new LogImpl();
-        this.transmissionTimer = new ElapsedTime();
-        this.isDirty = false;
-        this.clearOnAdd = false;
-        this.isAutoClear = true;
-        this.msTransmissionInterval = 250;
-        this.captionValueSeparator = " : ";
-        this.itemSeparator = " | ";
-    }
-
-    void markDirty() {
-        this.isDirty = true;
-    }
-
-    void markClean() {
-        this.isDirty = false;
-    }
-
-    boolean isDirty() {
-        return this.isDirty;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public boolean update() {
-        return tryUpdate(UpdateReason.USER);
-    }
-
-    @Override
-    public boolean tryUpdateIfDirty() {
-        return tryUpdate(UpdateReason.IFDIRTY);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessors
-    //----------------------------------------------------------------------------------------------
-
-    protected boolean tryUpdate(UpdateReason updateReason) {
-        synchronized (theLock) {
-            boolean result = false;
-
-            boolean intervalElapsed = this.transmissionTimer.milliseconds() > msTransmissionInterval;
-
-            boolean wantToTransmit = updateReason == UpdateReason.USER
-                    || updateReason == UpdateReason.LOG
-                    || (updateReason == UpdateReason.IFDIRTY && (isDirty() || log.isDirty()));
-
-            boolean recompose = updateReason == UpdateReason.USER
-                    || isDirty();         // only way we get dirty is from a previous UpdateReason.USER
-
-            if (intervalElapsed && wantToTransmit) {
-                // Evaluate any delayed actions we've been asked to do
-                for (Runnable action : this.actions) {
-                    action.run();
-                }
-
-                // Build an object to cary our telemetry data
-                TelemetryMessage transmitter = new TelemetryMessage();
-                this.saveToTransmitter(recompose, transmitter);
-
-                // Transmit if there's anything to transmit
-                if (transmitter.hasData()) {
-                    OpModeManagerImpl.updateTelemetryNow(this.opMode, transmitter);
-                }
-
-                // We've definitely got nothing lingering to transmit
-                this.log.markClean();
-                markClean();
-
-                // Update for the next time around
-                this.transmissionTimer.reset();
-                result = true;
-            } else if (updateReason == UpdateReason.USER) {
-                // Next time we get an IFDIRTY update, we'll try again. Note that the log has its
-                // own independent dirty status; thus if *it* is dirty, then an IFDIRTY update will
-                // automatically try again.
-                this.markDirty();
-            }
-
-            // In all cases, if it's a user requesting the update, then the next add clears
-            if (updateReason == UpdateReason.USER) {
-                // Postponing the clear vs doing it right now allows future log updates to
-                // transmit before the user does more addData()
-                this.clearOnAdd = isAutoClear();
-            }
-
-            return result;
-        }
-    }
-
-    protected void saveToTransmitter(boolean recompose, TelemetryMessage transmitter) {
-        transmitter.setSorted(false);
-
-        // When we recompose, we save the composed lines. Thus, they will stick around
-        // even after we might get clear()'d. In that way, they'll still be there to
-        // transmit if a log() write should happen to occur after the clear() but before
-        // a subsequent user update().
-        if (recompose) {
-            this.composedLines = new ArrayList<String>();
-            for (Lineable lineable : this.lines) {
-                this.composedLines.add(lineable.getComposed(recompose));
-            }
-        }
-
-        // Add in the composed lines
-        int iLine = 0;
-        for (iLine = 0; iLine < this.composedLines.size(); iLine++) {
-            transmitter.addData(getKey(iLine), this.composedLines.get(iLine));
-        }
-
-        // Add in the log
-        int size = this.log.size();
-        for (int i = 0; i < size; i++) {
-            String s = this.log.getDisplayOrder() == Log.DisplayOrder.OLDEST_FIRST
-                    ? this.log.get(i)
-                    : this.log.get(size - 1 - i);
-            transmitter.addData(getKey(iLine), s);
-            iLine++;
-        }
-    }
-
-    @Override
-    public Log log() {
-        return this.log;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Updating
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public boolean isAutoClear() {
-        return this.isAutoClear;
-    }
-
-    @Override
-    public void setAutoClear(boolean autoClear) {
-        synchronized (theLock) {
-            this.isAutoClear = autoClear;
-        }
-    }
-
-    @Override
-    public int getMsTransmissionInterval() {
-        return this.msTransmissionInterval;
-    }
-
-    @Override
-    public void setMsTransmissionInterval(int msTransmissionInterval) {
-        synchronized (theLock) {
-            this.msTransmissionInterval = msTransmissionInterval;
-        }
-    }
-
-    @Override
-    public String getItemSeparator() {
-        return this.itemSeparator;
-    }
-
-    @Override
-    public void setItemSeparator(String itemSeparator) {
-        synchronized (theLock) {
-            this.itemSeparator = itemSeparator;
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessors
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public String getCaptionValueSeparator() {
-        return this.captionValueSeparator;
-    }
-
-    @Override
-    public void setCaptionValueSeparator(String captionValueSeparator) {
-        synchronized (theLock) {
-            this.captionValueSeparator = captionValueSeparator;
-        }
-    }
-
-    @Override
-    public Object addAction(Runnable action) {
-        synchronized (theLock) {
-            this.actions.add(action);
-            return action;
-        }
-    }
-
-    @Override
-    public boolean removeAction(Object token) {
-        synchronized (theLock) {
-            return this.actions.remove(token);
-        }
-    }
-
-    @Override
-    public Item addData(String caption, String format, Object... args) {
-        return this.lines.addItemAfter(null, caption, new Value(format, args));
-    }
-
-    @Override
-    public Item addData(String caption, Object value) {
-        return this.lines.addItemAfter(null, caption, new Value(value));
-    }
-
-    @Override
-    public <T> Item addData(String caption, Func<T> valueProducer) {
-        return this.lines.addItemAfter(null, caption, new Value<T>(valueProducer));
-    }
-
-    @Override
-    public <T> Item addData(String caption, String format, Func<T> valueProducer) {
-        return this.lines.addItemAfter(null, caption, new Value<T>(format, valueProducer));
-    }
-
-    @Override
-    public Line addLine() {
-        return this.lines.addLineAfter(null, "");
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Adding and removing data
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public Line addLine(String lineCaption) {
-        return this.lines.addLineAfter(null, lineCaption);
-    }
-
-    @Override
-    public boolean removeItem(Item item) {
-        if (item instanceof ItemImpl) {
-            ItemImpl itemImpl = (ItemImpl) item;
-            return itemImpl.parent.remove(itemImpl);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean removeLine(Line line) {
-        if (line instanceof LineImpl) {
-            LineImpl lineImpl = (LineImpl) line;
-            return lineImpl.parent.remove(lineImpl);
-        }
-        return false;
-    }
-
-    protected void onAddData() {
-        if (this.clearOnAdd) {
-            clear();
-            this.clearOnAdd = false;
-        }
-
-        // We no longer have anything to dirty-transmit when the timer expires
-        markClean();
-    }
-
-    @Override
-    public void clear() {
-        synchronized (theLock) {
-            this.clearOnAdd = false;
-            markClean();
-            //
-            this.lines.removeAllRecurse(new Predicate<ItemImpl>() {
-                @Override
-                public boolean apply(ItemImpl item) {
-                    return !item.isRetained();
-                }
-            });
-        }
-    }
-
-    @Override
-    public void clearAll() {
-        synchronized (theLock) {
-            this.clearOnAdd = false;
-            markClean();
-            //
-            this.actions.clear();
-            this.lines.removeAllRecurse(new Predicate<ItemImpl>() {
-                @Override
-                public boolean apply(ItemImpl item) {
-                    return true;
-                }
-            });
-        }
-    }
-
-    protected enum UpdateReason {USER, LOG, IFDIRTY}
-
-    protected interface Lineable {
-        String getComposed(boolean recompose);
-    }
-
     /**
      * A {@link Value} is what gets displayed to the right of the captions on the driver station
      */
@@ -461,6 +127,10 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal {
 
             return "";
         }
+    }
+
+    protected interface Lineable {
+        String getComposed(boolean recompose);
     }
 
     protected class LineableContainer implements Iterable<Lineable> {
@@ -845,6 +515,336 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal {
                 this.entries.clear();
                 this.markDirty();
             }
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // State
+    //----------------------------------------------------------------------------------------------
+
+    protected final Object theLock = new Object();
+    protected LineableContainer lines;
+    protected List<String> composedLines;
+    protected List<Runnable> actions;
+    protected LogImpl log;
+    protected ElapsedTime transmissionTimer;
+    protected boolean isDirty;
+    protected boolean clearOnAdd;
+    protected OpMode opMode;
+    protected boolean isAutoClear;
+    protected int msTransmissionInterval;
+    protected String captionValueSeparator;
+    protected String itemSeparator;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public TelemetryImpl(OpMode opMode) {
+        this.opMode = opMode;
+        resetTelemetryForOpMode();
+    }
+
+    @Override
+    public void resetTelemetryForOpMode() {
+        this.lines = new LineableContainer();
+        this.composedLines = new ArrayList<String>();
+        this.actions = new LinkedList<Runnable>();
+        this.log = new LogImpl();
+        this.transmissionTimer = new ElapsedTime();
+        this.isDirty = false;
+        this.clearOnAdd = false;
+        this.isAutoClear = true;
+        this.msTransmissionInterval = 250;
+        this.captionValueSeparator = " : ";
+        this.itemSeparator = " | ";
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessors
+    //----------------------------------------------------------------------------------------------
+
+    void markDirty() {
+        this.isDirty = true;
+    }
+
+    void markClean() {
+        this.isDirty = false;
+    }
+
+    boolean isDirty() {
+        return this.isDirty;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Updating
+    //----------------------------------------------------------------------------------------------
+
+    protected static String getKey(int iLine) {
+        // Keys must be unique. If they start with nul, then they're not shown on the driver display.
+        // Historically, they were always shown, and sorted, so we used an *increasing sequence*
+        // of unrenderable strings.
+        return String.format("\0%c", 0x180 + iLine);
+    }
+
+    @Override
+    public boolean update() {
+        return tryUpdate(UpdateReason.USER);
+    }
+
+    @Override
+    public boolean tryUpdateIfDirty() {
+        return tryUpdate(UpdateReason.IFDIRTY);
+    }
+
+    protected enum UpdateReason {USER, LOG, IFDIRTY}
+
+    protected boolean tryUpdate(UpdateReason updateReason) {
+        synchronized (theLock) {
+            boolean result = false;
+
+            boolean intervalElapsed = this.transmissionTimer.milliseconds() > msTransmissionInterval;
+
+            boolean wantToTransmit = updateReason == UpdateReason.USER
+                    || updateReason == UpdateReason.LOG
+                    || (updateReason == UpdateReason.IFDIRTY && (isDirty() || log.isDirty()));
+
+            boolean recompose = updateReason == UpdateReason.USER
+                    || isDirty();         // only way we get dirty is from a previous UpdateReason.USER
+
+            if (intervalElapsed && wantToTransmit) {
+                // Evaluate any delayed actions we've been asked to do
+                for (Runnable action : this.actions) {
+                    action.run();
+                }
+
+                // Build an object to cary our telemetry data
+                TelemetryMessage transmitter = new TelemetryMessage();
+                this.saveToTransmitter(recompose, transmitter);
+
+                // Transmit if there's anything to transmit
+                if (transmitter.hasData()) {
+                    OpModeManagerImpl.updateTelemetryNow(this.opMode, transmitter);
+                }
+
+                // We've definitely got nothing lingering to transmit
+                this.log.markClean();
+                markClean();
+
+                // Update for the next time around
+                this.transmissionTimer.reset();
+                result = true;
+            } else if (updateReason == UpdateReason.USER) {
+                // Next time we get an IFDIRTY update, we'll try again. Note that the log has its
+                // own independent dirty status; thus if *it* is dirty, then an IFDIRTY update will
+                // automatically try again.
+                this.markDirty();
+            }
+
+            // In all cases, if it's a user requesting the update, then the next add clears
+            if (updateReason == UpdateReason.USER) {
+                // Postponing the clear vs doing it right now allows future log updates to
+                // transmit before the user does more addData()
+                this.clearOnAdd = isAutoClear();
+            }
+
+            return result;
+        }
+    }
+
+    protected void saveToTransmitter(boolean recompose, TelemetryMessage transmitter) {
+        transmitter.setSorted(false);
+
+        // When we recompose, we save the composed lines. Thus, they will stick around
+        // even after we might get clear()'d. In that way, they'll still be there to
+        // transmit if a log() write should happen to occur after the clear() but before
+        // a subsequent user update().
+        if (recompose) {
+            this.composedLines = new ArrayList<String>();
+            for (Lineable lineable : this.lines) {
+                this.composedLines.add(lineable.getComposed(recompose));
+            }
+        }
+
+        // Add in the composed lines
+        int iLine = 0;
+        for (iLine = 0; iLine < this.composedLines.size(); iLine++) {
+            transmitter.addData(getKey(iLine), this.composedLines.get(iLine));
+        }
+
+        // Add in the log
+        int size = this.log.size();
+        for (int i = 0; i < size; i++) {
+            String s = this.log.getDisplayOrder() == Log.DisplayOrder.OLDEST_FIRST
+                    ? this.log.get(i)
+                    : this.log.get(size - 1 - i);
+            transmitter.addData(getKey(iLine), s);
+            iLine++;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessors
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public Log log() {
+        return this.log;
+    }
+
+    @Override
+    public boolean isAutoClear() {
+        return this.isAutoClear;
+    }
+
+    @Override
+    public void setAutoClear(boolean autoClear) {
+        synchronized (theLock) {
+            this.isAutoClear = autoClear;
+        }
+    }
+
+    @Override
+    public int getMsTransmissionInterval() {
+        return this.msTransmissionInterval;
+    }
+
+    @Override
+    public void setMsTransmissionInterval(int msTransmissionInterval) {
+        synchronized (theLock) {
+            this.msTransmissionInterval = msTransmissionInterval;
+        }
+    }
+
+    @Override
+    public String getItemSeparator() {
+        return this.itemSeparator;
+    }
+
+    @Override
+    public void setItemSeparator(String itemSeparator) {
+        synchronized (theLock) {
+            this.itemSeparator = itemSeparator;
+        }
+    }
+
+    @Override
+    public String getCaptionValueSeparator() {
+        return this.captionValueSeparator;
+    }
+
+    @Override
+    public void setCaptionValueSeparator(String captionValueSeparator) {
+        synchronized (theLock) {
+            this.captionValueSeparator = captionValueSeparator;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Adding and removing data
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public Object addAction(Runnable action) {
+        synchronized (theLock) {
+            this.actions.add(action);
+            return action;
+        }
+    }
+
+    @Override
+    public boolean removeAction(Object token) {
+        synchronized (theLock) {
+            return this.actions.remove((Runnable) token);
+        }
+    }
+
+    @Override
+    public Item addData(String caption, String format, Object... args) {
+        return this.lines.addItemAfter(null, caption, new Value(format, args));
+    }
+
+    @Override
+    public Item addData(String caption, Object value) {
+        return this.lines.addItemAfter(null, caption, new Value(value));
+    }
+
+    @Override
+    public <T> Item addData(String caption, Func<T> valueProducer) {
+        return this.lines.addItemAfter(null, caption, new Value<T>(valueProducer));
+    }
+
+    @Override
+    public <T> Item addData(String caption, String format, Func<T> valueProducer) {
+        return this.lines.addItemAfter(null, caption, new Value<T>(format, valueProducer));
+    }
+
+    @Override
+    public Line addLine() {
+        return this.lines.addLineAfter(null, "");
+    }
+
+    @Override
+    public Line addLine(String lineCaption) {
+        return this.lines.addLineAfter(null, lineCaption);
+    }
+
+    @Override
+    public boolean removeItem(Item item) {
+        if (item instanceof ItemImpl) {
+            ItemImpl itemImpl = (ItemImpl) item;
+            return itemImpl.parent.remove(itemImpl);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeLine(Line line) {
+        if (line instanceof LineImpl) {
+            LineImpl lineImpl = (LineImpl) line;
+            return lineImpl.parent.remove(lineImpl);
+        }
+        return false;
+    }
+
+    protected void onAddData() {
+        if (this.clearOnAdd) {
+            clear();
+            this.clearOnAdd = false;
+        }
+
+        // We no longer have anything to dirty-transmit when the timer expires
+        markClean();
+    }
+
+    @Override
+    public void clear() {
+        synchronized (theLock) {
+            this.clearOnAdd = false;
+            markClean();
+            //
+            this.lines.removeAllRecurse(new Predicate<ItemImpl>() {
+                @Override
+                public boolean apply(ItemImpl item) {
+                    return !item.isRetained();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void clearAll() {
+        synchronized (theLock) {
+            this.clearOnAdd = false;
+            markClean();
+            //
+            this.actions.clear();
+            this.lines.removeAllRecurse(new Predicate<ItemImpl>() {
+                @Override
+                public boolean apply(ItemImpl item) {
+                    return true;
+                }
+            });
         }
     }
 }

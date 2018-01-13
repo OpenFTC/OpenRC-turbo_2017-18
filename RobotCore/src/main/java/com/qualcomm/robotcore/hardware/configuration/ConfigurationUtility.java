@@ -81,54 +81,9 @@ public class ConfigurationUtility {
     // Name management
     //----------------------------------------------------------------------------------------------
 
-    protected static List<DeviceConfiguration> buildEmptyDevices(int initialPort, int size, ConfigurationType type) {
-        ArrayList<DeviceConfiguration> list = new ArrayList<DeviceConfiguration>();
-        for (int i = 0; i < size; i++) {
-            list.add(new DeviceConfiguration(i + initialPort, type, DeviceConfiguration.DISABLED_DEVICE_NAME, false));
-        }
-        return list;
-    }
-
-    protected static List<MotorConfiguration> buildEmptyMotors(int initialPort, int size) {
-        return buildEmptyMotors(initialPort, size, MotorConfigurationType.getUnspecifiedMotorType());
-    }
-
-    protected static List<MotorConfiguration> buildEmptyMotors(int initialPort, int size, ConfigurationType type) {
-        ArrayList<MotorConfiguration> list = new ArrayList<MotorConfiguration>();
-        Assert.assertTrue(type.isDeviceFlavor(UserConfigurationType.Flavor.MOTOR));
-        for (int i = 0; i < size; i++) {
-            MotorConfiguration motorConfiguration = new MotorConfiguration(i + initialPort, DeviceConfiguration.DISABLED_DEVICE_NAME, false);
-            Assert.assertTrue(motorConfiguration.getConfigurationType() == MotorConfigurationType.getUnspecifiedMotorType());
-            motorConfiguration.setConfigurationType(type);
-            list.add(motorConfiguration);
-        }
-        return list;
-    }
-
-    protected static List<ServoConfiguration> buildEmptyServos(int initialPort, int size) {
-        return buildEmptyServos(initialPort, size, BuiltInConfigurationType.SERVO);
-    }
-
-    protected static List<ServoConfiguration> buildEmptyServos(int initialPort, int size, ConfigurationType type) {
-        ArrayList<ServoConfiguration> list = new ArrayList<ServoConfiguration>();
-        Assert.assertTrue(type == BuiltInConfigurationType.SERVO || type == BuiltInConfigurationType.CONTINUOUS_ROTATION_SERVO);
-        for (int i = 0; i < size; i++) {
-            list.add(new ServoConfiguration(i + initialPort, type, DeviceConfiguration.DISABLED_DEVICE_NAME, false));
-        }
-        return list;
-    }
-
-    protected static List<LynxI2cDeviceConfiguration> buildEmptyLynxI2cDevices() {
-        return new LinkedList<LynxI2cDeviceConfiguration>();
-    }
-
     public void resetNameUniquifiers() {
         existingNames = new HashSet<String>();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Building *new* configurations
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Historical policy is that all names are in a single flat name space. We could perhaps
@@ -176,16 +131,16 @@ public class ConfigurationUtility {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Building *new* configurations
+    //----------------------------------------------------------------------------------------------
+
     public MotorControllerConfiguration buildNewModernMotorController(SerialNumber serialNumber) {
         List<MotorConfiguration> motors = buildEmptyMotors(ModernRoboticsConstants.INITIAL_MOTOR_PORT, ModernRoboticsConstants.NUMBER_OF_MOTORS);
         String name = createUniqueName(BuiltInConfigurationType.MOTOR_CONTROLLER, R.string.counted_motor_controller_name);
         MotorControllerConfiguration motorController = new MotorControllerConfiguration(name, motors, serialNumber);
         return motorController;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Supporting methods
-    //----------------------------------------------------------------------------------------------
 
     public ServoControllerConfiguration buildNewModernServoController(SerialNumber serialNumber) {
         List<ServoConfiguration> servos = buildEmptyServos(ModernRoboticsConstants.INITIAL_SERVO_PORT, ModernRoboticsConstants.NUMBER_OF_SERVOS);
@@ -279,6 +234,51 @@ public class ConfigurationUtility {
         controllerConfiguration.setSystemSynthetic(true);
         //
         return controllerConfiguration;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Supporting methods
+    //----------------------------------------------------------------------------------------------
+
+    protected static List<DeviceConfiguration> buildEmptyDevices(int initialPort, int size, ConfigurationType type) {
+        ArrayList<DeviceConfiguration> list = new ArrayList<DeviceConfiguration>();
+        for (int i = 0; i < size; i++) {
+            list.add(new DeviceConfiguration(i + initialPort, type, DeviceConfiguration.DISABLED_DEVICE_NAME, false));
+        }
+        return list;
+    }
+
+    protected static List<MotorConfiguration> buildEmptyMotors(int initialPort, int size) {
+        return buildEmptyMotors(initialPort, size, MotorConfigurationType.getUnspecifiedMotorType());
+    }
+
+    protected static List<MotorConfiguration> buildEmptyMotors(int initialPort, int size, ConfigurationType type) {
+        ArrayList<MotorConfiguration> list = new ArrayList<MotorConfiguration>();
+        Assert.assertTrue(type.isDeviceFlavor(UserConfigurationType.Flavor.MOTOR));
+        for (int i = 0; i < size; i++) {
+            MotorConfiguration motorConfiguration = new MotorConfiguration(i + initialPort, DeviceConfiguration.DISABLED_DEVICE_NAME, false);
+            Assert.assertTrue(motorConfiguration.getConfigurationType() == MotorConfigurationType.getUnspecifiedMotorType());
+            motorConfiguration.setConfigurationType(type);
+            list.add(motorConfiguration);
+        }
+        return list;
+    }
+
+    protected static List<ServoConfiguration> buildEmptyServos(int initialPort, int size) {
+        return buildEmptyServos(initialPort, size, BuiltInConfigurationType.SERVO);
+    }
+
+    protected static List<ServoConfiguration> buildEmptyServos(int initialPort, int size, ConfigurationType type) {
+        ArrayList<ServoConfiguration> list = new ArrayList<ServoConfiguration>();
+        Assert.assertTrue(type == BuiltInConfigurationType.SERVO || type == BuiltInConfigurationType.CONTINUOUS_ROTATION_SERVO);
+        for (int i = 0; i < size; i++) {
+            list.add(new ServoConfiguration(i + initialPort, type, DeviceConfiguration.DISABLED_DEVICE_NAME, false));
+        }
+        return list;
+    }
+
+    protected static List<LynxI2cDeviceConfiguration> buildEmptyLynxI2cDevices() {
+        return new LinkedList<LynxI2cDeviceConfiguration>();
     }
 
     protected LynxModuleConfiguration buildEmptyLynxModule(String name, int moduleAddress, boolean isParent, boolean isEnabled) {

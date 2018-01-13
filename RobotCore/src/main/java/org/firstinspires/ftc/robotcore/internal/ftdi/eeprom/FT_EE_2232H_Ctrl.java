@@ -35,8 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.ftdi.eeprom;
 
-import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceIOException;
+import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 /**
@@ -297,7 +297,11 @@ public class FT_EE_2232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data15x00 = (short) ((var24 & '耀') >> 15);
-                eeprom.PowerSaveEnable = data15x00 == 1;
+                if (data15x00 == 1) {
+                    eeprom.PowerSaveEnable = true;
+                } else {
+                    eeprom.PowerSaveEnable = false;
+                }
 
                 eeprom.VendorId = (short) data[1];
                 eeprom.ProductId = (short) data[2];
@@ -319,10 +323,18 @@ public class FT_EE_2232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data2x06 = (short) (data[6] & 4);
-                eeprom.AL_SlowSlew = data2x06 == 4;
+                if (data2x06 == 4) {
+                    eeprom.AL_SlowSlew = true;
+                } else {
+                    eeprom.AL_SlowSlew = false;
+                }
 
                 short data3x06 = (short) (data[6] & 8);
-                eeprom.AL_SchmittInput = data3x06 == 8;
+                if (data3x06 == 8) {
+                    eeprom.AL_SchmittInput = true;
+                } else {
+                    eeprom.AL_SchmittInput = false;
+                }
 
                 short data45x06 = (short) ((data[6] & 48) >> 4);
                 switch (data45x06) {
@@ -340,10 +352,18 @@ public class FT_EE_2232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data6x06 = (short) (data[6] & 64);
-                eeprom.AH_SlowSlew = data6x06 == 64;
+                if (data6x06 == 64) {
+                    eeprom.AH_SlowSlew = true;
+                } else {
+                    eeprom.AH_SlowSlew = false;
+                }
 
                 short data7x06 = (short) (data[6] & 128);
-                eeprom.AH_SchmittInput = data7x06 == 128;
+                if (data7x06 == 128) {
+                    eeprom.AH_SchmittInput = true;
+                } else {
+                    eeprom.AH_SchmittInput = false;
+                }
 
                 short data89X06 = (short) ((data[6] & 768) >> 8);
                 switch (data89X06) {
@@ -361,10 +381,18 @@ public class FT_EE_2232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data10x06 = (short) (data[6] & 1024);
-                eeprom.BL_SlowSlew = data10x06 == 1024;
+                if (data10x06 == 1024) {
+                    eeprom.BL_SlowSlew = true;
+                } else {
+                    eeprom.BL_SlowSlew = false;
+                }
 
                 short data11x06 = (short) (data[6] & 2048);
-                eeprom.BL_SchmittInput = data7x06 == 2048;
+                if (data7x06 == 2048) {
+                    eeprom.BL_SchmittInput = true;
+                } else {
+                    eeprom.BL_SchmittInput = false;
+                }
 
                 short data1213X06 = (short) ((data[6] & 12288) >> 12);
                 switch (data1213X06) {
@@ -382,10 +410,18 @@ public class FT_EE_2232H_Ctrl extends FT_EE_Ctrl {
                 }
 
                 short data14x06 = (short) (data[6] & 16384);
-                eeprom.BH_SlowSlew = data14x06 == 16384;
+                if (data14x06 == 16384) {
+                    eeprom.BH_SlowSlew = true;
+                } else {
+                    eeprom.BH_SlowSlew = false;
+                }
 
                 short data15x06 = (short) (data[6] & '耀');
-                eeprom.BH_SchmittInput = data15x06 == '耀';
+                if (data15x06 == '耀') {
+                    eeprom.BH_SchmittInput = true;
+                } else {
+                    eeprom.BH_SchmittInput = false;
+                }
 
                 short datax0B = (short) ((data[11] & 24) >> 3);
                 if (datax0B < 4) {

@@ -52,12 +52,6 @@ import java.util.concurrent.TimeUnit;
 public interface EventLoop {
 
     /**
-     * The value to pass to {@link #refreshUserTelemetry(TelemetryMessage, double)} as the time interval
-     * parameter in order to cause a system default interval to be used.
-     */
-    double TELEMETRY_DEFAULT_INTERVAL = Double.NaN;
-
-    /**
      * Init method, this will be called before the first call to loop. You should set up
      * your hardware in this method.
      * <p>
@@ -90,6 +84,12 @@ public interface EventLoop {
      * @param sInterval the required minimum interval. NaN indicates that a system default interval should be used.
      */
     void refreshUserTelemetry(TelemetryMessage telemetry, double sInterval);
+
+    /**
+     * The value to pass to {@link #refreshUserTelemetry(TelemetryMessage, double)} as the time interval
+     * parameter in order to cause a system default interval to be used.
+     */
+    double TELEMETRY_DEFAULT_INTERVAL = Double.NaN;
 
     /**
      * Teardown method, this will be called after the last call to loop. You should place your robot

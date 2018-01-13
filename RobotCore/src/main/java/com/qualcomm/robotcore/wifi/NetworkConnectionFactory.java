@@ -32,6 +32,7 @@ package com.qualcomm.robotcore.wifi;
 
 import android.content.Context;
 
+import com.qualcomm.robotcore.util.Network;
 import com.qualcomm.robotcore.util.RobotLog;
 
 public class NetworkConnectionFactory {

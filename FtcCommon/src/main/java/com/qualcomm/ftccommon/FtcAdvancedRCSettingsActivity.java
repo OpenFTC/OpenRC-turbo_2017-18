@@ -40,8 +40,8 @@ import android.preference.PreferenceFragment;
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
@@ -56,36 +56,17 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcAdvancedRCSettingsActivity";
-    protected static final String CLIENT_CONNECTED = "CLIENT_CONNECTED";
-
-    //----------------------------------------------------------------------------------------------
-    // Life Cycle
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public String getTag() {
         return TAG;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_generic_settings);
+    //----------------------------------------------------------------------------------------------
+    // Life Cycle
+    //----------------------------------------------------------------------------------------------
 
-        // Always make sure we have a real device name before we launch
-        DeviceNameManager.getInstance().initializeDeviceNameIfNecessary();
-
-        // Display the fragment as the main content.
-        SettingsFragment settingsFragment = new SettingsFragment();
-        Bundle arguments = new Bundle();
-        arguments.putBoolean(CLIENT_CONNECTED, new PreferencesHelper(TAG, this).readBoolean(getString(R.string.pref_rc_connected), false));
-        settingsFragment.setArguments(arguments);
-
-        getFragmentManager()
-                .beginTransaction()
-                .replace(android.R.id.content, settingsFragment)
-                .commit();
-    }
+    protected static final String CLIENT_CONNECTED = "CLIENT_CONNECTED";
 
     public static class SettingsFragment extends PreferenceFragment {
         protected boolean clientConnected = false;
@@ -128,6 +109,26 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity {
 
             RobotLog.vv(TAG, "clientConnected=%s", clientConnected);
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_generic_settings);
+
+        // Always make sure we have a real device name before we launch
+        DeviceNameManager.getInstance().initializeDeviceNameIfNecessary();
+
+        // Display the fragment as the main content.
+        SettingsFragment settingsFragment = new SettingsFragment();
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(CLIENT_CONNECTED, new PreferencesHelper(TAG, this).readBoolean(getString(R.string.pref_rc_connected), false));
+        settingsFragment.setArguments(arguments);
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, settingsFragment)
+                .commit();
     }
 
 }

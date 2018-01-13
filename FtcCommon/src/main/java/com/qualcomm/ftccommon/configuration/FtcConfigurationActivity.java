@@ -73,10 +73,10 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.wifi.NetworkConnection;
 
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
-import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.IOException;
@@ -93,30 +93,27 @@ public class FtcConfigurationActivity extends EditActivity implements RecvLoopRu
     // State
     //------------------------------------------------------------------------------------------------
 
-    public static final String TAG = "FtcConfigTag";
-    public static final RequestCode requestCode = RequestCode.EDIT_FILE;
     protected static final boolean DEBUG = false;
-    protected final Object robotConfigMapLock = new Object();
-    protected USBScanManager usbScanManager = null;
-    protected ThreadPool.Singleton scanButtonSingleton = new ThreadPool.Singleton();
-    protected int idFeedbackAnchor = R.id.feedbackAnchor;
-    protected Semaphore feedbackPosted = new Semaphore(0);
-    protected long msSaveSplashDelay = 1000;
-    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    DialogInterface.OnClickListener doNothingAndCloseListener = new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int button) {
-            // Do nothing. Dialog will dismiss itself upon return.
-        }
-    };
-
-    //------------------------------------------------------------------------------------------------
-    // Life cycle
-    //------------------------------------------------------------------------------------------------
+    public static final String TAG = "FtcConfigTag";
 
     @Override
     public String getTag() {
         return TAG;
     }
+
+    public static final RequestCode requestCode = RequestCode.EDIT_FILE;
+
+    protected USBScanManager usbScanManager = null;
+    protected ThreadPool.Singleton scanButtonSingleton = new ThreadPool.Singleton();
+    protected final Object robotConfigMapLock = new Object();
+    protected int idFeedbackAnchor = R.id.feedbackAnchor;
+    protected Semaphore feedbackPosted = new Semaphore(0);
+    protected long msSaveSplashDelay = 1000;
+    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
+
+    //------------------------------------------------------------------------------------------------
+    // Life cycle
+    //------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,16 +192,22 @@ public class FtcConfigurationActivity extends EditActivity implements RecvLoopRu
         }
     }
 
-    //------------------------------------------------------------------------------------------------
-    // Life cycle support
-    //------------------------------------------------------------------------------------------------
-
     @Override
     protected void onDestroy() {
         RobotLog.vv(TAG, "FtcConfigurationActivity.onDestroy()");
         super.onDestroy();
         stopExecutorService();
     }
+
+    //------------------------------------------------------------------------------------------------
+    // Life cycle support
+    //------------------------------------------------------------------------------------------------
+
+    DialogInterface.OnClickListener doNothingAndCloseListener = new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int button) {
+            // Do nothing. Dialog will dismiss itself upon return.
+        }
+    };
 
     public void onDevicesInfoButtonPressed(View v) {
         RobotLog.vv(TAG, "onDevicesInfoButtonPressed()");

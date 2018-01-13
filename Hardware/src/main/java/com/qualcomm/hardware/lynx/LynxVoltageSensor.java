@@ -50,15 +50,15 @@ public class LynxVoltageSensor extends LynxController implements VoltageSensor {
 
     public static final String TAG = "LynxVoltageSensor";
 
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     public LynxVoltageSensor(final Context context, final LynxModule module)
             throws RobotCoreException, InterruptedException {
         super(context, module);
         finishConstruction();
-    }
-
-    @Override
-    protected String getTag() {
-        return TAG;
     }
 
     //----------------------------------------------------------------------------------------------

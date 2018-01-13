@@ -47,14 +47,56 @@ import java.util.Set;
 @SuppressWarnings("WeakerAccess")
 public class MatrixDcMotorController implements DcMotorController {
 
+    /*
+     * Controller properties caches.
+     */
+    private class MotorProperties {
+
+        public MotorProperties(int motor) {
+            target = 0;
+            position = 0;
+            mode = 0;
+            power = 0.0;
+            floating = true;
+            runMode = DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+            zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
+            // Note: we default to the legacy, 9.6v motor
+            motorType = MotorConfigurationType.getMotorType(MatrixLegacyMotor.class);
+        }
+
+        public int target;
+        public int position;
+        public byte mode;
+        public boolean floating;
+        public double power;
+        public DcMotor.RunMode runMode;
+        public DcMotor.ZeroPowerBehavior zeroPowerBehavior;
+        public MotorConfigurationType motorType;
+    }
+
+    /*
+     * Waste the zero element for ease of indexing.
+     */
+    private MotorProperties[] motorCache = {
+            new MotorProperties(1), new MotorProperties(1), new MotorProperties(2), new MotorProperties(3), new MotorProperties(4)
+    };
+
+    /**
+     * Used to help implement setMotorPower for a set of motors
+     */
+    private boolean pendMotorPowerChanges = false;
+
     public static final byte POWER_MAX = 0x64;
     public static final byte POWER_MIN = -0x64;
+
     protected static final double apiPowerMin = -1.0;
     protected static final double apiPowerMax = 1.0;
+
     /*
      * Motors float.  No PID, no encoders.
      */
     private final static byte CHANNEL_MODE_FLAG_SELECT_FLOAT = 0x00;
+
     /*
      * Run without PID control, but with motor braking
      */
@@ -71,6 +113,7 @@ public class MatrixDcMotorController implements DcMotorController {
      * Reset position encoder to zero
      */
     private final static byte CHANNEL_MODE_FLAG_SELECT_RESET = 0x04;
+
     private static final byte I2C_DATA_OFFSET = 0x04;
     private static final byte MODE_PENDING_BIT = 0x08;
     private static final byte SPEED_STOPPED = 0;
@@ -79,18 +122,10 @@ public class MatrixDcMotorController implements DcMotorController {
     private static final int BATTERY_UNITS = 40;
     private static final int POSITION_DATA_SIZE = 4;
     private static final int TARGET_DATA_SIZE = 4;
+
     protected MatrixMasterController master;
-    /*
-     * Waste the zero element for ease of indexing.
-     */
-    private MotorProperties[] motorCache = {
-            new MotorProperties(1), new MotorProperties(1), new MotorProperties(2), new MotorProperties(3), new MotorProperties(4)
-    };
-    /**
-     * Used to help implement setMotorPower for a set of motors
-     */
-    private boolean pendMotorPowerChanges = false;
     private int batteryVal;
+
     public MatrixDcMotorController(MatrixMasterController master) {
         this.master = master;
         this.batteryVal = 0;
@@ -156,7 +191,11 @@ public class MatrixDcMotorController implements DcMotorController {
 
         master.waitOnRead();
 
-        return (motorCache[transaction.motor].mode & 0x80) != 0;
+        if ((motorCache[transaction.motor].mode & 0x80) != 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -170,6 +209,7 @@ public class MatrixDcMotorController implements DcMotorController {
         this.throwIfMotorIsInvalid(motor);
         return motorCache[motor].motorType;
     }
+
 
     /*
      * Careful with the reset at it resets the entire motor.
@@ -208,7 +248,11 @@ public class MatrixDcMotorController implements DcMotorController {
     }
 
     void setFloatingFromMode(int motor) {
-        motorCache[motor].floating = motorCache[motor].runMode == DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+        if (motorCache[motor].runMode == DcMotor.RunMode.STOP_AND_RESET_ENCODER) {
+            motorCache[motor].floating = true;
+        } else {
+            motorCache[motor].floating = false;
+        }
     }
 
     @Override
@@ -446,33 +490,6 @@ public class MatrixDcMotorController implements DcMotorController {
         if (motor < 1 || motor > MAX_NUM_MOTORS) {
             throw new IllegalArgumentException(
                     String.format("Motor %d is invalid; valid motors are %d..%d", motor, MatrixConstants.INITIAL_MOTOR_PORT, MAX_NUM_MOTORS));
-        }
-    }
-
-    /*
-     * Controller properties caches.
-     */
-    private class MotorProperties {
-
-        public int target;
-        public int position;
-        public byte mode;
-        public boolean floating;
-        public double power;
-        public DcMotor.RunMode runMode;
-        public DcMotor.ZeroPowerBehavior zeroPowerBehavior;
-        public MotorConfigurationType motorType;
-
-        public MotorProperties(int motor) {
-            target = 0;
-            position = 0;
-            mode = 0;
-            power = 0.0;
-            floating = true;
-            runMode = DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-            zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE;
-            // Note: we default to the legacy, 9.6v motor
-            motorType = MotorConfigurationType.getMotorType(MatrixLegacyMotor.class);
         }
     }
 }

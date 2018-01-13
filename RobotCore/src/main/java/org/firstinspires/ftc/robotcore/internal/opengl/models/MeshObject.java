@@ -14,6 +14,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public abstract class MeshObject {
+    public enum BUFFER_TYPE {
+        BUFFER_TYPE_VERTEX, BUFFER_TYPE_TEXTURE_COORD, BUFFER_TYPE_NORMALS, BUFFER_TYPE_INDICES
+    }
+
     public Buffer getVertices() {
         return getBuffer(BUFFER_TYPE.BUFFER_TYPE_VERTEX);
     }
@@ -73,9 +77,5 @@ public abstract class MeshObject {
     public abstract int getNumObjectVertex();
 
     public abstract int getNumObjectIndex();
-
-    public enum BUFFER_TYPE {
-        BUFFER_TYPE_VERTEX, BUFFER_TYPE_TEXTURE_COORD, BUFFER_TYPE_NORMALS, BUFFER_TYPE_INDICES
-    }
 }
 

@@ -63,20 +63,20 @@ public class VendorAndProductIds {
         }
     }
 
-    public int getVendorId() {
-        return this.vendorId;
-    }
-
     public void setVendorId(int vid) {
         this.vendorId = vid;
     }
 
-    public int getProductId() {
-        return this.productId;
-    }
-
     public void setProductId(int pid) {
         this.productId = pid;
+    }
+
+    public int getVendorId() {
+        return this.vendorId;
+    }
+
+    public int getProductId() {
+        return this.productId;
     }
 
     public String toString() {

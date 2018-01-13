@@ -46,13 +46,13 @@ import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectGroupName;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectPersistentGroupManager;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
@@ -69,17 +69,18 @@ public class FtcWifiDirectRememberedGroupsActivity extends ThemedActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcWifiDirectRememberedGroupsActivity";
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
     private final boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
     private final NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     private final RecvLoopCallback recvLoopCallback = new RecvLoopCallback();
     private final Object requestGroupsFutureLock = new Object();
     private Future requestGroupsFuture = null;
     private WifiDirectPersistentGroupManager persistentGroupManager;
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
@@ -178,6 +179,16 @@ public class FtcWifiDirectRememberedGroupsActivity extends ThemedActivity {
         });
     }
 
+    protected class WifiP2pGroupItemAdapter extends ArrayAdapter<WifiDirectGroupName> {
+        public WifiP2pGroupItemAdapter(Context context, @LayoutRes int resource, @NonNull List<WifiDirectGroupName> objects) {
+            super(context, resource, objects);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Actions
+    //----------------------------------------------------------------------------------------------
+
     public void onClearRememberedGroupsClicked(View view) {
         RobotLog.vv(TAG, "onClearRememberedGroupsClicked()");
         if (!remoteConfigure) {
@@ -186,16 +197,6 @@ public class FtcWifiDirectRememberedGroupsActivity extends ThemedActivity {
             loadLocalGroups();
         } else {
             networkConnectionHandler.sendCommand(new Command(CommandList.CMD_CLEAR_REMEMBERED_GROUPS));
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Actions
-    //----------------------------------------------------------------------------------------------
-
-    protected class WifiP2pGroupItemAdapter extends ArrayAdapter<WifiDirectGroupName> {
-        public WifiP2pGroupItemAdapter(Context context, @LayoutRes int resource, @NonNull List<WifiDirectGroupName> objects) {
-            super(context, resource, objects);
         }
     }
 

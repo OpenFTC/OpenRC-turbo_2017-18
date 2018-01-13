@@ -42,6 +42,11 @@ import com.qualcomm.robotcore.hardware.DeviceManager;
  * device configurations that might exist within the SDK.
  */
 public interface ConfigurationType {
+    enum DisplayNameFlavor {
+        Normal,
+        Legacy
+    }
+
     /**
      * Returns a user-understandable string form of this configuration type
      *
@@ -74,9 +79,4 @@ public interface ConfigurationType {
      * @return whether this configuration type is of the indicated flavor;
      */
     boolean isDeviceFlavor(UserConfigurationType.Flavor flavor);
-
-    enum DisplayNameFlavor {
-        Normal,
-        Legacy
-    }
 }

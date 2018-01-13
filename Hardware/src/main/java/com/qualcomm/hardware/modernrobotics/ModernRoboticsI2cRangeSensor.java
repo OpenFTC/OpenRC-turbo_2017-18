@@ -62,13 +62,31 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
     //----------------------------------------------------------------------------------------------
 
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x28);
-    protected static final double apiLevelMin = 0.0;
+
+    public enum Register {
+        FIRST(0),
+        FIRMWARE_REV(0x00),
+        MANUFACTURE_CODE(0x01),
+        SENSOR_ID(0x02),
+        ULTRASONIC(0x04),
+        OPTICAL(0x05),
+        LAST(OPTICAL.bVal),
+        UNKNOWN(-1);
+
+        public byte bVal;
+
+        Register(int bVal) {
+            this.bVal = (byte) bVal;
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
+
+    protected static final double apiLevelMin = 0.0;
     protected static final double apiLevelMax = 1.0;
-    protected static final int cmUltrasonicMax = 255;
+
     /**
      * Experimentally determined constants for converting optical measurements to distance.
      */
@@ -77,6 +95,12 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
     public double cParam = -0.8061002068394054;
     public double dParam = 0.004048820370701007;
     public int rawOpticalMinValid = 3;
+
+    protected static final int cmUltrasonicMax = 255;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
 
     public ModernRoboticsI2cRangeSensor(I2cDeviceSynch deviceClient) {
         super(deviceClient, true);
@@ -87,10 +111,6 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
         super.registerArmingStateCallback(false);
         this.deviceClient.engage();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     protected void setOptimalReadWindow() {
         I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
@@ -104,6 +124,10 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
     protected synchronized boolean doInitialize() {
         return true;    // nothing to do
     }
+
+    //----------------------------------------------------------------------------------------------
+    // DistanceSensor
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns a calibrated, linear sense of distance as read by the infrared proximity
@@ -146,10 +170,6 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
         return unit.fromUnit(DistanceUnit.CM, cm);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // DistanceSensor
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Converts a raw optical inverse-square reading into a fitted, calibrated linear reading in cm.
      */
@@ -170,16 +190,16 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // OpticalDistanceSensor
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public double getLightDetected() {
         return Range.clip(
                 Range.scale(getRawLightDetected(), 0, getRawLightDetectedMax(), apiLevelMin, apiLevelMax),
                 apiLevelMin, apiLevelMax);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // OpticalDistanceSensor
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public double getRawLightDetected() {
@@ -201,6 +221,10 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
         return String.format(Locale.getDefault(), "%s on %s", getDeviceName(), getConnectionInfo());
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Raw sensor data
+    //----------------------------------------------------------------------------------------------
+
     /**
      * Returns the raw reading on the ultrasonic sensor
      *
@@ -210,10 +234,6 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
         return readUnsignedByte(Register.ULTRASONIC);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Raw sensor data
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Returns the raw reading on the optical sensor
      *
@@ -221,11 +241,6 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
      */
     public int rawOptical() {
         return readUnsignedByte(Register.OPTICAL);
-    }
-
-    @Override
-    public I2cAddr getI2cAddress() {
-        return this.deviceClient.getI2cAddress();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -238,8 +253,8 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
     }
 
     @Override
-    public Manufacturer getManufacturer() {
-        return Manufacturer.ModernRobotics;
+    public I2cAddr getI2cAddress() {
+        return this.deviceClient.getI2cAddress();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -247,18 +262,23 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
     //----------------------------------------------------------------------------------------------
 
     @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.ModernRobotics;
+    }
+
+    @Override
     public String getDeviceName() {
         return String.format(Locale.getDefault(), "Modern Robotics Range Sensor %s",
                 new RobotUsbDevice.FirmwareVersion(this.read8(Register.FIRMWARE_REV)));
     }
 
-    public byte read8(Register reg) {
-        return this.deviceClient.read8(reg.bVal);
-    }
-
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
+
+    public byte read8(Register reg) {
+        return this.deviceClient.read8(reg.bVal);
+    }
 
     public void write8(Register reg, byte value) {
         this.write8(reg, value, I2cWaitControl.NONE);
@@ -270,23 +290,6 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
 
     protected int readUnsignedByte(Register reg) {
         return TypeConversion.unsignedByteToInt(this.read8(reg));
-    }
-
-    public enum Register {
-        FIRST(0),
-        FIRMWARE_REV(0x00),
-        MANUFACTURE_CODE(0x01),
-        SENSOR_ID(0x02),
-        ULTRASONIC(0x04),
-        OPTICAL(0x05),
-        LAST(OPTICAL.bVal),
-        UNKNOWN(-1);
-
-        public byte bVal;
-
-        Register(int bVal) {
-            this.bVal = (byte) bVal;
-        }
     }
 
 }

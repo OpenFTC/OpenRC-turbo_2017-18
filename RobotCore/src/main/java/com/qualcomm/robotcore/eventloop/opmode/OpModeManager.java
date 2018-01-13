@@ -41,12 +41,6 @@ import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
  */
 public interface OpModeManager {
     /**
-     * DEFAULT_OP_MODE_NAME is the (non-localized) name of the default opmode, the one that
-     * automatically runs whenever no user opmode is running.
-     */
-    String DEFAULT_OP_MODE_NAME = "$Stop$Robot$";
-
-    /**
      * Registers a class for display on the driver station and availability for game play.
      * New instances of this class will be created as needed.
      *
@@ -81,4 +75,10 @@ public interface OpModeManager {
      * @param opModeInstance the object instance to use for that menu item
      */
     void register(OpModeMeta name, OpMode opModeInstance);
+
+    /**
+     * DEFAULT_OP_MODE_NAME is the (non-localized) name of the default opmode, the one that
+     * automatically runs whenever no user opmode is running.
+     */
+    String DEFAULT_OP_MODE_NAME = "$Stop$Robot$";
 }

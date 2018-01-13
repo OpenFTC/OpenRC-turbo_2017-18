@@ -46,10 +46,10 @@ import com.qualcomm.robotcore.util.ClassUtil;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Predicate;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.opmode.ClassFilter;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -79,35 +79,29 @@ public class UserConfigurationTypeManager implements ClassFilter {
     public static boolean DEBUG = true;
 
     protected static UserConfigurationTypeManager theInstance = new UserConfigurationTypeManager();
-    protected static String unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class.getAnnotation(MotorType.class));
+
+    public static UserConfigurationTypeManager getInstance() {
+        return theInstance;
+    }
+
     protected Context context;
     protected Map<String, UserConfigurationType> mapTagToUserType = new HashMap<String, UserConfigurationType>();
     protected Set<String> existingXmlTags = new HashSet<String>();
     protected Set<String> existingTypeDisplayNames = new HashSet<String>();
+    protected static String unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class.getAnnotation(MotorType.class));
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public UserConfigurationTypeManager() {
         this.context = AppUtil.getInstance().getApplication();
         addBuiltinConfigurationTypes();
     }
 
     //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    public static UserConfigurationTypeManager getInstance() {
-        return theInstance;
-    }
-
-    //----------------------------------------------------------------------------------------------
     // Retrieval
     //----------------------------------------------------------------------------------------------
-
-    public static String getXmlTag(I2cSensor i2cSensor) {
-        return ClassUtil.decodeStringRes(i2cSensor.xmlTag().trim());
-    }
-
-    public static String getXmlTag(MotorType motorType) {
-        return ClassUtil.decodeStringRes(motorType.xmlTag().trim());
-    }
 
     public MotorConfigurationType getUnspecifiedMotorType() {
         return (MotorConfigurationType) userTypeFromTag(unspecifiedMotorTypeXmlTag);
@@ -151,10 +145,6 @@ public class UserConfigurationTypeManager implements ClassFilter {
         return xmlTag == null ? null : userTypeFromTag(xmlTag);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Serialization
-    //----------------------------------------------------------------------------------------------
-
     public
     @Nullable
     UserConfigurationType userTypeFromTag(String xmlTag, UserConfigurationType.Flavor flavor) {
@@ -177,6 +167,10 @@ public class UserConfigurationTypeManager implements ClassFilter {
         return result;
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Serialization
+    //----------------------------------------------------------------------------------------------
+
     protected Gson newGson() {
         RuntimeTypeAdapterFactory<UserConfigurationType> userDeviceTypeAdapterFactory
                 = RuntimeTypeAdapterFactory.of(UserConfigurationType.class, "flavor")
@@ -197,6 +191,7 @@ public class UserConfigurationTypeManager implements ClassFilter {
         String userDeviceTypes = this.serializeUserDeviceTypes();
         NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_USER_DEVICE_LIST, userDeviceTypes));
     }
+
 
     // Replace the current user device types with the ones contained in the serialization
     public void deserializeUserDeviceTypes(String serialization) {
@@ -228,10 +223,6 @@ public class UserConfigurationTypeManager implements ClassFilter {
         existingXmlTags.add(deviceType.getXmlTag());
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Annotation parsing
-    //----------------------------------------------------------------------------------------------
-
     protected void clearUserTypes() {
         List<UserConfigurationType> extant = new ArrayList<>(mapTagToUserType.values()); // capture to avoid deleting while iterating
 
@@ -253,6 +244,10 @@ public class UserConfigurationTypeManager implements ClassFilter {
             }
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Annotation parsing
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void filterAllClassesStart() {
@@ -430,17 +425,25 @@ public class UserConfigurationTypeManager implements ClassFilter {
         return true;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
     protected boolean isLegalMotorTypeName(String name) {
-        return isGoodString(name);
+        if (!isGoodString(name)) {
+            return false;
+        }
+
+        return true;
     }
 
     protected boolean isLegalSensorName(String name) {
-        return isGoodString(name);
+        if (!isGoodString(name)) {
+            return false;
+        }
+
+        return true;
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
 
     protected boolean isGoodString(String string) {
         if (string == null) {
@@ -449,7 +452,11 @@ public class UserConfigurationTypeManager implements ClassFilter {
         if (!string.trim().equals(string)) {
             return false;
         }
-        return string.length() != 0;
+        if (string.length() == 0) {
+            return false;
+        }
+
+        return true;
     }
 
     protected void reportConfigurationError(String format, Object... args) {
@@ -472,6 +479,18 @@ public class UserConfigurationTypeManager implements ClassFilter {
         String nameStartChar = "\\p{Alpha}_:";
         String nameChar = nameStartChar + "0-9\\-\\.";
 
-        return xmlTag.matches("^[" + nameStartChar + "][" + nameChar + "]*$");
+        if (!xmlTag.matches("^[" + nameStartChar + "][" + nameChar + "]*$")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static String getXmlTag(I2cSensor i2cSensor) {
+        return ClassUtil.decodeStringRes(i2cSensor.xmlTag().trim());
+    }
+
+    public static String getXmlTag(MotorType motorType) {
+        return ClassUtil.decodeStringRes(motorType.xmlTag().trim());
     }
 }

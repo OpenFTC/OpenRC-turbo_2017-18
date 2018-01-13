@@ -35,6 +35,7 @@ package org.firstinspires.ftc.robotcore.internal.opengl.shaders;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IdRes;
 import android.support.annotation.RawRes;
 
 import com.qualcomm.robotcore.R;
@@ -42,16 +43,13 @@ import com.qualcomm.robotcore.R;
 import static android.opengl.GLES20.glUniform4f;
 
 public class ColorFragmentShader {
+    protected final int u_Color;
+
     @RawRes
     public static final int resourceId = R.raw.color_fragment_shader;
-    protected final int u_Color;
 
     public ColorFragmentShader(int programId) {
         u_Color = GLES20.glGetUniformLocation(programId, "u_Color");
-    }
-
-    private static float rescale(int colorComponent) {
-        return (float) colorComponent / 255.0f;
     }
 
     public void setColor(float r, float g, float b, float a) {
@@ -67,5 +65,9 @@ public class ColorFragmentShader {
                 rescale(Color.green(color)),
                 rescale(Color.blue(color)),
                 rescale(Color.alpha(color)));
+    }
+
+    private static float rescale(int colorComponent) {
+        return (float) colorComponent / 255.0f;
     }
 }

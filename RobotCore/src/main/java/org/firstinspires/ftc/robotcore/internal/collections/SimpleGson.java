@@ -41,11 +41,11 @@ import com.google.gson.Gson;
  */
 @SuppressWarnings("WeakerAccess")
 public class SimpleGson {
-    public static Gson getInstance() {
-        return InstanceHolder.theInstance;
-    }
-
     protected static class InstanceHolder {
         public static final Gson theInstance = new Gson();
+    }
+
+    public static Gson getInstance() {
+        return InstanceHolder.theInstance;
     }
 }

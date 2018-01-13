@@ -34,6 +34,7 @@ package com.qualcomm.hardware.lynx.commands.standard;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.commands.LynxResponse;
+import com.qualcomm.robotcore.exception.RobotCoreException;
 
 import java.nio.charset.Charset;
 
@@ -65,18 +66,6 @@ public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInte
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return COMMAND_NUMBER_QUERY_INTERFACE;
-    }
-
-    public static Class<? extends LynxResponse> getResponseClass() {
-        return LynxQueryInterfaceResponse.class;
-    }
-
-    String getInterfaceName() {
-        return this.interfaceName;
-    }
-
     void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
         // remove any terminating null
@@ -85,9 +74,9 @@ public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInte
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
+    String getInterfaceName() {
+        return this.interfaceName;
+    }
 
     String getNullTerminatedInterfaceName() {
         return getInterfaceName() + "\0";
@@ -95,6 +84,18 @@ public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInte
 
     public LynxQueryInterfaceResponse getResponse() {
         return this.response;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public static int getStandardCommandNumber() {
+        return COMMAND_NUMBER_QUERY_INTERFACE;
+    }
+
+    public static Class<? extends LynxResponse> getResponseClass() {
+        return LynxQueryInterfaceResponse.class;
     }
 
     @Override

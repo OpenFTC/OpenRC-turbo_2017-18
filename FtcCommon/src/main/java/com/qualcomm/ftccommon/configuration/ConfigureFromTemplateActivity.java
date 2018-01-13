@@ -50,10 +50,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import junit.framework.Assert;
 
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
-import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.StringReader;
@@ -78,18 +78,19 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
 
     public static final RequestCode requestCode = RequestCode.CONFIG_FROM_TEMPLATE;
     public static final String TAG = "ConfigFromTemplate";
-    protected final Deque<StringProcessor> receivedConfigProcessors = new LinkedList<StringProcessor>();
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
     protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
     protected List<RobotConfigFile> configurationList = new CopyOnWriteArrayList<RobotConfigFile>();
     protected List<RobotConfigFile> templateList = new CopyOnWriteArrayList<RobotConfigFile>();
     protected USBScanManager usbScanManager;
     protected ViewGroup feedbackAnchor;
     protected Map<String, String> remoteTemplates = new ConcurrentHashMap<String, String>();
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
+    protected final Deque<StringProcessor> receivedConfigProcessors = new LinkedList<StringProcessor>();
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
@@ -139,13 +140,13 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
 
     // RC has informed DS of the list of configurations
     protected CallbackResult handleCommandRequestConfigurationsResp(String extra) throws RobotCoreException {
-        configurationList = RobotConfigFileManager.deserializeXMLConfigList(extra);
+        configurationList = robotConfigFileManager.deserializeXMLConfigList(extra);
         return CallbackResult.HANDLED;
     }
 
     // RC has informed DS of the list of configuration templates
     protected CallbackResult handleCommandRequestTemplatesResp(String extra) throws RobotCoreException {
-        templateList = RobotConfigFileManager.deserializeXMLConfigList(extra);
+        templateList = robotConfigFileManager.deserializeXMLConfigList(extra);
         warnIfNoTemplates();
         populate();
         return CallbackResult.HANDLED;
@@ -281,6 +282,14 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
     // Remote templates
     //----------------------------------------------------------------------------------------------
 
+    protected interface TemplateProcessor {
+        void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser);
+    }
+
+    protected interface StringProcessor {
+        void processString(String string);
+    }
+
     protected void getTemplateAndThen(final RobotConfigFile templateMeta, final TemplateProcessor processor) {
         if (remoteConfigure) {
             // Look in cache if we have it, otherwise ask for it from RC
@@ -329,6 +338,10 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
         return (RobotConfigFile) name.getTag();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Template management
+    //----------------------------------------------------------------------------------------------
+
     protected ScannedDevices awaitScannedDevices() {
         try {
             scannedDevices = usbScanManager.awaitScannedDevices();
@@ -349,10 +362,6 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
         return robotConfigMap;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Template management
-    //----------------------------------------------------------------------------------------------
-
     private String indent(int count, String target) {
         String indent = "";
         for (int i = 0; i < count; i++) {
@@ -360,6 +369,10 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
         }
         return indent + target.replace("\n", "\n" + indent);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Network listener
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public CallbackResult commandEvent(Command command) {
@@ -390,10 +403,6 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
         usbScanManager.handleCommandScanResponse(extra);
         return CallbackResult.HANDLED_CONTINUE;  // someone else in the chain might want the same result
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Network listener
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public CallbackResult packetReceived(RobocolDatagram packet) {
@@ -428,13 +437,5 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
     @Override
     public CallbackResult reportGlobalError(String error, boolean recoverable) {
         return CallbackResult.NOT_HANDLED;
-    }
-
-    protected interface TemplateProcessor {
-        void processTemplate(RobotConfigFile templateMeta, XmlPullParser xmlPullParser);
-    }
-
-    protected interface StringProcessor {
-        void processString(String string);
     }
 }

@@ -50,8 +50,8 @@ import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.hardware.DragonboardIndicatorLED;
 import org.firstinspires.ftc.robotcore.internal.hardware.DragonboardLynxUserButton;
-import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 import org.firstinspires.ftc.robotcore.internal.ui.InputManager;
+import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,14 +79,15 @@ public class WifiDirectInviteDialogMonitor extends BroadcastReceiver {
     public static final String EXTRA_WIFI_P2P_INVITE_DIALOG = "dialogIdentity";
 
     protected static volatile Blinker uiLynxModule = null;
-    protected final Set<Integer> activeDialogs;
-    protected final SparseArray<Future> futures;
+
     protected Context context;
     protected LightBlinker indicatorLEDBlinker;
     protected Blinker lynxModulePushed;
     protected InputManager inputManager;
     protected int acceptKey;
     protected int cancelKey;
+    protected final Set<Integer> activeDialogs;
+    protected final SparseArray<Future> futures;
     protected int msAcceptInterval = 10000;
     protected int msDeclineInterval = 30000;
     protected int msPollButtonInterval = 250;
@@ -105,24 +106,6 @@ public class WifiDirectInviteDialogMonitor extends BroadcastReceiver {
         this.futures = new SparseArray<Future>();
     }
 
-    public static void clearUILynxModule() {
-        RobotLog.vv(TAG, "clearUILynxModule()");
-        uiLynxModule = null;
-    }
-
-    public static void setUILynxModule(Blinker lynxModule) {
-        RobotLog.vv(TAG, "setUILynxModule()");
-        uiLynxModule = lynxModule;
-    }
-
-    protected static String propertyForDialog(int dialogIdentity) {
-        return "ftcandroid.p2p.dialog." + dialogIdentity;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
     protected int keycode(String integerValue, int defKeyCode) {
         try {
             return Integer.valueOf(integerValue);
@@ -140,10 +123,6 @@ public class WifiDirectInviteDialogMonitor extends BroadcastReceiver {
         context.registerReceiver(this, intentFilter);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Acceptance / dismissal
-    //----------------------------------------------------------------------------------------------
-
     public void stopMonitoring() {
         RobotLog.vv(TAG, "stopMonitoring()");
         stopBlinking();
@@ -153,6 +132,28 @@ public class WifiDirectInviteDialogMonitor extends BroadcastReceiver {
             // stop called w/o start: ignore
         }
         removeAllFutures();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
+    public static void clearUILynxModule() {
+        RobotLog.vv(TAG, "clearUILynxModule()");
+        uiLynxModule = null;
+    }
+
+    public static void setUILynxModule(Blinker lynxModule) {
+        RobotLog.vv(TAG, "setUILynxModule()");
+        uiLynxModule = lynxModule;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Acceptance / dismissal
+    //----------------------------------------------------------------------------------------------
+
+    protected static String propertyForDialog(int dialogIdentity) {
+        return "ftcandroid.p2p.dialog." + dialogIdentity;
     }
 
     protected void acceptInvitation(int dialogId) {

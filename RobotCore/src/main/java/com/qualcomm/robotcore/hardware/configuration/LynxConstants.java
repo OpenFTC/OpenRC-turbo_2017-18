@@ -43,23 +43,6 @@ import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 @SuppressWarnings("WeakerAccess")
 public class LynxConstants {
     public static final String TAG = "LynxConstants";
-    public final static int INDICATOR_LED_ROBOT_CONTROLLER_ALIVE = 1;
-    public final static int INDICATOR_LED_INVITE_DIALOG_ACTIVE = 2;
-    public final static int INDICATOR_LED_BOOT = 4;
-    public static final int SERIAL_MODULE_BAUD_RATE = 460800;
-    public static final SerialNumber SERIAL_NUMBER_EMBEDDED = new SerialNumber("(embedded)"); // NB: do NOT localize the serial number
-    public final static int USB_BAUD_RATE = 460800;
-    public final static int LATENCY_TIMER = 1;
-    public final static int INITIAL_MOTOR_PORT = 0;
-    public final static int INITIAL_SERVO_PORT = 0;
-    public final static int NUMBER_OF_MOTORS = 4;
-    public final static int NUMBER_OF_SERVO_CHANNELS = 6;
-    public final static int NUMBER_OF_PWM_CHANNELS = 4;
-    public final static int NUMBER_OF_ANALOG_INPUTS = 4;
-    public final static int NUMBER_OF_DIGITAL_IOS = 8;
-    public final static int NUMBER_OF_I2C_BUSSES = 4;
-    public final static int EMBEDDED_IMU_BUS = 0;
-    public final static int DEFAULT_TARGET_POSITION_TOLERANCE = 5;
 
     /**
      * Are we running on a Dragonboard / Lynx combo device
@@ -94,6 +77,29 @@ public class LynxConstants {
     public static boolean useIndicatorLEDS() {
         return SystemProperties.getBoolean("persist.ftcandroid.rcuseleds", false);
     }
+
+    public final static int INDICATOR_LED_ROBOT_CONTROLLER_ALIVE = 1;
+    public final static int INDICATOR_LED_INVITE_DIALOG_ACTIVE = 2;
+    public final static int INDICATOR_LED_BOOT = 4;
+
+    public static final int SERIAL_MODULE_BAUD_RATE = 460800;
+    public static final SerialNumber SERIAL_NUMBER_EMBEDDED = new SerialNumber("(embedded)"); // NB: do NOT localize the serial number
+
+    public final static int USB_BAUD_RATE = 460800;
+    public final static int LATENCY_TIMER = 1;
+
+    public final static int INITIAL_MOTOR_PORT = 0;
+    public final static int INITIAL_SERVO_PORT = 0;
+
+    public final static int NUMBER_OF_MOTORS = 4;
+    public final static int NUMBER_OF_SERVO_CHANNELS = 6;
+    public final static int NUMBER_OF_PWM_CHANNELS = 4;
+    public final static int NUMBER_OF_ANALOG_INPUTS = 4;
+    public final static int NUMBER_OF_DIGITAL_IOS = 8;
+    public final static int NUMBER_OF_I2C_BUSSES = 4;
+    public final static int EMBEDDED_IMU_BUS = 0;
+
+    public final static int DEFAULT_TARGET_POSITION_TOLERANCE = 5;
 
     public static void validateMotorZ(int motorZ) {
         if (motorZ < 0 || motorZ >= NUMBER_OF_MOTORS) {

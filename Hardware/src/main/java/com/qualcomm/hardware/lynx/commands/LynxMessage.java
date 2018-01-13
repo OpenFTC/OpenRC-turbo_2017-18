@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx.commands;
 
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.util.TypeConversion;
 
 import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
@@ -176,12 +176,12 @@ public abstract class LynxMessage {
         return this.serialization;
     }
 
-    public void setSerialization(LynxDatagram datagram) {
-        this.serialization = datagram;
-    }
-
     public void forgetSerialization() {
         setSerialization(null);
+    }
+
+    public void setSerialization(LynxDatagram datagram) {
+        this.serialization = datagram;
     }
 
     public void loadFromSerialization() {

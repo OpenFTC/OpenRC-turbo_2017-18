@@ -50,20 +50,20 @@ public class StartResult {
         this.startCount = startCount;
     }
 
-    public WifiStartStoppable getStartStoppable() {
-        return this.startStoppable;
-    }
-
     public void setStartStoppable(WifiStartStoppable startStoppable) {
         this.startStoppable = startStoppable;
     }
 
-    public int getStartCount() {
-        return startCount;
+    public WifiStartStoppable getStartStoppable() {
+        return this.startStoppable;
     }
 
     public void setStartCount(int startCount) {
         this.startCount = startCount;
+    }
+
+    public int getStartCount() {
+        return startCount;
     }
 
     public void incrementStartCount() {

@@ -35,6 +35,8 @@ package com.qualcomm.hardware.lynx.commands.core;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.LynxInterfaceResponse;
+import com.qualcomm.hardware.lynx.commands.LynxResponse;
+import com.qualcomm.robotcore.exception.RobotCoreException;
 
 import java.nio.ByteBuffer;
 
@@ -54,45 +56,6 @@ public class LynxGetADCCommand extends LynxDekaInterfaceCommand<LynxGetADCRespon
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
-
-    public LynxGetADCCommand(LynxModuleIntf module) {
-        super(module);
-        this.response = new LynxGetADCResponse(module);
-    }
-
-    public LynxGetADCCommand(LynxModuleIntf module, Channel channel, Mode mode) {
-        this(module);
-        this.channel = channel.bVal;
-        this.mode = mode.bVal;
-    }
-
-    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
-        return LynxGetADCResponse.class;
-    }
-
-    @Override
-    public boolean isResponseExpected() {
-        return true;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public byte[] toPayloadByteArray() {
-        ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
-        buffer.put(this.channel);
-        buffer.put(this.mode);
-        return buffer.array();
-    }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb) {
-        ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
-        this.channel = buffer.get();
-        this.mode = buffer.get();
-    }
 
     public enum Channel {
         USER0(0), USER1(1), USER2(2), USER3(3), GPIO_CURRENT(4), I2C_BUS_CURRENT(5),
@@ -134,6 +97,47 @@ public class LynxGetADCCommand extends LynxDekaInterfaceCommand<LynxGetADCRespon
         Mode(int bVal) {
             this.bVal = (byte) bVal;
         }
+    }
+
+    ;
+
+    public LynxGetADCCommand(LynxModuleIntf module) {
+        super(module);
+        this.response = new LynxGetADCResponse(module);
+    }
+
+    public LynxGetADCCommand(LynxModuleIntf module, Channel channel, Mode mode) {
+        this(module);
+        this.channel = channel.bVal;
+        this.mode = mode.bVal;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public static Class<? extends LynxInterfaceResponse> getResponseClass() {
+        return LynxGetADCResponse.class;
+    }
+
+    @Override
+    public boolean isResponseExpected() {
+        return true;
+    }
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        ByteBuffer buffer = ByteBuffer.allocate(cbPayload).order(LynxDatagram.LYNX_ENDIAN);
+        buffer.put(this.channel);
+        buffer.put(this.mode);
+        return buffer.array();
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
+        this.channel = buffer.get();
+        this.mode = buffer.get();
     }
 
 }

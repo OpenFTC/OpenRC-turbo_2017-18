@@ -39,10 +39,10 @@ import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceIOException;
-import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceInfo;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceManager;
+import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
+import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceInfo;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 public class RobotUsbManagerFtdi implements RobotUsbManager {
@@ -67,11 +67,6 @@ public class RobotUsbManagerFtdi implements RobotUsbManager {
             RobotLog.ee(TAG, e, "Unable to create FtDeviceManager; cannot open USB devices");
             throw RobotCoreException.createChained(e, "unable to create FtDeviceManager");
         }
-    }
-
-    public static SerialNumber getSerialNumber(FtDevice device) {
-        FtDeviceInfo devInfo = device.getDeviceInfo();
-        return new SerialNumber(devInfo.serialNumber);
     }
 
     /**
@@ -107,6 +102,11 @@ public class RobotUsbManagerFtdi implements RobotUsbManager {
     @Override
     public String getDeviceDescriptionByIndex(int index) throws RobotCoreException {
         return ftDeviceManager.getDeviceInfoListDetail(index).description;
+    }
+
+    public static SerialNumber getSerialNumber(FtDevice device) {
+        FtDeviceInfo devInfo = device.getDeviceInfo();
+        return new SerialNumber(devInfo.serialNumber);
     }
 
     /**

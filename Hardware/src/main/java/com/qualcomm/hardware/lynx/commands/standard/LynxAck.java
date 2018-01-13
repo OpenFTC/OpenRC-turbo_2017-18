@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx.commands.standard;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.commands.LynxMessage;
 
@@ -65,16 +66,16 @@ public class LynxAck extends LynxMessage {
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return LynxStandardCommand.COMMAND_NUMBER_ACK;
+    public boolean isAttentionRequired() {
+        return this.isAttentionRequired;
     }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public boolean isAttentionRequired() {
-        return this.isAttentionRequired;
+    public static int getStandardCommandNumber() {
+        return LynxStandardCommand.COMMAND_NUMBER_ACK;
     }
 
     @Override

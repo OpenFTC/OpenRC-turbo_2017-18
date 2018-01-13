@@ -38,10 +38,6 @@ package com.qualcomm.robotcore.hardware;
  * @see HardwareDevice
  */
 public interface HardwareDeviceHealth {
-    HealthStatus getHealthStatus();
-
-    void setHealthStatus(HealthStatus status);
-
     enum HealthStatus {
         UNKNOWN,
 
@@ -57,4 +53,8 @@ public interface HardwareDeviceHealth {
 
         CLOSED,
     }
+
+    void setHealthStatus(HealthStatus status);
+
+    HealthStatus getHealthStatus();
 }

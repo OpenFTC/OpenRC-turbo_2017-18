@@ -48,11 +48,15 @@ public class HiTechnicNxtTouchSensorMultiplexer extends LegacyModulePortDeviceIm
     // Constants
     //------------------------------------------------------------------------------------------------
 
+    int NUM_TOUCH_SENSORS = 4;
+
     public static final int MASK_TOUCH_SENSOR_1 = 0x1;
     public static final int MASK_TOUCH_SENSOR_2 = 0x2;
     public static final int MASK_TOUCH_SENSOR_3 = 0x4;
     public static final int MASK_TOUCH_SENSOR_4 = 0x8;
+
     public static final int INVALID = -1;
+
     public static final int[] MASK_MAP = {
             INVALID,
             MASK_TOUCH_SENSOR_1,
@@ -60,7 +64,6 @@ public class HiTechnicNxtTouchSensorMultiplexer extends LegacyModulePortDeviceIm
             MASK_TOUCH_SENSOR_3,
             MASK_TOUCH_SENSOR_4
     };
-    int NUM_TOUCH_SENSORS = 4;
 
     //------------------------------------------------------------------------------------------------
     // Construction

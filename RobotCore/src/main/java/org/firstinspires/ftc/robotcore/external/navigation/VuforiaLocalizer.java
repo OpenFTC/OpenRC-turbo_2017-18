@@ -116,15 +116,6 @@ public interface VuforiaLocalizer {
     BlockingQueue<CloseableFrame> getFrameQueue();
 
     /**
-     * Returns the current capacity of the frame queue.
-     *
-     * @return the current capacity of the frame queue.
-     * @see #setFrameQueueCapacity(int)
-     * @see #getFrameQueue()
-     */
-    int getFrameQueueCapacity();
-
-    /**
      * Sets the maximum number of {@link Frame}s that will simultaneously be stored in the
      * frame queue. If the queue is full and new {@link Frame}s become available, older frames
      * will be discarded. The frame queue initially has a capacity of zero.
@@ -139,20 +130,13 @@ public interface VuforiaLocalizer {
     void setFrameQueueCapacity(int capacity);
 
     /**
-     * {@link CameraDirection} enumerates the identities of the cameras that Vuforia can use.
+     * Returns the current capacity of the frame queue.
      *
-     * @see Parameters#cameraDirection
+     * @return the current capacity of the frame queue.
+     * @see #setFrameQueueCapacity(int)
+     * @see #getFrameQueue()
      */
-    enum CameraDirection {
-        BACK(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_BACK),
-        FRONT(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_FRONT);
-
-        public final int direction;
-
-        CameraDirection(int direction) {
-            this.direction = direction;
-        }
-    }
+    int getFrameQueueCapacity();
 
     /**
      * {@link CloseableFrame} exposes a close() method so that one can proactively
@@ -170,6 +154,24 @@ public interface VuforiaLocalizer {
             super.delete();
         }
     }
+
+    /**
+     * {@link CameraDirection} enumerates the identities of the cameras that Vuforia can use.
+     *
+     * @see Parameters#cameraDirection
+     */
+    enum CameraDirection {
+        BACK(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_BACK),
+        FRONT(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_FRONT);
+
+        public final int direction;
+
+        CameraDirection(int direction) {
+            this.direction = direction;
+        }
+    }
+
+    ;
 
     /**
      * {@link Parameters} provides configuration information for instantiating the Vuforia localizer
@@ -203,6 +205,18 @@ public interface VuforiaLocalizer {
          * @see <a href="https://developer.vuforia.com/library/articles/Training/Extended-Tracking">Vuforia Extended Tracking</a>
          */
         public boolean useExtendedTracking = true;
+
+        /**
+         * {@link CameraMonitorFeedback} enumerates the kinds of positioning feedback that
+         * may be drawn in the camera monitor window.
+         *
+         * @see #cameraMonitorViewIdParent
+         * @see #cameraMonitorFeedback
+         */
+        public enum CameraMonitorFeedback {
+            NONE, AXES, TEAPOT, BUILDINGS
+        }
+
         /**
          * Indicates the style of camera monitoring feedback to use. Null indicates that
          * a default feedback style is to be used. {@link CameraMonitorFeedback#NONE None} indicates
@@ -212,6 +226,7 @@ public interface VuforiaLocalizer {
          * @see #cameraMonitorViewIdParent
          */
         public CameraMonitorFeedback cameraMonitorFeedback = CameraMonitorFeedback.AXES;
+
         /**
          * The resource id of the view within {@link #activity} that will be used
          * as the parent for a live monitor which provides feedback as to what the
@@ -224,6 +239,7 @@ public interface VuforiaLocalizer {
          * @see #fillCameraMonitorViewParent
          */
         public @IdRes int cameraMonitorViewIdParent = 0;
+
         /**
          * The view that will be used as the parent for a live monitor which provides
          * feedback as to what the the camera is seeing. If both {@link #cameraMonitorViewIdParent}
@@ -235,6 +251,7 @@ public interface VuforiaLocalizer {
          * @see #fillCameraMonitorViewParent
          */
         public ViewGroup cameraMonitorViewParent = null;
+
         /**
          * Controls whether the camera monitor should entirely fill the camera monitor view parent
          * or not. If true, then, depending on the aspect ratios of the camera and the view, some
@@ -245,6 +262,7 @@ public interface VuforiaLocalizer {
          * @see #cameraMonitorViewParent
          */
         public boolean fillCameraMonitorViewParent = false;
+
         /**
          * The activity in which the localizer is to run. May be null, in which case
          * the contextually current activity will be used.
@@ -256,17 +274,6 @@ public interface VuforiaLocalizer {
 
         public Parameters(@IdRes int cameraMonitorViewIdParent) {
             this.cameraMonitorViewIdParent = cameraMonitorViewIdParent;
-        }
-
-        /**
-         * {@link CameraMonitorFeedback} enumerates the kinds of positioning feedback that
-         * may be drawn in the camera monitor window.
-         *
-         * @see #cameraMonitorViewIdParent
-         * @see #cameraMonitorFeedback
-         */
-        public enum CameraMonitorFeedback {
-            NONE, AXES, TEAPOT, BUILDINGS
         }
     }
 }

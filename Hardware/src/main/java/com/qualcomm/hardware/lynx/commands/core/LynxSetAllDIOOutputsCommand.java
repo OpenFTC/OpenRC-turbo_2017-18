@@ -35,6 +35,7 @@ package com.qualcomm.hardware.lynx.commands.core;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.standard.LynxAck;
+import com.qualcomm.robotcore.exception.RobotCoreException;
 
 import java.nio.ByteBuffer;
 

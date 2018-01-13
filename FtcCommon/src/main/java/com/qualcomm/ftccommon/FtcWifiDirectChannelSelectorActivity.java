@@ -80,9 +80,9 @@ import android.widget.ListView;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectChannelAndDescription;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectChannelChanger;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
@@ -96,14 +96,15 @@ public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity impleme
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtcWifiDirectChannelSelectorActivity";
-    private boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
-    private PreferencesHelper preferencesHelper = new PreferencesHelper(TAG);
-    private WifiDirectChannelChanger configurer = null;
 
     @Override
     public String getTag() {
         return TAG;
     }
+
+    private boolean remoteConfigure = AppUtil.getInstance().isDriverStation();
+    private PreferencesHelper preferencesHelper = new PreferencesHelper(TAG);
+    private WifiDirectChannelChanger configurer = null;
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
@@ -150,36 +151,6 @@ public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity impleme
         itemsListView.setAdapter(adapter);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (configurer == null || !configurer.isBusy()) {
-            ArrayAdapter<WifiDirectChannelAndDescription> adapter = getAdapter(parent);
-            WifiDirectChannelAndDescription item = adapter.getItem(position);
-
-            // Give UI feedback
-            CheckedTextView checkedTextView = (CheckedTextView) view;
-            checkedTextView.setChecked(true);
-
-            // Change to the indicated item
-            if (remoteConfigure) {
-                if (preferencesHelper.writePrefIfDifferent(getString(R.string.pref_wifip2p_channel), item.getChannel())) {
-                    AppUtil.getInstance().showToast(UILocation.ONLY_LOCAL, getString(R.string.toastWifiP2pChannelChangeRequestedDS, item.getDescription()));
-                }
-            } else {
-                configurer.changeToChannel(item.getChannel());
-            }
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Actions
-    //----------------------------------------------------------------------------------------------
-
-    public void onWifiSettingsClicked(View view) {
-        RobotLog.vv(TAG, "launch wifi settings");
-        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
-    }
-
     protected class WifiChannelItemAdapter extends ArrayAdapter<WifiDirectChannelAndDescription> {
         @AnyRes
         int checkmark;
@@ -206,5 +177,35 @@ public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity impleme
             // Return the new view
             return view;
         }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Actions
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (configurer == null || !configurer.isBusy()) {
+            ArrayAdapter<WifiDirectChannelAndDescription> adapter = getAdapter(parent);
+            WifiDirectChannelAndDescription item = adapter.getItem(position);
+
+            // Give UI feedback
+            CheckedTextView checkedTextView = (CheckedTextView) view;
+            checkedTextView.setChecked(true);
+
+            // Change to the indicated item
+            if (remoteConfigure) {
+                if (preferencesHelper.writePrefIfDifferent(getString(R.string.pref_wifip2p_channel), item.getChannel())) {
+                    AppUtil.getInstance().showToast(UILocation.ONLY_LOCAL, getString(R.string.toastWifiP2pChannelChangeRequestedDS, item.getDescription()));
+                }
+            } else {
+                configurer.changeToChannel(item.getChannel());
+            }
+        }
+    }
+
+    public void onWifiSettingsClicked(View view) {
+        RobotLog.vv(TAG, "launch wifi settings");
+        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
     }
 }

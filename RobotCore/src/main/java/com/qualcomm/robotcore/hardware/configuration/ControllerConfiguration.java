@@ -129,22 +129,18 @@ public abstract class ControllerConfiguration<ITEM_T extends DeviceConfiguration
         return devices;
     }
 
-    public void setDevices(List<ITEM_T> devices) {
-        this.devices = devices;
-    }
-
     public ConfigurationType getConfigurationType() {
         return super.getConfigurationType();
+    }
+
+    public void setSerialNumber(@NonNull SerialNumber serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public
     @NonNull
     SerialNumber getSerialNumber() {
         return this.serialNumber;
-    }
-
-    public void setSerialNumber(@NonNull SerialNumber serialNumber) {
-        this.serialNumber = serialNumber;
     }
 
     public boolean isKnownToBeAttached() {
@@ -161,6 +157,10 @@ public abstract class ControllerConfiguration<ITEM_T extends DeviceConfiguration
 
     public void setSystemSynthetic(boolean systemSynthetic) {
         this.isSystemSynthetic = systemSynthetic;
+    }
+
+    public void setDevices(List<ITEM_T> devices) {
+        this.devices = devices;
     }
 
     public DeviceManager.DeviceType toUSBDeviceType() {

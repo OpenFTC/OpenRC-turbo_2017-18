@@ -67,6 +67,11 @@ import com.qualcomm.ftccommon.R;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 
 public class EditPWMDevicesActivity extends EditPortListCheckboxActivity<DeviceConfiguration> {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_PWM_PORT;
 
     public EditPWMDevicesActivity() {
@@ -77,10 +82,5 @@ public class EditPWMDevicesActivity extends EditPortListCheckboxActivity<DeviceC
         this.idItemCheckbox = R.id.checkbox_port;
         this.idItemEditTextResult = R.id.editTextResult;
         this.idItemPortNumber = R.id.port_number;
-    }
-
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
     }
 }

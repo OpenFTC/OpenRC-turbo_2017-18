@@ -124,9 +124,11 @@ public class HardwareFactory {
     //------------------------------------------------------------------------------------------------
 
     public static final String TAG = "HardwareFactory";
-    protected static final HashMap<String, String> deviceDisplayNames = new HashMap<String, String>();
+
     private Context context;
     private XmlPullParser xmlPullParser = null;
+
+    protected static final HashMap<String, String> deviceDisplayNames = new HashMap<String, String>();
 
     //------------------------------------------------------------------------------------------------
     // Construction
@@ -139,22 +141,6 @@ public class HardwareFactory {
     //------------------------------------------------------------------------------------------------
     // Hardware management
     //------------------------------------------------------------------------------------------------
-
-    public static void noteSerialNumberType(Context context, SerialNumber serialNumber, String typeName) {
-        synchronized (deviceDisplayNames) {
-            deviceDisplayNames.put(serialNumber.toString(), String.format("%s [%s]", typeName, serialNumber.toString(context)));
-        }
-    }
-
-    public static String getDeviceDisplayName(Context context, SerialNumber serialNumber) {
-        synchronized (deviceDisplayNames) {
-            String result = deviceDisplayNames.get(serialNumber.toString());
-            if (result == null) {
-                result = String.format(context.getString(R.string.deviceDisplayNameUnknownUSBDevice), serialNumber.toString(context));
-            }
-            return result;
-        }
-    }
 
     /**
      * Create a hardware map
@@ -205,12 +191,12 @@ public class HardwareFactory {
         }
     }
 
-    public XmlPullParser getXmlPullParser() {
-        return xmlPullParser;
-    }
-
     public void setXmlPullParser(XmlPullParser xmlPullParser) {
         this.xmlPullParser = xmlPullParser;
+    }
+
+    public XmlPullParser getXmlPullParser() {
+        return xmlPullParser;
     }
 
     private void mapUsbMotorController(HardwareMap map, DeviceManager deviceMgr, MotorControllerConfiguration ctrlConf) throws RobotCoreException, InterruptedException {
@@ -907,10 +893,6 @@ public class HardwareFactory {
         map.colorSensor.put(devConf.getName(), colorSensor);
     }
 
-    //------------------------------------------------------------------------------------------------
-    // Serial number display name management
-    //------------------------------------------------------------------------------------------------
-
     private void mapModernRoboticsGyro(HardwareMap map, DeviceManager deviceMgr, I2cController i2cController, DeviceConfiguration devConf) {
         if (!devConf.isEnabled()) {
             return;
@@ -925,5 +907,25 @@ public class HardwareFactory {
         }
         GyroSensor gyroSensor = deviceMgr.createModernRoboticsI2cGyroSensor(module, devConf.getI2cChannel(), devConf.getName());
         map.gyroSensor.put(devConf.getName(), gyroSensor);
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Serial number display name management
+    //------------------------------------------------------------------------------------------------
+
+    public static void noteSerialNumberType(Context context, SerialNumber serialNumber, String typeName) {
+        synchronized (deviceDisplayNames) {
+            deviceDisplayNames.put(serialNumber.toString(), String.format("%s [%s]", typeName, serialNumber.toString(context)));
+        }
+    }
+
+    public static String getDeviceDisplayName(Context context, SerialNumber serialNumber) {
+        synchronized (deviceDisplayNames) {
+            String result = deviceDisplayNames.get(serialNumber.toString());
+            if (result == null) {
+                result = String.format(context.getString(R.string.deviceDisplayNameUnknownUSBDevice), serialNumber.toString(context));
+            }
+            return result;
+        }
     }
 }

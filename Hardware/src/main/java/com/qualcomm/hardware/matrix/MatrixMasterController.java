@@ -60,16 +60,18 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
     private final static byte[] motorTargetOffset = {WASTED_BYTE, 0x52, 0x5C, 0x66, 0x70};
     private final static byte[] motorSpeedOffset = {WASTED_BYTE, 0x56, 0x60, 0x6A, 0x74};
     private final static byte[] motorModeOffset = {WASTED_BYTE, 0x57, 0x61, 0x6B, 0x75};
-    private final static boolean debug = false;
-    private static final double MIN_TRANSACTION_RATE = 2.0; // in seconds;
-    private static final int DEFAULT_TIMEOUT = 3;   // in seconds;
-    private final ElapsedTime lastTransaction = new ElapsedTime(0);
+
     protected ConcurrentLinkedQueue<MatrixI2cTransaction> transactionQueue;
     protected ModernRoboticsUsbLegacyModule legacyModule;
     protected MatrixDcMotorController motorController;
     protected MatrixServoController servoController;
     protected int physicalPort;
     private volatile boolean waitingForGodot = false;
+    private final static boolean debug = false;
+
+    private final ElapsedTime lastTransaction = new ElapsedTime(0);
+    private static final double MIN_TRANSACTION_RATE = 2.0; // in seconds;
+    private static final int DEFAULT_TIMEOUT = 3;   // in seconds;
 
     public MatrixMasterController(ModernRoboticsUsbLegacyModule legacyModule, int physicalPort) {
         this.legacyModule = legacyModule;
@@ -106,7 +108,7 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
         if (!force) {
             Iterator<MatrixI2cTransaction> it = transactionQueue.iterator();
             while (it.hasNext()) {
-                MatrixI2cTransaction t = it.next();
+                MatrixI2cTransaction t = (MatrixI2cTransaction) it.next();
                 if (t.isEqual(transaction)) {
                     buginf("NO Queue transaction " + transaction.toString());
                     return false;

@@ -78,17 +78,22 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
     protected final UpdateUI.Callback callback;
     protected final HardwareFactory hardwareFactory;
     protected final Context robotControllerContext;
-    protected final Object refreshUserTelemetryLock = new Object();
+
     protected EventLoopManager eventLoopManager;
+
     protected BatteryChecker robotControllerBatteryChecker;
     protected double robotControllerBatteryCheckerInterval = 180.0; // in seconds
+
     protected ElapsedTime robotBatteryTimer = new ElapsedTime();
     protected double robotBatteryInterval = 3.00; // in seconds
     protected MovingStatistics robotBatteryStatistics = new MovingStatistics(10);
     protected ElapsedTime robotBatteryLoggingTimer = new ElapsedTime(0); // 0 so we get an initial report
     protected double robotBatteryLoggingInterval = robotControllerBatteryCheckerInterval;
+
     protected ElapsedTime userTelemetryTimer = new ElapsedTime(0); // 0 so we get an initial report
     protected double userTelemetryInterval = 0.250; // in seconds
+    protected final Object refreshUserTelemetryLock = new Object();
+
     protected ElapsedTime updateUITimer = new ElapsedTime();
     protected double updateUIInterval = 0.250; // in seconds
 

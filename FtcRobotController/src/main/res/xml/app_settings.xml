@@ -38,43 +38,43 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 See https://developer.android.com/guide/topics/ui/settings.html
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+                  xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                  xmlns:tools="http://schemas.android.com/tools"
                   tools:context=".FtcRobotControllerActivity">
 
     <PreferenceCategory
         android:title="@string/prefcat_configure_robot">
 
         <EditTextPreference
-            android:key="@string/pref_device_name"
-            android:summary="@string/prefedit_device_name_summary_rc"
             android:title="@string/prefedit_device_name_rc"
+            android:summary="@string/prefedit_device_name_summary_rc"
+            android:key="@string/pref_device_name"
             />
 
         <org.firstinspires.ftc.robotcore.internal.ui.ColorListPreference
+            android:title="@string/prefedit_app_theme_rc"
+            android:summary="@string/prefedit_app_theme_summary_rc"
+            android:key="@string/pref_app_theme"
             android:entries="@array/app_theme_names"
             android:entryValues="@array/app_theme_tokens"
-            android:key="@string/pref_app_theme"
-            android:summary="@string/prefedit_app_theme_summary_rc"
-            android:title="@string/prefedit_app_theme_rc"
             app:colors="@array/app_theme_colors"
             />
 
         <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/pref_sound_on_off"
-            android:summary="@string/prefedit_sound_on_off_summary"
             android:title="@string/prefedit_sound_on_off"
+            android:summary="@string/prefedit_sound_on_off_summary"
+            android:key="@string/pref_sound_on_off"
+            android:defaultValue="true"
             />
 
         <PreferenceScreen
-            android:key="@string/pref_launch_advanced_rc_settings"
+            android:title="@string/titleAdvancedRCSettings"
             android:summary="@string/summaryAdvancedRCSettings"
-            android:title="@string/titleAdvancedRCSettings">
+            android:key="@string/pref_launch_advanced_rc_settings">
             <intent
-                android:targetClass="com.qualcomm.ftccommon.FtcAdvancedRCSettingsActivity"
                 android:targetPackage="@string/packageName"
+                android:targetClass="com.qualcomm.ftccommon.FtcAdvancedRCSettingsActivity"
                 />
         </PreferenceScreen>
 
@@ -82,16 +82,16 @@ See https://developer.android.com/guide/topics/ui/settings.html
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="@string/prefcat_logging_key"
-        android:title="@string/prefcat_logging">
+        android:title="@string/prefcat_logging"
+        android:key="@string/prefcat_logging_key">
 
         <PreferenceScreen
-            android:key="@string/pref_launch_viewlogs"
+            android:title="@string/prefedit_view_logs"
             android:summary="@string/prefedit_view_logs_summary"
-            android:title="@string/prefedit_view_logs">
+            android:key="@string/pref_launch_viewlogs">
             <intent
-                android:targetClass="com.qualcomm.ftccommon.ViewLogsActivity"
-                android:targetPackage="@string/packageName"/>
+                android:targetPackage="@string/packageName"
+                android:targetClass="com.qualcomm.ftccommon.ViewLogsActivity"/>
         </PreferenceScreen>
     </PreferenceCategory>
 

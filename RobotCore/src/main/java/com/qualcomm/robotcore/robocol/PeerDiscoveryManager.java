@@ -49,12 +49,33 @@ public class PeerDiscoveryManager {
 
     public static final String TAG = PeerDiscovery.TAG;
     private static final boolean DEBUG = false;
-    private final RobocolDatagramSocket socket;
-    private final PeerDiscovery message;
+
+    private class PeerDiscoveryRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                if (DEBUG) {
+                    RobotLog.vv(TAG, "sending peer discovery packet(%d)", message.getSequenceNumber());
+                }
+                RobocolDatagram packet = new RobocolDatagram(message);
+                if (socket.getInetAddress() == null) {
+                    packet.setAddress(peerDiscoveryDevice);
+                }
+                socket.send(packet);
+            } catch (RobotCoreException e) {
+                RobotLog.ee(TAG, "Unable to send peer discovery packet: " + e.toString());
+            }
+        }
+    }
+
     private InetAddress peerDiscoveryDevice;
+    private final RobocolDatagramSocket socket;
     private ScheduledExecutorService discoveryLoopService;
     private ScheduledFuture<?> discoveryLoopFuture;
+    private final PeerDiscovery message;
     private CountDownLatch interlock = new CountDownLatch(0);
+
     /**
      * Constructor
      *
@@ -109,25 +130,6 @@ public class PeerDiscoveryManager {
         if (discoveryLoopFuture != null) {
             discoveryLoopFuture.cancel(true);
             discoveryLoopFuture = null;
-        }
-    }
-
-    private class PeerDiscoveryRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                if (DEBUG) {
-                    RobotLog.vv(TAG, "sending peer discovery packet(%d)", message.getSequenceNumber());
-                }
-                RobocolDatagram packet = new RobocolDatagram(message);
-                if (socket.getInetAddress() == null) {
-                    packet.setAddress(peerDiscoveryDevice);
-                }
-                socket.send(packet);
-            } catch (RobotCoreException e) {
-                RobotLog.ee(TAG, "Unable to send peer discovery packet: " + e.toString());
-            }
         }
     }
 

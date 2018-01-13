@@ -112,9 +112,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
 
     protected final Utility utility;
     protected final OpModeManagerImpl opModeManager;
+    protected UsbModuleAttachmentHandler usbModuleAttachmentHandler;
     protected final Map<String, Long> recentlyAttachedUsbDevices;  // serialNumber -> when to attach
     protected final AtomicReference<OpMode> opModeStopRequested;
-    protected UsbModuleAttachmentHandler usbModuleAttachmentHandler;
 
     //------------------------------------------------------------------------------------------------
     // Construction

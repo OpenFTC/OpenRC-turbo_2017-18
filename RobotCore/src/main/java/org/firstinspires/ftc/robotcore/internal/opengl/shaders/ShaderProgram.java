@@ -8,11 +8,12 @@
  ***/
 package org.firstinspires.ftc.robotcore.internal.opengl.shaders;
 
+import static android.opengl.GLES20.glUseProgram;
+
 import android.content.Context;
 
 import org.firstinspires.ftc.robotcore.internal.opengl.TextResourceReader;
-
-import static android.opengl.GLES20.glUseProgram;
+import org.firstinspires.ftc.robotcore.internal.opengl.shaders.ShaderHelper;
 
 public abstract class ShaderProgram {
     // Shader program

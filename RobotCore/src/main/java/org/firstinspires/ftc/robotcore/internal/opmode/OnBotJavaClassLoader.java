@@ -100,6 +100,13 @@ public class OnBotJavaClassLoader extends ClassLoader implements Closeable {
         }
     }
 
+    public void close() {
+        for (DexFile dexFile : dexFiles) {
+            closeDexFile(dexFile);
+        }
+        dexFiles.clear();   // make idempotent
+    }
+
     protected static File getDexCacheDir() {
         File dexCache = null;
         // Using getCodeCacheDir() is logically ideal, but we can't use it everywhere since
@@ -113,6 +120,11 @@ public class OnBotJavaClassLoader extends ClassLoader implements Closeable {
         return dexCache;
     }
 
+    protected File getDexCache(File jarFile) {
+        // Note: the jar file needs to be uniquely *named* to its contents
+        return new File(getDexCacheDir(), jarFile.getAbsolutePath().replace(File.separatorChar, '@') + "@classes.dex");
+    }
+
     public static void fullClean() {
         for (File child : AppUtil.getInstance().filesUnder(getDexCacheDir())) {
             // RobotLog.vv(TAG, "cleaning up dex file: %s", child);
@@ -120,24 +132,12 @@ public class OnBotJavaClassLoader extends ClassLoader implements Closeable {
         }
     }
 
-    public static boolean isOnBotJava(Class clazz) {
-        return false; // modified for turbo: It can't be an OnBotJava class, so just return false
-    }
-
-    public void close() {
-        for (DexFile dexFile : dexFiles) {
-            closeDexFile(dexFile);
-        }
-        dexFiles.clear();   // make idempotent
-    }
-
     //----------------------------------------------------------------------------------------------
     // Operations & accessing
     //----------------------------------------------------------------------------------------------
 
-    protected File getDexCache(File jarFile) {
-        // Note: the jar file needs to be uniquely *named* to its contents
-        return new File(getDexCacheDir(), jarFile.getAbsolutePath().replace(File.separatorChar, '@') + "@classes.dex");
+    public static boolean isOnBotJava(Class clazz) {
+        return false; // modified for turbo: It can't be an OnBotJava class, so just return false
     }
 
     public List<File> getJarFiles() {

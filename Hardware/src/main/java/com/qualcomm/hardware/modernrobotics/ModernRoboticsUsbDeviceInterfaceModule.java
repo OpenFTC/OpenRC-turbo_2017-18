@@ -65,10 +65,17 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     //------------------------------------------------------------------------------------------------
 
     public final static String TAG = "MRDeviceInterfaceModule";
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     /**
      * Enable DEBUG_LOGGING logging
      */
     public static final boolean DEBUG_LOGGING = false;
+
     public static final int MIN_I2C_PORT_NUMBER = 0;
     public static final int MAX_I2C_PORT_NUMBER = 5;
     public static final int MAX_ANALOG_PORT_NUMBER = 7;
@@ -80,6 +87,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public static final int SIZE_ANALOG_BUFFER = 2;
     public static final int WORD_SIZE = 2;
     public static final double MAX_ANALOG_INPUT_VOLTAGE = 5.0;
+
     public static final int ADDRESS_BUFFER_STATUS = 0x03;
     public static final int ADDRESS_ANALOG_PORT_A0 = 0x04;
     public static final int ADDRESS_ANALOG_PORT_A1 = 0x06;
@@ -89,26 +97,33 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public static final int ADDRESS_ANALOG_PORT_A5 = 0x0E;
     public static final int ADDRESS_ANALOG_PORT_A6 = 0x10;
     public static final int ADDRESS_ANALOG_PORT_A7 = 0x12;
+
     public static final int ADDRESS_DIGITAL_INPUT_STATE = 0x14;
     public static final int ADDRESS_DIGITAL_IO_CONTROL = 0x15;
     public static final int ADDRESS_DIGITAL_OUTPUT_STATE = 0x16;
+
     public static final int ADDRESS_LED_SET = 0x17;
+
     public static final int ADDRESS_VOLTAGE_OUTPUT_PORT_0 = 0x18;
     public static final int ADDRESS_VOLTAGE_OUTPUT_PORT_1 = 0x1E;
+
     public static final int ADDRESS_PULSE_OUTPUT_PORT_0 = 0X24;
     public static final int ADDRESS_PULSE_OUTPUT_PORT_1 = 0X28;
+
     public static final int ADDRESS_I2C0 = 0x30;
     public static final int ADDRESS_I2C1 = 0x50;
     public static final int ADDRESS_I2C2 = 0x70;
     public static final int ADDRESS_I2C3 = 0x90;
     public static final int ADDRESS_I2C4 = 0xB0;
     public static final int ADDRESS_I2C5 = 0xD0;
+
     public static final byte BUFFER_FLAG_I2C0 = (byte) 0x01;
     public static final byte BUFFER_FLAG_I2C1 = (byte) 0x02;
     public static final byte BUFFER_FLAG_I2C2 = (byte) 0x04;
     public static final byte BUFFER_FLAG_I2C3 = (byte) 0x08;
     public static final byte BUFFER_FLAG_I2C4 = (byte) 0x10;
     public static final byte BUFFER_FLAG_I2C5 = (byte) 0x20;
+
     /*
      * memory offsets used by this controller
      */
@@ -116,9 +131,11 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public static final int OFFSET_ANALOG_VOLTAGE_OUTPUT_FREQ = 0x2;
     public static final int OFFSET_ANALOG_VOLTAGE_OUTPUT_MODE = 0x4;
     public static final int ANALOG_VOLTAGE_OUTPUT_BUFFER_SIZE = 0x5;
+
     public static final int OFFSET_PULSE_OUTPUT_TIME = 0x0;
     public static final int OFFSET_PULSE_OUTPUT_PERIOD = 0x2;
     public static final int PULSE_OUTPUT_BUFFER_SIZE = 0x4;
+
     public static final int OFFSET_I2C_PORT_MODE = 0x0;
     public static final int OFFSET_I2C_PORT_I2C_ADDRESS = 0x1;
     public static final int OFFSET_I2C_PORT_MEMORY_ADDRESS = 0x2;
@@ -126,12 +143,15 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public static final int OFFSET_I2C_PORT_MEMORY_BUFFER = 0x4;
     public static final int OFFSET_I2C_PORT_FLAG = 0x1f;
     public static final int I2C_PORT_BUFFER_SIZE = 0x20;
+
     public static final byte I2C_MODE_READ = (byte) 0x80;
     public static final byte I2C_MODE_WRITE = (byte) 0x00;
     public static final byte I2C_ACTION_FLAG = (byte) 0xff;
     public static final byte I2C_NO_ACTION_FLAG = (byte) 0x00;
+
     public static final int LED_0_BIT_MASK = 0x01;
     public static final int LED_1_BIT_MASK = 0x02;
+
     /*
      * map of LED bit masks
      */
@@ -139,6 +159,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             LED_0_BIT_MASK,
             LED_1_BIT_MASK
     };
+
     /*
      * digital masks used to pull out one specific bit.
      */
@@ -150,6 +171,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public static final int D5_MASK = 0x20;
     public static final int D6_MASK = 0x40;
     public static final int D7_MASK = 0x80;
+
     /*
      * map of physical ports to bit mask
      */
@@ -163,6 +185,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             D6_MASK,
             D7_MASK
     };
+
     /*
      * map of analog ports to memory addresses
      */
@@ -176,6 +199,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             ADDRESS_ANALOG_PORT_A6,
             ADDRESS_ANALOG_PORT_A7
     };
+
     /*
      * map of voltage output ports to memory addresses
      */
@@ -183,6 +207,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             ADDRESS_VOLTAGE_OUTPUT_PORT_0,
             ADDRESS_VOLTAGE_OUTPUT_PORT_1
     };
+
     /*
      * map of pulse output ports to memory addresses
      */
@@ -190,6 +215,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             ADDRESS_PULSE_OUTPUT_PORT_0,
             ADDRESS_PULSE_OUTPUT_PORT_1
     };
+
     /*
      * map of I2C ports to memory addresses
      */
@@ -201,6 +227,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             ADDRESS_I2C4,
             ADDRESS_I2C5
     };
+
     /*
      * map of buffer flags
      */
@@ -212,49 +239,58 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             BUFFER_FLAG_I2C4,
             BUFFER_FLAG_I2C5
     };
-    public static final int MAX_NEW_I2C_ADDRESS = 0x7e;
-    public static final int MIN_NEW_I2C_ADDRESS = 0x10;
+
     private static final int SEGMENT_KEY_ANALOG_VOLTAGE_OUTPUT_PORT_0 = 0;
     private static final int SEGMENT_KEY_ANALOG_VOLTAGE_OUTPUT_PORT_1 = 1;
+
     private static final int SEGMENT_KEY_PULSE_OUTPUT_PORT_0 = 2;
     private static final int SEGMENT_KEY_PULSE_OUTPUT_PORT_1 = 3;
+
     private static final int SEGMENT_KEY_I2C_PORT_0 = 4;
     private static final int SEGMENT_KEY_I2C_PORT_1 = 5;
     private static final int SEGMENT_KEY_I2C_PORT_2 = 6;
     private static final int SEGMENT_KEY_I2C_PORT_3 = 7;
     private static final int SEGMENT_KEY_I2C_PORT_4 = 8;
     private static final int SEGMENT_KEY_I2C_PORT_5 = 9;
+
     private static final int SEGMENT_KEY_I2C_PORT_0_FLAG_ONLY = 10;
     private static final int SEGMENT_KEY_I2C_PORT_1_FLAG_ONLY = 11;
     private static final int SEGMENT_KEY_I2C_PORT_2_FLAG_ONLY = 12;
     private static final int SEGMENT_KEY_I2C_PORT_3_FLAG_ONLY = 13;
     private static final int SEGMENT_KEY_I2C_PORT_4_FLAG_ONLY = 14;
     private static final int SEGMENT_KEY_I2C_PORT_5_FLAG_ONLY = 15;
+
     private static final int[] SEGMENT_KEY_ANALOG_VOLTAGE_PORT_MAP = {
             SEGMENT_KEY_ANALOG_VOLTAGE_OUTPUT_PORT_0, SEGMENT_KEY_ANALOG_VOLTAGE_OUTPUT_PORT_1
     };
+
     private static final int[] SEGMENT_KEY_PULSE_OUTPUT_PORT_MAP = {
             SEGMENT_KEY_PULSE_OUTPUT_PORT_0, SEGMENT_KEY_PULSE_OUTPUT_PORT_1
     };
+
     private static final int[] SEGMENT_KEY_I2C_PORT_MAP = {
             SEGMENT_KEY_I2C_PORT_0, SEGMENT_KEY_I2C_PORT_1, SEGMENT_KEY_I2C_PORT_2,
             SEGMENT_KEY_I2C_PORT_3, SEGMENT_KEY_I2C_PORT_4, SEGMENT_KEY_I2C_PORT_5
     };
+
     private static final int[] SEGMENT_KEY_I2C_PORT_FLAG_ONLY_MAP = {
             SEGMENT_KEY_I2C_PORT_0_FLAG_ONLY, SEGMENT_KEY_I2C_PORT_1_FLAG_ONLY, SEGMENT_KEY_I2C_PORT_2_FLAG_ONLY,
             SEGMENT_KEY_I2C_PORT_3_FLAG_ONLY, SEGMENT_KEY_I2C_PORT_4_FLAG_ONLY, SEGMENT_KEY_I2C_PORT_5_FLAG_ONLY
     };
-    protected final byte[] lastI2cPortModes = new byte[NUMBER_OF_PORTS];
+
     // tracks which ports have a registered callback
     private final I2cPortReadyCallback[] i2cPortReadyCallback = new I2cPortReadyCallback[NUMBER_OF_PORTS];
+
     private ReadWriteRunnableSegment[] analogVoltagePortSegments = new ReadWriteRunnableSegment[SEGMENT_KEY_ANALOG_VOLTAGE_PORT_MAP.length];
     private ReadWriteRunnableSegment[] pulseOutputPortSegments = new ReadWriteRunnableSegment[SEGMENT_KEY_PULSE_OUTPUT_PORT_MAP.length];
     private ReadWriteRunnableSegment[] i2cPortSegments = new ReadWriteRunnableSegment[SEGMENT_KEY_I2C_PORT_MAP.length];
+    private ReadWriteRunnableSegment[] i2cPortFlagOnlySegments = new ReadWriteRunnableSegment[SEGMENT_KEY_I2C_PORT_FLAG_ONLY_MAP.length];
+
+    protected final byte[] lastI2cPortModes = new byte[NUMBER_OF_PORTS];
 
     //------------------------------------------------------------------------------------------------
     // Construction
     //------------------------------------------------------------------------------------------------
-    private ReadWriteRunnableSegment[] i2cPortFlagOnlySegments = new ReadWriteRunnableSegment[SEGMENT_KEY_I2C_PORT_FLAG_ONLY_MAP.length];
 
     /**
      * Use ModernRoboticsUsbDeviceManager to create an instance of this class
@@ -271,30 +307,11 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
         });
     }
 
-    public static void throwIfModernRoboticsI2cAddressIsInvalid(I2cAddr newAddress) {
-        // New I2C address must be in the proper range, and must be even.
-        if (newAddress.get8Bit() < MIN_NEW_I2C_ADDRESS || newAddress.get8Bit() > MAX_NEW_I2C_ADDRESS) {
-            throw new IllegalArgumentException(
-                    String.format("New I2C address %d is invalid; valid range is: %d..%d", newAddress.get8Bit(),
-                            MIN_NEW_I2C_ADDRESS,
-                            MAX_NEW_I2C_ADDRESS));
-        }
-    }
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
     @Override
     protected void doArm() throws RobotCoreException, InterruptedException {
         super.doArm();
         createSegments();
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Operations
-    //------------------------------------------------------------------------------------------------
 
     @Override
     protected void doPretend() throws RobotCoreException, InterruptedException {
@@ -325,6 +342,10 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
         // nothing to do
     }
 
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
+
     @Override
     public Manufacturer getManufacturer() {
         return Manufacturer.ModernRobotics;
@@ -348,6 +369,7 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     @Override
     public void resetDeviceConfigurationForOpMode() {
     }
+
 
     //***************************************** Analog Channel **************************************//
     @Override
@@ -567,8 +589,6 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
         readWriteRunnable.queueSegmentWrite(SEGMENT_KEY_PULSE_OUTPUT_PORT_MAP[port]);
     }
 
-    //*********************************************** I2C ********************************************//
-
     @Override
     public void setPulseWidthPeriod(int port, int usPeriod) {
         throwIfI2cPortIsInvalid(port);
@@ -596,6 +616,9 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public int getPulseWidthPeriod(int port) {
         throw new UnsupportedOperationException("getPulseWidthOutputTime is not implemented.");
     }
+
+    //*********************************************** I2C ********************************************//
+
 
     @Override
     public void enableI2cReadMode(int physicalPort, I2cAddr i2cAddress, int memAddress, int length) {
@@ -853,8 +876,6 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
         i2cPortReadyCallback[port] = null;
     }
 
-    //********************************************* OTHER ********************************************//
-
     @Deprecated
     @Override
     public void readI2cCacheFromModule(int port) {
@@ -872,6 +893,8 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
     public void writeI2cPortFlagOnlyToModule(int port) {
         writeI2cPortFlagOnlyToController(port);
     }
+
+    //********************************************* OTHER ********************************************//
 
     private void throwIfLEDChannelIsInvalid(int port) {
         if (port != 0 && port != 1) {
@@ -904,10 +927,6 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
         }
     }
 
-    //------------------------------------------------------------------------------------------------
-    // Utility
-    //------------------------------------------------------------------------------------------------
-
     private void throwIfBufferIsTooLarge(int length) {
         if (length > SIZE_I2C_BUFFER) {
             throw new IllegalArgumentException(
@@ -938,6 +957,23 @@ public class ModernRoboticsUsbDeviceInterfaceModule extends ModernRoboticsUsbI2c
             if (i2cPortReadyCallback[i] != null && isI2cPortReady(i, bufferStatusByte)) {
                 i2cPortReadyCallback[i].portIsReady(i);
             }
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Utility
+    //------------------------------------------------------------------------------------------------
+
+    public static final int MAX_NEW_I2C_ADDRESS = 0x7e;
+    public static final int MIN_NEW_I2C_ADDRESS = 0x10;
+
+    public static void throwIfModernRoboticsI2cAddressIsInvalid(I2cAddr newAddress) {
+        // New I2C address must be in the proper range, and must be even.
+        if (newAddress.get8Bit() < MIN_NEW_I2C_ADDRESS || newAddress.get8Bit() > MAX_NEW_I2C_ADDRESS) {
+            throw new IllegalArgumentException(
+                    String.format("New I2C address %d is invalid; valid range is: %d..%d", newAddress.get8Bit(),
+                            MIN_NEW_I2C_ADDRESS,
+                            MAX_NEW_I2C_ADDRESS));
         }
     }
 }

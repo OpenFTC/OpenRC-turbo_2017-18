@@ -41,10 +41,11 @@ public enum TempUnit {
     //----------------------------------------------------------------------------------------------
 
     CELSIUS(0), FARENHEIT(1), KELVIN(2);
+    public final byte bVal;
+
     public static final double zeroCelsiusK = 273.15;
     public static final double zeroCelsiusF = 32;
     public static final double CperF = 5.0 / 9.0;
-    public final byte bVal;
 
     //----------------------------------------------------------------------------------------------
     // Construction

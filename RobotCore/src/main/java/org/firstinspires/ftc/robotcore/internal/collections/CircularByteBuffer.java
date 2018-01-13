@@ -45,10 +45,10 @@ public class CircularByteBuffer {
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final int capacity;
     protected byte[] buffer;
     protected int readIndex;
     protected int size;
+    protected final int capacity;
 
     //----------------------------------------------------------------------------------------------
     // State

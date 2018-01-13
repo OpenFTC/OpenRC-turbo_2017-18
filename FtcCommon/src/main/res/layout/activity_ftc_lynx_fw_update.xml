@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
               android:paddingBottom="@dimen/activity_vertical_margin"
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin"
@@ -13,9 +13,9 @@
         android:id="@+id/lynxFirmwareInstructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/lynx_fw_instructions_update"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:layout_gravity="center_horizontal"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -26,8 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:onClick="onUpdateLynxFirmwareClicked"
-            android:text="@string/update_lynx_firmware"/>
+            android:text="@string/update_lynx_firmware"
+            android:onClick="onUpdateLynxFirmwareClicked"/>
 
     </RelativeLayout>
 

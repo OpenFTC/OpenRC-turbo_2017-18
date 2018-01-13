@@ -68,8 +68,8 @@ import android.support.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbProtocolException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbTimeoutException;
@@ -85,18 +85,8 @@ public class ModernRoboticsReaderWriter {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "MRReaderWriter";
-    public final static String COMM_FAILURE_READ = "comm failure read";
-    public final static String COMM_FAILURE_WRITE = "comm failure write";
-    public final static String COMM_TIMEOUT_READ = "comm timeout awaiting response (read)";
-    public final static String COMM_TIMEOUT_WRITE = "comm timeout awaiting response (write)";
-    public final static String COMM_ERROR_READ = "comm error read";
-    public final static String COMM_ERROR_WRITE = "comm error write";
-    public final static String COMM_SYNC_LOST = "comm sync lost";
-    public final static String COMM_PAYLOAD_ERROR_READ = "comm payload error read";
-    public final static String COMM_PAYLOAD_ERROR_WRITE = "comm payload error write";
-    public final static String COMM_TYPE_ERROR_READ = "comm type error read";
-    public final static String COMM_TYPE_ERROR_WRITE = "comm type error write";
     public static boolean DEBUG = false;
+
     /**
      * The timeouts defined by the MR USB spec are subtle. Our historical timeout of 100ms
      * to read the header and the 100ms to read the payload was demonstrably insufficient, as teams
@@ -116,21 +106,38 @@ public class ModernRoboticsReaderWriter {
     public static int MS_INTER_BYTE_TIMEOUT = 10;
     public static int MS_USB_HUB_LATENCY = 2;    // this is probably way overkill
     public static int MS_REQUEST_RESPONSE_TIMEOUT = 50 + MS_USB_HUB_LATENCY * 2;
+
     /**
      * We run on a garbage collected system. That doesn't run very often, and doesn't run back to
      * back, only one at a time, but when it does run it shuts things down for 15ms-40ms. One of
      * those can happen in the middle of any of our timeouts. So we need to allow for same.
      */
     public static int MS_GARBAGE_COLLECTION_SPURT = 40;
+
     /**
      * We made this up: we want to be very generous in trying to recover from failures as we
      * read through possibly-old data trying to synchronize, and there's little harm in doing so
      */
     public static int MS_RESYNCH_TIMEOUT = 1000;
+
     public static int MS_FAILURE_WAIT = 40;   // per email from MR
     public static int MS_COMM_ERROR_WAIT = 100;  // historical. we made this up
     public static int MS_MAX_TIMEOUT = 100;  // we made this up.
+
     public static int MAX_SEQUENTIAL_USB_ERROR_COUNT = 5;    // we made this up. Used to be 10, but can tighten with the better sync logic we now have
+
+    public final static String COMM_FAILURE_READ = "comm failure read";
+    public final static String COMM_FAILURE_WRITE = "comm failure write";
+    public final static String COMM_TIMEOUT_READ = "comm timeout awaiting response (read)";
+    public final static String COMM_TIMEOUT_WRITE = "comm timeout awaiting response (write)";
+    public final static String COMM_ERROR_READ = "comm error read";
+    public final static String COMM_ERROR_WRITE = "comm error write";
+    public final static String COMM_SYNC_LOST = "comm sync lost";
+    public final static String COMM_PAYLOAD_ERROR_READ = "comm payload error read";
+    public final static String COMM_PAYLOAD_ERROR_WRITE = "comm payload error write";
+    public final static String COMM_TYPE_ERROR_READ = "comm type error read";
+    public final static String COMM_TYPE_ERROR_WRITE = "comm type error write";
+
     protected final RobotUsbDevice device;
     protected int usbSequentialCommReadErrorCount = 0;
     protected int usbSequentialCommWriteErrorCount = 0;
@@ -152,28 +159,6 @@ public class ModernRoboticsReaderWriter {
         this.device.setDebugRetainBuffers(true);
     }
 
-    protected static String bufferToString(byte[] buffer) {
-        StringBuilder result = new StringBuilder();
-        result.append("[");
-        if (buffer.length > 0) {
-            result.append(String.format("%02x", buffer[0]));
-        }
-
-        int cbMax = 16;
-        int cb = Math.min(buffer.length, cbMax);
-
-        for (int ib = 1; ib < cb; ++ib) {
-            result.append(String.format(" %02x", buffer[ib]));
-        }
-
-        if (cb < buffer.length) {
-            result.append(" ...");
-        }
-
-        result.append("]");
-        return result.toString();
-    }
-
     public void throwIfTooManySequentialCommErrors() throws RobotUsbTooManySequentialErrorsException {
         if (device.isOpen()) {
             if (this.usbSequentialCommReadErrorCount > MAX_SEQUENTIAL_USB_ERROR_COUNT || this.usbSequentialCommWriteErrorCount > MAX_SEQUENTIAL_USB_ERROR_COUNT) {
@@ -182,13 +167,13 @@ public class ModernRoboticsReaderWriter {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Reading and writing
-    //----------------------------------------------------------------------------------------------
-
     public void close() {
         this.device.close();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Reading and writing
+    //----------------------------------------------------------------------------------------------
 
     public void read(boolean retry, int address, byte[] buffer, @Nullable TimeWindow payloadTimeWindow) throws RobotUsbException, InterruptedException {
         if (DEBUG) {
@@ -329,10 +314,6 @@ public class ModernRoboticsReaderWriter {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Response reading
-    //----------------------------------------------------------------------------------------------
-
     protected void writeOnce(int address, byte[] buffer) throws RobotUsbException, InterruptedException {
         ModernRoboticsRequest request = null;
         ModernRoboticsResponse response = null;
@@ -385,6 +366,10 @@ public class ModernRoboticsReaderWriter {
             }
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Response reading
+    //----------------------------------------------------------------------------------------------
 
     protected ModernRoboticsResponse readResponse(ModernRoboticsRequest request, @Nullable TimeWindow payloadTimeWindow) throws RobotUsbException, InterruptedException {
         responseDeadline.reset();
@@ -510,14 +495,14 @@ public class ModernRoboticsReaderWriter {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
     protected byte readSingleByte(byte[] buffer, int msExtraTimeout, @Nullable TimeWindow timeWindow, String debugContext) throws RobotUsbException, InterruptedException {
         readIncomingBytes(buffer, 0, 1, msExtraTimeout, timeWindow, debugContext);
         return buffer[0];
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
 
     protected String timeoutMessage(String root, RobotUsbTimeoutException e) {
         return String.format("%s: %s", root, e.getMessage());
@@ -554,5 +539,27 @@ public class ModernRoboticsReaderWriter {
         RobotLog.ee(TAG, "%s: %s: request:%s response:%s", device.getSerialNumber(), message, bufferToString(requestHeader.data), bufferToString(responseHeader.data));
         doExceptionBookkeeping();
         throw new RobotUsbProtocolException(message);
+    }
+
+    protected static String bufferToString(byte[] buffer) {
+        StringBuilder result = new StringBuilder();
+        result.append("[");
+        if (buffer.length > 0) {
+            result.append(String.format("%02x", buffer[0]));
+        }
+
+        int cbMax = 16;
+        int cb = Math.min(buffer.length, cbMax);
+
+        for (int ib = 1; ib < cb; ++ib) {
+            result.append(String.format(" %02x", buffer[ib]));
+        }
+
+        if (cb < buffer.length) {
+            result.append(" ...");
+        }
+
+        result.append("]");
+        return result.toString();
     }
 }

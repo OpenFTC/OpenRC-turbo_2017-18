@@ -39,10 +39,11 @@ import java.util.Locale;
  */
 public enum DistanceUnit {
     METER(0), CM(1), MM(2), INCH(3);
+    public final byte bVal;
+
     public static final double infinity = Double.MAX_VALUE;
     public static final double mmPerInch = 25.4;
     public static final double mPerInch = mmPerInch * 0.001;
-    public final byte bVal;
 
     DistanceUnit(int i) {
         this.bVal = (byte) i;

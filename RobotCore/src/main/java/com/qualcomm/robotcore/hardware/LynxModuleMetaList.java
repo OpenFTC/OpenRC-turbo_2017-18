@@ -77,11 +77,6 @@ public class LynxModuleMetaList implements Iterable<LynxModuleMeta> {
         this(serialNumber, metaFromModules(modules));
     }
 
-    private LynxModuleMetaList(SerialNumber serialNumber, LynxModuleMeta[] modules) {
-        this.serialNumber = serialNumber;
-        this.modules = modules;
-    }
-
     private static LynxModuleMeta[] metaFromModules(List<RobotCoreLynxModule> modules) {
         LynxModuleMeta[] result = new LynxModuleMeta[modules.size()];
         for (int i = 0; i < result.length; i++) {
@@ -99,9 +94,35 @@ public class LynxModuleMetaList implements Iterable<LynxModuleMeta> {
         return result;
     }
 
+    private LynxModuleMetaList(SerialNumber serialNumber, LynxModuleMeta[] modules) {
+        this.serialNumber = serialNumber;
+        this.modules = modules;
+    }
+
     //----------------------------------------------------------------------------------------------
     // Iteration
     //----------------------------------------------------------------------------------------------
+
+    @Override
+    public Iterator<LynxModuleMeta> iterator() {
+        return Arrays.asList(this.modules).iterator();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Serialization
+    //----------------------------------------------------------------------------------------------
+
+    protected LynxModuleMetaList flatten() {
+        LynxModuleMeta[] flatModules = new LynxModuleMeta[this.modules.length];
+        for (int i = 0; i < this.modules.length; i++) {
+            flatModules[i] = new LynxModuleMeta(this.modules[i]);
+        }
+        return new LynxModuleMetaList(serialNumber, flatModules);
+    }
+
+    public String toSerializationString() {
+        return SimpleGson.getInstance().toJson(this.flatten());
+    }
 
     public static LynxModuleMetaList fromSerializationString(String serialization) {
         JsonDeserializer deserializer = new JsonDeserializer() {
@@ -116,27 +137,6 @@ public class LynxModuleMetaList implements Iterable<LynxModuleMeta> {
                 .create();
 
         return gson.fromJson(serialization, LynxModuleMetaList.class);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Serialization
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public Iterator<LynxModuleMeta> iterator() {
-        return Arrays.asList(this.modules).iterator();
-    }
-
-    protected LynxModuleMetaList flatten() {
-        LynxModuleMeta[] flatModules = new LynxModuleMeta[this.modules.length];
-        for (int i = 0; i < this.modules.length; i++) {
-            flatModules[i] = new LynxModuleMeta(this.modules[i]);
-        }
-        return new LynxModuleMetaList(serialNumber, flatModules);
-    }
-
-    public String toSerializationString() {
-        return SimpleGson.getInstance().toJson(this.flatten());
     }
 
     //----------------------------------------------------------------------------------------------

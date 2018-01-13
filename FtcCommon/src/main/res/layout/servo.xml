@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableRow
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/row_port"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="5dip">
 
     <TextView
         android:id="@+id/port_number"
-        android:paddingEnd="10dp"
         android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:text="@string/servo_port"
         android:textSize="22sp"
         android:textStyle="bold"/>

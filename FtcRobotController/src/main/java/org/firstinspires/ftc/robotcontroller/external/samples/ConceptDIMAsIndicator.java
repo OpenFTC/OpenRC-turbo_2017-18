@@ -57,10 +57,12 @@ public class ConceptDIMAsIndicator extends LinearOpMode {
 
     static final int BLUE_LED = 0;     // Blue LED channel on DIM
     static final int RED_LED = 1;     // Red LED Channel on DIM
-    // Define class members
-    DeviceInterfaceModule dim;
+
     // Create timer to toggle LEDs
     private ElapsedTime runtime = new ElapsedTime();
+
+    // Define class members
+    DeviceInterfaceModule dim;
 
     @Override
     public void runOpMode() {

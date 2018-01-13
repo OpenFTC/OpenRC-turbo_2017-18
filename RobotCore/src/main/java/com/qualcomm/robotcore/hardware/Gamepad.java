@@ -78,203 +78,135 @@ public class Gamepad extends RobocolParsableBase {
      * A gamepad with a phantom id a synthetic one made up by the system
      */
     public static final int ID_SYNTHETIC = -2;
-    // private static values used for packaging the gamepad state into a byte array
-    private static final short PAYLOAD_SIZE = 42;
-    private static final short BUFFER_SIZE = PAYLOAD_SIZE + RobocolParsable.HEADER_LENGTH;
-    private static final byte ROBOCOL_VERSION = 2;
-    private static final float MAX_MOTION_RANGE = 1.0f;
-    private static Set<Integer> gameControllerDeviceIdCache = new HashSet<Integer>();
-    // Set of devices to consume input events from. If null, inputs from all detected devices will be used.
-    private static Set<DeviceId> deviceWhitelist = null;
-    private final GamepadCallback callback;
+
+    /**
+     * Optional callback interface for monitoring changes due to MotionEvents and KeyEvents.
+     * <p>
+     * This interface can be used to notify you if the gamepad changes due to either a KeyEvent or a
+     * MotionEvent. It does not notify you if the gamepad changes for other reasons.
+     */
+    public interface GamepadCallback {
+
+        /**
+         * This method will be called whenever the gamepad state has changed due to either a KeyEvent
+         * or a MotionEvent.
+         *
+         * @param gamepad device which state has changed
+         */
+        void gamepadChanged(Gamepad gamepad);
+    }
+
     /**
      * left analog stick horizontal axis
      */
     public float left_stick_x = 0f;
+
     /**
      * left analog stick vertical axis
      */
     public float left_stick_y = 0f;
+
     /**
      * right analog stick horizontal axis
      */
     public float right_stick_x = 0f;
+
     /**
      * right analog stick vertical axis
      */
     public float right_stick_y = 0f;
+
     /**
      * dpad up
      */
     public boolean dpad_up = false;
+
     /**
      * dpad down
      */
     public boolean dpad_down = false;
+
     /**
      * dpad left
      */
     public boolean dpad_left = false;
+
     /**
      * dpad right
      */
     public boolean dpad_right = false;
+
     /**
      * button a
      */
     public boolean a = false;
+
     /**
      * button b
      */
     public boolean b = false;
+
     /**
      * button x
      */
     public boolean x = false;
+
     /**
      * button y
      */
     public boolean y = false;
+
     /**
      * button guide - often the large button in the middle of the controller. The OS may
      * capture this button before it is sent to the app; in which case you'll never
      * receive it.
      */
     public boolean guide = false;
+
     /**
      * button start
      */
     public boolean start = false;
+
     /**
      * button back
      */
     public boolean back = false;
+
     /**
      * button left bumper
      */
     public boolean left_bumper = false;
+
     /**
      * button right bumper
      */
     public boolean right_bumper = false;
+
     /**
      * left stick button
      */
     public boolean left_stick_button = false;
+
     /**
      * right stick button
      */
     public boolean right_stick_button = false;
+
     /**
      * left trigger
      */
     public float left_trigger = 0f;
+
     /**
      * right trigger
      */
     public float right_trigger = 0f;
-    /**
-     * ID assigned to this gamepad by the OS. This value can change each time the device is plugged in.
-     */
-    public int id = ID_UNASSOCIATED;  // public only for historical reasons
-    /**
-     * Relative timestamp of the last time an event was detected
-     */
-    public long timestamp = 0;
-    /**
-     * DPAD button will be considered pressed when the movement crosses this
-     * threshold
-     */
-    protected float dpadThreshold = 0.2f;
-    /**
-     * If the motion value is less than the threshold, the controller will be
-     * considered at rest
-     */
-    protected float joystickDeadzone = 0.2f; // very high, since we don't know the device type
+
     /**
      * Which user is this gamepad used by
      */
     private byte user = ID_UNASSOCIATED;
-
-    public Gamepad() {
-        this(null);
-    }
-
-    public Gamepad(GamepadCallback callback) {
-        this.callback = callback;
-    }
-
-    /**
-     * Add a whitelist filter for a specific device vendor/product ID.
-     * <p>
-     * This adds a whitelist to the gamepad detection method. If a device has been added to the
-     * whitelist, then only devices that match the given vendor ID and product ID will be considered
-     * gamepads. This method can be called multiple times to add multiple devices to the whitelist.
-     * <p>
-     * If no whitelist entries have been added, then the default OS detection methods will be used.
-     *
-     * @param vendorId  the vendor ID
-     * @param productId the product ID
-     */
-    public static void enableWhitelistFilter(int vendorId, int productId) {
-        if (deviceWhitelist == null) {
-            deviceWhitelist = new HashSet<DeviceId>();
-        }
-        deviceWhitelist.add(new DeviceId(vendorId, productId));
-    }
-
-    /**
-     * Clear the device whitelist filter.
-     */
-    public static void clearWhitelistFilter() {
-        deviceWhitelist = null;
-    }
-
-    /**
-     * Does this device ID belong to a gamepad device?
-     *
-     * @param deviceId device ID
-     * @return true, if gamepad device; false otherwise
-     */
-    @TargetApi(19)
-    public static synchronized boolean isGamepadDevice(int deviceId) {
-
-        // check the cache
-        if (gameControllerDeviceIdCache.contains(deviceId)) {
-            return true;
-        }
-
-        // update game controllers cache, since a new controller might have been plugged in
-        gameControllerDeviceIdCache = new HashSet<Integer>();
-        int[] deviceIds = InputDevice.getDeviceIds();
-        for (int id : deviceIds) {
-            InputDevice device = InputDevice.getDevice(id);
-
-            int source = device.getSources();
-            if ((source & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
-                    || (source & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
-
-                if (android.os.Build.VERSION.SDK_INT >= 19) {
-                    // null mDeviceWhitelist means all devices are valid
-                    // non-null mDeviceWhitelist means only use devices in mDeviceWhitelist
-                    if (deviceWhitelist == null
-                            || deviceWhitelist.contains(new DeviceId(device.getVendorId(), device.getProductId()))) {
-                        gameControllerDeviceIdCache.add(id);
-                    }
-                } else {
-                    gameControllerDeviceIdCache.add(id);
-                }
-            }
-        }
-
-        // check updated cache
-        if (gameControllerDeviceIdCache.contains(deviceId)) {
-            return true;
-        }
-
-        // this is not an event from a game pad
-        return false;
-    }
 
     //
     public GamepadUser getUser() {
@@ -286,13 +218,23 @@ public class Gamepad extends RobocolParsableBase {
         this.user = user.id;
     }
 
-    public int getGamepadId() {
-        return this.id;
-    }
+    /**
+     * ID assigned to this gamepad by the OS. This value can change each time the device is plugged in.
+     */
+    public int id = ID_UNASSOCIATED;  // public only for historical reasons
 
     public void setGamepadId(int id) {
         this.id = id;
     }
+
+    public int getGamepadId() {
+        return this.id;
+    }
+
+    /**
+     * Relative timestamp of the last time an event was detected
+     */
+    public long timestamp = 0;
 
     /**
      * Sets the time at which this Gamepad last changed its state,
@@ -307,6 +249,65 @@ public class Gamepad extends RobocolParsableBase {
      */
     public void refreshTimestamp() {
         setTimestamp(SystemClock.uptimeMillis());
+    }
+
+    /**
+     * DPAD button will be considered pressed when the movement crosses this
+     * threshold
+     */
+    protected float dpadThreshold = 0.2f;
+
+    /**
+     * If the motion value is less than the threshold, the controller will be
+     * considered at rest
+     */
+    protected float joystickDeadzone = 0.2f; // very high, since we don't know the device type
+
+    // private static values used for packaging the gamepad state into a byte array
+    private static final short PAYLOAD_SIZE = 42;
+    private static final short BUFFER_SIZE = PAYLOAD_SIZE + RobocolParsable.HEADER_LENGTH;
+
+    private static final byte ROBOCOL_VERSION = 2;
+
+    private static final float MAX_MOTION_RANGE = 1.0f;
+
+    private final GamepadCallback callback;
+
+    private static Set<Integer> gameControllerDeviceIdCache = new HashSet<Integer>();
+
+    // Set of devices to consume input events from. If null, inputs from all detected devices will be used.
+    private static Set<DeviceId> deviceWhitelist = null;
+
+    /**
+     * Container class to identify a vendor/product ID combination.
+     * <p>
+     * Reusing Map.Entry which provides appropriate .equals/.hashCode
+     */
+    private static class DeviceId extends java.util.AbstractMap.SimpleEntry<Integer, Integer> {
+        private static final long serialVersionUID = -6429575391769944899L;
+
+        public DeviceId(int vendorId, int productId) {
+            super(vendorId, productId);
+        }
+
+        @SuppressWarnings("unused")
+        public int getVendorId() {
+            return getKey();
+        }
+
+        @SuppressWarnings("unused")
+        public int getProductId() {
+            return getValue();
+        }
+
+    }
+
+    public Gamepad() {
+        this(null);
+    }
+
+    public Gamepad(GamepadCallback callback) {
+        this.callback = callback;
     }
 
     /**
@@ -633,43 +634,74 @@ public class Gamepad extends RobocolParsableBase {
     }
 
     /**
-     * Optional callback interface for monitoring changes due to MotionEvents and KeyEvents.
+     * Add a whitelist filter for a specific device vendor/product ID.
      * <p>
-     * This interface can be used to notify you if the gamepad changes due to either a KeyEvent or a
-     * MotionEvent. It does not notify you if the gamepad changes for other reasons.
+     * This adds a whitelist to the gamepad detection method. If a device has been added to the
+     * whitelist, then only devices that match the given vendor ID and product ID will be considered
+     * gamepads. This method can be called multiple times to add multiple devices to the whitelist.
+     * <p>
+     * If no whitelist entries have been added, then the default OS detection methods will be used.
+     *
+     * @param vendorId  the vendor ID
+     * @param productId the product ID
      */
-    public interface GamepadCallback {
-
-        /**
-         * This method will be called whenever the gamepad state has changed due to either a KeyEvent
-         * or a MotionEvent.
-         *
-         * @param gamepad device which state has changed
-         */
-        void gamepadChanged(Gamepad gamepad);
+    public static void enableWhitelistFilter(int vendorId, int productId) {
+        if (deviceWhitelist == null) {
+            deviceWhitelist = new HashSet<DeviceId>();
+        }
+        deviceWhitelist.add(new DeviceId(vendorId, productId));
     }
 
     /**
-     * Container class to identify a vendor/product ID combination.
-     * <p>
-     * Reusing Map.Entry which provides appropriate .equals/.hashCode
+     * Clear the device whitelist filter.
      */
-    private static class DeviceId extends java.util.AbstractMap.SimpleEntry<Integer, Integer> {
-        private static final long serialVersionUID = -6429575391769944899L;
+    public static void clearWhitelistFilter() {
+        deviceWhitelist = null;
+    }
 
-        public DeviceId(int vendorId, int productId) {
-            super(vendorId, productId);
+    /**
+     * Does this device ID belong to a gamepad device?
+     *
+     * @param deviceId device ID
+     * @return true, if gamepad device; false otherwise
+     */
+    @TargetApi(19)
+    public static synchronized boolean isGamepadDevice(int deviceId) {
+
+        // check the cache
+      if (gameControllerDeviceIdCache.contains(deviceId)) {
+        return true;
+      }
+
+        // update game controllers cache, since a new controller might have been plugged in
+        gameControllerDeviceIdCache = new HashSet<Integer>();
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+
+            int source = device.getSources();
+            if ((source & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
+                    || (source & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+
+                if (android.os.Build.VERSION.SDK_INT >= 19) {
+                    // null mDeviceWhitelist means all devices are valid
+                    // non-null mDeviceWhitelist means only use devices in mDeviceWhitelist
+                    if (deviceWhitelist == null
+                            || deviceWhitelist.contains(new DeviceId(device.getVendorId(), device.getProductId()))) {
+                        gameControllerDeviceIdCache.add(id);
+                    }
+                } else {
+                    gameControllerDeviceIdCache.add(id);
+                }
+            }
         }
 
-        @SuppressWarnings("unused")
-        public int getVendorId() {
-            return getKey();
-        }
+        // check updated cache
+      if (gameControllerDeviceIdCache.contains(deviceId)) {
+        return true;
+      }
 
-        @SuppressWarnings("unused")
-        public int getProductId() {
-            return getValue();
-        }
-
+        // this is not an event from a game pad
+        return false;
     }
 }

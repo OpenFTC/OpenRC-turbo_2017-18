@@ -69,12 +69,6 @@ public class LocalByRefRequestCodeHolder<T> {
         mapRequestCodeToHolder.put(this.actualRequestCode, this);
     }
 
-    public static
-    @Nullable
-    LocalByRefRequestCodeHolder from(int actualRequestCode) {
-        return mapRequestCodeToHolder.get(actualRequestCode);
-    }
-
     public int getActualRequestCode() {
         return this.actualRequestCode;
     }
@@ -86,6 +80,12 @@ public class LocalByRefRequestCodeHolder<T> {
     public T getTargetAndForget() {
         mapRequestCodeToHolder.remove(this.actualRequestCode);
         return target;
+    }
+
+    public static
+    @Nullable
+    LocalByRefRequestCodeHolder from(int actualRequestCode) {
+        return mapRequestCodeToHolder.get(actualRequestCode);
     }
 
 }

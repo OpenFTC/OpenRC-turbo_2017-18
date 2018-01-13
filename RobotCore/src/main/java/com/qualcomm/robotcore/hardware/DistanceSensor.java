@@ -40,11 +40,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 public interface DistanceSensor extends HardwareDevice {
     /**
-     * The value returned when a distance reading is not in fact available.
-     */
-    double distanceOutOfRange = DistanceUnit.infinity;
-
-    /**
      * Returns the current distance in the indicated distance units
      *
      * @param unit the unit of distance in which the result should be returned
@@ -53,4 +48,9 @@ public interface DistanceSensor extends HardwareDevice {
      * returned;
      */
     double getDistance(DistanceUnit unit);
+
+    /**
+     * The value returned when a distance reading is not in fact available.
+     */
+    double distanceOutOfRange = DistanceUnit.infinity;
 }

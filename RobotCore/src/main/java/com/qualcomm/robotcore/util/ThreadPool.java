@@ -81,28 +81,229 @@ public class ThreadPool {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "ThreadPool";
-    private final static Object extantExecutorsLock = new Object();
 
-    //----------------------------------------------------------------------------------------------
-    // Singleton
-    //----------------------------------------------------------------------------------------------
     /**
      * maps Thread.id to OS notion of thread id
      */
     private static LongSparseArray<Integer> threadIdMap = new LongSparseArray<Integer>();
+
+    //----------------------------------------------------------------------------------------------
+    // Singleton
+    //----------------------------------------------------------------------------------------------
+
     /**
-     * We use the keys of the weak hash map to remember the executors we've instantiated. Because
-     * those keys are weak references, they won't keep our executors alive longer than they otherwise
-     * would live, yet allows us to find them and iterate over them when we need to.
+     * Singletons are helpers that gatekeep execution of work on a service to a single runnable
+     * at a time. Submitting a runnable will return a SingletonResult, either from a newly started
+     * item or one that was previously running. That result can be waited upon for completion.
+     * Alternately, the Singleton itself can be waited upon to await the completion of the
+     * currently running item, if any.
+     *
+     * @see SingletonResult
      */
-    private static Map<ExecutorService, Integer> extantExecutors = new WeakHashMap<ExecutorService, Integer>();
+    public static class Singleton<T> {
+        public static int INFINITE_TIMEOUT = -1;
+
+        private ExecutorService service = null;
+        private final Object lock = new Object();
+        private SingletonResult<T> result = null;
+        private boolean inFlight = false;
+
+        public Singleton() {
+        }
+
+        public void setService(ExecutorService service) {
+            this.service = service;
+        }
+
+        public void reset() {
+            synchronized (lock) {
+                this.result = null;
+                this.inFlight = false;
+            }
+        }
+
+        /**
+         * Submits a runnable to the service of this singleton, but only if there's not some
+         * other runnable currently submitted thereto.
+         *
+         * @param runnable the code to run if something's not already running
+         * @return a result that can be waited upon for completion
+         * @see #await(long)
+         * @see #submit(int, Callable)
+         * @see SingletonResult#await(long)
+         */
+        public SingletonResult<T> submit(final int msAwaitDefault, final Runnable runnable) {
+            return this.submit(msAwaitDefault, new Callable<T>() {
+                @Override
+                public T call() throws Exception {
+                    runnable.run();
+                    return null;
+                }
+            });
+        }
+
+        public SingletonResult<T> submit(Runnable runnable) {
+            return submit(Singleton.INFINITE_TIMEOUT, runnable);
+        }
+
+        public SingletonResult<T> submit(final int msAwaitDefault, final Callable<T> callable) {
+            synchronized (lock) {
+                // Have we already got someone running?
+                if (!inFlight) {
+                    if (service == null) {
+                        throw new IllegalArgumentException("Singleton service must be set before work is submitted");
+                    }
+
+                    // Record us as busy *before* we actually try to run!
+                    inFlight = true;
+
+                    // Run and remember the future for later
+                    result = new SingletonResult<T>(msAwaitDefault, this.service.submit(new Callable<T>() {
+                        @Override
+                        public T call() throws Exception {
+                            try {
+                                return callable.call();
+                            } catch (InterruptedException ignored) {
+                                Thread.currentThread().interrupt();
+                                return null;
+                            } catch (Exception e) {
+                                RobotLog.ee(TAG, e, "exception thrown during Singleton.submit()");
+                                return null;
+                            } finally {
+                                // Note that we will allow another guy in the next time someone asks
+                                synchronized (lock) {
+                                    inFlight = false;
+                                }
+                            }
+                        }
+                    }));
+                }
+                return result;
+            }
+        }
+
+        public SingletonResult<T> submit(Callable<T> callable) {
+            return submit(Singleton.INFINITE_TIMEOUT, callable);
+        }
+
+
+        /**
+         * Returns the result from the extant or previous work item, if any; otherwise, null.
+         *
+         * @return the result from the extant or previous work item, if any; otherwise, null.
+         */
+        public SingletonResult<T> getResult() {
+            synchronized (lock) {
+                return result;
+            }
+        }
+
+        /**
+         * Awaits the completion of the extant work item, if one exists
+         *
+         * @see #getResult()
+         */
+        public
+        @Nullable
+        T await(long ms) throws InterruptedException {
+            SingletonResult<T> result = getResult();
+            if (result != null) {
+                return result.await(ms);
+            } else {
+                return null;
+            }
+        }
+
+        public
+        @Nullable
+        T await() throws InterruptedException {
+            SingletonResult<T> result = getResult();
+            if (result != null) {
+                return result.await();
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * SingletonResults are returned from {@link Singleton Singletons} as a token
+     * that can be used to await the completion of submitted work.
+     *
+     * @see Singleton#submit(int, Callable)
+     */
+    public static class SingletonResult<T> {
+        private Future<T> future = null;
+        private long nsDeadline;
+
+        public SingletonResult(int msAwaitDefault, Future<T> future) {
+            this.future = future;
+            this.nsDeadline = msAwaitDefault == Singleton.INFINITE_TIMEOUT
+                    ? -1
+                    : System.nanoTime() + msAwaitDefault * ElapsedTime.MILLIS_IN_NANO;
+        }
+
+        public SingletonResult() {
+            this(0, null);
+        }
+
+        public void setFuture(Future<T> future) {
+            this.future = future;
+        }
+
+        /**
+         * Awaits the completion of the work item associated with this result.
+         *
+         * @param ms the duration in milliseconds to wait
+         * @return the result of the execution, or null of that was not available
+         * @see Singleton#submit(int, Runnable)
+         */
+        public
+        @Nullable
+        T await(long ms) throws InterruptedException {
+            try {
+                if (this.future != null) {
+                    return this.future.get(ms, TimeUnit.MILLISECONDS);
+                }
+            } catch (ExecutionException e) {
+                RobotLog.ee(TAG, e, "singleton threw ExecutionException");
+            } catch (TimeoutException e) {
+                RobotLog.ee(TAG, e, "singleton timed out");
+            }
+            return null;
+        }
+
+        /**
+         * Awaits (until deadline, forever, or until interruption) the completion of
+         * the work item associated with this result.
+         *
+         * @return the result of the execution, or null of that was not available
+         * @see Singleton#submit(int, Runnable)
+         */
+        public
+        @Nullable
+        T await() throws InterruptedException {
+            if (nsDeadline >= 0) {
+                long nsNow = System.nanoTime();
+                long nsRemaining = Math.max(0, nsDeadline - nsNow);
+                return await(nsRemaining / ElapsedTime.MILLIS_IN_NANO);
+            } else {
+                try {
+                    if (this.future != null) {
+                        return this.future.get();
+                    }
+                } catch (ExecutionException e) {
+                    RobotLog.ee(TAG, e, "singleton threw ExecutionException");
+                }
+                return null;
+            }
+        }
+    }
 
 
     //----------------------------------------------------------------------------------------------
     // Construction API
     //----------------------------------------------------------------------------------------------
-    private static ExecutorService defaultThreadPool = null;
-    private static ScheduledExecutorService defaultScheduler = null;
 
     public static ExecutorService getDefault() {
         synchronized (ThreadPool.class) {
@@ -189,11 +390,25 @@ public class ThreadPool {
         return result;
     }
 
+    /**
+     * We use the keys of the weak hash map to remember the executors we've instantiated. Because
+     * those keys are weak references, they won't keep our executors alive longer than they otherwise
+     * would live, yet allows us to find them and iterate over them when we need to.
+     */
+    private static Map<ExecutorService, Integer> extantExecutors = new WeakHashMap<ExecutorService, Integer>();
+    private final static Object extantExecutorsLock = new Object();
+    private static ExecutorService defaultThreadPool = null;
+    private static ScheduledExecutorService defaultScheduler = null;
+
     private static void noteNewExecutor(ExecutorService executor) {
         synchronized (extantExecutorsLock) {
             extantExecutors.put(executor, 1);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Operational API
+    //----------------------------------------------------------------------------------------------
 
     private static void noteTID(Thread thread, int tid) {
         synchronized (ThreadPool.class) {
@@ -206,10 +421,6 @@ public class ThreadPool {
             threadIdMap.remove(thread.getId());
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Operational API
-    //----------------------------------------------------------------------------------------------
 
     /**
      * Returns the OS-level thread id for the given thread
@@ -426,6 +637,10 @@ public class ThreadPool {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Types
+    //----------------------------------------------------------------------------------------------
+
     public interface ContainerOfThreads extends Iterable<Thread> {
         void setNameRootForThreads(@NonNull String nameRootForThreads);
 
@@ -434,218 +649,6 @@ public class ThreadPool {
         void noteNewThread(Thread thread);
 
         void noteFinishedThread(Thread thread);
-    }
-
-    /**
-     * Singletons are helpers that gatekeep execution of work on a service to a single runnable
-     * at a time. Submitting a runnable will return a SingletonResult, either from a newly started
-     * item or one that was previously running. That result can be waited upon for completion.
-     * Alternately, the Singleton itself can be waited upon to await the completion of the
-     * currently running item, if any.
-     *
-     * @see SingletonResult
-     */
-    public static class Singleton<T> {
-        public static int INFINITE_TIMEOUT = -1;
-        private final Object lock = new Object();
-        private ExecutorService service = null;
-        private SingletonResult<T> result = null;
-        private boolean inFlight = false;
-
-        public Singleton() {
-        }
-
-        public void setService(ExecutorService service) {
-            this.service = service;
-        }
-
-        public void reset() {
-            synchronized (lock) {
-                this.result = null;
-                this.inFlight = false;
-            }
-        }
-
-        /**
-         * Submits a runnable to the service of this singleton, but only if there's not some
-         * other runnable currently submitted thereto.
-         *
-         * @param runnable the code to run if something's not already running
-         * @return a result that can be waited upon for completion
-         * @see #await(long)
-         * @see #submit(int, Callable)
-         * @see SingletonResult#await(long)
-         */
-        public SingletonResult<T> submit(final int msAwaitDefault, final Runnable runnable) {
-            return this.submit(msAwaitDefault, new Callable<T>() {
-                @Override
-                public T call() throws Exception {
-                    runnable.run();
-                    return null;
-                }
-            });
-        }
-
-        public SingletonResult<T> submit(Runnable runnable) {
-            return submit(Singleton.INFINITE_TIMEOUT, runnable);
-        }
-
-        public SingletonResult<T> submit(final int msAwaitDefault, final Callable<T> callable) {
-            synchronized (lock) {
-                // Have we already got someone running?
-                if (!inFlight) {
-                    if (service == null) {
-                        throw new IllegalArgumentException("Singleton service must be set before work is submitted");
-                    }
-
-                    // Record us as busy *before* we actually try to run!
-                    inFlight = true;
-
-                    // Run and remember the future for later
-                    result = new SingletonResult<T>(msAwaitDefault, this.service.submit(new Callable<T>() {
-                        @Override
-                        public T call() throws Exception {
-                            try {
-                                return callable.call();
-                            } catch (InterruptedException ignored) {
-                                Thread.currentThread().interrupt();
-                                return null;
-                            } catch (Exception e) {
-                                RobotLog.ee(TAG, e, "exception thrown during Singleton.submit()");
-                                return null;
-                            } finally {
-                                // Note that we will allow another guy in the next time someone asks
-                                synchronized (lock) {
-                                    inFlight = false;
-                                }
-                            }
-                        }
-                    }));
-                }
-                return result;
-            }
-        }
-
-        public SingletonResult<T> submit(Callable<T> callable) {
-            return submit(Singleton.INFINITE_TIMEOUT, callable);
-        }
-
-
-        /**
-         * Returns the result from the extant or previous work item, if any; otherwise, null.
-         *
-         * @return the result from the extant or previous work item, if any; otherwise, null.
-         */
-        public SingletonResult<T> getResult() {
-            synchronized (lock) {
-                return result;
-            }
-        }
-
-        /**
-         * Awaits the completion of the extant work item, if one exists
-         *
-         * @see #getResult()
-         */
-        public
-        @Nullable
-        T await(long ms) throws InterruptedException {
-            SingletonResult<T> result = getResult();
-            if (result != null) {
-                return result.await(ms);
-            } else {
-                return null;
-            }
-        }
-
-        public
-        @Nullable
-        T await() throws InterruptedException {
-            SingletonResult<T> result = getResult();
-            if (result != null) {
-                return result.await();
-            } else {
-                return null;
-            }
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Types
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * SingletonResults are returned from {@link Singleton Singletons} as a token
-     * that can be used to await the completion of submitted work.
-     *
-     * @see Singleton#submit(int, Callable)
-     */
-    public static class SingletonResult<T> {
-        private Future<T> future = null;
-        private long nsDeadline;
-
-        public SingletonResult(int msAwaitDefault, Future<T> future) {
-            this.future = future;
-            this.nsDeadline = msAwaitDefault == Singleton.INFINITE_TIMEOUT
-                    ? -1
-                    : System.nanoTime() + msAwaitDefault * ElapsedTime.MILLIS_IN_NANO;
-        }
-
-        public SingletonResult() {
-            this(0, null);
-        }
-
-        public void setFuture(Future<T> future) {
-            this.future = future;
-        }
-
-        /**
-         * Awaits the completion of the work item associated with this result.
-         *
-         * @param ms the duration in milliseconds to wait
-         * @return the result of the execution, or null of that was not available
-         * @see Singleton#submit(int, Runnable)
-         */
-        public
-        @Nullable
-        T await(long ms) throws InterruptedException {
-            try {
-                if (this.future != null) {
-                    return this.future.get(ms, TimeUnit.MILLISECONDS);
-                }
-            } catch (ExecutionException e) {
-                RobotLog.ee(TAG, e, "singleton threw ExecutionException");
-            } catch (TimeoutException e) {
-                RobotLog.ee(TAG, e, "singleton timed out");
-            }
-            return null;
-        }
-
-        /**
-         * Awaits (until deadline, forever, or until interruption) the completion of
-         * the work item associated with this result.
-         *
-         * @return the result of the execution, or null of that was not available
-         * @see Singleton#submit(int, Runnable)
-         */
-        public
-        @Nullable
-        T await() throws InterruptedException {
-            if (nsDeadline >= 0) {
-                long nsNow = System.nanoTime();
-                long nsRemaining = Math.max(0, nsDeadline - nsNow);
-                return await(nsRemaining / ElapsedTime.MILLIS_IN_NANO);
-            } else {
-                try {
-                    if (this.future != null) {
-                        return this.future.get();
-                    }
-                } catch (ExecutionException e) {
-                    RobotLog.ee(TAG, e, "singleton threw ExecutionException");
-                }
-                return null;
-            }
-        }
     }
 
     /**

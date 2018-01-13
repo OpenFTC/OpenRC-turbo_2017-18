@@ -38,12 +38,12 @@ import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.acos;
-import static java.lang.Math.asin;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.cos;
+import static java.lang.Math.asin;
+import static java.lang.Math.acos;
+import static java.lang.Math.atan2;
+import static java.lang.Math.PI;
 
 /**
  * Instances of {@link Orientation} represent a rotated stance in three-dimensional space
@@ -161,6 +161,87 @@ public class Orientation {
         this.secondAngle = secondAngle;
         this.thirdAngle = thirdAngle;
         this.acquisitionTime = acquisitionTime;
+    }
+
+    /**
+     * Converts this {@link Orientation} to one with the indicated angular units.
+     *
+     * @param angleUnit the units to use in the returned [@link Orientation}
+     * @return a new [@link Orientation} with the same data but in the indicated units
+     */
+    public Orientation toAngleUnit(AngleUnit angleUnit) {
+        if (angleUnit != this.angleUnit) {
+            return new Orientation(this.axesReference, this.axesOrder, angleUnit,
+                    angleUnit.fromUnit(this.angleUnit, firstAngle),
+                    angleUnit.fromUnit(this.angleUnit, secondAngle),
+                    angleUnit.fromUnit(this.angleUnit, thirdAngle),
+                    this.acquisitionTime);
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Converts the {@link Orientation} to an equivalent one with the indicted point of view.
+     *
+     * @param axesReference whether we wish to consider rotations from an extrinsic or intrinsic point of view
+     * @return an equivalent orientation but with the indicated point of view.
+     */
+    public Orientation toAxesReference(AxesReference axesReference) {
+        if (this.axesReference != axesReference) {
+            /**
+             * Theorem: Any extrinsic rotation is equivalent to an intrinsic rotation by
+             * the same angles but with inverted order of elemental orientations, and vice versa.
+             * @see <a href="https://en.wikipedia.org/wiki/Euler_angles">Euler Angles</a>
+             */
+            Assert.assertTrue(axesReference == this.axesReference.reverse());
+            return new Orientation(this.axesReference.reverse(), this.axesOrder.reverse(), this.angleUnit,
+                    this.thirdAngle, this.secondAngle, this.firstAngle, this.acquisitionTime);
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Converst the {@link Orientation} to an equivalent one with the indicated ordering of axes
+     *
+     * @param axesOrder the desired ordering of axes
+     * @return an equivalent orientation with the indicated axes order
+     */
+    public Orientation toAxesOrder(AxesOrder axesOrder) {
+        if (this.axesOrder != axesOrder) {
+            return Orientation.getOrientation(this.getRotationMatrix(), this.axesReference, axesOrder, this.angleUnit);
+        } else {
+            return this;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        if (this.angleUnit == AngleUnit.DEGREES) {
+            return String.format("{%s %s %.0f %.0f %.0f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
+        } else {
+            return String.format("{%s %s %.3f %.3f %.3f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Rotation Matrices
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Returns the rotation matrix associated with the receiver {@link Orientation}.
+     *
+     * @return the rotation matrix associated with the receiver {@link Orientation}.
+     * @see #getRotationMatrix(AxesReference, AxesOrder, AngleUnit, float, float, float)
+     * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
+     */
+    public OpenGLMatrix getRotationMatrix() {
+        return getRotationMatrix(this.axesReference, this.axesOrder, this.angleUnit, this.firstAngle, this.secondAngle, this.thirdAngle);
     }
 
     /**
@@ -377,6 +458,16 @@ public class Orientation {
 
         return vOne.magnitude() <= vOther.magnitude() ? one : theOther;
     }
+
+    /**
+     * {@link AngleSet} is used to distinguish between the two sets of angles that will produce
+     * a given rotation in a given axes reference and a given axes order
+     */
+    public enum AngleSet {
+        THEONE, THEOTHER
+    }
+
+    ;
 
     /**
      * Given a rotation matrix, and an {@link AxesReference} and {@link AxesOrder}, returns an orientation
@@ -721,95 +812,6 @@ public class Orientation {
         return new Orientation(axesReference, axesOrder, unit,
                 unit.fromRadians(firstAngle), unit.fromRadians(secondAngle), unit.fromRadians(thirdAngle),
                 0);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * Converts this {@link Orientation} to one with the indicated angular units.
-     *
-     * @param angleUnit the units to use in the returned [@link Orientation}
-     * @return a new [@link Orientation} with the same data but in the indicated units
-     */
-    public Orientation toAngleUnit(AngleUnit angleUnit) {
-        if (angleUnit != this.angleUnit) {
-            return new Orientation(this.axesReference, this.axesOrder, angleUnit,
-                    angleUnit.fromUnit(this.angleUnit, firstAngle),
-                    angleUnit.fromUnit(this.angleUnit, secondAngle),
-                    angleUnit.fromUnit(this.angleUnit, thirdAngle),
-                    this.acquisitionTime);
-        } else {
-            return this;
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Rotation Matrices
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * Converts the {@link Orientation} to an equivalent one with the indicted point of view.
-     *
-     * @param axesReference whether we wish to consider rotations from an extrinsic or intrinsic point of view
-     * @return an equivalent orientation but with the indicated point of view.
-     */
-    public Orientation toAxesReference(AxesReference axesReference) {
-        if (this.axesReference != axesReference) {
-            /**
-             * Theorem: Any extrinsic rotation is equivalent to an intrinsic rotation by
-             * the same angles but with inverted order of elemental orientations, and vice versa.
-             * @see <a href="https://en.wikipedia.org/wiki/Euler_angles">Euler Angles</a>
-             */
-            Assert.assertTrue(axesReference == this.axesReference.reverse());
-            return new Orientation(this.axesReference.reverse(), this.axesOrder.reverse(), this.angleUnit,
-                    this.thirdAngle, this.secondAngle, this.firstAngle, this.acquisitionTime);
-        } else {
-            return this;
-        }
-    }
-
-    /**
-     * Converst the {@link Orientation} to an equivalent one with the indicated ordering of axes
-     *
-     * @param axesOrder the desired ordering of axes
-     * @return an equivalent orientation with the indicated axes order
-     */
-    public Orientation toAxesOrder(AxesOrder axesOrder) {
-        if (this.axesOrder != axesOrder) {
-            return Orientation.getOrientation(this.getRotationMatrix(), this.axesReference, axesOrder, this.angleUnit);
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public String toString() {
-        if (this.angleUnit == AngleUnit.DEGREES) {
-            return String.format("{%s %s %.0f %.0f %.0f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
-        } else {
-            return String.format("{%s %s %.3f %.3f %.3f}", this.axesReference.toString(), this.axesOrder.toString(), this.firstAngle, this.secondAngle, this.thirdAngle);
-        }
-    }
-
-    /**
-     * Returns the rotation matrix associated with the receiver {@link Orientation}.
-     *
-     * @return the rotation matrix associated with the receiver {@link Orientation}.
-     * @see #getRotationMatrix(AxesReference, AxesOrder, AngleUnit, float, float, float)
-     * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation Matrix</a>
-     */
-    public OpenGLMatrix getRotationMatrix() {
-        return getRotationMatrix(this.axesReference, this.axesOrder, this.angleUnit, this.firstAngle, this.secondAngle, this.thirdAngle);
-    }
-
-    /**
-     * {@link AngleSet} is used to distinguish between the two sets of angles that will produce
-     * a given rotation in a given axes reference and a given axes order
-     */
-    public enum AngleSet {
-        THEONE, THEOTHER
     }
 
 }

@@ -85,13 +85,43 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
     //------------------------------------------------------------------------------------------------
 
     public static final I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x38);
+
+    public enum Register {
+        READ_WINDOW_FIRST(0x00),
+        FIRMWARE_REV(0x00),
+        MANUFACTURE_CODE(0x01),
+        SENSOR_ID(0x02),
+        UNUSED(0x03),
+        DIR_DATA_1200(0x04),
+        SIGNAL_STRENTH_1200(0x05),
+        DIR_DATA_600(0x06),
+        SIGNAL_STRENTH_600(0x07),
+        LEFT_SIDE_DATA_1200(0x08),
+        RIGHT_SIDE_DATA_1200(0x0A),
+        LEFT_SIDE_DATA_600(0x0C),
+        RIGHT_SIDE_DATA_600(0x0E),
+        READ_WINDOW_LAST(RIGHT_SIDE_DATA_600.bVal + 1),
+        UNKNOWN(-1);
+        public byte bVal;
+
+        Register(int value) {
+            this.bVal = (byte) value;
+        }
+    }
+
     public static final double MAX_SENSOR_STRENGTH = 255.0;
-    protected Mode mode = Mode.MODE_1200HZ;
 
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
+
+    protected Mode mode = Mode.MODE_1200HZ;
     protected double signalDetectedThreshold;    // set in doInitialize
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
     public ModernRoboticsI2cIrSeekerSensorV3(I2cDeviceSynch deviceClient) {
         super(deviceClient, true);
 
@@ -101,10 +131,6 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
         super.registerArmingStateCallback(false);
         this.deviceClient.engage();
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------------
 
     protected void setOptimalReadWindow() {
         I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
@@ -138,13 +164,13 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
         return 3;
     }
 
-    public byte read8(Register reg) {
-        return this.deviceClient.read8(reg.bVal);
-    }
-
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
+
+    public byte read8(Register reg) {
+        return this.deviceClient.read8(reg.bVal);
+    }
 
     public void write8(Register reg, byte value) {
         this.deviceClient.write8(reg.bVal, value);
@@ -153,6 +179,10 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
     protected short readShort(Register reg) {
         return TypeConversion.byteArrayToShort(this.deviceClient.read(reg.bVal, 2), ByteOrder.LITTLE_ENDIAN);
     }
+
+    //------------------------------------------------------------------------------------------------
+    // Operations
+    //------------------------------------------------------------------------------------------------
 
     @Override
     public String toString() {
@@ -163,9 +193,10 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
         }
     }
 
-    //------------------------------------------------------------------------------------------------
-    // Operations
-    //------------------------------------------------------------------------------------------------
+    @Override
+    public synchronized void setSignalDetectedThreshold(double threshold) {
+        signalDetectedThreshold = threshold;
+    }
 
     @Override
     public double getSignalDetectedThreshold() {
@@ -173,18 +204,13 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
     }
 
     @Override
-    public synchronized void setSignalDetectedThreshold(double threshold) {
-        signalDetectedThreshold = threshold;
+    public synchronized void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     @Override
     public Mode getMode() {
         return mode;
-    }
-
-    @Override
-    public synchronized void setMode(Mode mode) {
-        this.mode = mode;
     }
 
     @Override
@@ -238,36 +264,13 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
     }
 
     @Override
-    public I2cAddr getI2cAddress() {
-        return this.deviceClient.getI2cAddress();
-    }
-
-    @Override
     public synchronized void setI2cAddress(I2cAddr newAddress) {
         // In light of the existence of I2C multiplexers, we don't *require* a valid Modern Robotics I2cAddr
         this.deviceClient.setI2cAddress(newAddress);
     }
 
-    public enum Register {
-        READ_WINDOW_FIRST(0x00),
-        FIRMWARE_REV(0x00),
-        MANUFACTURE_CODE(0x01),
-        SENSOR_ID(0x02),
-        UNUSED(0x03),
-        DIR_DATA_1200(0x04),
-        SIGNAL_STRENTH_1200(0x05),
-        DIR_DATA_600(0x06),
-        SIGNAL_STRENTH_600(0x07),
-        LEFT_SIDE_DATA_1200(0x08),
-        RIGHT_SIDE_DATA_1200(0x0A),
-        LEFT_SIDE_DATA_600(0x0C),
-        RIGHT_SIDE_DATA_600(0x0E),
-        READ_WINDOW_LAST(RIGHT_SIDE_DATA_600.bVal + 1),
-        UNKNOWN(-1);
-        public byte bVal;
-
-        Register(int value) {
-            this.bVal = (byte) value;
-        }
+    @Override
+    public I2cAddr getI2cAddress() {
+        return this.deviceClient.getI2cAddress();
     }
 }

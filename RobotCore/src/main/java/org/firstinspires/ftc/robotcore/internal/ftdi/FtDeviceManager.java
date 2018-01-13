@@ -64,8 +64,11 @@ public class FtDeviceManager extends FtConstants {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FtDeviceManager";
-    protected static final String ACTION_FTDI_USB_PERMISSION = "org.firstinspires.ftc.ftdi.permission";  // https://developer.android.com/guide/topics/connectivity/usb/host.html
+
     private static FtDeviceManager theInstance = null;
+
+    protected static final String ACTION_FTDI_USB_PERMISSION = "org.firstinspires.ftc.ftdi.permission";  // https://developer.android.com/guide/topics/connectivity/usb/host.html
+
     private static Context mContext = null;
     private static PendingIntent mPendingIntent = null;
     private static List<VendorAndProductIds> mSupportedDevices = new ArrayList<VendorAndProductIds>(Arrays.asList(new VendorAndProductIds[]{
@@ -87,23 +90,9 @@ public class FtDeviceManager extends FtConstants {
             new VendorAndProductIds(0x15d6, 1),        // 0x0001    Keith Support Request 8/10/04
             new VendorAndProductIds(0x0403, 24599)})); // 0x6017    Additional VID/PID
     private static UsbManager mUsbManager;
-    private static BroadcastReceiver mUsbDevicePermissions = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (ACTION_FTDI_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        RobotLog.vv(TAG, "permission granted for device " + device.getDeviceName());
-                    } else {
-                        RobotLog.ee(TAG, "permission denied for device " + device.getDeviceName());
-                    }
-                }
-            }
 
-        }
-    };
     private ArrayList<FtDevice> mFtdiDevices;
+
     private BroadcastReceiver mUsbPlugEvents = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -124,6 +113,23 @@ public class FtDeviceManager extends FtConstants {
 
                 FtDeviceManager.this.addOrUpdateUsbDevice(dev);
             }
+        }
+    };
+
+    private static BroadcastReceiver mUsbDevicePermissions = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ACTION_FTDI_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        RobotLog.vv(TAG, "permission granted for device " + device.getDeviceName());
+                    } else {
+                        RobotLog.ee(TAG, "permission denied for device " + device.getDeviceName());
+                    }
+                }
+            }
+
         }
     };
 
@@ -164,34 +170,6 @@ public class FtDeviceManager extends FtConstants {
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    private static synchronized boolean updateContext(Context context) {
-        boolean result = false;
-        if (context == null) {
-        } else {
-            // TODO: this should compare application contexts, shouldn't it?
-            if (mContext != context) {
-                mContext = context;
-                mPendingIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 0, new Intent(ACTION_FTDI_USB_PERMISSION), /*134217728*/ /*0x8000000*/ PendingIntent.FLAG_UPDATE_CURRENT);
-                mContext.getApplicationContext().registerReceiver(mUsbDevicePermissions, new IntentFilter(ACTION_FTDI_USB_PERMISSION));
-            }
-
-            result = true;
-        }
-        return result;
-    }
-
-    private static boolean findUsbManger() {
-        if (mUsbManager == null && mContext != null) {
-            mUsbManager = (UsbManager) mContext.getApplicationContext().getSystemService(Context.USB_SERVICE);
-        }
-
-        return mUsbManager != null;
-    }
-
-    public static int getLibraryVersion() {
-        return 540016640 /*0x20300000*/;
-    }
-
     private FtDevice findDevice(UsbDevice usbDev) {
         synchronized (this.mFtdiDevices) {
             for (FtDevice ftDevice : this.mFtdiDevices) {
@@ -216,6 +194,22 @@ public class FtDeviceManager extends FtConstants {
         }
     }
 
+    private static synchronized boolean updateContext(Context context) {
+        boolean result = false;
+        if (context == null) {
+        } else {
+            // TODO: this should compare application contexts, shouldn't it?
+            if (mContext != context) {
+                mContext = context;
+                mPendingIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 0, new Intent(ACTION_FTDI_USB_PERMISSION), /*134217728*/ /*0x8000000*/ PendingIntent.FLAG_UPDATE_CURRENT);
+                mContext.getApplicationContext().registerReceiver(mUsbDevicePermissions, new IntentFilter(ACTION_FTDI_USB_PERMISSION));
+            }
+
+            result = true;
+        }
+        return result;
+    }
+
     private boolean isPermitted(UsbDevice dev) {
         boolean result = false;
         if (!mUsbManager.hasPermission(dev)) {
@@ -228,6 +222,14 @@ public class FtDeviceManager extends FtConstants {
         }
 
         return result;
+    }
+
+    private static boolean findUsbManger() {
+        if (mUsbManager == null && mContext != null) {
+            mUsbManager = (UsbManager) mContext.getApplicationContext().getSystemService(Context.USB_SERVICE);
+        }
+
+        return mUsbManager != null;
     }
 
     public boolean setVIDPID(int vendorId, int productId) {
@@ -254,7 +256,7 @@ public class FtDeviceManager extends FtConstants {
         int[][] arrayVIDPID = new int[2][listSize];
 
         for (int i = 0; i < listSize; ++i) {
-            VendorAndProductIds vidpid = mSupportedDevices.get(i);
+            VendorAndProductIds vidpid = (VendorAndProductIds) mSupportedDevices.get(i);
             arrayVIDPID[0][i] = vidpid.getVendorId();
             arrayVIDPID[1][i] = vidpid.getProductId();
         }
@@ -330,6 +332,10 @@ public class FtDeviceManager extends FtConstants {
                 : null;
     }
 
+    public static int getLibraryVersion() {
+        return 540016640 /*0x20300000*/;
+    }
+
     private boolean tryOpen(Context parentContext, FtDevice ftDev, FtDeviceManagerParams params) {
         boolean result = false;
         if (ftDev == null) {
@@ -379,7 +385,7 @@ public class FtDeviceManager extends FtConstants {
     }
 
     public synchronized FtDevice openByUsbDevice(Context parentContext, UsbDevice dev) {
-        return this.openByUsbDevice(parentContext, dev, null);
+        return this.openByUsbDevice(parentContext, dev, (FtDeviceManagerParams) null);
     }
 
     public synchronized FtDevice openByIndex(Context parentContext, int index, FtDeviceManagerParams params) {
@@ -397,7 +403,7 @@ public class FtDeviceManager extends FtConstants {
     }
 
     public synchronized FtDevice openByIndex(Context parentContext, int index) {
-        return this.openByIndex(parentContext, index, null);
+        return this.openByIndex(parentContext, index, (FtDeviceManagerParams) null);
     }
 
     public synchronized FtDevice openBySerialNumber(Context parentContext, String serialNumber, FtDeviceManagerParams params) {
@@ -408,7 +414,7 @@ public class FtDeviceManager extends FtConstants {
             updateContext(parentContext);
 
             for (int i = 0; i < this.mFtdiDevices.size(); ++i) {
-                FtDevice tmpDev = this.mFtdiDevices.get(i);
+                FtDevice tmpDev = (FtDevice) this.mFtdiDevices.get(i);
                 if (tmpDev != null) {
                     devInfo = tmpDev.mDeviceInfo;
                     if (devInfo == null) {
@@ -428,7 +434,7 @@ public class FtDeviceManager extends FtConstants {
     }
 
     public synchronized FtDevice openBySerialNumber(Context parentContext, String serialNumber) {
-        return this.openBySerialNumber(parentContext, serialNumber, null);
+        return this.openBySerialNumber(parentContext, serialNumber, (FtDeviceManagerParams) null);
     }
 
     public synchronized FtDevice openByDescription(Context parentContext, String description, FtDeviceManagerParams params) {
@@ -461,7 +467,7 @@ public class FtDeviceManager extends FtConstants {
     }
 
     public synchronized FtDevice openByDescription(Context parentContext, String description) {
-        return this.openByDescription(parentContext, description, null);
+        return this.openByDescription(parentContext, description, (FtDeviceManagerParams) null);
     }
 
     public synchronized FtDevice openByLocation(Context parentContext, int location, FtDeviceManagerParams params) {
@@ -473,7 +479,7 @@ public class FtDeviceManager extends FtConstants {
             updateContext(parentContext);
 
             for (int i = 0; i < this.mFtdiDevices.size(); ++i) {
-                FtDevice tmpDev = this.mFtdiDevices.get(i);
+                FtDevice tmpDev = (FtDevice) this.mFtdiDevices.get(i);
                 if (tmpDev != null) {
                     devInfo = tmpDev.mDeviceInfo;
                     if (devInfo == null) {
@@ -494,7 +500,7 @@ public class FtDeviceManager extends FtConstants {
     }
 
     public synchronized FtDevice openByLocation(Context parentContext, int location) {
-        return this.openByLocation(parentContext, location, null);
+        return this.openByLocation(parentContext, location, (FtDeviceManagerParams) null);
     }
 
     public int addOrUpdateUsbDevice(UsbDevice usbDevice) {

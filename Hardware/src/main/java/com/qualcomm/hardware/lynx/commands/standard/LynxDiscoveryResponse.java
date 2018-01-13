@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx.commands.standard;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.commands.LynxResponse;
 import com.qualcomm.robotcore.util.TypeConversion;
 
@@ -63,10 +64,6 @@ public class LynxDiscoveryResponse extends LynxStandardResponse {
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    public static int getStandardCommandNumber() {
-        return LynxDiscoveryCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
-    }
-
     public boolean isParent() {
         return !isChild();
     }
@@ -79,16 +76,21 @@ public class LynxDiscoveryResponse extends LynxStandardResponse {
         return TypeConversion.unsignedByteToInt(this.parentIndicator);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Transmission
-    //----------------------------------------------------------------------------------------------
-
     public int getDiscoveredModuleAddress() {
         return this.serialization.getSourceModuleAddress();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Transmission
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public boolean isAckable() {
+        return false;
+    }
+
+    @Override
+    public boolean isRetransmittable() {
         return false;
     }
 
@@ -96,9 +98,8 @@ public class LynxDiscoveryResponse extends LynxStandardResponse {
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public boolean isRetransmittable() {
-        return false;
+    public static int getStandardCommandNumber() {
+        return LynxDiscoveryCommand.getStandardCommandNumber() | LynxResponse.RESPONSE_BIT;
     }
 
     @Override

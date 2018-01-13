@@ -53,16 +53,19 @@ public class EditSwapUsbDevices extends EditActivity {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "EditSwapUsbDevices";
-    public static final RequestCode requestCode = RequestCode.EDIT_SWAP_USB_DEVICES;
-    /**
-     * the controller for whom we seek a swap
-     */
-    protected ControllerConfiguration targetConfiguration;
 
     @Override
     public String getTag() {
         return TAG;
     }
+
+    public static final RequestCode requestCode = RequestCode.EDIT_SWAP_USB_DEVICES;
+
+
+    /**
+     * the controller for whom we seek a swap
+     */
+    protected ControllerConfiguration targetConfiguration;
 
     //------------------------------------------------------------------------------------------------
     // Life cycle

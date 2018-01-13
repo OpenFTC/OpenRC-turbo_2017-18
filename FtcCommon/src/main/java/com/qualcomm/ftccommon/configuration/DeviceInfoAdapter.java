@@ -39,9 +39,12 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
+import com.qualcomm.robotcore.util.SerialNumber;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
 public class DeviceInfoAdapter extends BaseAdapter implements ListAdapter {
@@ -82,7 +85,7 @@ public class DeviceInfoAdapter extends BaseAdapter implements ListAdapter {
         }
 
         ControllerConfiguration controllerConfiguration = deviceControllers.get(pos);
-        String serialNum = EditActivity.formatSerialNumber(editActivity, controllerConfiguration);
+        String serialNum = editActivity.formatSerialNumber(editActivity, controllerConfiguration);
         TextView displayNum = (TextView) row.findViewById(android.R.id.text2);
         displayNum.setText(serialNum);
 

@@ -54,6 +54,54 @@ public interface RobocolParsable {
    *    05+ | Payload
    */
 
+    /**
+     * Message Type
+     */
+    public enum MsgType {
+        /*
+         * NOTE: when adding new message types, do not change existing message
+         * type values or you will break backwards capability.
+         */
+        EMPTY(0),
+        HEARTBEAT(1),
+        GAMEPAD(2),
+        PEER_DISCOVERY(3),
+        COMMAND(4),
+        TELEMETRY(5);
+
+        private static final MsgType[] VALUES_CACHE = MsgType.values();
+        private final int type;
+
+        /**
+         * Create a MsgType from a byte
+         *
+         * @param b
+         * @return MsgType
+         */
+        public static MsgType fromByte(byte b) {
+            MsgType t = EMPTY;
+            try {
+                t = VALUES_CACHE[b];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                RobotLog.w(String.format("Cannot convert %d to MsgType: %s", b, e.toString()));
+            }
+            return t;
+        }
+
+        private MsgType(int type) {
+            this.type = type;
+        }
+
+        /**
+         * Return this message type as a byte
+         *
+         * @return message type as byte
+         */
+        public byte asByte() {
+            return (byte) (type);
+        }
+    }
+
     // A header consists of the 'message type' (1 byte), 'payload size' (2 bytes), and a sequence number (2 bytes)
     int HEADER_LENGTH = 1 + 2 + 2;
 
@@ -113,52 +161,4 @@ public interface RobocolParsable {
      * @throws RobotCoreException if unable to parse the byte array.
      */
     void fromByteArray(byte[] byteArray) throws RobotCoreException;
-
-    /**
-     * Message Type
-     */
-    enum MsgType {
-        /*
-         * NOTE: when adding new message types, do not change existing message
-         * type values or you will break backwards capability.
-         */
-        EMPTY(0),
-        HEARTBEAT(1),
-        GAMEPAD(2),
-        PEER_DISCOVERY(3),
-        COMMAND(4),
-        TELEMETRY(5);
-
-        private static final MsgType[] VALUES_CACHE = MsgType.values();
-        private final int type;
-
-        MsgType(int type) {
-            this.type = type;
-        }
-
-        /**
-         * Create a MsgType from a byte
-         *
-         * @param b
-         * @return MsgType
-         */
-        public static MsgType fromByte(byte b) {
-            MsgType t = EMPTY;
-            try {
-                t = VALUES_CACHE[b];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                RobotLog.w(String.format("Cannot convert %d to MsgType: %s", b, e.toString()));
-            }
-            return t;
-        }
-
-        /**
-         * Return this message type as a byte
-         *
-         * @return message type as byte
-         */
-        public byte asByte() {
-            return (byte) (type);
-        }
-    }
 }

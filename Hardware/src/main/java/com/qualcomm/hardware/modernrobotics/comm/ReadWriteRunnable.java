@@ -37,6 +37,8 @@ import java.util.concurrent.ExecutorService;
 @SuppressWarnings("unused")
 public interface ReadWriteRunnable extends Runnable, SyncdDevice {
 
+    enum BlockingState {BLOCKING, WAITING}
+
     int MAX_BUFFER_SIZE = 256;
 
     void setCallback(Callback callback);
@@ -47,9 +49,9 @@ public interface ReadWriteRunnable extends Runnable, SyncdDevice {
 
     void write(int address, byte[] data);
 
-    boolean getAcceptingWrites();
-
     void setAcceptingWrites(boolean acceptingWrites);
+
+    boolean getAcceptingWrites();
 
     void drainPendingWrites();
 
@@ -75,8 +77,6 @@ public interface ReadWriteRunnable extends Runnable, SyncdDevice {
 
     @Override
     void run();
-
-    enum BlockingState {BLOCKING, WAITING}
 
     interface Callback {
         void startupComplete() throws InterruptedException;

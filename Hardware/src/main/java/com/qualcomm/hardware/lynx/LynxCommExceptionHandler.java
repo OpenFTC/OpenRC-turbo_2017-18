@@ -45,19 +45,19 @@ public class LynxCommExceptionHandler {
 
     protected String tag = RobotLog.TAG;
 
-    public LynxCommExceptionHandler() {
+    protected String getTag() {
+        return tag;
     }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxCommExceptionHandler(String tag) {
-        this.tag = tag;
+    public LynxCommExceptionHandler() {
     }
 
-    protected String getTag() {
-        return tag;
+    public LynxCommExceptionHandler(String tag) {
+        this.tag = tag;
     }
 
     //----------------------------------------------------------------------------------------------

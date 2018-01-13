@@ -55,7 +55,7 @@ public abstract class I2cControllerPortDeviceImpl implements RobotArmingStateNot
         controllerNowArmedOrPretending();
 
         if (controller instanceof RobotArmingStateNotifier) {
-            ((RobotArmingStateNotifier) controller).registerCallback(this, false);
+            ((RobotArmingStateNotifier) controller).registerCallback((RobotArmingStateNotifier.Callback) this, false);
         }
     }
 

@@ -62,12 +62,13 @@ public class FileBasedLock {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "FileBasedLock";
+
+    protected File rootDir;
+    protected File lockFile;
     protected final Random random = new Random();
     protected final int msDeadlineInterval = 4000;
     protected final int msRefreshInterval = 1000;
     protected final int msClockSlop = 2000;
-    protected File rootDir;
-    protected File lockFile;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -83,6 +84,11 @@ public class FileBasedLock {
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
+
+    protected class NeverThrown extends Exception {
+    }
+
+    ;
 
     public void lockWhile(final Runnable runnable) throws InterruptedException {
         lockWhile(new Supplier<Void>() {
@@ -280,8 +286,5 @@ public class FileBasedLock {
 
     protected long msNow() {
         return System.currentTimeMillis();
-    }
-
-    protected class NeverThrown extends Exception {
     }
 }

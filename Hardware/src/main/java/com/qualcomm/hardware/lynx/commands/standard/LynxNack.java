@@ -46,66 +46,6 @@ public class LynxNack extends LynxMessage {
     // Types
     //----------------------------------------------------------------------------------------------
 
-    private int nackReasonCode;
-
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
-
-    public LynxNack(LynxModuleIntf module) {
-        super(module);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    public LynxNack(LynxModuleIntf module, int nackReasonCode) {
-        this(module);
-        this.nackReasonCode = nackReasonCode;
-    }
-
-    public LynxNack(LynxModuleIntf module, ReasonCode reasonCode) {
-        this(module, reasonCode.getValue());
-    }
-
-    public static int getStandardCommandNumber() {
-        return LynxStandardCommand.COMMAND_NUMBER_NACK;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessors
-    //----------------------------------------------------------------------------------------------
-
-    public ReasonCode getNackReasonCode() {
-        return ReasonCode.fromInt(this.nackReasonCode);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public int getCommandNumber() {
-        return getStandardCommandNumber();
-    }
-
-    @Override
-    public byte[] toPayloadByteArray() {
-        Assert.assertTrue((byte) this.nackReasonCode == this.nackReasonCode);
-        return new byte[]{(byte) this.nackReasonCode};
-    }
-
-    @Override
-    public void fromPayloadByteArray(byte[] rgb) {
-        this.nackReasonCode = TypeConversion.unsignedByteToInt(rgb[0]);
-    }
-
-    @Override
-    public boolean isNack() {
-        return true;
-    }
-
     public enum ReasonCode {
         PARAM0(0), PARAM1(1), PARAM2(2), PARAM3(3), PARAM4(4), PARAM5(5), PARAM6(6), PARAM7(7), PARAM8(8), PARAM9(9),
         GPIO_OUT0(10), GPIO_OUT1(11), GPIO_OUT2(12), GPIO_OUT3(13), GPIO_OUT4(14), GPIO_OUT5(15), GPIO_OUT6(16), GPIO_OUT7(17), GPIO_NO_OUTPUT(18),
@@ -133,6 +73,10 @@ public class LynxNack extends LynxMessage {
             this.iVal = i;
         }
 
+        public int getValue() {
+            return this.iVal;
+        }
+
         public static ReasonCode fromInt(int i) {
             // handle a couple specially, for speed
             if (i == I2C_OPERATION_IN_PROGRESS.getValue()) {
@@ -149,10 +93,6 @@ public class LynxNack extends LynxMessage {
             return PACKET_TYPE_ID_UNKNOWN;
         }
 
-        public int getValue() {
-            return this.iVal;
-        }
-
         public boolean isUnsupportedReason() {
             switch (this) {
                 case COMMAND_IMPL_PENDING:
@@ -163,5 +103,66 @@ public class LynxNack extends LynxMessage {
                     return false;
             }
         }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // State
+    //----------------------------------------------------------------------------------------------
+
+    private int nackReasonCode;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public LynxNack(LynxModuleIntf module) {
+        super(module);
+    }
+
+    public LynxNack(LynxModuleIntf module, int nackReasonCode) {
+        this(module);
+        this.nackReasonCode = nackReasonCode;
+    }
+
+    public LynxNack(LynxModuleIntf module, ReasonCode reasonCode) {
+        this(module, reasonCode.getValue());
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessors
+    //----------------------------------------------------------------------------------------------
+
+    public ReasonCode getNackReasonCode() {
+        return ReasonCode.fromInt(this.nackReasonCode);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public static int getStandardCommandNumber() {
+        return LynxStandardCommand.COMMAND_NUMBER_NACK;
+    }
+
+    @Override
+    public int getCommandNumber() {
+        return getStandardCommandNumber();
+    }
+
+
+    @Override
+    public byte[] toPayloadByteArray() {
+        Assert.assertTrue((byte) this.nackReasonCode == this.nackReasonCode);
+        return new byte[]{(byte) this.nackReasonCode};
+    }
+
+    @Override
+    public void fromPayloadByteArray(byte[] rgb) {
+        this.nackReasonCode = TypeConversion.unsignedByteToInt(rgb[0]);
+    }
+
+    @Override
+    public boolean isNack() {
+        return true;
     }
 }

@@ -73,7 +73,7 @@ public class FT_EE_232R_Ctrl extends FT_EE_Ctrl {
             byte latency = ftDevice.getLatencyTimer();
             ftDevice.setLatencyTimer((byte) 119);
             try {
-                int status = ftDevice.getConnection().controlTransfer(64, 145, value, offset, null, 0, 0);
+                int status = ftDevice.getConnection().controlTransfer(64, 145, value, offset, (byte[]) null, 0, 0);
                 FtDevice.throwIfStatus(status, "writeWord");
             } finally {
                 ftDevice.setLatencyTimer(latency);
@@ -200,31 +200,75 @@ public class FT_EE_232R_Ctrl extends FT_EE_Ctrl {
                 data[e] = this.readWord((short) e);
             }
 
-            eeprom.HighIO = (data[0] & 4) == 4;
+            if ((data[0] & 4) == 4) {
+                eeprom.HighIO = true;
+            } else {
+                eeprom.HighIO = false;
+            }
 
-            eeprom.LoadVCP = (data[0] & 8) == 8;
+            if ((data[0] & 8) == 8) {
+                eeprom.LoadVCP = true;
+            } else {
+                eeprom.LoadVCP = false;
+            }
 
-            eeprom.ExternalOscillator = (data[0] & 2) == 2;
+            if ((data[0] & 2) == 2) {
+                eeprom.ExternalOscillator = true;
+            } else {
+                eeprom.ExternalOscillator = false;
+            }
 
             eeprom.VendorId = (short) data[1];
             eeprom.ProductId = (short) data[2];
             this.getUSBConfig(eeprom, data[4]);
             this.getDeviceControl(eeprom, data[5]);
-            eeprom.InvertTXD = (data[5] & 256) == 256;
+            if ((data[5] & 256) == 256) {
+                eeprom.InvertTXD = true;
+            } else {
+                eeprom.InvertTXD = false;
+            }
 
-            eeprom.InvertRXD = (data[5] & 512) == 512;
+            if ((data[5] & 512) == 512) {
+                eeprom.InvertRXD = true;
+            } else {
+                eeprom.InvertRXD = false;
+            }
 
-            eeprom.InvertRTS = (data[5] & 1024) == 1024;
+            if ((data[5] & 1024) == 1024) {
+                eeprom.InvertRTS = true;
+            } else {
+                eeprom.InvertRTS = false;
+            }
 
-            eeprom.InvertCTS = (data[5] & 2048) == 2048;
+            if ((data[5] & 2048) == 2048) {
+                eeprom.InvertCTS = true;
+            } else {
+                eeprom.InvertCTS = false;
+            }
 
-            eeprom.InvertDTR = (data[5] & 4096) == 4096;
+            if ((data[5] & 4096) == 4096) {
+                eeprom.InvertDTR = true;
+            } else {
+                eeprom.InvertDTR = false;
+            }
 
-            eeprom.InvertDSR = (data[5] & 8192) == 8192;
+            if ((data[5] & 8192) == 8192) {
+                eeprom.InvertDSR = true;
+            } else {
+                eeprom.InvertDSR = false;
+            }
 
-            eeprom.InvertDCD = (data[5] & 16384) == 16384;
+            if ((data[5] & 16384) == 16384) {
+                eeprom.InvertDCD = true;
+            } else {
+                eeprom.InvertDCD = false;
+            }
 
-            eeprom.InvertRI = (data[5] & '耀') == '耀';
+            if ((data[5] & '耀') == '耀') {
+                eeprom.InvertRI = true;
+            } else {
+                eeprom.InvertRI = false;
+            }
 
             e = data[10];
             int cbus0 = e & 15;

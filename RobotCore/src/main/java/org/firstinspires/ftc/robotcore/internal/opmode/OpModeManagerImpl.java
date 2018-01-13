@@ -78,22 +78,69 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     // Types
     //------------------------------------------------------------------------------------------------
 
-    public static final String TAG = "OpModeManager";
+    class OpModeStateTransition {
+        String queuedOpModeName = null;
+        Boolean opModeSwapNeeded = null;
+        Boolean callToInitNeeded = null;
+        Boolean gamepadResetNeeded = null;
+        Boolean telemetryClearNeeded = null;
+        Boolean callToStartNeeded = null;
+
+        void apply() {
+            if (queuedOpModeName != null) {
+                OpModeManagerImpl.this.queuedOpModeName = queuedOpModeName;
+            }
+
+            // We never clear state here; that's done in runActiveOpMode()
+            if (opModeSwapNeeded != null) {
+                OpModeManagerImpl.this.opModeSwapNeeded = opModeSwapNeeded;
+            }
+            if (callToInitNeeded != null) {
+                OpModeManagerImpl.this.callToInitNeeded = callToInitNeeded;
+            }
+            if (gamepadResetNeeded != null) {
+                OpModeManagerImpl.this.gamepadResetNeeded = gamepadResetNeeded;
+            }
+            if (telemetryClearNeeded != null) {
+                OpModeManagerImpl.this.telemetryClearNeeded = telemetryClearNeeded;
+            }
+            if (callToStartNeeded != null) {
+                OpModeManagerImpl.this.callToStartNeeded = callToStartNeeded;
+            }
+        }
+
+        OpModeStateTransition copy() {
+            OpModeStateTransition result = new OpModeStateTransition();
+            result.queuedOpModeName = this.queuedOpModeName;
+            result.opModeSwapNeeded = this.opModeSwapNeeded;
+            result.callToInitNeeded = this.callToInitNeeded;
+            result.gamepadResetNeeded = this.gamepadResetNeeded;
+            result.telemetryClearNeeded = this.telemetryClearNeeded;
+            result.callToStartNeeded = this.callToStartNeeded;
+            return result;
+        }
+    }
 
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
+
+    public static final String TAG = "OpModeManager";
+
     public static final String DEFAULT_OP_MODE_NAME = OpModeManager.DEFAULT_OP_MODE_NAME;
     public static final OpMode DEFAULT_OP_MODE = new DefaultOpMode();
-    protected static final WeakHashMap<Activity, OpModeManagerImpl> mapActivityToOpModeManager = new WeakHashMap<Activity, OpModeManagerImpl>();
-    protected final WeakReferenceSet<OpModeManagerNotifier.Notifications> listeners = new WeakReferenceSet<OpModeManagerNotifier.Notifications>();
+
+    protected enum OpModeState {INIT, LOOPING}
+
     protected Context context;
     protected String activeOpModeName = DEFAULT_OP_MODE_NAME;
     protected OpMode activeOpMode = DEFAULT_OP_MODE;
     protected String queuedOpModeName = DEFAULT_OP_MODE_NAME;
     protected HardwareMap hardwareMap = null;
     protected EventLoopManager eventLoopManager = null;
+    protected final WeakReferenceSet<OpModeManagerNotifier.Notifications> listeners = new WeakReferenceSet<OpModeManagerNotifier.Notifications>();
     protected OpModeStuckCodeMonitor stuckMonitor = null;
+
     protected OpModeState opModeState = OpModeState.INIT;
     protected boolean opModeSwapNeeded = false;
     protected boolean callToInitNeeded = false;
@@ -101,6 +148,13 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     protected boolean gamepadResetNeeded = false;
     protected boolean telemetryClearNeeded = false;
     protected AtomicReference<OpModeStateTransition> nextOpModeState = new AtomicReference<OpModeStateTransition>(null);
+
+    protected static final WeakHashMap<Activity, OpModeManagerImpl> mapActivityToOpModeManager = new WeakHashMap<Activity, OpModeManagerImpl>();
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
     // Called on FtcRobotControllerService thread
     public OpModeManagerImpl(Activity activity, HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -121,17 +175,6 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         }
     }
 
-    //------------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------------
-
-    /**
-     * For the use of {@link TelemetryImpl}.
-     */
-    public static void updateTelemetryNow(OpMode opMode, TelemetryMessage telemetry) {
-        opMode.internalUpdateTelemetryNow(telemetry);
-    }
-
     // called from the RobotSetupRunnable.run thread
     public void init(EventLoopManager eventLoopManager) {
         this.stuckMonitor = new OpModeStuckCodeMonitor();
@@ -142,6 +185,10 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         this.stuckMonitor.shutdown();
     }
 
+    //------------------------------------------------------------------------------------------------
+    // Notifications
+    //------------------------------------------------------------------------------------------------
+
     @Override
     public OpMode registerListener(OpModeManagerNotifier.Notifications listener) {
         synchronized (this.listeners) {
@@ -149,10 +196,6 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
             return this.activeOpMode;
         }
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Notifications
-    //------------------------------------------------------------------------------------------------
 
     @Override
     public void unregisterListener(OpModeManagerNotifier.Notifications listener) {
@@ -168,10 +211,6 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         }
     }
 
-    public HardwareMap getHardwareMap() {
-        return hardwareMap;
-    }
-
     //------------------------------------------------------------------------------------------------
     // Accessors
     //------------------------------------------------------------------------------------------------
@@ -181,14 +220,18 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         this.hardwareMap = hardwareMap;
     }
 
-    // called on DS receive thread, event loop thread
-    public String getActiveOpModeName() {
-        return activeOpModeName;
+    public HardwareMap getHardwareMap() {
+        return hardwareMap;
     }
 
     //------------------------------------------------------------------------------------------------
     // OpMode management
     //------------------------------------------------------------------------------------------------
+
+    // called on DS receive thread, event loop thread
+    public String getActiveOpModeName() {
+        return activeOpModeName;
+    }
 
     // called on the event loop thread
     public OpMode getActiveOpMode() {
@@ -315,6 +358,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         }
     }
 
+
     private void performOpModeSwap() {
         RobotLog.i("Attempting to switch to op mode " + queuedOpModeName);
 
@@ -365,6 +409,100 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
             runnable.run();
         } finally {
             stuckMonitor.stopMonitoring();
+        }
+    }
+
+    /**
+     * A utility class that detects infinite loops in user code
+     */
+    protected class OpModeStuckCodeMonitor {
+        ExecutorService executorService = ThreadPool.newSingleThreadExecutor("OpModeStuckCodeMonitor");
+        Semaphore stopped = new Semaphore(0);
+        CountDownLatch acquired = null;
+        boolean debuggerDetected = false;
+        int msTimeout;
+        String method;
+
+        public void startMonitoring(int msTimeout, String method, boolean resetDebuggerCheck) {
+            // Wait for any previous monitoring to drain
+            if (acquired != null) {
+                try {
+                    acquired.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            this.msTimeout = msTimeout;
+            this.method = method;
+            stopped.drainPermits();
+            acquired = new CountDownLatch(1);
+            executorService.execute(new Runner());
+            if (resetDebuggerCheck) {
+                debuggerDetected = false;
+            }
+        }
+
+        public void stopMonitoring() {
+            stopped.release();
+        }
+
+        public void shutdown() {
+            executorService.shutdownNow();
+        }
+
+        protected boolean checkForDebugger() {
+            // Once we see a debugger, we disable timeout checking for the remainder of the OpMode
+            // in order to be sure to avoid premature termination of the app.
+            debuggerDetected = debuggerDetected || Debug.isDebuggerConnected();
+            return debuggerDetected;
+        }
+
+        protected class Runner implements Runnable {
+            @Override
+            public void run() {
+                boolean errorWasSet = false;
+                try {
+                    // We won't bother timing if a debugger is attached because single stepping
+                    // etc in a debugger can take an arbitrarily long amount of time.
+                    if (checkForDebugger()) {
+                        return;
+                    }
+
+                    if (!stopped.tryAcquire(msTimeout, TimeUnit.MILLISECONDS)) {
+                        // Timeout hit waiting for opmode to stop. Inform user, then restart app.
+                        if (checkForDebugger()) {
+                            return;
+                        }
+
+                        String message = String.format(context.getString(R.string.errorOpModeStuck), activeOpModeName, method);
+                        errorWasSet = RobotLog.setGlobalErrorMsg(message);
+                        RobotLog.e(message);
+
+            /*
+             * We are giving the Robot Controller a lethal injection, try to help its operator figure out why.
+             */
+                        RobotLog.e("Begin thread dump");
+                        Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+                        for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
+                            RobotLog.logStackTrace(entry.getKey(), entry.getValue());
+                        }
+
+                        // Wait a touch for message to be seen
+                        AppUtil.getInstance().showToast(UILocation.BOTH, context, String.format(context.getString(R.string.toastOpModeStuck), method));
+                        Thread.sleep(1000);
+
+                        // Restart
+                        AppUtil.getInstance().restartApp(-1);
+                    }
+                } catch (InterruptedException e) {
+                    // Shutdown complete, return
+                    if (errorWasSet) {
+                        RobotLog.clearGlobalErrorMsg();
+                    }
+                } finally {
+                    acquired.countDown();
+                }
+            }
         }
     }
 
@@ -428,6 +566,17 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         activeOpMode.internalPostLoop();
     }
 
+    //------------------------------------------------------------------------------------------------
+    // OpModeServices
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     * For the use of {@link TelemetryImpl}.
+     */
+    public static void updateTelemetryNow(OpMode opMode, TelemetryMessage telemetry) {
+        opMode.internalUpdateTelemetryNow(telemetry);
+    }
+
     @Override
     public void refreshUserTelemetry(TelemetryMessage telemetry, double sInterval) {
         this.eventLoopManager.getEventLoop().refreshUserTelemetry(telemetry, sInterval);
@@ -447,10 +596,8 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     }
 
     //------------------------------------------------------------------------------------------------
-    // OpModeServices
+    // Default OpMode
     //------------------------------------------------------------------------------------------------
-
-    protected enum OpModeState {INIT, LOOPING}
 
     /**
      * {@link DefaultOpMode} is the opmode that the system runs when no user opmode is active.
@@ -584,147 +731,6 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
             }
           blinkerTimer.reset();
         }*/
-            }
-        }
-    }
-
-    class OpModeStateTransition {
-        String queuedOpModeName = null;
-        Boolean opModeSwapNeeded = null;
-        Boolean callToInitNeeded = null;
-        Boolean gamepadResetNeeded = null;
-        Boolean telemetryClearNeeded = null;
-        Boolean callToStartNeeded = null;
-
-        void apply() {
-            if (queuedOpModeName != null) {
-                OpModeManagerImpl.this.queuedOpModeName = queuedOpModeName;
-            }
-
-            // We never clear state here; that's done in runActiveOpMode()
-            if (opModeSwapNeeded != null) {
-                OpModeManagerImpl.this.opModeSwapNeeded = opModeSwapNeeded;
-            }
-            if (callToInitNeeded != null) {
-                OpModeManagerImpl.this.callToInitNeeded = callToInitNeeded;
-            }
-            if (gamepadResetNeeded != null) {
-                OpModeManagerImpl.this.gamepadResetNeeded = gamepadResetNeeded;
-            }
-            if (telemetryClearNeeded != null) {
-                OpModeManagerImpl.this.telemetryClearNeeded = telemetryClearNeeded;
-            }
-            if (callToStartNeeded != null) {
-                OpModeManagerImpl.this.callToStartNeeded = callToStartNeeded;
-            }
-        }
-
-        OpModeStateTransition copy() {
-            OpModeStateTransition result = new OpModeStateTransition();
-            result.queuedOpModeName = this.queuedOpModeName;
-            result.opModeSwapNeeded = this.opModeSwapNeeded;
-            result.callToInitNeeded = this.callToInitNeeded;
-            result.gamepadResetNeeded = this.gamepadResetNeeded;
-            result.telemetryClearNeeded = this.telemetryClearNeeded;
-            result.callToStartNeeded = this.callToStartNeeded;
-            return result;
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------
-    // Default OpMode
-    //------------------------------------------------------------------------------------------------
-
-    /**
-     * A utility class that detects infinite loops in user code
-     */
-    protected class OpModeStuckCodeMonitor {
-        ExecutorService executorService = ThreadPool.newSingleThreadExecutor("OpModeStuckCodeMonitor");
-        Semaphore stopped = new Semaphore(0);
-        CountDownLatch acquired = null;
-        boolean debuggerDetected = false;
-        int msTimeout;
-        String method;
-
-        public void startMonitoring(int msTimeout, String method, boolean resetDebuggerCheck) {
-            // Wait for any previous monitoring to drain
-            if (acquired != null) {
-                try {
-                    acquired.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            this.msTimeout = msTimeout;
-            this.method = method;
-            stopped.drainPermits();
-            acquired = new CountDownLatch(1);
-            executorService.execute(new Runner());
-            if (resetDebuggerCheck) {
-                debuggerDetected = false;
-            }
-        }
-
-        public void stopMonitoring() {
-            stopped.release();
-        }
-
-        public void shutdown() {
-            executorService.shutdownNow();
-        }
-
-        protected boolean checkForDebugger() {
-            // Once we see a debugger, we disable timeout checking for the remainder of the OpMode
-            // in order to be sure to avoid premature termination of the app.
-            debuggerDetected = debuggerDetected || Debug.isDebuggerConnected();
-            return debuggerDetected;
-        }
-
-        protected class Runner implements Runnable {
-            @Override
-            public void run() {
-                boolean errorWasSet = false;
-                try {
-                    // We won't bother timing if a debugger is attached because single stepping
-                    // etc in a debugger can take an arbitrarily long amount of time.
-                    if (checkForDebugger()) {
-                        return;
-                    }
-
-                    if (!stopped.tryAcquire(msTimeout, TimeUnit.MILLISECONDS)) {
-                        // Timeout hit waiting for opmode to stop. Inform user, then restart app.
-                        if (checkForDebugger()) {
-                            return;
-                        }
-
-                        String message = String.format(context.getString(R.string.errorOpModeStuck), activeOpModeName, method);
-                        errorWasSet = RobotLog.setGlobalErrorMsg(message);
-                        RobotLog.e(message);
-
-            /*
-             * We are giving the Robot Controller a lethal injection, try to help its operator figure out why.
-             */
-                        RobotLog.e("Begin thread dump");
-                        Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
-                        for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
-                            RobotLog.logStackTrace(entry.getKey(), entry.getValue());
-                        }
-
-                        // Wait a touch for message to be seen
-                        AppUtil.getInstance().showToast(UILocation.BOTH, context, String.format(context.getString(R.string.toastOpModeStuck), method));
-                        Thread.sleep(1000);
-
-                        // Restart
-                        AppUtil.getInstance().restartApp(-1);
-                    }
-                } catch (InterruptedException e) {
-                    // Shutdown complete, return
-                    if (errorWasSet) {
-                        RobotLog.clearGlobalErrorMsg();
-                    }
-                } finally {
-                    acquired.countDown();
-                }
             }
         }
     }

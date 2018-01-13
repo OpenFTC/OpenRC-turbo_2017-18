@@ -76,9 +76,18 @@ public class WifiDirectAgent extends WifiStartStoppable {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_wifiDirectAgent";
+
+    public String getTag() {
+        return TAG;
+    }
+
     @SuppressLint("StaticFieldLeak")
     protected static WifiDirectAgent theInstance;
     protected static StartResult theInstanceStartResult = new StartResult();
+
+    public static WifiDirectAgent getInstance() {
+        return theInstance;
+    }
 
     static {
         theInstance = new WifiDirectAgent();
@@ -94,9 +103,15 @@ public class WifiDirectAgent extends WifiStartStoppable {
     protected final ChannelListener channelListener;
     protected final CallbackRegistrar<Callback> callbacks = new CallbackRegistrar<Callback>();
     protected final WifiBroadcastReceiver wifiBroadcastReceiver;
+
     protected boolean isWifiP2pEnabled = false;
     protected WifiState wifiState = WifiState.UNKNOWN;
     protected NetworkInfo.State wifiP2pState = NetworkInfo.State.UNKNOWN;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public WifiDirectAgent() {
         super(0);
         context = AppUtil.getInstance().getApplication();
@@ -107,25 +122,9 @@ public class WifiDirectAgent extends WifiStartStoppable {
         wifiBroadcastReceiver = new WifiBroadcastReceiver();
     }
 
-    public static WifiDirectAgent getInstance() {
-        return theInstance;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    protected static String format(WifiP2pDevice wifiP2pDevice) {
-        return wifiP2pDevice.toString().replace(": ", "=").replace("\n ", " ");
-    }
-
     //----------------------------------------------------------------------------------------------
     // Start / stop
     //----------------------------------------------------------------------------------------------
-
-    public String getTag() {
-        return TAG;
-    }
 
     @Override
     protected boolean doStart() {
@@ -154,14 +153,14 @@ public class WifiDirectAgent extends WifiStartStoppable {
         return localSuccess;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Low level accessing
-    //----------------------------------------------------------------------------------------------
-
     @Override
     protected void doStop() {
         context.unregisterReceiver(wifiBroadcastReceiver);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Low level accessing
+    //----------------------------------------------------------------------------------------------
 
     public WifiP2pManager getWifiP2pManager() {
         return wifiP2pManager;
@@ -188,15 +187,15 @@ public class WifiDirectAgent extends WifiStartStoppable {
         return wifiState;
     }
 
+    public NetworkInfo.State getWifiDirectState() {
+        return wifiP2pState;
+    }
+
     //----------------------------------------------------------------------------------------------
     // General wifi-related queries & utilities
     //
     // Not really wifi-*direct*-related, per se, but it's handy and convenient to locate there here
     //----------------------------------------------------------------------------------------------
-
-    public NetworkInfo.State getWifiDirectState() {
-        return wifiP2pState;
-    }
 
     public boolean isAirplaneModeOn() {
         return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
@@ -223,10 +222,6 @@ public class WifiDirectAgent extends WifiStartStoppable {
         NetworkInfo.State state = getWifiDirectState();
         return state == NetworkInfo.State.CONNECTED || state == NetworkInfo.State.CONNECTING;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Changing Channels
-    //----------------------------------------------------------------------------------------------
 
     /**
      * synchronously disconnects from wifi direct. must not be called on the callback looper thread
@@ -269,7 +264,7 @@ public class WifiDirectAgent extends WifiStartStoppable {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Types and Notifications
+    // Changing Channels
     //----------------------------------------------------------------------------------------------
 
     /**
@@ -293,16 +288,20 @@ public class WifiDirectAgent extends WifiStartStoppable {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Types and Notifications
+    //----------------------------------------------------------------------------------------------
+
+    public interface Callback {
+        void onReceive(Context context, Intent intent);
+    }
+
     public void registerCallback(Callback callback) {
         callbacks.registerCallback(callback);
     }
 
     public void unregisterCallback(Callback callback) {
         callbacks.unregisterCallback(callback);
-    }
-
-    public interface Callback {
-        void onReceive(Context context, Intent intent);
     }
 
     protected class WifiBroadcastReceiver extends BroadcastReceiver {
@@ -405,6 +404,11 @@ public class WifiDirectAgent extends WifiStartStoppable {
             RobotLog.vv(TAG, "WifiP2pGroup: %s", (info.toString().replace("\n ", ", ")));
         }
     }
+
+    protected static String format(WifiP2pDevice wifiP2pDevice) {
+        return wifiP2pDevice.toString().replace(": ", "=").replace("\n ", " ");
+    }
+
 
     protected class ChannelListener implements WifiP2pManager.ChannelListener {
         @Override

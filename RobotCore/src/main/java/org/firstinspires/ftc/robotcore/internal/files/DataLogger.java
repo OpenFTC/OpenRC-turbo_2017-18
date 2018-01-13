@@ -58,6 +58,13 @@ public class DataLogger {
     // Construction
     //----------------------------------------------------------------------------------------------
 
+    public static String createFileName(String root) {
+        Date dateUTC = new Date(System.currentTimeMillis());
+        SimpleDateFormat formatter = AppUtil.getInstance().getIso8601DateFormat();
+        String uniquifier = formatter.format(dateUTC);
+        return String.format(Locale.US, "%s-%s.txt", root, uniquifier);
+    }
+
     public DataLogger(String fileName) throws IOException {
         file = new File(fileName);
         if (!file.isAbsolute()) {
@@ -68,13 +75,6 @@ public class DataLogger {
         AppUtil.getInstance().ensureDirectoryExists(directory);
 
         writer = new BufferedWriter(new FileWriter(file));
-    }
-
-    public static String createFileName(String root) {
-        Date dateUTC = new Date(System.currentTimeMillis());
-        SimpleDateFormat formatter = AppUtil.getInstance().getIso8601DateFormat();
-        String uniquifier = formatter.format(dateUTC);
-        return String.format(Locale.US, "%s-%s.txt", root, uniquifier);
     }
 
     public void close() {

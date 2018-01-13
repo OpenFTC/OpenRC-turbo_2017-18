@@ -32,9 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.vuforia;
 
-import com.vuforia.Matrix34F;
-import com.vuforia.Matrix44F;
-import com.vuforia.TrackableResult;
+import com.vuforia.*;
 
 import org.firstinspires.ftc.robotcore.external.matrices.GeneralMatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;

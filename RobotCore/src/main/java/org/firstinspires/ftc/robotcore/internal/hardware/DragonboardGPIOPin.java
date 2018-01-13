@@ -53,23 +53,30 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
     // State
     //----------------------------------------------------------------------------------------------
 
+    protected abstract String getTag();
+
+    public enum Active {LOW, HIGH}
+
     public static final String TAG = "DragonboardGPIOPin";
+
     protected final int gpioPinNumber;
     protected final File path;
     protected final Active active;
     protected LastKnown<DigitalChannel.Mode> lastKnownMode;
     protected DigitalChannel.Mode defaultMode;
     protected boolean defaultStateIfOutput;
-    public DragonboardGPIOPin(int gpioPinNumber) {
-        this(gpioPinNumber, Mode.INPUT, false, Active.HIGH);
-    }
-    public DragonboardGPIOPin(int gpioPinNumber, boolean initialState, Active active) {
-        this(gpioPinNumber, Mode.OUTPUT, initialState, active);
-    }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
+
+    public DragonboardGPIOPin(int gpioPinNumber) {
+        this(gpioPinNumber, Mode.INPUT, false, Active.HIGH);
+    }
+
+    public DragonboardGPIOPin(int gpioPinNumber, boolean initialState, Active active) {
+        this(gpioPinNumber, Mode.OUTPUT, initialState, active);
+    }
 
     private DragonboardGPIOPin(int gpioPinNumber, DigitalChannel.Mode defaultMode, boolean defaultStateIfOutput, Active active) {
         this.gpioPinNumber = gpioPinNumber;
@@ -82,7 +89,9 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
         this.defaultStateIfOutput = defaultStateIfOutput;
     }
 
-    protected abstract String getTag();
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
 
     /**
      * If it's an input pin, then read the value directly from the device. Otherwise, return
@@ -91,22 +100,6 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
     @Override
     public boolean getState() {
         return adjustActive(getRawState());
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public synchronized void setState(boolean state) {
-        if (getMode() == Mode.OUTPUT) {
-            try {
-                String zeroOrOne = adjustActive(state) ? "1" : "0";
-                writeAspect("value", zeroOrOne);
-            } catch (IOException e) {
-                // ignored
-            }
-        }
     }
 
     protected synchronized boolean getRawState() {
@@ -120,6 +113,18 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
     }
 
     @Override
+    public synchronized void setState(boolean state) {
+        if (getMode() == Mode.OUTPUT) {
+            try {
+                String zeroOrOne = adjustActive(state) ? "1" : "0";
+                writeAspect("value", zeroOrOne);
+            } catch (IOException e) {
+                // ignored
+            }
+        }
+    }
+
+    @Override
     public synchronized Mode getMode() {
         Mode result = lastKnownMode.getValue();
         if (result == null) {
@@ -127,12 +132,6 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
             lastKnownMode.setValue(result);
         }
         return result;
-    }
-
-    @Override
-    @Deprecated
-    public void setMode(DigitalChannelController.Mode mode) {
-        setMode(mode.migrate());
     }
 
     protected synchronized Mode getRawMode() {
@@ -162,13 +161,19 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
     }
 
     @Override
-    public Manufacturer getManufacturer() {
-        return Manufacturer.Other;
+    @Deprecated
+    public void setMode(DigitalChannelController.Mode mode) {
+        setMode(mode.migrate());
     }
 
     //----------------------------------------------------------------------------------------------
     // HardwareDevice
     //----------------------------------------------------------------------------------------------
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return Manufacturer.Other;
+    }
 
     @Override
     public String getDeviceName() {
@@ -202,14 +207,14 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
         // Nothing to do
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Utility
+    //----------------------------------------------------------------------------------------------
+
     protected boolean adjustActive(boolean state) {
         //noinspection SimplifiableConditionalExpression
         return (active == Active.HIGH) ? state : !state;
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
 
     protected String readAspect(String aspect) throws IOException {
         File aspectFile = new File(getPath(), aspect);
@@ -229,6 +234,4 @@ public abstract class DragonboardGPIOPin implements DigitalChannel {
     protected File getPath() {
         return path;
     }
-
-    public enum Active {LOW, HIGH}
 }

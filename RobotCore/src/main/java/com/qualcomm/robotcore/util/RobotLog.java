@@ -37,8 +37,8 @@ import android.util.Log;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.robocol.Heartbeat;
 
-import org.firstinspires.ftc.robotcore.internal.files.LogOutputStream;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.files.LogOutputStream;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,29 +56,33 @@ public class RobotLog {
    * Currently only supports android style logging, but may support more in the future.
    */
 
-    public static final String ERROR_PREPEND = "### ERROR: ";
-
-    //------------------------------------------------------------------------------------------------
-    // State
-    //------------------------------------------------------------------------------------------------
-    public static final String TAG = "RobotCore";
-    private static final Object globalWarningLock = new Object();
-    public static String logcatCommand = "logcat";
-    public static int kbLogcatQuantum = 4 * 1024;
-    public static int logcatRotatedLogsMax = 4;
-    public static String logcatFormat = "threadtime";
-    public static String logcatFilter = "UsbRequestJNI:S UsbRequest:S *:V";
-    private static String globalErrorMessage = "";
-    private static String globalWarningMessage = "";
-    private static WeakHashMap<GlobalWarningSource, Integer> globalWarningSources = new WeakHashMap<GlobalWarningSource, Integer>();
-    private static double msTimeOffset = 0.0;
-    private static Thread loggingThread = null;
-
     /*
      * Only contains static utility methods
      */
     private RobotLog() {
     }
+
+    //------------------------------------------------------------------------------------------------
+    // State
+    //------------------------------------------------------------------------------------------------
+
+    public static final String ERROR_PREPEND = "### ERROR: ";
+
+    private static String globalErrorMessage = "";
+    private static final Object globalWarningLock = new Object();
+    private static String globalWarningMessage = "";
+    private static WeakHashMap<GlobalWarningSource, Integer> globalWarningSources = new WeakHashMap<GlobalWarningSource, Integer>();
+    private static double msTimeOffset = 0.0;
+
+    public static final String TAG = "RobotCore";
+
+    private static Thread loggingThread = null;
+
+    public static String logcatCommand = "logcat";
+    public static int kbLogcatQuantum = 4 * 1024;
+    public static int logcatRotatedLogsMax = 4;
+    public static String logcatFormat = "threadtime";
+    public static String logcatFilter = "UsbRequestJNI:S UsbRequest:S *:V";
 
     //------------------------------------------------------------------------------------------------
     // Time Synchronization
@@ -355,6 +359,22 @@ public class RobotLog {
         setGlobalErrorMsg(String.format(format, args));
     }
 
+
+    /**
+     * Sets the global warning message.
+     * <p>
+     * This stays set until clearGlobalWarningMsg is called.
+     *
+     * @param message the warning message to set
+     */
+    public static void setGlobalWarningMessage(String message) {
+        synchronized (globalWarningLock) {
+            if (globalWarningMessage.isEmpty()) {
+                globalWarningMessage += message;
+            }
+        }
+    }
+
     public static void setGlobalWarningMessage(String format, Object... args) {
         setGlobalWarningMessage(String.format(format, args));
     }
@@ -438,21 +458,6 @@ public class RobotLog {
             }
         }
         return combineGlobalWarnings(warnings);
-    }
-
-    /**
-     * Sets the global warning message.
-     * <p>
-     * This stays set until clearGlobalWarningMsg is called.
-     *
-     * @param message the warning message to set
-     */
-    public static void setGlobalWarningMessage(String message) {
-        synchronized (globalWarningLock) {
-            if (globalWarningMessage.isEmpty()) {
-                globalWarningMessage += message;
-            }
-        }
     }
 
     /**

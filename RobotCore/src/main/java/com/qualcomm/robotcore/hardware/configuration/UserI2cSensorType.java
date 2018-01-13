@@ -65,15 +65,16 @@ public final class UserI2cSensorType extends UserConfigurationType // final beca
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected static final Class<?>[] ctorI2cDeviceSynchSimple = new Class<?>[]{I2cDeviceSynchSimple.class};
-    protected static final Class<?>[] ctorI2cDeviceSynch = new Class<?>[]{I2cDeviceSynch.class};
-    protected static final Class<?>[] ctorI2cDevice = new Class<?>[]{I2cDevice.class};
-    protected static final Class<?>[] ctorI2cControllerPort = new Class<?>[]{I2cController.class, int.class};
     protected Class<? extends HardwareDevice> clazz;
     protected List<Constructor> constructors;
     protected
     @Expose
     String description;
+
+    protected static final Class<?>[] ctorI2cDeviceSynchSimple = new Class<?>[]{I2cDeviceSynchSimple.class};
+    protected static final Class<?>[] ctorI2cDeviceSynch = new Class<?>[]{I2cDeviceSynch.class};
+    protected static final Class<?>[] ctorI2cDevice = new Class<?>[]{I2cDevice.class};
+    protected static final Class<?>[] ctorI2cControllerPort = new Class<?>[]{I2cController.class, int.class};
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -85,13 +86,13 @@ public final class UserI2cSensorType extends UserConfigurationType // final beca
         this.constructors = findConstructors();
     }
 
+    public static UserI2cSensorType getLynxEmbeddedIMUType() {
+        return (UserI2cSensorType) UserConfigurationTypeManager.getInstance().userTypeFromTag(AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.lynx_embedded_imu_xmltag));
+    }
+
     // Used by gson deserialization
     public UserI2cSensorType() {
         super(Flavor.I2C);
-    }
-
-    public static UserI2cSensorType getLynxEmbeddedIMUType() {
-        return (UserI2cSensorType) UserConfigurationTypeManager.getInstance().userTypeFromTag(AppUtil.getDefContext().getString(com.qualcomm.robotcore.R.string.lynx_embedded_imu_xmltag));
     }
 
     public void processAnnotation(@Nullable I2cSensor i2cSensor) {

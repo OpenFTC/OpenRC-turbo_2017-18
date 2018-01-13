@@ -71,13 +71,6 @@ public class I2cDeviceSynchReadHistoryImpl implements I2cDeviceSynchReadHistory 
     }
 
     @Override
-    public int getHistoryQueueCapacity() {
-        synchronized (this.historyQueueLock) {
-            return this.historyQueueCapacity;
-        }
-    }
-
-    @Override
     public void setHistoryQueueCapacity(int capacity) {
         synchronized (this.historyQueueLock) {
             this.historyQueueCapacity = Math.max(0, capacity);
@@ -86,6 +79,13 @@ public class I2cDeviceSynchReadHistoryImpl implements I2cDeviceSynchReadHistory 
             } else {
                 this.historyQueue = new EvictingBlockingQueue<TimestampedI2cData>(new ArrayBlockingQueue<TimestampedI2cData>(capacity));
             }
+        }
+    }
+
+    @Override
+    public int getHistoryQueueCapacity() {
+        synchronized (this.historyQueueLock) {
+            return this.historyQueueCapacity;
         }
     }
 

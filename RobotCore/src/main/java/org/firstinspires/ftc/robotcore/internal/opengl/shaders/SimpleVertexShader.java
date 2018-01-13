@@ -38,10 +38,11 @@ import android.support.annotation.RawRes;
 import com.qualcomm.robotcore.R;
 
 public class SimpleVertexShader implements PositionAttributeShader {
-    @RawRes
-    public static final int resourceId = R.raw.simple_vertex_shader;
     protected final int a_vertexPosition;
     protected final int u_modelViewProjectionMatrix;
+
+    @RawRes
+    public static final int resourceId = R.raw.simple_vertex_shader;
 
     public SimpleVertexShader(int programId) {
         a_vertexPosition = GLES20.glGetAttribLocation(programId, "vertexPosition");

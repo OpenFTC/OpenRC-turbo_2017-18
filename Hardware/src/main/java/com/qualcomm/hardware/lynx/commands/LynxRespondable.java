@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx.commands;
 
+import com.qualcomm.hardware.lynx.LynxUnsupportedCommandNumberException;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.LynxNackException;
-import com.qualcomm.hardware.lynx.LynxUnsupportedCommandNumberException;
 import com.qualcomm.hardware.lynx.commands.standard.LynxAck;
 import com.qualcomm.hardware.lynx.commands.standard.LynxNack;
 import com.qualcomm.robotcore.util.ElapsedTime;

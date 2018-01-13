@@ -40,8 +40,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.opengl.models;
 
-import android.content.res.AssetManager;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,12 +48,16 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import android.content.res.AssetManager;
+
+import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
+
 
 public class SavedMeshObject extends MeshObject {
-    int numVerts = 0;
     private ByteBuffer verts;
     private ByteBuffer textCoords;
     private ByteBuffer norms;
+    int numVerts = 0;
 
     public void loadModel(AssetManager assetManager, String filename) throws IOException {
         InputStream is = null;

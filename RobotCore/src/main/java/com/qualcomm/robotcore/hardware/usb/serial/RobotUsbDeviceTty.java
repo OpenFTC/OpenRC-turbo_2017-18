@@ -40,8 +40,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbUnspecifiedException;
 
@@ -64,31 +64,33 @@ public class RobotUsbDeviceTty extends RobotUsbDeviceImplBase implements RobotUs
 
     public static final String TAG = "RobotUsbDeviceTTY";
     public static boolean DEBUG = false;
+
+    @Override
+    public String getTag() {
+        return TAG;
+    }
+
     protected final File file;
-    protected final Object startStopLock = new Object();
-    protected final Object readLock = new Object();
-    protected final Object writeLock = new Object();
     protected SerialPort serialPort;
     protected int baudRate;
     protected int msDefaultTimeout = 100;
     protected USBIdentifiers usbIdentifiers = new USBIdentifiers();
+    protected final Object startStopLock = new Object();
+    protected final Object readLock = new Object();
+    protected final Object writeLock = new Object();
     protected Queue<Byte> readAhead = new ArrayDeque<Byte>();
     protected boolean debugRetainBuffers = false;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public RobotUsbDeviceTty(SerialPort serialPort, SerialNumber serialNumber, File file) {
         super(serialNumber);
         RobotLog.vv(TAG, "opening serial=%s file=%s", serialNumber, file.getPath());
         this.file = file;
         this.serialPort = serialPort;
         this.baudRate = serialPort.getBaudRate();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public String getTag() {
-        return TAG;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -242,13 +244,13 @@ public class RobotUsbDeviceTty extends RobotUsbDeviceImplBase implements RobotUs
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public boolean getDebugRetainBuffers() {
-        return this.debugRetainBuffers;
+    public void setDebugRetainBuffers(boolean retain) {
+        this.debugRetainBuffers = retain;
     }
 
     @Override
-    public void setDebugRetainBuffers(boolean retain) {
-        this.debugRetainBuffers = retain;
+    public boolean getDebugRetainBuffers() {
+        return this.debugRetainBuffers;
     }
 
     @Override
@@ -278,12 +280,12 @@ public class RobotUsbDeviceTty extends RobotUsbDeviceImplBase implements RobotUs
         // ignored // TODO fix later
     }
 
-    public int getMsDefaultTimeout() {
-        return msDefaultTimeout;
-    }
-
     public void setMsDefaultTimeout(int msDefaultTimeout) {
         this.msDefaultTimeout = msDefaultTimeout;
+    }
+
+    public int getMsDefaultTimeout() {
+        return msDefaultTimeout;
     }
 
     //----------------------------------------------------------------------------------------------

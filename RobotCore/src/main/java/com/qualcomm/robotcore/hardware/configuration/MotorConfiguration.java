@@ -47,16 +47,6 @@ public class MotorConfiguration extends DeviceConfiguration {
         this(port, DISABLED_DEVICE_NAME, false);
     }
 
-    /**
-     * returns the list of the extant motor configuration types
-     */
-    public static ConfigurationType[] getAllMotorConfigurationTypes() {
-        List<ConfigurationType> list = new LinkedList<ConfigurationType>();
-        list.add(BuiltInConfigurationType.NOTHING);
-        list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.MOTOR));
-        return list.toArray(new ConfigurationType[list.size()]);
-    }
-
     public
     @NonNull
     MotorConfigurationType getMotorType() {
@@ -73,5 +63,15 @@ public class MotorConfiguration extends DeviceConfiguration {
             return getMotorType();
         }
         return super.getSpinnerChoiceType();
+    }
+
+    /**
+     * returns the list of the extant motor configuration types
+     */
+    public static ConfigurationType[] getAllMotorConfigurationTypes() {
+        List<ConfigurationType> list = new LinkedList<ConfigurationType>();
+        list.add(BuiltInConfigurationType.NOTHING);
+        list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.MOTOR));
+        return list.toArray(new ConfigurationType[list.size()]);
     }
 }

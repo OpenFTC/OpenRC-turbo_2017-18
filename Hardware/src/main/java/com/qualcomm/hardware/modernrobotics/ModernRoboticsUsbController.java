@@ -51,13 +51,22 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
     // State
     //----------------------------------------------------------------------------------------------
 
+    protected enum WRITE_STATUS {IDLE, DIRTY, READ}
+
+    ;
+
+    protected WRITE_STATUS writeStatus;
+    protected boolean readWriteRunnableIsRunning;
     protected final AtomicInteger callbackWaiterCount = new AtomicInteger();
     protected final AtomicLong readCompletionCount = new AtomicLong();
     // Locking hierarchy is in the order listed
     protected final Object concurrentClientLock = new Object();
     protected final Object callbackLock = new Object();
-    protected WRITE_STATUS writeStatus;
-    protected boolean readWriteRunnableIsRunning;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public ModernRoboticsUsbController(Context context, SerialNumber serialNumber, EventLoopManager manager, OpenRobotUsbDevice openRobotUsbDevice, CreateReadWriteRunnable createReadWriteRunnable)
             throws RobotCoreException, InterruptedException {
         super(context, serialNumber, manager, openRobotUsbDevice, createReadWriteRunnable);
@@ -66,7 +75,11 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
     }
 
     //----------------------------------------------------------------------------------------------
-    // Construction
+    // Reading and writing
+    //
+    // The key thing here is that we will block reads to wait until any pending writes have
+    // completed before issuing, as that guarantees that they will see the effect of the writes.
+    // Second, we block *writes* on any pending writes so that we know they've issued.
     //----------------------------------------------------------------------------------------------
 
     @Override
@@ -95,14 +108,6 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
             }
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Reading and writing
-    //
-    // The key thing here is that we will block reads to wait until any pending writes have
-    // completed before issuing, as that guarantees that they will see the effect of the writes.
-    // Second, we block *writes* on any pending writes so that we know they've issued.
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public byte[] read(int address, int size) {
@@ -216,7 +221,5 @@ public abstract class ModernRoboticsUsbController extends ModernRoboticsUsbDevic
         this.callbackWaiterCount.decrementAndGet();
         return result;
     }
-
-    protected enum WRITE_STATUS {IDLE, DIRTY, READ}
 
 }

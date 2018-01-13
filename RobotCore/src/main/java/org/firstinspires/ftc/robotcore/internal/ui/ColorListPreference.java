@@ -111,7 +111,7 @@ public class ColorListPreference extends ListPreference {
         // https://stackoverflow.com/questions/20880841/how-to-add-imageview-array-to-arrayadapter-for-a-listview
         final ArrayList<Pair<CharSequence, Integer>> entryAndColors = new ArrayList<>();
         for (int i = 0; i < getEntries().length; i++) {
-            entryAndColors.add(new Pair<CharSequence, Integer>(getEntries()[i], colors[i]));
+            entryAndColors.add(new Pair<CharSequence, Integer>(getEntries()[i], (Integer) colors[i]));
         }
 
         clickedDialogEntryIndex = getValueIndex();
@@ -145,6 +145,15 @@ public class ColorListPreference extends ListPreference {
         builder.setPositiveButton(null, null);
     }
 
+    protected class DialogClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialog, int which) {
+            // Clicking on an item simulates the positive button click and dismisses the dialog.
+            clickedDialogEntryIndex = which;
+            ColorListPreference.this.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
+            dialog.dismiss();
+        }
+    }
+
     protected void onDialogClosed(boolean positiveResult) {
         // do NOT call super: we're duplicating and enhancing that impl here
         if (positiveResult && clickedDialogEntryIndex >= 0 && getEntryValues() != null) {
@@ -152,15 +161,6 @@ public class ColorListPreference extends ListPreference {
             if (callChangeListener(value)) {
                 setValue(value);
             }
-        }
-    }
-
-    protected class DialogClickListener implements DialogInterface.OnClickListener {
-        public void onClick(DialogInterface dialog, int which) {
-            // Clicking on an item simulates the positive button click and dismisses the dialog.
-            clickedDialogEntryIndex = which;
-            ColorListPreference.this.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
-            dialog.dismiss();
         }
     }
 

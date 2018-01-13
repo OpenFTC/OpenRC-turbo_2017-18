@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.hardware.lynx.commands.standard;
 
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.exception.RobotCoreException;
 
 /**
  * Created by bob on 2016-03-06.

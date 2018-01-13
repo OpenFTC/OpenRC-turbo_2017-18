@@ -234,15 +234,15 @@ public class LynxUsbDeviceDelegate implements LynxUsbDevice, HardwareDeviceClose
     }
 
     @Override
-    public RobotUsbModule getOwner() {
-        assertOpen();
-        return delegate.getOwner();
-    }
-
-    @Override
     public void setOwner(RobotUsbModule owner) {
         assertOpen();
         delegate.setOwner(owner);
+    }
+
+    @Override
+    public RobotUsbModule getOwner() {
+        assertOpen();
+        return delegate.getOwner();
     }
 
     //----------------------------------------------------------------------------------------------

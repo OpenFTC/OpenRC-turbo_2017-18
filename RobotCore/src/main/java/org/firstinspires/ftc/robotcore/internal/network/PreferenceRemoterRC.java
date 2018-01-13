@@ -54,18 +54,13 @@ public class PreferenceRemoterRC extends PreferenceRemoter {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = NetworkDiscoveryManager.TAG + "_prefremrc";
+
+    public String getTag() {
+        return TAG;
+    }
+
     @SuppressLint("StaticFieldLeak")
     protected static PreferenceRemoterRC theInstance = null;
-    protected Set<String> rcPrefsOfInterestToDS;
-
-    public PreferenceRemoterRC() {
-        rcPrefsOfInterestToDS = new HashSet<String>();
-        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_device_name));
-        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_app_theme));
-        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_sound_on_off));
-        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_wifip2p_remote_channel_change_works));
-        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_has_independent_phone_battery));
-    }
 
     public synchronized static PreferenceRemoterRC getInstance() {
         if (null == theInstance) {
@@ -74,12 +69,19 @@ public class PreferenceRemoterRC extends PreferenceRemoter {
         return theInstance;
     }
 
+    protected Set<String> rcPrefsOfInterestToDS;
+
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public String getTag() {
-        return TAG;
+    public PreferenceRemoterRC() {
+        rcPrefsOfInterestToDS = new HashSet<String>();
+        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_device_name));
+        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_app_theme));
+        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_sound_on_off));
+        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_wifip2p_remote_channel_change_works));
+        rcPrefsOfInterestToDS.add(context.getString(R.string.pref_has_independent_phone_battery));
     }
 
     @Override
@@ -114,6 +116,18 @@ public class PreferenceRemoterRC extends PreferenceRemoter {
     // Preferences
     //----------------------------------------------------------------------------------------------
 
+    protected class SharedPreferencesListenerRC implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String rcPrefName) {
+            RobotLog.vv(TAG, "onSharedPreferenceChanged(name=%s, value=%s)", rcPrefName, preferencesHelper.readPref(rcPrefName));
+
+            // If the DS wants to know about this one, then tell him
+            if (rcPrefsOfInterestToDS.contains(rcPrefName)) {
+                sendPreference(rcPrefName);
+            }
+        }
+    }
+
     protected void sendPreference(String rcPrefName) {
         Object value = preferencesHelper.readPref(rcPrefName);
         if (value != null) {
@@ -125,18 +139,6 @@ public class PreferenceRemoterRC extends PreferenceRemoter {
         RobotLog.vv(TAG, "sendAllPreferences()");
         for (String rcPrefName : rcPrefsOfInterestToDS) {
             sendPreference(rcPrefName);
-        }
-    }
-
-    protected class SharedPreferencesListenerRC implements SharedPreferences.OnSharedPreferenceChangeListener {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String rcPrefName) {
-            RobotLog.vv(TAG, "onSharedPreferenceChanged(name=%s, value=%s)", rcPrefName, preferencesHelper.readPref(rcPrefName));
-
-            // If the DS wants to know about this one, then tell him
-            if (rcPrefsOfInterestToDS.contains(rcPrefName)) {
-                sendPreference(rcPrefName);
-            }
         }
     }
 }

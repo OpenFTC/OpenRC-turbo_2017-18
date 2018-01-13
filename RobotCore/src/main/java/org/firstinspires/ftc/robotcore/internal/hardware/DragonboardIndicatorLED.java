@@ -107,15 +107,15 @@ public class DragonboardIndicatorLED implements SwitchableLight {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected DragonboardIndicatorLED(int index) {
-        this.ledName = ledNames[index];
-    }
-
     public static DragonboardIndicatorLED forIndex(int index) {
         if (index < LED_FIRST || index > LED_LAST) {
             throw new IllegalArgumentException("illegal LED index: " + index);
         }
         return instances[index];
+    }
+
+    protected DragonboardIndicatorLED(int index) {
+        this.ledName = ledNames[index];
     }
 
     //----------------------------------------------------------------------------------------------

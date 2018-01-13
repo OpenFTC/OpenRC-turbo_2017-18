@@ -61,17 +61,18 @@ import java.util.Calendar;
 
 public class ViewLogsActivity extends ThemedActivity {
 
-    public static final String FILENAME = LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME;
-    TextView textAdbLogs;
-    int DEFAULT_NUMBER_OF_LINES = 300;
-    String filepath = " ";
-    private File sdcard;
-    private File logFile;
-
     @Override
     public String getTag() {
         return this.getClass().getSimpleName();
     }
+
+    TextView textAdbLogs;
+    int DEFAULT_NUMBER_OF_LINES = 300;
+    public static final String FILENAME = LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME;
+    private File sdcard;
+    private File logFile;
+
+    String filepath = " ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -32,8 +32,8 @@ package com.qualcomm.robotcore.hardware;
 
 import com.qualcomm.robotcore.R;
 
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;

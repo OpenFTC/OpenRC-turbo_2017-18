@@ -45,10 +45,10 @@ public class CircularLongBuffer {
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final int capacity;
     protected long[] buffer;
     protected int readIndex;
     protected int size;
+    protected final int capacity;
 
     //----------------------------------------------------------------------------------------------
     // State

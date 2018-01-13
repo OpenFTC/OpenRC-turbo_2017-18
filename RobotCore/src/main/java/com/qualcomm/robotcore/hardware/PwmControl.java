@@ -49,20 +49,20 @@ package com.qualcomm.robotcore.hardware;
  */
 public interface PwmControl {
     /**
-     * Returns the current PWM range limits for the servo
-     *
-     * @return the current PWM range limits for the servo
-     * @see #setPwmRange(PwmRange)
-     */
-    PwmRange getPwmRange();
-
-    /**
      * Sets the PWM range limits for the servo
      *
      * @param range the new PWM range limits for the servo
      * @see #getPwmRange()
      */
     void setPwmRange(PwmRange range);
+
+    /**
+     * Returns the current PWM range limits for the servo
+     *
+     * @return the current PWM range limits for the servo
+     * @see #setPwmRange(PwmRange)
+     */
+    PwmRange getPwmRange();
 
     /**
      * Individually energizes the PWM for this particular servo.

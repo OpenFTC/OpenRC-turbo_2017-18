@@ -102,20 +102,20 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
     //----------------------------------------------------------------------------------------------
 
     /**
-     * Returns the current register window used for reading.
-     *
-     * @return the current read window
-     * @see #setReadWindow(ReadWindow)
-     */
-    ReadWindow getReadWindow();
-
-    /**
      * Set the set of registers that we will read and read and read again on every hardware cycle
      *
      * @param window the register window to read. May be null, indicating that no reads are to occur.
      * @see #getReadWindow()
      */
     void setReadWindow(ReadWindow window);
+
+    /**
+     * Returns the current register window used for reading.
+     *
+     * @return the current read window
+     * @see #setReadWindow(ReadWindow)
+     */
+    ReadWindow getReadWindow();
 
     /**
      * Ensure that the current register window covers the indicated set of registers.
@@ -159,15 +159,6 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
     //----------------------------------------------------------------------------------------------
 
     /**
-     * Returns the interval within which communication must be received by the I2C device lest
-     * a timeout occur.
-     *
-     * @return the current heartbeat interval, in milliseconds
-     * @see #setHeartbeatInterval(int)
-     */
-    int getHeartbeatInterval();
-
-    /**
      * Sets the interval within which communication must be received by the I2C device lest
      * a timeout may occur. The default heartbeat interval is zero, signifying that no heartbeat
      * is maintained.
@@ -178,12 +169,13 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
     void setHeartbeatInterval(int ms);
 
     /**
-     * Returns the current action, if any, to take upon expiration of the heartbeat interval.
+     * Returns the interval within which communication must be received by the I2C device lest
+     * a timeout occur.
      *
-     * @return the current heartbeat action. May be null
-     * @see #setHeartbeatAction(HeartbeatAction)
+     * @return the current heartbeat interval, in milliseconds
+     * @see #setHeartbeatInterval(int)
      */
-    HeartbeatAction getHeartbeatAction();
+    int getHeartbeatInterval();
 
     /**
      * Sets the action to take when the current heartbeat interval expires.
@@ -195,6 +187,51 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
      * @see #setHeartbeatInterval(int)
      */
     void setHeartbeatAction(HeartbeatAction action);
+
+    /**
+     * Returns the current action, if any, to take upon expiration of the heartbeat interval.
+     *
+     * @return the current heartbeat action. May be null
+     * @see #setHeartbeatAction(HeartbeatAction)
+     */
+    HeartbeatAction getHeartbeatAction();
+
+    /**
+     * Instances of HeartBeatAction indicate what action to carry out to perform
+     * a heartbeat should that become necessary. The actual action to take is indicated
+     * by one of several prioritized possibilities. When a heartbeat is needed, these
+     * are considered in order, and the first one applicable given the state of the
+     * I2C device at the time will be applied.
+     */
+    class HeartbeatAction {
+        /**
+         * Priority #1: re-issue the last I2C read operation, if possible.
+         */
+        public final boolean rereadLastRead;
+
+        /**
+         * Priority #2: re-issue the last I2C write operation, if possible.
+         */
+        public final boolean rewriteLastWritten;
+
+        /**
+         * Priority #3: explicitly read a given register window
+         */
+        public final ReadWindow heartbeatReadWindow;
+
+        /**
+         * instantiates a new HeartbeatAction.
+         */
+        public HeartbeatAction(boolean rereadLastRead, boolean rewriteLastWritten, ReadWindow readWindow) {
+            this.rereadLastRead = rereadLastRead;
+            this.rewriteLastWritten = rewriteLastWritten;
+            this.heartbeatReadWindow = readWindow;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // RegWindow
+    //----------------------------------------------------------------------------------------------
 
     /**
      * {@link ReadMode} controls whether when asked to read we read only once or read multiple times.
@@ -231,42 +268,8 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
         ONLY_ONCE
     }
 
-    //----------------------------------------------------------------------------------------------
-    // RegWindow
-    //----------------------------------------------------------------------------------------------
+    ;
 
-    /**
-     * Instances of HeartBeatAction indicate what action to carry out to perform
-     * a heartbeat should that become necessary. The actual action to take is indicated
-     * by one of several prioritized possibilities. When a heartbeat is needed, these
-     * are considered in order, and the first one applicable given the state of the
-     * I2C device at the time will be applied.
-     */
-    class HeartbeatAction {
-        /**
-         * Priority #1: re-issue the last I2C read operation, if possible.
-         */
-        public final boolean rereadLastRead;
-
-        /**
-         * Priority #2: re-issue the last I2C write operation, if possible.
-         */
-        public final boolean rewriteLastWritten;
-
-        /**
-         * Priority #3: explicitly read a given register window
-         */
-        public final ReadWindow heartbeatReadWindow;
-
-        /**
-         * instantiates a new HeartbeatAction.
-         */
-        public HeartbeatAction(boolean rereadLastRead, boolean rewriteLastWritten, ReadWindow readWindow) {
-            this.rereadLastRead = rereadLastRead;
-            this.rewriteLastWritten = rewriteLastWritten;
-            this.heartbeatReadWindow = readWindow;
-        }
-    }
 
     /**
      * RegWindow is a utility class for managing the window of I2C register bytes that
@@ -307,23 +310,6 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
          */
         private boolean usedForRead;
 
-
-        /**
-         * Create a new register window with the indicated starting register and register count
-         *
-         * @param iregFirst the index of the first register to read
-         * @param creg      the number of registers to read
-         * @param readMode  whether to repeat-read or read only once
-         */
-        public ReadWindow(int iregFirst, int creg, ReadMode readMode) {
-            this.readMode = readMode;
-            this.usedForRead = false;
-            this.iregFirst = iregFirst;
-            this.creg = creg;
-            if (creg < 0 || creg > READ_REGISTER_COUNT_MAX) {
-                throw new IllegalArgumentException(String.format("buffer length %d invalid; max is %d", creg, READ_REGISTER_COUNT_MAX));
-            }
-        }
 
         /**
          * Returns the first register in the window
@@ -387,10 +373,6 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
             return !this.usedForRead || this.readMode != ReadMode.ONLY_ONCE;
         }
 
-        //------------------------------------------------------------------------------------------
-        // Construction
-        //------------------------------------------------------------------------------------------
-
         /**
          * Answers as to whether this window in its present state ought to cause a transition
          * to read-mode when there's nothing else for the device to be doing.
@@ -399,6 +381,27 @@ public interface I2cDeviceSynch extends I2cDeviceSynchSimple, Engagable {
          */
         public boolean mayInitiateSwitchToReadMode() {
             return !this.usedForRead || this.readMode == ReadMode.REPEAT;
+        }
+
+        //------------------------------------------------------------------------------------------
+        // Construction
+        //------------------------------------------------------------------------------------------
+
+        /**
+         * Create a new register window with the indicated starting register and register count
+         *
+         * @param iregFirst the index of the first register to read
+         * @param creg      the number of registers to read
+         * @param readMode  whether to repeat-read or read only once
+         */
+        public ReadWindow(int iregFirst, int creg, ReadMode readMode) {
+            this.readMode = readMode;
+            this.usedForRead = false;
+            this.iregFirst = iregFirst;
+            this.creg = creg;
+            if (creg < 0 || creg > READ_REGISTER_COUNT_MAX) {
+                throw new IllegalArgumentException(String.format("buffer length %d invalid; max is %d", creg, READ_REGISTER_COUNT_MAX));
+            }
         }
 
         /**

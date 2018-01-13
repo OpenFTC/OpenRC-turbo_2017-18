@@ -53,15 +53,15 @@ public class ProgressParameters {
         this.max = max;
     }
 
+    public double fractionComplete() {
+        return (double) cur / (double) max;
+    }
+
     public static ProgressParameters fromFraction(double fractionComplete, int max) {
         return new ProgressParameters((int) Math.round(fractionComplete * max), max);
     }
 
     public static ProgressParameters fromFraction(double fractionComplete) {
         return fromFraction(fractionComplete, 100);
-    }
-
-    public double fractionComplete() {
-        return (double) cur / (double) max;
     }
 }

@@ -75,8 +75,8 @@ public class MediaTransferProtocolMonitor implements Closeable {
     protected int msMinimumScanInterval = 5000;
     protected RecursiveFileObserver dirObserver = null;
 
-    public MediaTransferProtocolMonitor() {
-        this.context = AppUtil.getDefContext();
+    protected static class InstanceHolder {
+        public static MediaTransferProtocolMonitor theInstance = new MediaTransferProtocolMonitor();
     }
 
     public static MediaTransferProtocolMonitor getInstance() {
@@ -87,32 +87,18 @@ public class MediaTransferProtocolMonitor implements Closeable {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public static void makeIndicatorFile(File directory) {
-        final File tempFile = new File(directory, UUID.randomUUID().toString() + tmpMTPExtension);
-        ReadWriteFile.writeFile(tempFile, "internal system utility file - you can delete this file");
-    }
-
-    public static boolean isIndicatorFile(File file) {
-        return file.getName().endsWith(tmpMTPExtension);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Starting and stopping
-    //----------------------------------------------------------------------------------------------
-
-    public static void renoticeIndicatorFiles(File directory) {
-        getInstance().noteFiles(AppUtil.getInstance().filesIn(directory, new Predicate<File>() {
-            @Override
-            public boolean test(File file) {
-                return isIndicatorFile(file);
-            }
-        }));
+    public MediaTransferProtocolMonitor() {
+        this.context = AppUtil.getDefContext();
     }
 
     @Override
     public void close() {
         stop();
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Starting and stopping
+    //----------------------------------------------------------------------------------------------
 
     protected void start() {
         synchronized (concurrentClientLock) {
@@ -157,10 +143,6 @@ public class MediaTransferProtocolMonitor implements Closeable {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
     // Set up a file observer to know when things are created in the external directory so that
     // they can be made publicly visible over MTP (Media Transfer Protocol). Note that this is all
     // just a temporary thing: *everything* will be made visible the next time the device reboots.
@@ -200,6 +182,28 @@ public class MediaTransferProtocolMonitor implements Closeable {
             dirObserver.stopWatching();
             dirObserver = null;
         }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public static void makeIndicatorFile(File directory) {
+        final File tempFile = new File(directory, UUID.randomUUID().toString() + tmpMTPExtension);
+        ReadWriteFile.writeFile(tempFile, "internal system utility file - you can delete this file");
+    }
+
+    public static boolean isIndicatorFile(File file) {
+        return file.getName().endsWith(tmpMTPExtension);
+    }
+
+    public static void renoticeIndicatorFiles(File directory) {
+        getInstance().noteFiles(AppUtil.getInstance().filesIn(directory, new Predicate<File>() {
+            @Override
+            public boolean test(File file) {
+                return isIndicatorFile(file);
+            }
+        }));
     }
 
     /**
@@ -273,9 +277,5 @@ public class MediaTransferProtocolMonitor implements Closeable {
                         }
                     });
         }
-    }
-
-    protected static class InstanceHolder {
-        public static MediaTransferProtocolMonitor theInstance = new MediaTransferProtocolMonitor();
     }
 }

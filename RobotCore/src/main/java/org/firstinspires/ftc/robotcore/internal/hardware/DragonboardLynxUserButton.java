@@ -48,11 +48,13 @@ public class DragonboardLynxUserButton extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxUserButton";
-    protected static final DragonboardLynxUserButton theInstance = new DragonboardLynxUserButton();
 
-    protected DragonboardLynxUserButton() {
-        super(17);
+    @Override
+    protected String getTag() {
+        return TAG;
     }
+
+    protected static final DragonboardLynxUserButton theInstance = new DragonboardLynxUserButton();
 
     public static DragonboardLynxUserButton getInstance() {
         return theInstance;
@@ -62,8 +64,7 @@ public class DragonboardLynxUserButton extends DragonboardGPIOPin {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    protected String getTag() {
-        return TAG;
+    protected DragonboardLynxUserButton() {
+        super(17);
     }
 }

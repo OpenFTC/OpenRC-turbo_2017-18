@@ -51,6 +51,14 @@ public class FileModifyObserver {
     protected RecursiveFileObserver fileObserver;
     protected Listener listener;
 
+    public interface Listener {
+        void onFileChanged(int event, File file);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public FileModifyObserver(final File monitoredFile, final Listener listener) {
         this.monitoredFile = monitoredFile;
         this.listener = listener;
@@ -90,17 +98,9 @@ public class FileModifyObserver {
         this.directoryObserver.startWatching();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     public void close() {
         directoryObserver.stopWatching();
         fileObserver.stopWatching();
-    }
-
-    public interface Listener {
-        void onFileChanged(int event, File file);
     }
 
     //----------------------------------------------------------------------------------------------

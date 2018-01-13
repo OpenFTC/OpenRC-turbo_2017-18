@@ -37,6 +37,7 @@ import android.support.annotation.Nullable;
 
 import com.qualcomm.hardware.R;
 import com.qualcomm.hardware.lynx.commands.LynxCommand;
+import com.qualcomm.hardware.lynx.commands.core.LynxI2cReadMultipleBytesCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxI2cReadSingleByteCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxI2cReadStatusQueryCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxI2cReadStatusQueryResponse;
@@ -67,15 +68,27 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxI2cDeviceSynch";
-    private final I2cDeviceSynchReadHistoryImpl readHistory = new I2cDeviceSynchReadHistoryImpl();
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     protected I2cAddr i2cAddr;
     protected int bus;
-    protected LynxUsbUtil.Placeholder<TimestampedData> readTimeStampedPlaceholder = new LynxUsbUtil.Placeholder<TimestampedData>(TAG, "readTimestamped");
     private boolean loggingEnabled;
     private String loggingTag;
     private String name;
     private int msBusyWait = 3;
+    private final I2cDeviceSynchReadHistoryImpl readHistory = new I2cDeviceSynchReadHistoryImpl();
+
+    protected LynxUsbUtil.Placeholder<TimestampedData> readTimeStampedPlaceholder = new LynxUsbUtil.Placeholder<TimestampedData>(TAG, "readTimestamped");
     private LynxUsbUtil.Placeholder<TimestampedData> readStatusQueryPlaceholder = new LynxUsbUtil.Placeholder<TimestampedData>(TAG, "readStatusQuery");
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     protected LynxI2cDeviceSynch(final Context context, final LynxModule module, int bus) {
         super(context, module);
         this.bus = bus;
@@ -83,15 +96,6 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
         this.loggingEnabled = false;
         this.loggingTag = TAG;
         this.finishConstruction();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    protected String getTag() {
-        return TAG;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -130,13 +134,18 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
     }
 
     @Override
-    public I2cAddr getI2cAddress() {
-        return this.i2cAddr;
+    public void setI2cAddress(I2cAddr i2cAddr) {
+        this.i2cAddr = i2cAddr;
     }
 
     @Override
-    public void setI2cAddress(I2cAddr i2cAddr) {
+    public void setI2cAddr(I2cAddr i2cAddr) {
         this.i2cAddr = i2cAddr;
+    }
+
+    @Override
+    public I2cAddr getI2cAddress() {
+        return this.i2cAddr;
     }
 
     @Override
@@ -145,8 +154,8 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
     }
 
     @Override
-    public void setI2cAddr(I2cAddr i2cAddr) {
-        this.i2cAddr = i2cAddr;
+    public void setUserConfiguredName(@Nullable String name) {
+        this.name = name;
     }
 
     @Override
@@ -156,8 +165,8 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
     }
 
     @Override
-    public void setUserConfiguredName(@Nullable String name) {
-        this.name = name;
+    public void setLogging(boolean enabled) {
+        this.loggingEnabled = enabled;
     }
 
     @Override
@@ -166,8 +175,8 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
     }
 
     @Override
-    public void setLogging(boolean enabled) {
-        this.loggingEnabled = enabled;
+    public void setLoggingTag(String loggingTag) {
+        this.loggingTag = loggingTag;
     }
 
     @Override
@@ -175,23 +184,18 @@ public class LynxI2cDeviceSynch extends LynxController implements I2cDeviceSynch
         return this.loggingTag;
     }
 
-    @Override
-    public void setLoggingTag(String loggingTag) {
-        this.loggingTag = loggingTag;
-    }
-
     //----------------------------------------------------------------------------------------------
     // I2cDeviceSynchReadHistory API methods
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public int getHistoryQueueCapacity() {
-        return readHistory.getHistoryQueueCapacity();
+    public void setHistoryQueueCapacity(int capacity) {
+        readHistory.setHistoryQueueCapacity(capacity);
     }
 
     @Override
-    public void setHistoryQueueCapacity(int capacity) {
-        readHistory.setHistoryQueueCapacity(capacity);
+    public int getHistoryQueueCapacity() {
+        return readHistory.getHistoryQueueCapacity();
     }
 
     @Override

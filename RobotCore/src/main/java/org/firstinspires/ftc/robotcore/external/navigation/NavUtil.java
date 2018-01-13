@@ -41,9 +41,6 @@ public class NavUtil {
     // Arithmetic: some handy helpers
     //----------------------------------------------------------------------------------------------
 
-    private NavUtil() {
-    }
-
     public static Position plus(Position a, Position b) {
         return new Position(a.unit,
                 a.x + a.unit.fromUnit(b.unit, b.x),
@@ -124,10 +121,6 @@ public class NavUtil {
                 v.acquisitionTime);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Integration
-    //----------------------------------------------------------------------------------------------
-
     public static Velocity integrate(Acceleration a, double dt) {
         return new Velocity(a.unit,
                 a.xAccel * dt,
@@ -135,6 +128,10 @@ public class NavUtil {
                 a.zAccel * dt,
                 a.acquisitionTime);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Integration
+    //----------------------------------------------------------------------------------------------
 
     /**
      * Integrate between two velocities to determine a change in position using an assumption
@@ -151,10 +148,6 @@ public class NavUtil {
         return integrate(meanVelocity, duration);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Integrate between two accelerations to determine a change in velocity using an assumption
      * that the mean of the accelerations has been acting the entire interval.
@@ -168,5 +161,12 @@ public class NavUtil {
         double duration = (cur.acquisitionTime - prev.acquisitionTime) * 1e-9;
         Acceleration meanAcceleration = scale(plus(cur, prev), 0.5);
         return integrate(meanAcceleration, duration);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    private NavUtil() {
     }
 }

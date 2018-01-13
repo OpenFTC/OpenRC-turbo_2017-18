@@ -55,6 +55,18 @@ public abstract class ThemedActivity extends Activity {
     // State
     //----------------------------------------------------------------------------------------------
 
+    public abstract String getTag();
+
+    //----------------------------------------------------------------------------------------------
+    // Life Cycle
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        appAppThemeToActivity(getTag(), this);
+        super.onCreate(savedInstanceState);
+    }
+
     public static void appAppThemeToActivity(String tag, Activity activity) {
         // Find / initialize the app theme
         PreferencesHelper preferencesHelper = new PreferencesHelper(tag, activity);
@@ -80,9 +92,9 @@ public abstract class ThemedActivity extends Activity {
         ar.recycle();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Life Cycle
-    //----------------------------------------------------------------------------------------------
+    public void restartForAppThemeChange(@StringRes final int idToast) {
+        restartForAppThemeChange(getTag(), getString(idToast));
+    }
 
     public static void restartForAppThemeChange(final String tag, final String toast) {
         final AppUtil appUtil = AppUtil.getInstance();
@@ -100,17 +112,5 @@ public abstract class ThemedActivity extends Activity {
                 }, 1250);
             }
         });
-    }
-
-    public abstract String getTag();
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        appAppThemeToActivity(getTag(), this);
-        super.onCreate(savedInstanceState);
-    }
-
-    public void restartForAppThemeChange(@StringRes final int idToast) {
-        restartForAppThemeChange(getTag(), getString(idToast));
     }
 }

@@ -50,29 +50,27 @@ import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 public class ConfigWifiDirectActivity extends ThemedActivity {
 
     public static final String TAG = "ConfigWifiDirectActivity";
-    private static Flag flag = Flag.NONE;
-    private WifiManager wifiManager;
-    private ProgressDialog progressDialog;
-    private Context context;
-    private TextView textPleaseWait;
-    private TextView textBadDeviceName;
-
-    public static void launch(Context context) {
-        launch(context, Flag.WIFI_DIRECT_FIX_CONFIG);
-    }
-
-    public static void launch(Context context, Flag flag) {
-        Intent configWifiDirectIntent = new Intent(context, ConfigWifiDirectActivity.class);
-        configWifiDirectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
-        context.startActivity(configWifiDirectIntent);
-
-        ConfigWifiDirectActivity.flag = flag;
-    }
 
     @Override
     public String getTag() {
         return TAG;
     }
+
+    public enum Flag {
+        NONE,
+        WIFI_DIRECT_FIX_CONFIG,
+        WIFI_DIRECT_DEVICE_NAME_INVALID
+    }
+
+    private static Flag flag = Flag.NONE;
+
+    private WifiManager wifiManager;
+    private ProgressDialog progressDialog;
+    private Context context;
+
+    private TextView textPleaseWait;
+    private TextView textBadDeviceName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,34 +108,6 @@ public class ConfigWifiDirectActivity extends ThemedActivity {
         super.onPause();
         flag = Flag.NONE;
         textBadDeviceName.setVisibility(View.INVISIBLE);
-    }
-
-    private void showProgressDialog() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog = new ProgressDialog(context, R.style.ConfigWifiDirectDialog);
-                progressDialog.setMessage(getString(R.string.progressPleaseWait));
-                progressDialog.setTitle("Configuring Wifi Direct");
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
-            }
-        });
-    }
-
-    private void dismissProgressDialog() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.dismiss();
-            }
-        });
-    }
-
-    public enum Flag {
-        NONE,
-        WIFI_DIRECT_FIX_CONFIG,
-        WIFI_DIRECT_DEVICE_NAME_INVALID
     }
 
     /*
@@ -191,5 +161,39 @@ public class ConfigWifiDirectActivity extends ThemedActivity {
                 dismissProgressDialog();
             }
         }
+    }
+
+    private void showProgressDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog = new ProgressDialog(context, R.style.ConfigWifiDirectDialog);
+                progressDialog.setMessage(getString(R.string.progressPleaseWait));
+                progressDialog.setTitle("Configuring Wifi Direct");
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+            }
+        });
+    }
+
+    private void dismissProgressDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    public static void launch(Context context) {
+        launch(context, Flag.WIFI_DIRECT_FIX_CONFIG);
+    }
+
+    public static void launch(Context context, Flag flag) {
+        Intent configWifiDirectIntent = new Intent(context, ConfigWifiDirectActivity.class);
+        configWifiDirectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        context.startActivity(configWifiDirectIntent);
+
+        ConfigWifiDirectActivity.flag = flag;
     }
 }

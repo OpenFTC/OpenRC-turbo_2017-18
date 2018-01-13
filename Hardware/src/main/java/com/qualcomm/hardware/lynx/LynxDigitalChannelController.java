@@ -58,12 +58,28 @@ public class LynxDigitalChannelController extends LynxController implements Digi
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "LynxDigitalChannelController";
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     public static final int apiPinFirst = 0;
     public static final int apiPinLast = apiPinFirst + LynxConstants.NUMBER_OF_DIGITAL_IOS - 1;
-    protected final PinProperties[] pins = new PinProperties[LynxConstants.NUMBER_OF_DIGITAL_IOS];
 
     //----------------------------------------------------------------------------------------------
     // State
+    //----------------------------------------------------------------------------------------------
+
+    protected class PinProperties {
+        LastKnown<DigitalChannel.Mode> lastKnownMode = new LastKnown<DigitalChannel.Mode>();
+        LastKnown<Boolean> lastKnownState = new LastKnown<Boolean>();
+    }
+
+    protected final PinProperties[] pins = new PinProperties[LynxConstants.NUMBER_OF_DIGITAL_IOS];
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
     //----------------------------------------------------------------------------------------------
 
     public LynxDigitalChannelController(final Context context, final LynxModule module)
@@ -74,15 +90,6 @@ public class LynxDigitalChannelController extends LynxController implements Digi
         }
         this.finishConstruction();
     }
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public void initializeHardware() {
@@ -100,23 +107,23 @@ public class LynxDigitalChannelController extends LynxController implements Digi
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // HardwareDevice
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public String getDeviceName() {
         return this.context.getString(R.string.lynxDigitalChannelControllerDisplayName);
     }
 
     //----------------------------------------------------------------------------------------------
-    // HardwareDevice
+    // DigitalChannelController
     //----------------------------------------------------------------------------------------------
 
     @Override
     public SerialNumber getSerialNumber() {
         return this.getModule().getSerialNumber();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // DigitalChannelController
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public synchronized DigitalChannel.Mode getDigitalChannelMode(int pin) {
@@ -219,18 +226,13 @@ public class LynxDigitalChannelController extends LynxController implements Digi
         }
     }
 
-    private void validatePin(int pin) {
-        if (pin < apiPinFirst || pin > apiPinLast) {
-            throw new IllegalArgumentException(String.format("pin %d is invalid; valid pins are %d..%d", pin, apiPinFirst, apiPinLast));
-        }
-    }
-
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
 
-    protected class PinProperties {
-        LastKnown<DigitalChannel.Mode> lastKnownMode = new LastKnown<DigitalChannel.Mode>();
-        LastKnown<Boolean> lastKnownState = new LastKnown<Boolean>();
+    private void validatePin(int pin) {
+        if (pin < apiPinFirst || pin > apiPinLast) {
+            throw new IllegalArgumentException(String.format("pin %d is invalid; valid pins are %d..%d", pin, apiPinFirst, apiPinLast));
+        }
     }
 }

@@ -73,11 +73,31 @@ public interface DcMotor extends DcMotorSimple {
     int getPortNumber();
 
     /**
-     * Returns the current behavior of the motor were a power level of zero to be applied.
+     * ZeroPowerBehavior provides an indication as to a motor's behavior when a power level of zero
+     * is applied.
      *
-     * @return the current behavior of the motor were a power level of zero to be applied.
+     * @see #setZeroPowerBehavior(ZeroPowerBehavior)
+     * @see #setPower(double)
      */
-    ZeroPowerBehavior getZeroPowerBehavior();
+    enum ZeroPowerBehavior {
+        /**
+         * The behavior of the motor when zero power is applied is not currently known. This value
+         * is mostly useful for your internal state variables. It may not be passed as a parameter
+         * to {@link #setZeroPowerBehavior(ZeroPowerBehavior)} and will never be returned from
+         * {@link #getZeroPowerBehavior()}
+         */
+        UNKNOWN,
+        /**
+         * The motor stops and then brakes, actively resisting any external force which attempts
+         * to turn the motor.
+         */
+        BRAKE,
+        /**
+         * The motor stops and then floats: an external force attempting to turn the motor is not
+         * met with active resistence.
+         */
+        FLOAT
+    }
 
     /**
      * Sets the behavior of the motor when a power level of zero is applied.
@@ -87,6 +107,13 @@ public interface DcMotor extends DcMotorSimple {
      * @see #setPower(double)
      */
     void setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior);
+
+    /**
+     * Returns the current behavior of the motor were a power level of zero to be applied.
+     *
+     * @return the current behavior of the motor were a power level of zero to be applied.
+     */
+    ZeroPowerBehavior getZeroPowerBehavior();
 
     /**
      * Sets the zero power behavior of the motor to {@link ZeroPowerBehavior#FLOAT FLOAT}, then
@@ -125,14 +152,6 @@ public interface DcMotor extends DcMotorSimple {
     boolean getPowerFloat();
 
     /**
-     * Returns the current target encoder position for this motor.
-     *
-     * @return the current target encoder position for this motor.
-     * @see #setTargetPosition(int)
-     */
-    int getTargetPosition();
-
-    /**
      * Sets the desired encoder target position to which the motor should advance or retreat
      * and then actively hold thereat. This behavior is similar to the operation of a servo.
      * The maximum speed at which this advance or retreat occurs is governed by the power level
@@ -154,6 +173,14 @@ public interface DcMotor extends DcMotorSimple {
     void setTargetPosition(int position);
 
     /**
+     * Returns the current target encoder position for this motor.
+     *
+     * @return the current target encoder position for this motor.
+     * @see #setTargetPosition(int)
+     */
+    int getTargetPosition();
+
+    /**
      * Returns true if the motor is currently advancing or retreating to a target position.
      *
      * @return true if the motor is currently advancing or retreating to a target position.
@@ -171,51 +198,6 @@ public interface DcMotor extends DcMotorSimple {
      * @see RunMode#STOP_AND_RESET_ENCODER
      */
     int getCurrentPosition();
-
-    /**
-     * Returns the current run mode for this motor
-     *
-     * @return the current run mode for this motor
-     * @see RunMode
-     * @see #setMode(RunMode)
-     */
-    RunMode getMode();
-
-    /**
-     * Sets the current run mode for this motor
-     *
-     * @param mode the new current run mode for this motor
-     * @see RunMode
-     * @see #getMode()
-     */
-    void setMode(RunMode mode);
-
-    /**
-     * ZeroPowerBehavior provides an indication as to a motor's behavior when a power level of zero
-     * is applied.
-     *
-     * @see #setZeroPowerBehavior(ZeroPowerBehavior)
-     * @see #setPower(double)
-     */
-    enum ZeroPowerBehavior {
-        /**
-         * The behavior of the motor when zero power is applied is not currently known. This value
-         * is mostly useful for your internal state variables. It may not be passed as a parameter
-         * to {@link #setZeroPowerBehavior(ZeroPowerBehavior)} and will never be returned from
-         * {@link #getZeroPowerBehavior()}
-         */
-        UNKNOWN,
-        /**
-         * The motor stops and then brakes, actively resisting any external force which attempts
-         * to turn the motor.
-         */
-        BRAKE,
-        /**
-         * The motor stops and then floats: an external force attempting to turn the motor is not
-         * met with active resistence.
-         */
-        FLOAT
-    }
 
     /**
      * The run mode of a motor {@link RunMode} controls how the motor interprets the
@@ -304,4 +286,22 @@ public interface DcMotor extends DcMotorSimple {
             return this == RUN_USING_ENCODER || this == RUN_USING_ENCODERS || this == RUN_TO_POSITION;
         }
     }
+
+    /**
+     * Sets the current run mode for this motor
+     *
+     * @param mode the new current run mode for this motor
+     * @see RunMode
+     * @see #getMode()
+     */
+    void setMode(RunMode mode);
+
+    /**
+     * Returns the current run mode for this motor
+     *
+     * @return the current run mode for this motor
+     * @see RunMode
+     * @see #setMode(RunMode)
+     */
+    RunMode getMode();
 }

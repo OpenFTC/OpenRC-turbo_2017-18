@@ -33,10 +33,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.hardware.lynx.commands.core;
 
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
-import com.qualcomm.hardware.lynx.commands.LynxDatagram;
-import com.qualcomm.hardware.lynx.commands.LynxInterfaceResponse;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.hardware.lynx.commands.LynxDatagram;
+import com.qualcomm.hardware.lynx.commands.LynxInterfaceResponse;
+import com.qualcomm.hardware.lynx.commands.LynxResponse;
+import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 
 import java.nio.ByteBuffer;
 

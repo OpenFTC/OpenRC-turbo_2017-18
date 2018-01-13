@@ -46,17 +46,19 @@ public class TimestampedI2cData extends TimestampedData {
     //----------------------------------------------------------------------------------------------
 
     /**
-     * internal: keeps track of
-     */
-    protected static AtomicInteger healthStatusSuppressionCount = new AtomicInteger(0);
-    /**
      * the I2c address from which the data was read
      */
     public I2cAddr i2cAddr;
+
     /**
      * the starting register address from which the data was retrieved
      */
     public int register;
+
+    /**
+     * internal: keeps track of
+     */
+    protected static AtomicInteger healthStatusSuppressionCount = new AtomicInteger(0);
 
     //----------------------------------------------------------------------------------------------
     // Fake data / device health management

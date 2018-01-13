@@ -119,26 +119,6 @@ public class LightBlinker implements Blinker {
         return false;
     }
 
-    protected boolean isCurrentPattern(Collection<Step> steps) {
-        if (steps.size() != this.currentSteps.size()) {
-            return false;
-        }
-        int i = 0;
-        for (Step theirStep : steps) {
-            Step ourStep = this.currentSteps.get(i++);
-            if (!theirStep.equals(ourStep)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public synchronized Collection<Step> getPattern() {
-        // Return a copy so caller can't mess with us
-        return new ArrayList<Step>(this.currentSteps);
-    }
-
     @Override
     public synchronized void setPattern(Collection<Step> steps) {
         if (isCurrentPattern(steps)) // for this implementation, there's simply no point otherwise
@@ -157,6 +137,26 @@ public class LightBlinker implements Blinker {
                 }
             }
         }
+    }
+
+    protected boolean isCurrentPattern(Collection<Step> steps) {
+        if (steps.size() != this.currentSteps.size()) {
+            return false;
+        }
+        int i = 0;
+        for (Step theirStep : steps) {
+            Step ourStep = this.currentSteps.get(i++);
+            if (!theirStep.equals(ourStep)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public synchronized Collection<Step> getPattern() {
+        // Return a copy so caller can't mess with us
+        return new ArrayList<Step>(this.currentSteps);
     }
 
     protected synchronized void scheduleNext() {

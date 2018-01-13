@@ -61,9 +61,10 @@ package org.firstinspires.ftc.robotcore.external.navigation;
 @SuppressWarnings("WeakerAccess")
 public enum AngleUnit {
     DEGREES(0), RADIANS(1);
-    public static final float Pif = (float) Math.PI;
-    protected static final double TwoPi = 2 * Math.PI;
     public final byte bVal;
+
+    protected static final double TwoPi = 2 * Math.PI;
+    public static final float Pif = (float) Math.PI;
 
     AngleUnit(int i) {
         bVal = (byte) i;
@@ -72,34 +73,6 @@ public enum AngleUnit {
     //----------------------------------------------------------------------------------------------
     // Primitive operations
     //----------------------------------------------------------------------------------------------
-
-    public static double normalizeDegrees(double degrees) {
-        while (degrees >= 180.0) {
-            degrees -= 360.0;
-        }
-        while (degrees < -180.0) {
-            degrees += 360.0;
-        }
-        return degrees;
-    }
-
-    public static float normalizeDegrees(float degrees) {
-        return (float) normalizeDegrees((double) degrees);
-    }
-
-    public static double normalizeRadians(double radians) {
-        while (radians >= Math.PI) {
-            radians -= TwoPi;
-        }
-        while (radians < -Math.PI) {
-            radians += TwoPi;
-        }
-        return radians;
-    }
-
-    public static float normalizeRadians(float radians) {
-        return (float) normalizeRadians((double) radians);
-    }
 
     public double fromDegrees(double degrees) {
         switch (this) {
@@ -120,10 +93,6 @@ public enum AngleUnit {
                 return this.normalize(degrees);
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Derived operations
-    //----------------------------------------------------------------------------------------------
 
     public double fromRadians(double radians) {
         switch (this) {
@@ -166,7 +135,7 @@ public enum AngleUnit {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Normalization
+    // Derived operations
     //----------------------------------------------------------------------------------------------
 
     public double toDegrees(double inOurUnits) {
@@ -209,6 +178,10 @@ public enum AngleUnit {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Normalization
+    //----------------------------------------------------------------------------------------------
+
     public double normalize(double mine) {
         switch (this) {
             default:
@@ -227,6 +200,34 @@ public enum AngleUnit {
             case DEGREES:
                 return normalizeDegrees(mine);
         }
+    }
+
+    public static double normalizeDegrees(double degrees) {
+        while (degrees >= 180.0) {
+            degrees -= 360.0;
+        }
+        while (degrees < -180.0) {
+            degrees += 360.0;
+        }
+        return degrees;
+    }
+
+    public static float normalizeDegrees(float degrees) {
+        return (float) normalizeDegrees((double) degrees);
+    }
+
+    public static double normalizeRadians(double radians) {
+        while (radians >= Math.PI) {
+            radians -= TwoPi;
+        }
+        while (radians < -Math.PI) {
+            radians += TwoPi;
+        }
+        return radians;
+    }
+
+    public static float normalizeRadians(float radians) {
+        return (float) normalizeRadians((double) radians);
     }
 
     public UnnormalizedAngleUnit getUnnormalized() {

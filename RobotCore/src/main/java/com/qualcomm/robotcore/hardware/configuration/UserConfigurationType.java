@@ -55,14 +55,16 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
     // Types
     //----------------------------------------------------------------------------------------------
 
-    protected
-    @Expose
-    @NonNull
-    final Flavor flavor;
+    public enum Flavor {I2C, MOTOR}
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
+
+    protected
+    @Expose
+    @NonNull
+    final Flavor flavor;
     protected
     @Expose
     @NonNull
@@ -74,15 +76,16 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
     protected
     @Expose
     boolean isOnBotJava;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public UserConfigurationType(Class clazz, @NonNull Flavor flavor, @NonNull String xmlTag) {
         this.flavor = flavor;
         this.xmlTag = xmlTag;
         this.isOnBotJava = OnBotJavaClassLoader.isOnBotJava(clazz);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     // used by gson deserialization
     protected UserConfigurationType(@NonNull Flavor flavor) {
@@ -91,17 +94,33 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
         this.isOnBotJava = false;
     }
 
-    private Object writeReplace() {
-        return new SerializationProxy(this);
-    }
-
     //----------------------------------------------------------------------------------------------
     // Serialization (used in local marshalling during configuration editing)
     //----------------------------------------------------------------------------------------------
 
+    protected static class SerializationProxy implements Serializable {
+        protected String xmlTag;
+
+        public SerializationProxy(UserConfigurationType userConfigurationType) {
+            this.xmlTag = userConfigurationType.xmlTag;
+        }
+
+        private Object readResolve() {
+            return UserConfigurationTypeManager.getInstance().configurationTypeFromTag(xmlTag);
+        }
+    }
+
+    private Object writeReplace() {
+        return new SerializationProxy(this);
+    }
+
     private void readObject(ObjectInputStream in) throws InvalidObjectException {
         throw new InvalidObjectException("proxy required"); // attack threat paranoia
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
 
     public
     @NonNull
@@ -116,7 +135,7 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
     }
 
     //----------------------------------------------------------------------------------------------
-    // Accessing
+    // ConfigurationType
     //----------------------------------------------------------------------------------------------
 
     @Override
@@ -131,10 +150,6 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
         return this.xmlTag;
     }
 
-    //----------------------------------------------------------------------------------------------
-    // ConfigurationType
-    //----------------------------------------------------------------------------------------------
-
     @Override
     @NonNull
     public DeviceManager.DeviceType toUSBDeviceType() {
@@ -144,19 +159,5 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
     @Override
     public boolean isDeviceFlavor(UserConfigurationType.Flavor flavor) {
         return this.flavor == flavor;
-    }
-
-    public enum Flavor {I2C, MOTOR}
-
-    protected static class SerializationProxy implements Serializable {
-        protected String xmlTag;
-
-        public SerializationProxy(UserConfigurationType userConfigurationType) {
-            this.xmlTag = userConfigurationType.xmlTag;
-        }
-
-        private Object readResolve() {
-            return UserConfigurationTypeManager.getInstance().configurationTypeFromTag(xmlTag);
-        }
     }
 }

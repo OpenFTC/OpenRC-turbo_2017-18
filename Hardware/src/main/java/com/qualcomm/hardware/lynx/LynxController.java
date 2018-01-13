@@ -58,14 +58,21 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final WeakReferenceSet<Callback> registeredCallbacks = new WeakReferenceSet<Callback>();
-    protected final HardwareDeviceHealthImpl hardwareDeviceHealth;
+    protected abstract String getTag();
+
     protected Context context;
+    private LynxModule module;
     protected boolean isHardwareInitialized;
     protected boolean isEngaged;    // does the user want us to connect to the underlying device?
     protected boolean isHooked;     // are we presently connected to the underlying device?
-    private LynxModule module;
     private LynxModuleIntf pretendModule;
+    protected final WeakReferenceSet<Callback> registeredCallbacks = new WeakReferenceSet<Callback>();
+    protected final HardwareDeviceHealthImpl hardwareDeviceHealth;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public LynxController(Context context, LynxModule module) {
         this.context = context;
         this.module = module;
@@ -77,12 +84,6 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
         //
         this.module.noteController(this);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    protected abstract String getTag();
 
     protected void finishConstruction() {
         moduleNowArmedOrPretending();
@@ -220,6 +221,11 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
         }
     }
 
+    @Override
+    public void setHealthStatus(HealthStatus status) {
+        hardwareDeviceHealth.setHealthStatus(status);
+    }
+
     protected Callable<HealthStatus> getHealthStatusOverride() {
         return new Callable<HealthStatus>() {
             @Override
@@ -235,11 +241,6 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
     @Override
     public HealthStatus getHealthStatus() {
         return hardwareDeviceHealth.getHealthStatus();
-    }
-
-    @Override
-    public void setHealthStatus(HealthStatus status) {
-        hardwareDeviceHealth.setHealthStatus(status);
     }
 
     //----------------------------------------------------------------------------------------------

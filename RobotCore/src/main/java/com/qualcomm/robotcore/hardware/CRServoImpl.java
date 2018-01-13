@@ -14,13 +14,14 @@ public class CRServoImpl implements CRServo {
     // State
     //----------------------------------------------------------------------------------------------
 
+    protected ServoController controller = null;
+    protected int portNumber = -1;
+    protected Direction direction = Direction.FORWARD;
+
     protected static final double apiPowerMin = -1.0;
     protected static final double apiPowerMax = 1.0;
     protected static final double apiServoPositionMin = 0.0;
     protected static final double apiServoPositionMax = 1.0;
-    protected ServoController controller = null;
-    protected int portNumber = -1;
-    protected Direction direction = Direction.FORWARD;
 
     //------------------------------------------------------------------------------------------------
     // Construction
@@ -98,23 +99,13 @@ public class CRServoImpl implements CRServo {
     }
 
     @Override
-    public synchronized Direction getDirection() {
-        return this.direction;
-    }
-
-    @Override
     public synchronized void setDirection(Direction direction) {
         this.direction = direction;
     }
 
     @Override
-    public double getPower() {
-        double power = this.controller.getServoPosition(this.portNumber);
-        power = Range.scale(power, apiServoPositionMin, apiServoPositionMax, apiPowerMin, apiPowerMax);
-        if (this.direction == Direction.REVERSE) {
-            power = -power;
-        }
-        return power;
+    public synchronized Direction getDirection() {
+        return this.direction;
     }
 
     @Override
@@ -131,5 +122,15 @@ public class CRServoImpl implements CRServo {
         power = Range.clip(power, apiPowerMin, apiPowerMax);
         power = Range.scale(power, apiPowerMin, apiPowerMax, apiServoPositionMin, apiServoPositionMax);
         this.controller.setServoPosition(this.portNumber, power);
+    }
+
+    @Override
+    public double getPower() {
+        double power = this.controller.getServoPosition(this.portNumber);
+        power = Range.scale(power, apiServoPositionMin, apiServoPositionMax, apiPowerMin, apiPowerMax);
+        if (this.direction == Direction.REVERSE) {
+            power = -power;
+        }
+        return power;
     }
 }

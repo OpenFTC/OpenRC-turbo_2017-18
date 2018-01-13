@@ -50,15 +50,6 @@ import java.util.concurrent.BlockingQueue;
 @SuppressWarnings("WeakerAccess")
 public interface I2cDeviceSynchReadHistory {
     /**
-     * Returns the current capacity of the history queue.
-     *
-     * @return the current capacity of the history queue.
-     * @see #setHistoryQueueCapacity(int)
-     * @see #getHistoryQueue()
-     */
-    int getHistoryQueueCapacity();
-
-    /**
      * Sets the maximum number of {@link TimestampedI2cData}s that will simultaneously be stored in the
      * history queue. If the queue is full and new {@link TimestampedI2cData}s become available, older
      * data will be discarded. The history queue initially has a capacity of zero.
@@ -71,6 +62,15 @@ public interface I2cDeviceSynchReadHistory {
      * @see #getHistoryQueueCapacity()
      */
     void setHistoryQueueCapacity(int capacity);
+
+    /**
+     * Returns the current capacity of the history queue.
+     *
+     * @return the current capacity of the history queue.
+     * @see #setHistoryQueueCapacity(int)
+     * @see #getHistoryQueue()
+     */
+    int getHistoryQueueCapacity();
 
     /**
      * (Advanced) Returns a queue into which, if requested, {@link TimestampedI2cData}s are (optionally)

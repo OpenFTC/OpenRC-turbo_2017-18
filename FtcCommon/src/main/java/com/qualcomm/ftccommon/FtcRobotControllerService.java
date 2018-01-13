@@ -70,12 +70,11 @@ import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebServer;
 import org.openftc.turbo.TurboException;
+// modified for turbo: remove webserver import
 
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-// modified for turbo: remove webserver import
 
 public class FtcRobotControllerService extends Service implements NetworkConnection.NetworkConnectionCallback, WifiDirectAgent.Callback, EventLoopManagerClient {
 
@@ -90,22 +89,26 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
     private final IBinder binder = new FtcRobotControllerBinder();
     private final PreferencesHelper preferencesHelper = new PreferencesHelper(TAG);
-    private final EventLoopMonitor eventLoopMonitor = new EventLoopMonitor();
-    private final Object wifiDirectCallbackLock = new Object();
+
     private NetworkConnection networkConnection;
     private EventLoopManager eventLoopManager;
     private Robot robot;
     private EventLoop eventLoop;
     private EventLoop idleEventLoop;
+
     private WifiDirectAssistant.Event networkConnectionStatus = WifiDirectAssistant.Event.UNKNOWN;
     private RobotStatus robotStatus = RobotStatus.NONE;
     private PeerStatus peerStatus = PeerStatus.DISCONNECTED;
+
     private UpdateUI.Callback callback = null;
+    private final EventLoopMonitor eventLoopMonitor = new EventLoopMonitor();
+
     private SwitchableLight bootIndicator = null;
     private Future bootIndicatorOff = null;
     private LightBlinker livenessIndicatorBlinker = null;
     private Future robotSetupFuture = null;
     private WifiDirectAgent wifiDirectAgent = WifiDirectAgent.getInstance();
+    private final Object wifiDirectCallbackLock = new Object();
 
     // Modified for turbo: This method is a dummy.
     public WebServer getWebServer() {
@@ -118,242 +121,15 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
     // Initialization
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        synchronized (wifiDirectCallbackLock) {
-            wifiDirectCallbackLock.notifyAll();
+    public class FtcRobotControllerBinder extends Binder {
+        public FtcRobotControllerService getService() {
+            return FtcRobotControllerService.this;
         }
     }
 
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
-
-    void waitForNextWifiDirectCallback() throws InterruptedException {
-        synchronized (wifiDirectCallbackLock) {
-            wifiDirectCallbackLock.wait();
-        }
-    }
-
-    public NetworkConnection getNetworkConnection() {
-        return networkConnection;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Wifi processing
-    //----------------------------------------------------------------------------------------------
-
-    public NetworkConnection.Event getNetworkConnectionStatus() {
-        return networkConnectionStatus;
-    }
-
-    public RobotStatus getRobotStatus() {
-        return robotStatus;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Accessing
-    //----------------------------------------------------------------------------------------------
-
-    public Robot getRobot() {
-        return this.robot;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        RobotLog.vv(TAG, "onCreate()");
-        wifiDirectAgent.registerCallback(this);
-        startLEDS();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        RobotLog.vv(TAG, "onStartCommand()");
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        RobotLog.vv(TAG, "onBind()");
-        RobotLog.vv(TAG, "Android Device: maker=%s model=%s sdk=%d", Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT);
-
-        preferencesHelper.writeBooleanPrefIfDifferent(getString(R.string.pref_wifip2p_remote_channel_change_works), Device.wifiP2pRemoteChannelChangeWorks());
-        preferencesHelper.writeBooleanPrefIfDifferent(getString(R.string.pref_has_independent_phone_battery), !LynxConstants.isRevControlHub());
-        FtcLynxFirmwareUpdateActivity.initializeDirectories();
-
-        NetworkType networkType = (NetworkType) intent.getSerializableExtra(NetworkConnectionFactory.NETWORK_CONNECTION_TYPE);
-        networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, getBaseContext());
-        networkConnection.setCallback(this);
-
-        networkConnection.enable();
-        networkConnection.createConnection();
-
-        return binder;
-    }
-
-    //modified for turbo: removed getWebServer method
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        RobotLog.vv(TAG, "onUnbind()");
-
-        networkConnection.disable();
-        shutdownRobot();
-
-        if (eventLoopManager != null) {
-            eventLoopManager.close();
-            eventLoopManager = null;
-        }
-
-        return false; // don't have new clients call onRebind()
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        RobotLog.vv(TAG, "onDestroy()");
-        //modified for turbo: no need to stop a nonexistent webserver
-        stopLEDS();
-        wifiDirectAgent.unregisterCallback(this);
-    }
-
-    protected void startLEDS() {
-        if (LynxConstants.useIndicatorLEDS()) {
-            //
-            // Reset state to something known
-            for (int i = DragonboardIndicatorLED.LED_FIRST; i <= DragonboardIndicatorLED.LED_LAST; i++) {
-                DragonboardIndicatorLED.forIndex(i).enableLight(false);
-            }
-            //
-            bootIndicator = LightMultiplexor.forLight(DragonboardIndicatorLED.forIndex(LynxConstants.INDICATOR_LED_BOOT));
-            bootIndicator.enableLight(true);
-            bootIndicatorOff = ThreadPool.getDefaultScheduler().schedule(new Runnable() {
-                @Override
-                public void run() {
-                    bootIndicator.enableLight(false);
-                }
-            }, 10, TimeUnit.SECONDS);
-            //
-            livenessIndicatorBlinker = new LightBlinker(LightMultiplexor.forLight(DragonboardIndicatorLED.forIndex(LynxConstants.INDICATOR_LED_ROBOT_CONTROLLER_ALIVE)));
-            List<Blinker.Step> steps = LynxModule.getLivenessSteps();
-            livenessIndicatorBlinker.setPattern(steps);
-        }
-    }
-
-    protected void stopLEDS() {
-        if (bootIndicatorOff != null) {
-            bootIndicatorOff.cancel(false);
-            bootIndicatorOff = null;
-        }
-        if (bootIndicator != null) {
-            bootIndicator.enableLight(false);
-            bootIndicator = null;
-        }
-        if (livenessIndicatorBlinker != null) {
-            livenessIndicatorBlinker.stopBlinking();
-            livenessIndicatorBlinker = null;
-        }
-    }
-
-    public synchronized void setCallback(UpdateUI.Callback callback) {
-        this.callback = callback;
-    }
-
-    public synchronized void setupRobot(EventLoop eventLoop, EventLoop idleEventLoop) {
-
-    /*
-     * (Possibly out-of-date comment:)
-     * There is a bug in the Android activity life cycle with regards to apps
-     * launched via USB. To work around this bug we will only honor this
-     * method if setup is not currently running
-     *
-     * See: https://code.google.com/p/android/issues/detail?id=25701
-     */
-
-        shutdownRobotSetup();
-
-        RobotLog.clearGlobalErrorMsg();
-        RobotLog.clearGlobalWarningMsg();
-
-        this.eventLoop = eventLoop;
-        this.idleEventLoop = idleEventLoop;
-
-        robotSetupFuture = ThreadPool.getDefault().submit(new RobotSetupRunnable());
-    }
-
-    void shutdownRobotSetup() {
-        if (robotSetupFuture != null) {
-            ThreadPool.cancelFutureOrExitApplication(robotSetupFuture, 10, TimeUnit.SECONDS, "robot setup", "internal error");
-            robotSetupFuture = null;
-        }
-    }
-
-    public synchronized void shutdownRobot() {
-
-        shutdownRobotSetup();
-
-        // shut down the robot
-        if (robot != null) {
-            robot.shutdown();
-        }
-        robot = null; // need to set robot to null
-        updateRobotStatus(RobotStatus.NONE);
-    }
-
-    @Override
-    public CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event) {
-        CallbackResult result = CallbackResult.NOT_HANDLED;
-        switch (event) {
-            case CONNECTED_AS_GROUP_OWNER:
-                RobotLog.ii(TAG, "Wifi Direct - connected as group owner");
-                if (!NetworkConnection.isDeviceNameValid(networkConnection.getDeviceName())) {
-                    RobotLog.ee(TAG, "Network Connection device name contains non-printable characters");
-                    ConfigWifiDirectActivity.launch(getBaseContext(), ConfigWifiDirectActivity.Flag.WIFI_DIRECT_DEVICE_NAME_INVALID);
-                    result = CallbackResult.HANDLED;
-                }
-                break;
-            case CONNECTED_AS_PEER:
-                RobotLog.ee(TAG, "Wifi Direct - connected as peer, was expecting Group Owner");
-                ConfigWifiDirectActivity.launch(getBaseContext(), ConfigWifiDirectActivity.Flag.WIFI_DIRECT_FIX_CONFIG);
-                result = CallbackResult.HANDLED;
-                break;
-            case CONNECTION_INFO_AVAILABLE:
-                RobotLog.ii(TAG, "Network Connection Passphrase: " + networkConnection.getPassphrase());
-                //modified for turbo: don't start the webserver here
-                break;
-            case ERROR:
-                RobotLog.ee(TAG, "Network Connection Error: " + networkConnection.getFailureReason());
-                break;
-            case AP_CREATED:
-                RobotLog.ii(TAG, "Network Connection created: " + networkConnection.getConnectionOwnerName());
-            default:
-                break;
-        }
-
-        updateNetworkConnectionStatus(event);
-        return result;
-    }
-
-    private void updateNetworkConnectionStatus(final WifiDirectAssistant.Event event) {
-        networkConnectionStatus = event;
-        if (callback != null) {
-            callback.networkConnectionUpdate(networkConnectionStatus);
-        }
-    }
-
-    private void updateRobotStatus(@NonNull final RobotStatus status) {
-        robotStatus = status;
-        if (callback != null) {
-            callback.updateRobotStatus(status);
-        }
-    }
-
-    public class FtcRobotControllerBinder extends Binder {
-        public FtcRobotControllerService getService() {
-            return FtcRobotControllerService.this;
-        }
-    }
 
     private class EventLoopMonitor implements EventLoopManager.EventLoopMonitor {
 
@@ -536,6 +312,233 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
                 }
             });
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Wifi processing
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        synchronized (wifiDirectCallbackLock) {
+            wifiDirectCallbackLock.notifyAll();
+        }
+    }
+
+    void waitForNextWifiDirectCallback() throws InterruptedException {
+        synchronized (wifiDirectCallbackLock) {
+            wifiDirectCallbackLock.wait();
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Accessing
+    //----------------------------------------------------------------------------------------------
+
+    public NetworkConnection getNetworkConnection() {
+        return networkConnection;
+    }
+
+    public NetworkConnection.Event getNetworkConnectionStatus() {
+        return networkConnectionStatus;
+    }
+
+    public RobotStatus getRobotStatus() {
+        return robotStatus;
+    }
+
+    public Robot getRobot() {
+        return this.robot;
+    }
+
+    //modified for turbo: removed getWebServer method
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        RobotLog.vv(TAG, "onCreate()");
+        wifiDirectAgent.registerCallback(this);
+        startLEDS();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        RobotLog.vv(TAG, "onStartCommand()");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        RobotLog.vv(TAG, "onBind()");
+        RobotLog.vv(TAG, "Android Device: maker=%s model=%s sdk=%d", Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT);
+
+        preferencesHelper.writeBooleanPrefIfDifferent(getString(R.string.pref_wifip2p_remote_channel_change_works), Device.wifiP2pRemoteChannelChangeWorks());
+        preferencesHelper.writeBooleanPrefIfDifferent(getString(R.string.pref_has_independent_phone_battery), !LynxConstants.isRevControlHub());
+        FtcLynxFirmwareUpdateActivity.initializeDirectories();
+
+        NetworkType networkType = (NetworkType) intent.getSerializableExtra(NetworkConnectionFactory.NETWORK_CONNECTION_TYPE);
+        networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, getBaseContext());
+        networkConnection.setCallback(this);
+
+        networkConnection.enable();
+        networkConnection.createConnection();
+
+        return binder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        RobotLog.vv(TAG, "onUnbind()");
+
+        networkConnection.disable();
+        shutdownRobot();
+
+        if (eventLoopManager != null) {
+            eventLoopManager.close();
+            eventLoopManager = null;
+        }
+
+        return false; // don't have new clients call onRebind()
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RobotLog.vv(TAG, "onDestroy()");
+        //modified for turbo: no need to stop a nonexistent webserver
+        stopLEDS();
+        wifiDirectAgent.unregisterCallback(this);
+    }
+
+    protected void startLEDS() {
+        if (LynxConstants.useIndicatorLEDS()) {
+            //
+            // Reset state to something known
+            for (int i = DragonboardIndicatorLED.LED_FIRST; i <= DragonboardIndicatorLED.LED_LAST; i++) {
+                DragonboardIndicatorLED.forIndex(i).enableLight(false);
+            }
+            //
+            bootIndicator = LightMultiplexor.forLight(DragonboardIndicatorLED.forIndex(LynxConstants.INDICATOR_LED_BOOT));
+            bootIndicator.enableLight(true);
+            bootIndicatorOff = ThreadPool.getDefaultScheduler().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    bootIndicator.enableLight(false);
+                }
+            }, 10, TimeUnit.SECONDS);
+            //
+            livenessIndicatorBlinker = new LightBlinker(LightMultiplexor.forLight(DragonboardIndicatorLED.forIndex(LynxConstants.INDICATOR_LED_ROBOT_CONTROLLER_ALIVE)));
+            List<Blinker.Step> steps = LynxModule.getLivenessSteps();
+            livenessIndicatorBlinker.setPattern(steps);
+        }
+    }
+
+    protected void stopLEDS() {
+        if (bootIndicatorOff != null) {
+            bootIndicatorOff.cancel(false);
+            bootIndicatorOff = null;
+        }
+        if (bootIndicator != null) {
+            bootIndicator.enableLight(false);
+            bootIndicator = null;
+        }
+        if (livenessIndicatorBlinker != null) {
+            livenessIndicatorBlinker.stopBlinking();
+            livenessIndicatorBlinker = null;
+        }
+    }
+
+    public synchronized void setCallback(UpdateUI.Callback callback) {
+        this.callback = callback;
+    }
+
+    public synchronized void setupRobot(EventLoop eventLoop, EventLoop idleEventLoop) {
+
+    /* 
+     * (Possibly out-of-date comment:)
+     * There is a bug in the Android activity life cycle with regards to apps
+     * launched via USB. To work around this bug we will only honor this
+     * method if setup is not currently running
+     *
+     * See: https://code.google.com/p/android/issues/detail?id=25701
+     */
+
+        shutdownRobotSetup();
+
+        RobotLog.clearGlobalErrorMsg();
+        RobotLog.clearGlobalWarningMsg();
+
+        this.eventLoop = eventLoop;
+        this.idleEventLoop = idleEventLoop;
+
+        robotSetupFuture = ThreadPool.getDefault().submit(new RobotSetupRunnable());
+    }
+
+    void shutdownRobotSetup() {
+        if (robotSetupFuture != null) {
+            ThreadPool.cancelFutureOrExitApplication(robotSetupFuture, 10, TimeUnit.SECONDS, "robot setup", "internal error");
+            robotSetupFuture = null;
+        }
+    }
+
+    public synchronized void shutdownRobot() {
+
+        shutdownRobotSetup();
+
+        // shut down the robot
+        if (robot != null) {
+            robot.shutdown();
+        }
+        robot = null; // need to set robot to null
+        updateRobotStatus(RobotStatus.NONE);
+    }
+
+    @Override
+    public CallbackResult onNetworkConnectionEvent(NetworkConnection.Event event) {
+        CallbackResult result = CallbackResult.NOT_HANDLED;
+        switch (event) {
+            case CONNECTED_AS_GROUP_OWNER:
+                RobotLog.ii(TAG, "Wifi Direct - connected as group owner");
+                if (!NetworkConnection.isDeviceNameValid(networkConnection.getDeviceName())) {
+                    RobotLog.ee(TAG, "Network Connection device name contains non-printable characters");
+                    ConfigWifiDirectActivity.launch(getBaseContext(), ConfigWifiDirectActivity.Flag.WIFI_DIRECT_DEVICE_NAME_INVALID);
+                    result = CallbackResult.HANDLED;
+                }
+                break;
+            case CONNECTED_AS_PEER:
+                RobotLog.ee(TAG, "Wifi Direct - connected as peer, was expecting Group Owner");
+                ConfigWifiDirectActivity.launch(getBaseContext(), ConfigWifiDirectActivity.Flag.WIFI_DIRECT_FIX_CONFIG);
+                result = CallbackResult.HANDLED;
+                break;
+            case CONNECTION_INFO_AVAILABLE:
+                RobotLog.ii(TAG, "Network Connection Passphrase: " + networkConnection.getPassphrase());
+                //modified for turbo: don't start the webserver here
+                break;
+            case ERROR:
+                RobotLog.ee(TAG, "Network Connection Error: " + networkConnection.getFailureReason());
+                break;
+            case AP_CREATED:
+                RobotLog.ii(TAG, "Network Connection created: " + networkConnection.getConnectionOwnerName());
+            default:
+                break;
+        }
+
+        updateNetworkConnectionStatus(event);
+        return result;
+    }
+
+    private void updateNetworkConnectionStatus(final WifiDirectAssistant.Event event) {
+        networkConnectionStatus = event;
+        if (callback != null) {
+            callback.networkConnectionUpdate(networkConnectionStatus);
+        }
+    }
+
+    private void updateRobotStatus(@NonNull final RobotStatus status) {
+        robotStatus = status;
+        if (callback != null) {
+            callback.updateRobotStatus(status);
         }
     }
 }

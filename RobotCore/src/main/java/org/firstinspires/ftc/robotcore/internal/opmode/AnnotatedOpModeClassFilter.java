@@ -72,18 +72,19 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "OpmodeRegistration";
+
+    private Context context;
+    private RegisteredOpModes registeredOpModes;
     private final String defaultOpModeGroupName = OpModeMeta.DefaultGroup;
+
     private final Set<Class<OpMode>> filteredAnnotatedOpModeClasses = new HashSet<Class<OpMode>>();
     private final List<OpModeMetaAndClass> knownOpModes = new ArrayList<OpModeMetaAndClass>();
     private final List<OpModeMetaAndClass> newOpModes = new ArrayList<OpModeMetaAndClass>();
     private final HashMap<Class, OpModeMetaAndClass> classNameOverrides = new HashMap<Class, OpModeMetaAndClass>();
     private final Set<Method> registrarMethods = new HashSet<Method>();
-    private Context context;
-    private RegisteredOpModes registeredOpModes;
 
-    private AnnotatedOpModeClassFilter() {
-        this.registeredOpModes = null;
-        this.context = AppUtil.getDefContext();
+    private static class InstanceHolder {
+        public static AnnotatedOpModeClassFilter theInstance = new AnnotatedOpModeClassFilter();
     }
 
     public static AnnotatedOpModeClassFilter getInstance() {
@@ -92,6 +93,15 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
 
     //----------------------------------------------------------------------------------------------
     // Construction
+    //----------------------------------------------------------------------------------------------
+
+    private AnnotatedOpModeClassFilter() {
+        this.registeredOpModes = null;
+        this.context = AppUtil.getDefContext();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
     //----------------------------------------------------------------------------------------------
 
     void registerAllClasses(RegisteredOpModes registeredOpModes) {
@@ -123,10 +133,6 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
     public void registerOnBotJavaClasses(RegisteredOpModes registeredOpModes) {
         this.registeredOpModes = registeredOpModes;
         try {
@@ -151,6 +157,7 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
             this.registeredOpModes = null;
         }
     }
+
 
     void reportOpModeConfigurationError(String format, Object... args) {
         String message = String.format(format, args);
@@ -338,6 +345,41 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
     }
 
     /**
+     * An instance of this class is passed to annotated static registration methods
+     */
+    class OpModeRegistrarMethodManager implements AnnotatedOpModeManager {
+        public void register(Class clazz) {
+            if (checkOpModeClassConstraints(clazz, null)) {
+                addAnnotatedOpMode((Class<OpMode>) clazz);
+            }
+        }
+
+        public void register(String name, Class clazz) {
+            if (checkOpModeClassConstraints(clazz, name)) {
+                addUserNamedOpMode((Class<OpMode>) clazz, new OpModeMeta(name));
+            }
+        }
+
+        public void register(OpModeMeta meta, Class clazz) {
+            if (checkOpModeClassConstraints(clazz, meta.name)) {
+                addUserNamedOpMode((Class<OpMode>) clazz, meta);
+            }
+        }
+
+        public void register(String name, OpMode opModeInstance) {
+            // We just go ahead and register this, as there's nothing else to do.
+            registeredOpModes.register(name, opModeInstance);
+            RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), name));
+        }
+
+        public void register(OpModeMeta meta, OpMode opModeInstance) {
+            // We just go ahead and register this, as there's nothing else to do.
+            registeredOpModes.register(meta, opModeInstance);
+            RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), meta.name));
+        }
+    }
+
+    /**
      * add this class, which has opmode annotations, to the map of classes to register
      */
     private boolean addAnnotatedOpMode(Class<OpMode> clazz) {
@@ -430,51 +472,16 @@ public class AnnotatedOpModeClassFilter implements ClassFilter {
         if (name == null) {
             return false;
         }
-        return !((name.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) ||
-                (name.trim().equals("")));
+        if ((name.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) ||
+                (name.trim().equals(""))) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private boolean isOpMode(Class clazz) {
         return ClassUtil.inheritsFrom(clazz, OpMode.class);
-    }
-
-    private static class InstanceHolder {
-        public static AnnotatedOpModeClassFilter theInstance = new AnnotatedOpModeClassFilter();
-    }
-
-    /**
-     * An instance of this class is passed to annotated static registration methods
-     */
-    class OpModeRegistrarMethodManager implements AnnotatedOpModeManager {
-        public void register(Class clazz) {
-            if (checkOpModeClassConstraints(clazz, null)) {
-                addAnnotatedOpMode((Class<OpMode>) clazz);
-            }
-        }
-
-        public void register(String name, Class clazz) {
-            if (checkOpModeClassConstraints(clazz, name)) {
-                addUserNamedOpMode((Class<OpMode>) clazz, new OpModeMeta(name));
-            }
-        }
-
-        public void register(OpModeMeta meta, Class clazz) {
-            if (checkOpModeClassConstraints(clazz, meta.name)) {
-                addUserNamedOpMode((Class<OpMode>) clazz, meta);
-            }
-        }
-
-        public void register(String name, OpMode opModeInstance) {
-            // We just go ahead and register this, as there's nothing else to do.
-            registeredOpModes.register(name, opModeInstance);
-            RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), name));
-        }
-
-        public void register(OpModeMeta meta, OpMode opModeInstance) {
-            // We just go ahead and register this, as there's nothing else to do.
-            registeredOpModes.register(meta, opModeInstance);
-            RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), meta.name));
-        }
     }
 
 }

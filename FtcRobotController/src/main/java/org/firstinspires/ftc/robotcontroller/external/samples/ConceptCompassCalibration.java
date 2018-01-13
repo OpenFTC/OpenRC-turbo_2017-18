@@ -56,13 +56,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Disabled
 public class ConceptCompassCalibration extends LinearOpMode {
 
+    /* Declare OpMode members. */
+    HardwarePushbot robot = new HardwarePushbot();   // Use a Pushbot's hardware
+    private ElapsedTime runtime = new ElapsedTime();
+    CompassSensor compass;
+
     final static double MOTOR_POWER = 0.2; // scale from 0 to 1
     static final long HOLD_TIME_MS = 3000;
     static final double CAL_TIME_SEC = 20;
-    /* Declare OpMode members. */
-    HardwarePushbot robot = new HardwarePushbot();   // Use a Pushbot's hardware
-    CompassSensor compass;
-    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {

@@ -58,22 +58,24 @@ public class InputManager {
     public static final int INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2;
 
     protected static InputManager theInstance = new InputManager();
+
+    public static InputManager getInstance() {
+        return theInstance;
+    }
+
     protected android.hardware.input.InputManager inputManager;
     protected Method methodInjectInputEvent;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     protected InputManager() {
         inputManager = (android.hardware.input.InputManager) AppUtil.getInstance().getActivity().getSystemService(Context.INPUT_SERVICE);
         try {
             methodInjectInputEvent = android.hardware.input.InputManager.class.getMethod("injectInputEvent", InputEvent.class, int.class);
         } catch (NoSuchMethodException ignored) {
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    public static InputManager getInstance() {
-        return theInstance;
     }
 
     //----------------------------------------------------------------------------------------------

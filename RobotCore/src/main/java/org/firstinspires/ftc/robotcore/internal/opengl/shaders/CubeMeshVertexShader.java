@@ -40,10 +40,11 @@ import com.qualcomm.robotcore.R;
 import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
 
 public class CubeMeshVertexShader extends SimpleVertexShader {
-    @RawRes
-    public static final int resourceId = R.raw.cube_mesh_vertex_shader;
     protected final int a_vertexNormal;
     protected final int a_vertexTexCoord;
+
+    @RawRes
+    public static final int resourceId = R.raw.cube_mesh_vertex_shader;
 
     public CubeMeshVertexShader(int programId) {
         super(programId);

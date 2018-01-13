@@ -1,7 +1,7 @@
 package com.qualcomm.robotcore.util;
 
-import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

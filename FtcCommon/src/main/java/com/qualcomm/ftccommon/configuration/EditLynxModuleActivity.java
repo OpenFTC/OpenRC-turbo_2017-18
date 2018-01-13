@@ -62,10 +62,44 @@ import java.util.List;
  * {@link EditLynxModuleActivity} handles the configuration of the devices in a Lynx module.
  */
 public class EditLynxModuleActivity extends EditActivity {
+    @Override
+    public String getTag() {
+        return this.getClass().getSimpleName();
+    }
+
     public static final RequestCode requestCode = RequestCode.EDIT_LYNX_MODULE;
+
     private LynxModuleConfiguration lynxModuleConfiguration;
     private EditText lynx_module_name;
     private DisplayNameAndRequestCode[] listKeys;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.lynx_module);
+
+        String[] strings = getResources().getStringArray(R.array.lynx_module_options_array);
+        listKeys = DisplayNameAndRequestCode.fromArray(strings);
+
+        ListView listView = (ListView) findViewById(R.id.lynx_module_devices);
+        listView.setAdapter(new ArrayAdapter<DisplayNameAndRequestCode>(this, android.R.layout.simple_list_item_1, listKeys));
+        listView.setOnItemClickListener(editLaunchListener);
+
+        lynx_module_name = (EditText) findViewById(R.id.lynx_module_name);
+
+        EditParameters parameters = EditParameters.fromIntent(this, getIntent());
+        deserialize(parameters);
+
+        lynxModuleConfiguration = (LynxModuleConfiguration) controllerConfiguration;
+        lynx_module_name.addTextChangedListener(new SetNameTextWatcher(lynxModuleConfiguration));
+        lynx_module_name.setText(lynxModuleConfiguration.getName());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -101,38 +135,6 @@ public class EditLynxModuleActivity extends EditActivity {
             }
         }
     };
-
-    @Override
-    public String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.lynx_module);
-
-        String[] strings = getResources().getStringArray(R.array.lynx_module_options_array);
-        listKeys = DisplayNameAndRequestCode.fromArray(strings);
-
-        ListView listView = (ListView) findViewById(R.id.lynx_module_devices);
-        listView.setAdapter(new ArrayAdapter<DisplayNameAndRequestCode>(this, android.R.layout.simple_list_item_1, listKeys));
-        listView.setOnItemClickListener(editLaunchListener);
-
-        lynx_module_name = (EditText) findViewById(R.id.lynx_module_name);
-
-        EditParameters parameters = EditParameters.fromIntent(this, getIntent());
-        deserialize(parameters);
-
-        lynxModuleConfiguration = (LynxModuleConfiguration) controllerConfiguration;
-        lynx_module_name.addTextChangedListener(new SetNameTextWatcher(lynxModuleConfiguration));
-        lynx_module_name.setText(lynxModuleConfiguration.getName());
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
     <ITEM_T extends DeviceConfiguration> EditParameters initParameters(int initialPortNumber, Class<ITEM_T> clazz, List<ITEM_T> currentItems) {
         EditParameters result = new EditParameters<ITEM_T>(this, clazz, currentItems);

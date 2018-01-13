@@ -46,51 +46,6 @@ public class ReusableCountDownLatch {
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final Sync sync;
-
-    public ReusableCountDownLatch(int count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count < 0");
-        }
-        this.sync = new Sync(count);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * note: there's no concurrency control here on the reset
-     */
-    public void reset(int count) {
-        this.sync.setCount(count);
-    }
-
-    public void await() throws InterruptedException {
-        sync.acquireSharedInterruptibly(1);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
-    public boolean await(long timeout, TimeUnit unit)
-            throws InterruptedException {
-        return sync.tryAcquireSharedNanos(1, unit.toNanos(timeout));
-    }
-
-    public void countDown() {
-        sync.releaseShared(1);
-    }
-
-    public long getCount() {
-        return sync.getCount();
-    }
-
-    public String toString() {
-        return super.toString() + "[Count = " + sync.getCount() + "]";
-    }
-
     protected static final class Sync extends AbstractQueuedSynchronizer {
         protected Sync(int count) {
             setState(count);
@@ -121,5 +76,50 @@ public class ReusableCountDownLatch {
                 }
             }
         }
+    }
+
+    protected final Sync sync;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
+    public ReusableCountDownLatch(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count < 0");
+        }
+        this.sync = new Sync(count);
+    }
+
+    /**
+     * note: there's no concurrency control here on the reset
+     */
+    public void reset(int count) {
+        this.sync.setCount(count);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
+    public void await() throws InterruptedException {
+        sync.acquireSharedInterruptibly(1);
+    }
+
+    public boolean await(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        return sync.tryAcquireSharedNanos(1, unit.toNanos(timeout));
+    }
+
+    public void countDown() {
+        sync.releaseShared(1);
+    }
+
+    public long getCount() {
+        return sync.getCount();
+    }
+
+    public String toString() {
+        return super.toString() + "[Count = " + sync.getCount() + "]";
     }
 }

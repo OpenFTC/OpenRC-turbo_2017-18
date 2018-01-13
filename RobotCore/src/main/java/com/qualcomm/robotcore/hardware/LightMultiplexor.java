@@ -56,11 +56,6 @@ public class LightMultiplexor implements SwitchableLight {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected LightMultiplexor(SwitchableLight target) {
-        this.target = target;
-        this.enableCount = 0;
-    }
-
     public synchronized static LightMultiplexor forLight(SwitchableLight target) {
         for (LightMultiplexor multiplexor : extantMultiplexors) {
             if (multiplexor.target.equals(target)) {
@@ -71,6 +66,11 @@ public class LightMultiplexor implements SwitchableLight {
         LightMultiplexor result = new LightMultiplexor(target);
         extantMultiplexors.add(result);
         return result;
+    }
+
+    protected LightMultiplexor(SwitchableLight target) {
+        this.target = target;
+        this.enableCount = 0;
     }
 
     //----------------------------------------------------------------------------------------------

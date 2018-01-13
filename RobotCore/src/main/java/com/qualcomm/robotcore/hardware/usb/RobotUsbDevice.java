@@ -37,8 +37,8 @@ import android.support.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 import java.util.Arrays;
@@ -51,9 +51,83 @@ import java.util.Set;
 @SuppressWarnings("WeakerAccess")
 public interface RobotUsbDevice {
 
-    boolean getDebugRetainBuffers();
+    enum Channel {RX, TX, NONE, BOTH}
+
+    ;
+
+    class FirmwareVersion {
+        public int majorVersion;
+        public int minorVersion;
+
+        public FirmwareVersion(int majorVersion, int minorVersion) {
+            this.majorVersion = majorVersion;
+            this.minorVersion = minorVersion;
+        }
+
+        public FirmwareVersion(int bVersion) {
+            majorVersion = (bVersion >> 4) & 0x0F;
+            minorVersion = (bVersion >> 0) & 0x0F;
+        }
+
+        public FirmwareVersion() {
+            this(0, 0);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("v%d.%d", this.majorVersion, this.minorVersion);
+        }
+    }
+
+    /**
+     * @see #getUsbIdentifiers()
+     */
+    class USBIdentifiers {
+        public int vendorId;
+        public int productId;
+        public int bcdDevice;
+
+        // See also device_filter.xml
+        private static final int vendorIdFTDI = 0x0403;
+        private static final Set<Integer> productIdsModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[]{0x6001}));
+        private static final Set<Integer> bcdDevicesModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[]{0x0600}));
+        private static final Set<Integer> productIdsLynx = new HashSet<Integer>(Arrays.asList(new Integer[]{0x6015}));
+        private static final Set<Integer> bcdDevicesLynx = new HashSet<Integer>(Arrays.asList(new Integer[]{0x1000}));
+
+        public boolean isModernRoboticsDevice() {
+            return this.vendorId == vendorIdFTDI
+                    && productIdsModernRobotics.contains(this.productId)
+                    && bcdDevicesModernRobotics.contains(this.bcdDevice & 0xFF00);
+        }
+
+        public boolean isLynxDevice() {
+            return this.vendorId == vendorIdFTDI
+                    && productIdsLynx.contains(this.productId)
+                    && bcdDevicesLynx.contains(this.bcdDevice & 0xFF00);
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        public static USBIdentifiers createLynxIdentifiers() {
+            USBIdentifiers result = new USBIdentifiers();
+            result.vendorId = vendorIdFTDI;
+            result.productId = first(productIdsLynx);
+            result.bcdDevice = first(bcdDevicesLynx);
+            Assert.assertTrue(result.isLynxDevice());
+            return result;
+        }
+
+        protected static <T> T first(Set<T> set) {
+            //noinspection LoopStatementThatDoesntLoop
+            for (T t : set) {
+                return t;
+            }
+            return null;
+        }
+    }
 
     void setDebugRetainBuffers(boolean retain);
+
+    boolean getDebugRetainBuffers();
 
     void logRetainedBuffers(long nsOrigin, long nsTimerExpire, String tag, String format, Object... args);
 
@@ -189,79 +263,8 @@ public interface RobotUsbDevice {
     @NonNull
     SerialNumber getSerialNumber();
 
-    @NonNull
-    DeviceManager.DeviceType getDeviceType();
-
     void setDeviceType(@NonNull DeviceManager.DeviceType deviceType);
 
-    enum Channel {RX, TX, NONE, BOTH}
-
-    class FirmwareVersion {
-        public int majorVersion;
-        public int minorVersion;
-
-        public FirmwareVersion(int majorVersion, int minorVersion) {
-            this.majorVersion = majorVersion;
-            this.minorVersion = minorVersion;
-        }
-
-        public FirmwareVersion(int bVersion) {
-            majorVersion = (bVersion >> 4) & 0x0F;
-            minorVersion = (bVersion >> 0) & 0x0F;
-        }
-
-        public FirmwareVersion() {
-            this(0, 0);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("v%d.%d", this.majorVersion, this.minorVersion);
-        }
-    }
-
-    /**
-     * @see #getUsbIdentifiers()
-     */
-    class USBIdentifiers {
-        // See also device_filter.xml
-        private static final int vendorIdFTDI = 0x0403;
-        private static final Set<Integer> productIdsModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[]{0x6001}));
-        private static final Set<Integer> bcdDevicesModernRobotics = new HashSet<Integer>(Arrays.asList(new Integer[]{0x0600}));
-        private static final Set<Integer> productIdsLynx = new HashSet<Integer>(Arrays.asList(new Integer[]{0x6015}));
-        private static final Set<Integer> bcdDevicesLynx = new HashSet<Integer>(Arrays.asList(new Integer[]{0x1000}));
-        public int vendorId;
-        public int productId;
-        public int bcdDevice;
-
-        @SuppressWarnings("ConstantConditions")
-        public static USBIdentifiers createLynxIdentifiers() {
-            USBIdentifiers result = new USBIdentifiers();
-            result.vendorId = vendorIdFTDI;
-            result.productId = first(productIdsLynx);
-            result.bcdDevice = first(bcdDevicesLynx);
-            Assert.assertTrue(result.isLynxDevice());
-            return result;
-        }
-
-        protected static <T> T first(Set<T> set) {
-            //noinspection LoopStatementThatDoesntLoop
-            for (T t : set) {
-                return t;
-            }
-            return null;
-        }
-
-        public boolean isModernRoboticsDevice() {
-            return this.vendorId == vendorIdFTDI
-                    && productIdsModernRobotics.contains(this.productId)
-                    && bcdDevicesModernRobotics.contains(this.bcdDevice & 0xFF00);
-        }
-
-        public boolean isLynxDevice() {
-            return this.vendorId == vendorIdFTDI
-                    && productIdsLynx.contains(this.productId)
-                    && bcdDevicesLynx.contains(this.bcdDevice & 0xFF00);
-        }
-    }
+    @NonNull
+    DeviceManager.DeviceType getDeviceType();
 }

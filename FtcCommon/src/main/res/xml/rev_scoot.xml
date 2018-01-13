@@ -4,8 +4,8 @@
     type="FirstInspires-FTC-template">
     <LynxUsbDevice
         name="REV Hub"
-        parentModuleAddress="2"
-        serialNumber="">
+        serialNumber=""
+        parentModuleAddress="2">
         <LynxModule
             name="Expansion Hub"
             port="2">
@@ -32,8 +32,8 @@
                 port="0"/>
             <LynxEmbeddedIMU
                 name="imu"
-                bus="0"
-                port="0"/>
+                port="0"
+                bus="0"/>
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

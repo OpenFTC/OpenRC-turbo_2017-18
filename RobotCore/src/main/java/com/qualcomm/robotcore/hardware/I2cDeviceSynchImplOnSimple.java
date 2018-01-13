@@ -51,21 +51,26 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final Object engagementLock = new Object();
-    protected final Object concurrentClientLock = new Object(); // the lock we use to serialize against concurrent clients of us.
     protected I2cDeviceSynchSimple i2cDeviceSynchSimple;
     protected I2cDeviceSynchReadHistory i2cDeviceSynchSimpleHistory;
     protected boolean isSimpleOwned;
+
     protected ReadWindow readWindow;                 // the set of registers to look at when we are in read mode. May be null, indicating no read needed
+
     protected int iregReadLast, cregReadLast;
     protected int iregWriteLast;
     protected byte[] rgbWriteLast;
+
     protected boolean isHooked;                   // whether we are connected to the underling device or not
     protected boolean isEngaged;                  // user's hooking *intent*
     protected boolean isClosing;
+
     protected int msHeartbeatInterval;        // time between heartbeats; zero is 'none necessary'
     protected HeartbeatAction heartbeatAction;            // the action to take when a heartbeat is needed. May be null.
     protected ScheduledExecutorService heartbeatExecutor;       // used to schedule heartbeats when we need to read from the outside
+
+    protected final Object engagementLock = new Object();
+    protected final Object concurrentClientLock = new Object(); // the lock we use to serialize against concurrent clients of us.
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -92,19 +97,14 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     //----------------------------------------------------------------------------------------------
 
     @Override
-    @Nullable
-    public String getUserConfiguredName() {
-        return this.i2cDeviceSynchSimple.getUserConfiguredName();
-    }
-
-    @Override
     public void setUserConfiguredName(@Nullable String name) {
         this.i2cDeviceSynchSimple.setUserConfiguredName(name);
     }
 
     @Override
-    public boolean getLogging() {
-        return this.i2cDeviceSynchSimple.getLogging();
+    @Nullable
+    public String getUserConfiguredName() {
+        return this.i2cDeviceSynchSimple.getUserConfiguredName();
     }
 
     @Override
@@ -113,13 +113,18 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     }
 
     @Override
-    public String getLoggingTag() {
-        return this.i2cDeviceSynchSimple.getLoggingTag();
+    public boolean getLogging() {
+        return this.i2cDeviceSynchSimple.getLogging();
     }
 
     @Override
     public void setLoggingTag(String loggingTag) {
         this.i2cDeviceSynchSimple.setLoggingTag(loggingTag);
+    }
+
+    @Override
+    public String getLoggingTag() {
+        return this.i2cDeviceSynchSimple.getLoggingTag();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -204,11 +209,6 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public int getHeartbeatInterval() {
-        return this.msHeartbeatInterval;
-    }
-
-    @Override
     public void setHeartbeatInterval(int ms) {
         synchronized (concurrentClientLock) {
             this.msHeartbeatInterval = Math.max(0, msHeartbeatInterval);
@@ -218,13 +218,18 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     }
 
     @Override
-    public HeartbeatAction getHeartbeatAction() {
-        return this.heartbeatAction;
+    public int getHeartbeatInterval() {
+        return this.msHeartbeatInterval;
     }
 
     @Override
     public void setHeartbeatAction(HeartbeatAction action) {
         this.heartbeatAction = action;
+    }
+
+    @Override
+    public HeartbeatAction getHeartbeatAction() {
+        return this.heartbeatAction;
     }
 
     void startHeartBeat() {
@@ -267,16 +272,16 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public ReadWindow getReadWindow() {
+    public void setReadWindow(ReadWindow window) {
         synchronized (concurrentClientLock) {
-            return this.readWindow;
+            this.readWindow = window.readableCopy();
         }
     }
 
     @Override
-    public void setReadWindow(ReadWindow window) {
+    public ReadWindow getReadWindow() {
         synchronized (concurrentClientLock) {
-            this.readWindow = window.readableCopy();
+            return this.readWindow;
         }
     }
 
@@ -340,13 +345,13 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public HealthStatus getHealthStatus() {
-        return i2cDeviceSynchSimple.getHealthStatus();
+    public void setHealthStatus(HealthStatus status) {
+        i2cDeviceSynchSimple.setHealthStatus(status);
     }
 
     @Override
-    public void setHealthStatus(HealthStatus status) {
-        i2cDeviceSynchSimple.setHealthStatus(status);
+    public HealthStatus getHealthStatus() {
+        return i2cDeviceSynchSimple.getHealthStatus();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -362,19 +367,19 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     }
 
     @Override
-    public int getHistoryQueueCapacity() {
-        return i2cDeviceSynchSimpleHistory == null
-                ? super.getHistoryQueueCapacity()
-                : i2cDeviceSynchSimpleHistory.getHistoryQueueCapacity();
-    }
-
-    @Override
     public void setHistoryQueueCapacity(int capacity) {
         if (i2cDeviceSynchSimpleHistory == null) {
             super.setHistoryQueueCapacity(capacity);
         } else {
             i2cDeviceSynchSimpleHistory.setHistoryQueueCapacity(capacity);
         }
+    }
+
+    @Override
+    public int getHistoryQueueCapacity() {
+        return i2cDeviceSynchSimpleHistory == null
+                ? super.getHistoryQueueCapacity()
+                : i2cDeviceSynchSimpleHistory.getHistoryQueueCapacity();
     }
 
     @Override
@@ -403,23 +408,23 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
     }
 
     @Override
-    public I2cAddr getI2cAddress() {
-        return getI2cAddr();
-    }
-
-    @Override
     public void setI2cAddress(I2cAddr newAddress) {
         setI2cAddr(newAddress);
     }
 
     @Override
-    public I2cAddr getI2cAddr() {
-        return this.i2cDeviceSynchSimple.getI2cAddress();
+    public I2cAddr getI2cAddress() {
+        return getI2cAddr();
     }
 
     @Override
     public void setI2cAddr(I2cAddr i2cAddr) {
         this.i2cDeviceSynchSimple.setI2cAddress(i2cAddr);
+    }
+
+    @Override
+    public I2cAddr getI2cAddr() {
+        return this.i2cDeviceSynchSimple.getI2cAddress();
     }
 
     @Override

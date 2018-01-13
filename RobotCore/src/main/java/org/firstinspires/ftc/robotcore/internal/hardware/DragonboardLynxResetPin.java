@@ -42,11 +42,13 @@ public class DragonboardLynxResetPin extends DragonboardGPIOPin {
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "DragonboardLynxResetPin";
-    protected static final DragonboardLynxResetPin theInstance = new DragonboardLynxResetPin();
 
-    protected DragonboardLynxResetPin() {
-        super(13, false, Active.LOW);
+    @Override
+    protected String getTag() {
+        return TAG;
     }
+
+    protected static final DragonboardLynxResetPin theInstance = new DragonboardLynxResetPin();
 
     public static DragonboardLynxResetPin getInstance() {
         return theInstance;
@@ -56,8 +58,7 @@ public class DragonboardLynxResetPin extends DragonboardGPIOPin {
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    protected String getTag() {
-        return TAG;
+    protected DragonboardLynxResetPin() {
+        super(13, false, Active.LOW);
     }
 }

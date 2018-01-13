@@ -56,19 +56,36 @@ public class ElapsedTime {
     //------------------------------------------------------------------------------------------------
 
     /**
+     * An indicator of the resolution of a timer.
+     *
+     * @see ElapsedTime#ElapsedTime(Resolution)
+     */
+    public enum Resolution {
+        SECONDS,
+        MILLISECONDS
+    }
+
+    /**
      * the number of nanoseconds in a second
      */
     public static final long SECOND_IN_NANO = 1000000000;
+
     /**
      * the number of nanoseconds in a millisecond
      */
     public static final long MILLIS_IN_NANO = 1000000;
-    protected final double resolution;
 
     //------------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------------
+
     protected volatile long nsStartTime;
+    protected final double resolution;
+
+    //------------------------------------------------------------------------------------------------
+    // Construction
+    //------------------------------------------------------------------------------------------------
+
     /**
      * Creates a timer with resolution {@link com.qualcomm.robotcore.util.ElapsedTime.Resolution#SECONDS Resolution.Seconds}
      * that is initialized with the now-current time.
@@ -80,10 +97,6 @@ public class ElapsedTime {
         reset();
         this.resolution = SECOND_IN_NANO;
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------------
 
     /**
      * Creates a timer with resolution {@link com.qualcomm.robotcore.util.ElapsedTime.Resolution#SECONDS Resolution.Seconds}.
@@ -119,13 +132,13 @@ public class ElapsedTime {
         }
     }
 
-    protected long nsNow() {
-        return System.nanoTime();
-    }
-
     //------------------------------------------------------------------------------------------------
     // Operations
     //------------------------------------------------------------------------------------------------
+
+    protected long nsNow() {
+        return System.nanoTime();
+    }
 
     /**
      * Returns the current time on the clock used by the timer
@@ -234,6 +247,10 @@ public class ElapsedTime {
         }
     }
 
+    //------------------------------------------------------------------------------------------------
+    // Utility
+    //------------------------------------------------------------------------------------------------
+
     private String resolutionStr() {
         if (resolution == SECOND_IN_NANO) {
             return "seconds";
@@ -243,10 +260,6 @@ public class ElapsedTime {
             return "unknown units";
         }
     }
-
-    //------------------------------------------------------------------------------------------------
-    // Utility
-    //------------------------------------------------------------------------------------------------
 
     /**
      * Log a message stating how long the timer has been running
@@ -261,15 +274,5 @@ public class ElapsedTime {
     @Override
     public String toString() {
         return String.format("%1.4f %s", time(), resolutionStr());
-    }
-
-    /**
-     * An indicator of the resolution of a timer.
-     *
-     * @see ElapsedTime#ElapsedTime(Resolution)
-     */
-    public enum Resolution {
-        SECONDS,
-        MILLISECONDS
     }
 }

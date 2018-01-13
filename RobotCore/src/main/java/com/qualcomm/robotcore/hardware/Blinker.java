@@ -45,19 +45,19 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("WeakerAccess")
 public interface Blinker {
     /**
-     * Returns the current blinking pattern
-     *
-     * @return the current blinking pattern
-     */
-    Collection<Step> getPattern();
-
-    /**
      * Sets the pattern with which this LED or light should illuminate. If the list of steps is longer
      * than the maximum number supported, then the pattern is truncated.
      *
      * @param steps the pattern of colors and durations that the LED or light should illuminate itself with
      */
     void setPattern(Collection<Step> steps);
+
+    /**
+     * Returns the current blinking pattern
+     *
+     * @return the current blinking pattern
+     */
+    Collection<Step> getPattern();
 
     /**
      * Saves the existing pattern such that it can be later restored, then calls setPattern().

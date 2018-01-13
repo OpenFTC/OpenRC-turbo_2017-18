@@ -71,19 +71,19 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     //------------------------------------------------------------------------------------------------
 
     public static final String TAG = "ReadWriteRunnable";
-    protected static boolean DEBUG_SEGMENTS = false;
+
     protected final byte[] localDeviceReadCache = new byte[MAX_BUFFER_SIZE];
     protected final byte[] localDeviceWriteCache = new byte[MAX_BUFFER_SIZE];
-    protected final Context context;
-    protected final SerialNumber serialNumber;
-    protected final Object acceptingWritesLock = new Object();
-    protected final Object readSupressionLock = new Object();
-    protected final boolean debugLogging;
+
     protected Map<Integer, ReadWriteRunnableSegment> segments = new HashMap<Integer, ReadWriteRunnableSegment>();
     protected ConcurrentLinkedQueue<Integer> segmentReadQueue = new ConcurrentLinkedQueue<Integer>();
     protected ConcurrentLinkedQueue<Integer> segmentWriteQueue = new ConcurrentLinkedQueue<Integer>();
+
+    protected final Context context;
+    protected final SerialNumber serialNumber;
     protected RobotUsbDevice robotUsbDevice;
     protected ModernRoboticsReaderWriter usbHandler;
+
     protected int startAddress;
     protected int monitorLength;
     protected boolean pruneBufferAfterRead;
@@ -91,15 +91,22 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     protected int ibActiveFirst;
     protected byte[] activeBuffer;
     protected TimeWindow activeBufferTimeWindow;
+
     protected CountDownLatch runningInterlock = new CountDownLatch(1);
     protected volatile boolean running = false;
     protected volatile ShutdownReason shutdownReason = ShutdownReason.NORMAL;
     protected volatile boolean shutdownComplete = false;
+    private volatile boolean writeNeeded = false;
+    protected final Object acceptingWritesLock = new Object();
     protected volatile boolean acceptingWrites = false;
     protected volatile boolean suppressReads = false;
+    protected final Object readSupressionLock = new Object();
+
     protected Callback callback;
     protected RobotUsbModule owner;
-    private volatile boolean writeNeeded = false;
+
+    protected final boolean debugLogging;
+    protected static boolean DEBUG_SEGMENTS = false;
 
     //------------------------------------------------------------------------------------------------
     // Construction
@@ -132,13 +139,13 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     }
 
     @Override
-    public RobotUsbModule getOwner() {
-        return this.owner;
+    public void setOwner(RobotUsbModule owner) {
+        this.owner = owner;
     }
 
     @Override
-    public void setOwner(RobotUsbModule owner) {
-        this.owner = owner;
+    public RobotUsbModule getOwner() {
+        return this.owner;
     }
 
 //------------------------------------------------------------------------------------------------
@@ -526,15 +533,15 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     }
 
     @Override
-    public boolean getAcceptingWrites() {
-        return this.acceptingWrites;
-    }
-
-    @Override
     public void setAcceptingWrites(boolean acceptingWrites) {
         synchronized (this.acceptingWritesLock) {
             this.acceptingWrites = acceptingWrites;
         }
+    }
+
+    @Override
+    public boolean getAcceptingWrites() {
+        return this.acceptingWrites;
     }
 
     protected void dumpBuffers(String name, byte[] byteArray) {

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
-           elementFormDefault="qualified" vc:minVersion="1.1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified"
+           attributeFormDefault="unqualified" vc:minVersion="1.1">
     <xs:element name="RobotConfigTaxonomy">
         <xs:annotation>
             <xs:documentation>Comment describing your root element</xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
                     <xs:element name="Sensor" type="Sensor"/>
                 </xs:choice>
             </xs:sequence>

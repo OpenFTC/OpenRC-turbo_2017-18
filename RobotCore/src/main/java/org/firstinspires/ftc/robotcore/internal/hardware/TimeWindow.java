@@ -55,19 +55,19 @@ public class TimeWindow {
         return this.nsFirst == 0 && this.nsLast == 0;
     }
 
-    public long getNanosecondsFirst() {
-        return nsFirst;
-    }
-
     public void setNanosecondsFirst(long nsFirst) {
         this.nsFirst = nsFirst;
     }
 
-    public long getNanosecondsLast() {
-        return nsLast;
-    }
-
     public void setNanosecondsLast(long nsLast) {
         this.nsLast = nsLast;
+    }
+
+    public long getNanosecondsFirst() {
+        return nsFirst;
+    }
+
+    public long getNanosecondsLast() {
+        return nsLast;
     }
 }

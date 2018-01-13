@@ -58,8 +58,8 @@
 
             <include layout="@layout/red_line"/>
 
-            <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                         android:id="@+id/tableLayout"
+            <TableLayout android:id="@+id/tableLayout"
+                         xmlns:android="http://schemas.android.com/apk/res/android"
                          android:layout_width="match_parent"
                          android:layout_height="match_parent"
                          android:shrinkColumns="0"
@@ -74,8 +74,8 @@
 
                     <TextView
                         android:id="@+id/port_title"
-                        android:paddingEnd="10dp"
                         android:paddingStart="5dp"
+                        android:paddingEnd="10dp"
                         android:text="@string/port"
                         android:textSize="14sp"
                         android:textStyle="bold"/>

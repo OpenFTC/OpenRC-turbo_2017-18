@@ -69,6 +69,16 @@ public class WifiDirectGroupName implements Comparable<WifiDirectGroupName> {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
+    @Override
+    public int compareTo(WifiDirectGroupName another) {
+        return this.toString().compareTo(another.toString());
+    }
+
     public static String serializeNames(Collection<WifiP2pGroup> groups) {
         return serializeNames(namesFromGroups(groups));
     }
@@ -81,15 +91,5 @@ public class WifiDirectGroupName implements Comparable<WifiDirectGroupName> {
         Type listType = new TypeToken<ArrayList<WifiDirectGroupName>>() {
         }.getType();
         return SimpleGson.getInstance().fromJson(string, listType);
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
-    }
-
-    @Override
-    public int compareTo(WifiDirectGroupName another) {
-        return this.toString().compareTo(another.toString());
     }
 }

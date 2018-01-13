@@ -54,49 +54,16 @@ import java.util.List;
 
 public class EditDeviceInterfaceModuleActivity extends EditUSBDeviceActivity {
 
-    public static final RequestCode requestCode = RequestCode.EDIT_DEVICE_INTERFACE_MODULE;
-    private DeviceInterfaceModuleConfiguration deviceInterfaceModuleConfiguration;
-    private EditText device_interface_module_name;
-    private DisplayNameAndRequestCode[] listKeys;
-    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            DisplayNameAndRequestCode key = listKeys[position];
-
-            if (key.requestCode == EditPWMDevicesActivity.requestCode) {
-                handleLaunchEdit(key.requestCode, EditPWMDevicesActivity.class, deviceInterfaceModuleConfiguration.getPwmOutputs());
-            } else if (key.requestCode == EditI2cDevicesActivity.requestCode) {
-                EditParameters<DeviceConfiguration> parameters = new EditParameters<DeviceConfiguration>(EditDeviceInterfaceModuleActivity.this,
-                        DeviceConfiguration.class,
-                        deviceInterfaceModuleConfiguration.getI2cDevices(),
-                        ModernRoboticsUsbDeviceInterfaceModule.MAX_I2C_PORT_NUMBER + 1);
-                //
-                List<ConfigurationType> list = new LinkedList<ConfigurationType>();
-                list.add(BuiltInConfigurationType.NOTHING);
-                list.add(BuiltInConfigurationType.IR_SEEKER_V3);
-                list.add(BuiltInConfigurationType.COLOR_SENSOR);
-                list.add(BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR);
-                list.add(BuiltInConfigurationType.GYRO);
-                list.add(BuiltInConfigurationType.I2C_DEVICE);
-                list.add(BuiltInConfigurationType.I2C_DEVICE_SYNCH);
-                list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.I2C));
-                parameters.setConfigurationTypes(list.toArray(new ConfigurationType[list.size()]));
-                //
-                handleLaunchEdit(key.requestCode, EditI2cDevicesActivity.class, parameters);
-            } else if (key.requestCode == EditAnalogInputDevicesActivity.requestCode) {
-                handleLaunchEdit(key.requestCode, EditAnalogInputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogInputDevices());
-            } else if (key.requestCode == EditDigitalDevicesActivity.requestCode) {
-                handleLaunchEdit(key.requestCode, EditDigitalDevicesActivity.class, deviceInterfaceModuleConfiguration.getDigitalDevices());
-            } else if (key.requestCode == EditAnalogOutputDevicesActivity.requestCode) {
-                handleLaunchEdit(key.requestCode, EditAnalogOutputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogOutputDevices());
-            }
-        }
-    };
-
     @Override
     public String getTag() {
         return this.getClass().getSimpleName();
     }
+
+    public static final RequestCode requestCode = RequestCode.EDIT_DEVICE_INTERFACE_MODULE;
+
+    private DeviceInterfaceModuleConfiguration deviceInterfaceModuleConfiguration;
+    private EditText device_interface_module_name;
+    private DisplayNameAndRequestCode[] listKeys;
 
     /**
      * In onCreate, we gather all of the linearLayout's that are associated with each port.
@@ -138,6 +105,41 @@ public class EditDeviceInterfaceModuleActivity extends EditUSBDeviceActivity {
     protected void onStart() {
         super.onStart();
     }
+
+    private AdapterView.OnItemClickListener editLaunchListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            DisplayNameAndRequestCode key = listKeys[position];
+
+            if (key.requestCode == EditPWMDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditPWMDevicesActivity.class, deviceInterfaceModuleConfiguration.getPwmOutputs());
+            } else if (key.requestCode == EditI2cDevicesActivity.requestCode) {
+                EditParameters<DeviceConfiguration> parameters = new EditParameters<DeviceConfiguration>(EditDeviceInterfaceModuleActivity.this,
+                        DeviceConfiguration.class,
+                        deviceInterfaceModuleConfiguration.getI2cDevices(),
+                        ModernRoboticsUsbDeviceInterfaceModule.MAX_I2C_PORT_NUMBER + 1);
+                //
+                List<ConfigurationType> list = new LinkedList<ConfigurationType>();
+                list.add(BuiltInConfigurationType.NOTHING);
+                list.add(BuiltInConfigurationType.IR_SEEKER_V3);
+                list.add(BuiltInConfigurationType.COLOR_SENSOR);
+                list.add(BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR);
+                list.add(BuiltInConfigurationType.GYRO);
+                list.add(BuiltInConfigurationType.I2C_DEVICE);
+                list.add(BuiltInConfigurationType.I2C_DEVICE_SYNCH);
+                list.addAll(UserConfigurationTypeManager.getInstance().allUserTypes(UserConfigurationType.Flavor.I2C));
+                parameters.setConfigurationTypes(list.toArray(new ConfigurationType[list.size()]));
+                //
+                handleLaunchEdit(key.requestCode, EditI2cDevicesActivity.class, parameters);
+            } else if (key.requestCode == EditAnalogInputDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditAnalogInputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogInputDevices());
+            } else if (key.requestCode == EditDigitalDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditDigitalDevicesActivity.class, deviceInterfaceModuleConfiguration.getDigitalDevices());
+            } else if (key.requestCode == EditAnalogOutputDevicesActivity.requestCode) {
+                handleLaunchEdit(key.requestCode, EditAnalogOutputDevicesActivity.class, deviceInterfaceModuleConfiguration.getAnalogOutputDevices());
+            }
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCodeValue, int resultCode, Intent data) {

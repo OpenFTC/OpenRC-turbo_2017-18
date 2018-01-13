@@ -43,9 +43,11 @@ public class Dimmer {
     public static final int LONG_BRIGHT_TIME = 60 * 1000; // milliseconds
     public static final float MAXIMUM_BRIGHTNESS = 1.0f;
     public static final float MINIMUM_BRIGHTNESS = 0.05f;
-    final WindowManager.LayoutParams layoutParams;
+
     Handler handler = new Handler();
+
     Activity activity;
+    final WindowManager.LayoutParams layoutParams;
     long waitTime; // milliseconds
     float userBrightness = MAXIMUM_BRIGHTNESS;
 

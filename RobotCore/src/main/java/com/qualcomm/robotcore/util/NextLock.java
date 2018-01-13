@@ -45,30 +45,6 @@ public class NextLock {
     }
 
     /**
-     * Returns a {@link Waiter} that will await the next {@link #advanceNext()}.
-     *
-     * @return a {@link Waiter} that will await the next {@link #advanceNext()}.
-     * @see #advanceNext()
-     */
-    public Waiter getNextWaiter() {
-        synchronized (lock) {
-            return new Waiter(this.count + 1);
-        }
-    }
-
-    /**
-     * Advances to the next event in the sequence.
-     *
-     * @see #getNextWaiter()
-     */
-    public void advanceNext() {
-        synchronized (lock) {
-            count += 1;
-            lock.notifyAll();
-        }
-    }
-
-    /**
      * {@link Waiter} instances are returned from {@link #getNextWaiter()}, and can
      * be used to await the next {@link #advanceNext()} call in lock from which they
      * were retrieved.
@@ -113,5 +89,29 @@ public class NextLock {
                 }
             }
         */
+    }
+
+    /**
+     * Returns a {@link Waiter} that will await the next {@link #advanceNext()}.
+     *
+     * @return a {@link Waiter} that will await the next {@link #advanceNext()}.
+     * @see #advanceNext()
+     */
+    public Waiter getNextWaiter() {
+        synchronized (lock) {
+            return new Waiter(this.count + 1);
+        }
+    }
+
+    /**
+     * Advances to the next event in the sequence.
+     *
+     * @see #getNextWaiter()
+     */
+    public void advanceNext() {
+        synchronized (lock) {
+            count += 1;
+            lock.notifyAll();
+        }
     }
 }

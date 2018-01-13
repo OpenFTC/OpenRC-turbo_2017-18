@@ -67,6 +67,16 @@ public class ServiceController {
         autoStartServices();
     }
 
+    protected static class AutoStartableService {
+        public String className;
+        public int launchOrder;
+
+        public AutoStartableService(String className, int launchOrder) {
+            this.className = className;
+            this.launchOrder = launchOrder;
+        }
+    }
+
     protected static List<AutoStartableService> getAutoStartableServices() {
         List<AutoStartableService> result = new ArrayList<AutoStartableService>();
 
@@ -154,15 +164,5 @@ public class ServiceController {
             RobotLog.ee(TAG, e, "unable to stop service %s", serviceClass.getSimpleName());
         }
         return false;
-    }
-
-    protected static class AutoStartableService {
-        public String className;
-        public int launchOrder;
-
-        public AutoStartableService(String className, int launchOrder) {
-            this.className = className;
-            this.launchOrder = launchOrder;
-        }
     }
 }

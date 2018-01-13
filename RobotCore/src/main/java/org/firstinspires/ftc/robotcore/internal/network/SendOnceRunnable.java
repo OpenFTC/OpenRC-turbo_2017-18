@@ -28,25 +28,63 @@ public class SendOnceRunnable implements Runnable {
     // Types
     //----------------------------------------------------------------------------------------------
 
-    public static final String TAG = RobocolDatagram.TAG;
-    public static final double ASSUME_DISCONNECT_TIMER = 2.0; // in seconds
+    public interface ClientCallback {
+
+        /**
+         * Notifies that the peer is currently connected. Note: this is a level-state
+         * notification, not a transition notification from disconnected to connected,
+         * though the peerLikelyChanged parameter provides an indication of the latter.
+         *
+         * @param peerLikelyChanged if false, then the peer is the same as the last notification.
+         */
+        void peerConnected(boolean peerLikelyChanged);
+
+        /**
+         * Notifies that the peer is currently disconnected. Note: this is a level-state
+         * notification, not a transition notification from connected to disconnected.
+         */
+        void peerDisconnected();
+    }
+
+    public static class Parameters {
+        public boolean disconnectOnTimeout = true;
+        public boolean originateHeartbeats = AppUtil.getInstance().isDriverStation();
+        public RobotCoreGamepadManager gamepadManager = null;
+
+        public Parameters() {
+        }
+
+        public Parameters(RobotCoreGamepadManager gamepadManager) {
+            this.gamepadManager = gamepadManager;
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
+
+    public static final String TAG = RobocolDatagram.TAG;
+    public static boolean DEBUG = false;
+
+    public static final double ASSUME_DISCONNECT_TIMER = 2.0; // in seconds
     public static final int MAX_COMMAND_ATTEMPTS = 10;
     public static final long GAMEPAD_UPDATE_THRESHOLD = 1000; // in milliseconds
     public static final int MS_HEARTBEAT_TRANSMISSION_INTERVAL = 100;
-    public static boolean DEBUG = false;
-    protected final Parameters parameters;
-    protected final Object issuedDisconnectLogMessageLock = new Object();
+
     protected ElapsedTime lastRecvPacket;
     protected List<Command> pendingCommands = new CopyOnWriteArrayList<Command>();
     protected Heartbeat heartbeatSend = new Heartbeat();
     protected RobocolDatagramSocket socket;
     protected ClientCallback clientCallback;
     protected Context context;
+    protected final Parameters parameters;
+    protected final Object issuedDisconnectLogMessageLock = new Object();
     protected boolean issuedDisconnectLogMessage;
+
+    //----------------------------------------------------------------------------------------------
+    // Construction
+    //----------------------------------------------------------------------------------------------
+
     public SendOnceRunnable(@NonNull Context context,
                             @Nullable ClientCallback clientCallback,
                             @NonNull RobocolDatagramSocket socket,
@@ -62,6 +100,10 @@ public class SendOnceRunnable implements Runnable {
         RobotLog.vv(TAG, "SendOnceRunnable created");
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Operations
+    //----------------------------------------------------------------------------------------------
+
     public void onPeerConnected(boolean peerLikelyChanged) {
         synchronized (issuedDisconnectLogMessageLock) {
             if (this.issuedDisconnectLogMessage) {
@@ -70,10 +112,6 @@ public class SendOnceRunnable implements Runnable {
             }
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public void run() {
@@ -167,10 +205,6 @@ public class SendOnceRunnable implements Runnable {
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Operations
-    //----------------------------------------------------------------------------------------------
-
     private void send(RobocolDatagram datagram) {
         if (socket.getInetAddress() != null) {
             socket.send(datagram);
@@ -187,36 +221,5 @@ public class SendOnceRunnable implements Runnable {
 
     public void clearCommands() {
         pendingCommands.clear();
-    }
-
-    public interface ClientCallback {
-
-        /**
-         * Notifies that the peer is currently connected. Note: this is a level-state
-         * notification, not a transition notification from disconnected to connected,
-         * though the peerLikelyChanged parameter provides an indication of the latter.
-         *
-         * @param peerLikelyChanged if false, then the peer is the same as the last notification.
-         */
-        void peerConnected(boolean peerLikelyChanged);
-
-        /**
-         * Notifies that the peer is currently disconnected. Note: this is a level-state
-         * notification, not a transition notification from connected to disconnected.
-         */
-        void peerDisconnected();
-    }
-
-    public static class Parameters {
-        public boolean disconnectOnTimeout = true;
-        public boolean originateHeartbeats = AppUtil.getInstance().isDriverStation();
-        public RobotCoreGamepadManager gamepadManager = null;
-
-        public Parameters() {
-        }
-
-        public Parameters(RobotCoreGamepadManager gamepadManager) {
-            this.gamepadManager = gamepadManager;
-        }
     }
 }
