@@ -76,7 +76,13 @@ public abstract class Auto extends LinearOpMode {
             ballKnock.swivelLeft();
         }
 
-        Revbot.sleep(1000);
+        safeSleep(1000);
+    }
 
+
+    public void safeSleep(long milliseconds) {
+        if (opModeIsActive()) {
+            super.sleep(milliseconds);
+        }
     }
 }

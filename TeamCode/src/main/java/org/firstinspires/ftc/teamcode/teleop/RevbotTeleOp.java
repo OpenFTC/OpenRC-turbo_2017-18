@@ -128,6 +128,8 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
             if (gamepad1.y) {
                 relicSlide.raise();
+            } else {
+                relicSlide.stop();
             }
 
             // Shoulder button control (g1)

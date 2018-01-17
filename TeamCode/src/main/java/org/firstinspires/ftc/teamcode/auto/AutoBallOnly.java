@@ -35,14 +35,14 @@ public abstract class AutoBallOnly extends Auto {
         cubeLift.raise(125);
 
         drivetrain.strafe(Direction.LEFT, 0.5, 750);
-        sleep(500);
+        safeSleep(500);
 
         knockBalls(alliance);
-        sleep(500);
+        safeSleep(500);
 
         ballKnock.swivelCenter();
         drivetrain.strafe(Direction.RIGHT, 0.5, 125);
         armWinch.raise(4000);
-        sleep(500);
+        safeSleep(500);
     }
 }
