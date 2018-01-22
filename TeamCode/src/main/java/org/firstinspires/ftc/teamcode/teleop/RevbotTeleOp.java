@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
 import org.firstinspires.ftc.teamcode.claw.RelicClaw;
 import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
 import org.firstinspires.ftc.teamcode.drivetrain.Slide;
-import org.firstinspires.ftc.teamcode.lift.AbstractLift;
+import org.firstinspires.ftc.teamcode.lift.Lift;
 import org.firstinspires.ftc.teamcode.lift.ArmWinch;
 import org.firstinspires.ftc.teamcode.lift.CubeLift;
 import org.firstinspires.ftc.teamcode.lift.RelicSlide;
@@ -84,17 +84,17 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         OneServoClaw relicClaw;
         CubeClaw cubeClaw;
         BallKnock ballKnock;
-        AbstractLift armWinch, cubeLift, relicSlide;
+        Lift armWinch, cubeLift, relicSlide;
 
         double[] fourAxisDirection;
 
         void init(Revbot robot) {
             relicClaw = new RelicClaw(robot.relicClaw);
             cubeClaw = new CubeClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
-            ballKnock = new BallKnock(robot.fondler);
+            ballKnock = new BallKnock(robot.ballKnock);
             armWinch = new ArmWinch(robot.armWinch);
             cubeLift = new CubeLift(robot.cubeLift);
-            relicSlide = new RelicSlide(robot.relicSlide);
+            relicSlide = new RelicSlide(robot.relicSlide, 0, 0.57, 1);
         }
 
         void handleInput() {
@@ -116,18 +116,25 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             }
 
             // Face button control (Relic/Endgame) (g1)
+            /*
             if (gamepad1.a) {
                 setCurrentDirection(new double[]{1., 1., 0.});
             }
+            */
 
+            //closes relic claw (B)
             if (gamepad1.b) {
                 relicClaw.close();
+                //opens relic claw (X)
             } else if (gamepad1.x) {
                 relicClaw.open();
             }
 
+            //raises relic slide (Y)
             if (gamepad1.y) {
                 relicSlide.raise();
+            } else if (gamepad1.a) {
+                relicSlide.lower();
             } else {
                 relicSlide.stop();
             }
@@ -162,8 +169,10 @@ public abstract class RevbotTeleOp extends LinearOpMode {
                 cubeClaw.openLeft();
             }
 
+            //lowers arm (A)
             if (gamepad2.a) {
                 armWinch.lower();
+                //raises arm (Y)
             } else if (gamepad2.y) {
                 armWinch.raise();
             } else {
@@ -189,6 +198,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
         private double currentGear = 1.0;
 
+        //sets starting speed of 1, speed increases by 0.1 each time
         Gear() {
             this(1.0, 0.1);
         }

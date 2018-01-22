@@ -19,8 +19,8 @@ public class Revbot {
     public DcMotor leftDrive, rightDrive, strafeDrive;
     public DcMotor cubeLift;
     public Servo clawRight, clawLeft, relicClaw;
-    public Servo fondler;
-    public CRServo armWinch, relicSlide;
+    public Servo ballKnock, relicSlide;
+    public CRServo armWinch;
     public ColorSensor color;
     private HardwareMap hardwareMap;
     private ToneGenerator tone;
@@ -60,10 +60,10 @@ public class Revbot {
         clawLeft = hardwareMap.get(Servo.class, "clawLeft");
         relicClaw = hardwareMap.get(Servo.class, "relicClaw");
 
-        fondler = hardwareMap.get(Servo.class, "fondler");
+        ballKnock = hardwareMap.get(Servo.class, "ballKnock");
 
-        armWinch = hardwareMap.get(CRServo.class, "winch");
-        relicSlide = hardwareMap.get(CRServo.class, "relicSlide");
+        armWinch = hardwareMap.get(CRServo.class, "armWinch");
+        relicSlide = hardwareMap.get(Servo.class, "relicSlide");
 
         // Initialize sensors
         color = hardwareMap.get(ColorSensor.class, "color");

@@ -1,46 +1,26 @@
 package org.firstinspires.ftc.teamcode.lift;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-
-import org.firstinspires.ftc.teamcode.Revbot;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by josh on 1/5/18.
  */
 
-public class RelicSlide extends AbstractLift {
-    CRServo servo;
+public class RelicSlide extends Lift {
+    Servo servo;
 
-    public RelicSlide(CRServo servo) {
+    public RelicSlide(Servo servo) {
+        this(servo, 0, 0.5, 1);
+    }
+
+    public RelicSlide(Servo servo, double down, double stop, double up) {
+        super(down, stop, up);
         this.servo = servo;
     }
 
     @Override
-    public void raise() {
-        servo.setPower(1);
-    }
-
-    @Override
-    public void raise(long ms) {
-        servo.setPower(1);
-        Revbot.sleep(ms);
-        stop();
-    }
-
-    @Override
-    public void lower() {
-
-    }
-
-    @Override
-    public void lower(long ms) {
-        servo.setPower(-1);
-        Revbot.sleep(ms);
-        stop();
-    }
-
-    @Override
-    public void stop() {
-        servo.setPower(0);
+    public void move(double power) {
+        servo.setPosition(power);
     }
 }

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.drivetrain.Slide;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
 import org.firstinspires.ftc.teamcode.enums.Column;
 import org.firstinspires.ftc.teamcode.enums.Location;
-import org.firstinspires.ftc.teamcode.lift.AbstractLift;
+import org.firstinspires.ftc.teamcode.lift.Lift;
 import org.firstinspires.ftc.teamcode.lift.ArmWinch;
 import org.firstinspires.ftc.teamcode.lift.CubeLift;
 import org.firstinspires.ftc.teamcode.lift.RelicSlide;
@@ -30,7 +30,7 @@ public abstract class Auto extends LinearOpMode {
     CubeClaw cubeClaw;
     BallKnock ballKnock;
     Drivetrain drivetrain;
-    AbstractLift armWinch, cubeLift, relicSlide;
+    Lift armWinch, cubeLift, relicSlide;
 
     RevbotSensors sensors;
 
@@ -50,7 +50,7 @@ public abstract class Auto extends LinearOpMode {
 
         relicClaw = new RelicClaw(robot.relicClaw);
         cubeClaw = new CubeClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
-        ballKnock = new BallKnock(robot.fondler);
+        ballKnock = new BallKnock(robot.ballKnock);
         drivetrain = new Slide(robot);
         armWinch = new ArmWinch(robot.armWinch);
         cubeLift = new CubeLift(robot.cubeLift);
@@ -63,14 +63,18 @@ public abstract class Auto extends LinearOpMode {
         waitForStart();
     }
 
+    //Knocks the ball off the stand
     void knockBalls(Alliance alliance) {
 
+        //Knocks off right ball
         if ((alliance.equals(Alliance.BLUE) && sensors.isBlue())
                 || (alliance.equals(Alliance.RED) && sensors.isRed())) {
             ballKnock.swivelRight();
+            //Knocks off left ball
         } else if ((alliance.equals(Alliance.BLUE) && sensors.isRed())
                 || (alliance.equals(Alliance.RED) && sensors.isBlue())) {
             ballKnock.swivelLeft();
+            //Knocks off both balls
         } else {
             ballKnock.swivelRight();
             ballKnock.swivelLeft();

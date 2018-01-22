@@ -15,8 +15,8 @@ public class TwoServoClaw extends Claw {
     }
 
     TwoServoClaw(Servo servo1, Servo servo2, double closedPosition, double openPosition) {
-        this.CLOSED_POSITION = closedPosition;
-        this.OPEN_POSITION = openPosition;
+        this.closedPosition = closedPosition;
+        this.openPosition = openPosition;
         claw1 = new OneServoClaw(servo1, closedPosition, openPosition);
         claw2 = new OneServoClaw(servo2, closedPosition, openPosition);
     }
@@ -24,13 +24,13 @@ public class TwoServoClaw extends Claw {
     public void open() {
         claw1.open();
         claw2.open();
-        OPEN = true;
+        open = true;
     }
 
     public void close() {
         claw1.close();
         claw2.close();
-        OPEN = false;
+        open = false;
     }
 
     public double getPosition() {

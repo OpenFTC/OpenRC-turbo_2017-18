@@ -2,45 +2,24 @@ package org.firstinspires.ftc.teamcode.lift;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 
-import org.firstinspires.ftc.teamcode.Revbot;
-
 /**
  * Created by josh on 1/5/18.
  */
 
-public class ArmWinch extends AbstractLift {
+public class ArmWinch extends Lift {
     CRServo servo;
 
     public ArmWinch(CRServo servo) {
+        this(servo, 0, 0.5, 1);
+    }
+
+    public ArmWinch(CRServo servo, double down, double stop, double up) {
+        super(down, stop, up);
         this.servo = servo;
     }
 
     @Override
-    public void raise() {
-        servo.setPower(1);
-    }
-
-    @Override
-    public void raise(long ms) {
-        servo.setPower(1);
-        Revbot.sleep(ms);
-        stop();
-    }
-
-    @Override
-    public void lower() {
-        servo.setPower(-1);
-    }
-
-    @Override
-    public void lower(long ms) {
-        servo.setPower(-1);
-        Revbot.sleep(ms);
-        stop();
-    }
-
-    @Override
-    public void stop() {
-        servo.setPower(0);
+    public void move(double power) {
+        servo.setPower(power);
     }
 }
