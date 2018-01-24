@@ -214,4 +214,4 @@ public class VuforiaTest extends LinearOpMode {
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
-}
+    }

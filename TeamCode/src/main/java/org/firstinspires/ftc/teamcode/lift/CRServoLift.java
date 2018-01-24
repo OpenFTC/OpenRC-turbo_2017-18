@@ -9,6 +9,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 public class CRServoLift extends Lift {
     CRServo servo;
 
+    public CRServoLift(CRServo servo) {
+        this(servo, -1, 0, 1);
+    }
+
     public CRServoLift(CRServo crServo, double down, double stop, double up) {
         super(down, stop, up);
         this.servo = crServo;

@@ -9,10 +9,9 @@ import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
 import org.firstinspires.ftc.teamcode.claw.RelicClaw;
 import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
 import org.firstinspires.ftc.teamcode.drivetrain.Slide;
+import org.firstinspires.ftc.teamcode.lift.CRServoLift;
 import org.firstinspires.ftc.teamcode.lift.Lift;
-import org.firstinspires.ftc.teamcode.lift.ArmWinch;
-import org.firstinspires.ftc.teamcode.lift.CubeLift;
-import org.firstinspires.ftc.teamcode.lift.RelicSlide;
+import org.firstinspires.ftc.teamcode.lift.MotorLift;
 import org.firstinspires.ftc.teamcode.swivel.BallKnock;
 
 /**
@@ -92,9 +91,9 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             relicClaw = new RelicClaw(robot.relicClaw);
             cubeClaw = new CubeClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
             ballKnock = new BallKnock(robot.ballKnock);
-            armWinch = new ArmWinch(robot.armWinch);
-            cubeLift = new CubeLift(robot.cubeLift);
-            relicSlide = new RelicSlide(robot.relicSlide, 0, 0.57, 1);
+            armWinch = new CRServoLift(robot.armWinch);
+            cubeLift = new MotorLift(robot.cubeLift);
+            relicSlide = new CRServoLift(robot.relicSlide);
         }
 
         void handleInput() {
@@ -114,13 +113,6 @@ public abstract class RevbotTeleOp extends LinearOpMode {
             } else if (gamepad1.dpad_right || gamepad2.dpad_right) {
                 cubeClaw.close();
             }
-
-            // Face button control (Relic/Endgame) (g1)
-            /*
-            if (gamepad1.a) {
-                setCurrentDirection(new double[]{1., 1., 0.});
-            }
-            */
 
             //closes relic claw (B)
             if (gamepad1.b) {

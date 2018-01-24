@@ -11,10 +11,9 @@ import org.firstinspires.ftc.teamcode.drivetrain.Slide;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
 import org.firstinspires.ftc.teamcode.enums.Column;
 import org.firstinspires.ftc.teamcode.enums.Location;
+import org.firstinspires.ftc.teamcode.lift.CRServoLift;
 import org.firstinspires.ftc.teamcode.lift.Lift;
-import org.firstinspires.ftc.teamcode.lift.ArmWinch;
-import org.firstinspires.ftc.teamcode.lift.CubeLift;
-import org.firstinspires.ftc.teamcode.lift.RelicSlide;
+import org.firstinspires.ftc.teamcode.lift.MotorLift;
 import org.firstinspires.ftc.teamcode.sensor.RevbotSensors;
 import org.firstinspires.ftc.teamcode.swivel.BallKnock;
 import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
@@ -52,9 +51,9 @@ public abstract class Auto extends LinearOpMode {
         cubeClaw = new CubeClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
         ballKnock = new BallKnock(robot.ballKnock);
         drivetrain = new Slide(robot);
-        armWinch = new ArmWinch(robot.armWinch);
-        cubeLift = new CubeLift(robot.cubeLift);
-        relicSlide = new RelicSlide(robot.relicSlide);
+        armWinch = new CRServoLift(robot.armWinch, 0, 0.5, 1);
+        cubeLift = new MotorLift(robot.cubeLift, -1, 0, 1);
+        relicSlide = new CRServoLift(robot.relicSlide, 0, 0.5, 1);
         sensors = new RevbotSensors(robot.color);
 
         robot.beep();
