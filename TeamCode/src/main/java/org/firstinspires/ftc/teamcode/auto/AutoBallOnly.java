@@ -29,7 +29,7 @@ public abstract class AutoBallOnly extends Auto {
         telemetry.addData("Cube Claw", cubeClaw.getPosition());
         telemetry.update();
 
-        ballKnock.swivelCenter();
+        servoSwivel.swivelCenter();
 
         armWinch.lower(3500);
         cubeLift.raise(125);
@@ -40,7 +40,7 @@ public abstract class AutoBallOnly extends Auto {
         knockBalls(alliance);
         safeSleep(500);
 
-        ballKnock.swivelCenter();
+        servoSwivel.swivelCenter();
         drivetrain.strafe(Direction.RIGHT, 0.5, 125);
         armWinch.raise(4000);
         safeSleep(500);

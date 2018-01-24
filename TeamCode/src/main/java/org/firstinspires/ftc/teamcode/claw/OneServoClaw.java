@@ -9,11 +9,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class OneServoClaw extends Claw {
     private Servo clawServo;
 
-    OneServoClaw(Servo servo) {
+    public OneServoClaw(Servo servo) {
         this(servo,0,1);
     }
 
-    OneServoClaw(Servo servo, double closedPosition, double openPosition) {
+    public OneServoClaw(Servo servo, double closedPosition, double openPosition) {
         this.closedPosition = closedPosition;
         this.openPosition = openPosition;
         this.clawServo = servo;

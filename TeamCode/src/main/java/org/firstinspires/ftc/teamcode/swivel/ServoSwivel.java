@@ -3,18 +3,18 @@ package org.firstinspires.ftc.teamcode.swivel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * BallKnock class. Has knockBalls(Alliance alliance)
+ * ServoSwivel class. Has knockBalls(Alliance alliance)
  */
 
-public class BallKnock extends Swivel {
+public class ServoSwivel extends Swivel {
     private Servo servo;
 
-    public BallKnock(Servo servo) {
+    public ServoSwivel(Servo servo) {
         super();
         this.servo = servo;
     }
 
-    public BallKnock(Servo servo, double left, double center, double right) {
+    public ServoSwivel(Servo servo, double left, double center, double right) {
         super(left, center, right);
         this.servo = servo;
     }
