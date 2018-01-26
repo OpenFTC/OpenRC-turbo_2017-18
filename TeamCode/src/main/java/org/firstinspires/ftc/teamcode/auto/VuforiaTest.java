@@ -45,6 +45,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.Revbot;
+import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
+import org.firstinspires.ftc.teamcode.drivetrain.Slide;
+import org.firstinspires.ftc.teamcode.enums.Direction;
 import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
 
 /**
@@ -73,6 +76,7 @@ public class VuforiaTest extends LinearOpMode {
 
     OpenGLMatrix lastLocation = null;
     private Revbot robot = new Revbot();
+    Drivetrain poo = new Slide(robot);
 
 
     @Override
@@ -133,6 +137,7 @@ public class VuforiaTest extends LinearOpMode {
         final int STOP_RANGE=50;
         final int TARGET_X=-1000;
         final int TARGET_Y=0;
+        final double DRIVE_POO=0.5; //speed of driving
 
         while (opModeIsActive()) {
 
@@ -175,16 +180,22 @@ public class VuforiaTest extends LinearOpMode {
 
                     if (tY >= TARGET_Y+STOP_RANGE) {
                         str+=" LEFT ";
+                        poo.drive(Direction.BACKWARD,DRIVE_POO);
 
                     } else if (tY <= TARGET_Y-STOP_RANGE) {
                         str+=" RIGHT ";
-                    }
+                        poo.drive(Direction.FORWARD,DRIVE_POO);
+                    }else
+                        poo.stopDriving();
 
                     if (tZ >= TARGET_X+STOP_RANGE) {
                         str+=" BACKWARDS ";
+                        poo.strafe(Direction.RIGHT,DRIVE_POO);
                     } else if (tZ < TARGET_X-STOP_RANGE) {
                         str += " FORWARDS ";
-                    }
+                        poo.strafe(Direction.LEFT,DRIVE_POO);
+                    }else
+                        poo.stopStrafing();
 
                     //telemetry.addData("x", tX);
                     //telemetry.addData("y", tY);
@@ -199,10 +210,14 @@ public class VuforiaTest extends LinearOpMode {
                 //commands.stopStrafing();
                 //commands.stopDriving();
                 str+=" NOTFOUND ";
+                poo.turn(Direction.RIGHT,0.2);
             }
 
-            if(str.isEmpty())
-                str+="PERFECT!!!!!!!! :D";
+            if(str.isEmpty()) {
+                str += "PERFECT!!!!!!!! :D";
+                poo.stopDriving();
+                poo.stopStrafing();
+            }
             telemetry.clear();
             telemetry.addLine(str);
 
@@ -214,4 +229,4 @@ public class VuforiaTest extends LinearOpMode {
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
-    }
+}
