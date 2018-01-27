@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drivetrain;
 
 import org.firstinspires.ftc.teamcode.Revbot;
+import org.firstinspires.ftc.teamcode.Sleep;
 import org.firstinspires.ftc.teamcode.enums.Direction;
 
 /**
@@ -16,7 +17,7 @@ public abstract class Drivetrain {
 
     public void strafe(Direction direction, double power, long ms) {
         strafe(direction, power);
-        Revbot.sleep(ms);
+        new Sleep().javaIsDumb(ms);
         stopStrafing();
     }
 
@@ -26,7 +27,7 @@ public abstract class Drivetrain {
 
     public void drive(Direction direction, double power, long ms) {
         drive(direction, power);
-        Revbot.sleep(ms);
+        new Sleep().javaIsDumb(ms);
         stopDriving();
     }
 
@@ -36,7 +37,7 @@ public abstract class Drivetrain {
 
     public void turn(Direction direction, double power, long ms) {
         turn(direction, power);
-        Revbot.sleep(ms);
+        new Sleep().javaIsDumb(ms);
         stopTurning();
     }
 

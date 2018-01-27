@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.lift;
 
-import org.firstinspires.ftc.teamcode.Revbot;
+import org.firstinspires.ftc.teamcode.Sleep;
 
 /**
  * Abstract class that all Lifts should extend from.
@@ -19,14 +19,14 @@ public abstract class Lift {
     public abstract void raise();
     public void raise(long ms) {
         raise();
-        Revbot.sleep(ms);
+        new Sleep().javaIsDumb(ms);
         stop();
     }
 
     public abstract void lower();
     public void lower(long ms) {
         lower();
-        Revbot.sleep(ms);
+        new Sleep().javaIsDumb(ms);
         stop();
     }
 

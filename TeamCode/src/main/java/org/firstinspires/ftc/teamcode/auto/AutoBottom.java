@@ -18,46 +18,25 @@ public abstract class AutoBottom extends Auto {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
-        boxLocation = Vuforia.readImage();
-        telemetry.addData("Vuforia Target Seen:", boxLocation);
-        telemetry.update();
-
-        cubeClaw.close();
-
-        telemetry.addData("Cube Claw", cubeClaw.getPosition());
-        telemetry.update();
-
-        servoSwivel.swivelCenter();
-
-        armWinch.lower(3500);
-        cubeLift.raise(125);
-
-        drivetrain.strafe(Direction.LEFT, 0.5, 750);
-        safeSleep(500);
-
-        knockBalls(alliance);
-        safeSleep(500);
-
-        servoSwivel.swivelCenter();
-        drivetrain.strafe(Direction.RIGHT, 0.5, 125);
-        armWinch.raise(4000);
-        safeSleep(500);
+        toBalls();
 
         drivetrain.drive(alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD, 0.5, 700);
-        safeSleep(500);
+        sleep(500);
 
         drivetrain.strafe(Direction.RIGHT, 0.5, 750);
-        safeSleep(500);
+        sleep(500);
 
         cubeIntoCrypotbox();
-        safeSleep(500);
+        sleep(500);
 
         drivetrain.drive(Direction.FORWARD, 0.5, 1000);
-        safeSleep(500);
+        sleep(500);
 
         cubeLift.lower(125);
 
         cubeClaw.open();
+
+        drivetrain.drive(Direction.BACKWARD, 0.5, 125);
 
         for (int i = 0; i < 3; i++) {
             robot.beep();
@@ -65,36 +44,42 @@ public abstract class AutoBottom extends Auto {
     }
 
     void cubeIntoCrypotbox() {
-        Direction direction = alliance.equals(Alliance.RED) ? Direction.LEFT : Direction.RIGHT;
+        Direction turnDirection = alliance.equals(Alliance.RED) ? Direction.LEFT : Direction.RIGHT;
+        Direction direction = alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD;
+        drivetrain.turn(turnDirection, 0.5, 800);
+        int baseMs = 200;
+        int incrementMs = 250;
         if (alliance.equals(Alliance.RED)) {
-            drivetrain.turn(direction, 0.5, 1800);
             switch (boxLocation) {
                 case RIGHT:
-                    drivetrain.strafe(direction, 0.5, 300);
+                    drivetrain.drive(direction, 0.5, baseMs + incrementMs);
                     break;
 
                 case CENTER:
-                    drivetrain.strafe(direction, 0.5, 550);
+                    drivetrain.drive(direction, 0.5, baseMs + 2 *incrementMs);
                     break;
 
                 case LEFT:
-                    drivetrain.strafe(direction, 0.5, 800);
+                    drivetrain.drive(direction, 0.5, baseMs + 3 * incrementMs);
                     break;
             }
+
         } else if (alliance.equals(Alliance.BLUE)) {
             switch (boxLocation) {
                 case LEFT:
-                    drivetrain.strafe(direction, 0.5, 300);
+                    drivetrain.drive(direction, 0.5, baseMs + incrementMs);
                     break;
 
                 case CENTER:
-                    drivetrain.strafe(direction, 0.5, 550);
+                    drivetrain.drive(direction, 0.5, baseMs + 2 * incrementMs);
                     break;
 
                 case RIGHT:
-                    drivetrain.strafe(direction, 0.5, 800);
+                    drivetrain.drive(direction, 0.5, baseMs + 3 * incrementMs);
                     break;
             }
         }
+
+        drivetrain.turn(Direction.LEFT, 0.5, 800);
     }
 }

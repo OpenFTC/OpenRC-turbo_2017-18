@@ -3,11 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the hardware map for the 2017-2018 robot.
@@ -18,25 +22,14 @@ public class Revbot {
     // Define hardware
     public DcMotor leftDrive, rightDrive, strafeDrive;
     public DcMotor cubeLift;
-    public Servo clawRight, clawLeft, relicClaw;
+    public Servo clawRight, clawLeft;
+    public Servo glyphGrip;
+    public Servo relicWrist, relicClaw;
     public Servo ballKnock;
     public CRServo armWinch, relicSlide;
     public ColorSensor color;
     private HardwareMap hardwareMap;
     private ToneGenerator tone;
-
-    /**
-     * This method puts the current thread to sleep for the given time in msec.
-     *
-     * @param sleepTime specifies sleep time in msec.
-     */
-    public static void sleep(long sleepTime) {
-        try {
-            Thread.sleep(sleepTime);
-        } catch (InterruptedException e) {
-            System.out.println("got interrupted!");
-        }
-    }   //sleep
 
     /**
      * void init() Initializes the hardware, call this method first
@@ -56,9 +49,10 @@ public class Revbot {
         cubeLift = hardwareMap.get(DcMotor.class, "cubeLift");
 
         // Initialize servos
-        clawRight = hardwareMap.get(Servo.class, "clawRight");
-        clawLeft = hardwareMap.get(Servo.class, "clawLeft");
+        clawRight = hardwareMap.get(Servo.class, "rightClaw");
+        clawLeft = hardwareMap.get(Servo.class, "leftClaw");
         relicClaw = hardwareMap.get(Servo.class, "relicClaw");
+        glyphGrip = hardwareMap.get(Servo.class, "glyphGrip");
 
         ballKnock = hardwareMap.get(Servo.class, "ballKnock");
 
@@ -81,6 +75,7 @@ public class Revbot {
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         clawLeft.setDirection(Servo.Direction.REVERSE);
+        glyphGrip.setDirection(Servo.Direction.REVERSE);
     }
 
     /**
