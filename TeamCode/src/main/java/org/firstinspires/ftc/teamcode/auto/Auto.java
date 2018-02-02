@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.enums.Location;
 import org.firstinspires.ftc.teamcode.lift.CRServoLift;
 import org.firstinspires.ftc.teamcode.lift.Lift;
 import org.firstinspires.ftc.teamcode.lift.MotorLift;
-import org.firstinspires.ftc.teamcode.sensor.RevbotSensors;
+import org.firstinspires.ftc.teamcode.sensor.RobotSensors;
 import org.firstinspires.ftc.teamcode.swivel.ServoSwivel;
 import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
 
@@ -38,7 +38,7 @@ public abstract class Auto extends LinearOpMode {
     Drivetrain drivetrain;
     Lift armWinch, cubeLift, relicSlide;
 
-    RevbotSensors sensors;
+    RobotSensors sensors;
 
     Alliance alliance;
     RelicRecoveryVuMark boxLocation;
@@ -66,7 +66,7 @@ public abstract class Auto extends LinearOpMode {
         armWinch = new CRServoLift(robot.armWinch, -1, 0, 1);
         cubeLift = new MotorLift(robot.cubeLift, -1, 0, 1);
         relicSlide = new CRServoLift(robot.relicSlide, -1, 0, 1);
-        sensors = new RevbotSensors(robot.color);
+        sensors = new RobotSensors(robot.color);
         glyphGrip = new OneServoClaw(robot.glyphGrip, 0.2, 1);
 
         glyphGrip.close();
@@ -105,18 +105,16 @@ public abstract class Auto extends LinearOpMode {
      *
      * @param alliance
      */
+    // TODO: Fix this now
     void knockBalls(Alliance alliance) {
-
-        //Knocks off right ball
-        if ((alliance.equals(Alliance.BLUE) && sensors.isBlue())
-                || (alliance.equals(Alliance.RED) && sensors.isRed())) {
+        if (alliance.equals(sensors.getAlliance())) {
+            //Knocks off right ball
             servoSwivel.swivelRight();
+        } else if (alliance.equals(sensors.getAlliance())) {
             //Knocks off left ball
-        } else if ((alliance.equals(Alliance.BLUE) && sensors.isRed())
-                || (alliance.equals(Alliance.RED) && sensors.isBlue())) {
             servoSwivel.swivelLeft();
-            //Knocks off both balls
         } else {
+            //Knocks off both balls
             servoSwivel.swivelRight();
             servoSwivel.swivelLeft();
         }

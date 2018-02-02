@@ -48,6 +48,7 @@ public class Revbot {
         clawRight = hardwareMap.get(Servo.class, "rightClaw");
         clawLeft = hardwareMap.get(Servo.class, "leftClaw");
         relicClaw = hardwareMap.get(Servo.class, "relicClaw");
+        relicWrist = hardwareMap.get(Servo.class, "relicWrist");
         glyphGrip = hardwareMap.get(Servo.class, "glyphGrip");
 
         ballKnock = hardwareMap.get(Servo.class, "ballKnock");

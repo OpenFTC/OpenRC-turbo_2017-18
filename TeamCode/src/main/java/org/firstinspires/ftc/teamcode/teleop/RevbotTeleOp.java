@@ -79,7 +79,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
     class InputHandler {
         static final double MIN_TRIGGER_VALUE = 0.1;
-        OneServoClaw relicClaw;
+        OneServoClaw relicClaw, relicWrist;
         TwoServoClaw cubeClaw;
         ServoSwivel servoSwivel;
         Lift armWinch, cubeLift, relicSlide;
@@ -88,6 +88,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
 
         void init(Revbot robot) {
             relicClaw = new OneServoClaw(robot.relicClaw);
+            relicWrist = new OneServoClaw(robot.relicWrist, 0, 0.5);
             cubeClaw = new TwoServoClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
             servoSwivel = new ServoSwivel(robot.ballKnock);
             armWinch = new CRServoLift(robot.armWinch);
@@ -177,6 +178,12 @@ public abstract class RevbotTeleOp extends LinearOpMode {
                 gear.gearDown();
             } else if (gamepad2.right_bumper) {
                 gear.gearUp();
+            }
+
+            if (gamepad2.left_trigger > MIN_TRIGGER_VALUE) {
+                relicWrist.open();
+            } else if (gamepad2.right_trigger > MIN_TRIGGER_VALUE) {
+                relicWrist.close();
             }
 
         }

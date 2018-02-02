@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drivetrain;
 import org.firstinspires.ftc.teamcode.Revbot;
 import org.firstinspires.ftc.teamcode.Sleep;
 import org.firstinspires.ftc.teamcode.enums.Direction;
+import org.firstinspires.ftc.teamcode.sensor.RobotSensors;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public abstract class Drivetrain {
+    RobotSensors sensors;
+
     public abstract void move(double[] direction);
 
     public abstract void strafe(Direction direction, double power);
@@ -40,6 +43,11 @@ public abstract class Drivetrain {
         turn(direction, power);
         new Sleep().javaIsDumb(ms);
         stopTurning();
+    }
+
+    public void turn(Direction direction, double power, double targetAngle) {
+        turn(direction, power);
+
     }
 
     public void stopAllMovement() {

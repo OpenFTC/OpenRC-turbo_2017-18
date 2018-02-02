@@ -14,6 +14,9 @@ public class Slide extends Drivetrain {
         this.robot = robot;
     }
 
+    /** Manually move the drivetrain in a specified direction.
+     * @param direction An array that holds the [left, right, center] values for direction.
+     */
     @Override
     public void move(double[] direction) {
         robot.leftDrive.setPower(direction[0]);
@@ -21,6 +24,10 @@ public class Slide extends Drivetrain {
         robot.strafeDrive.setPower(direction[2]);
     }
 
+    /** Strafe the drivetrain in a specified direction.
+     * @param direction Direction (Left, Right) for the drivetrain to move
+     * @param power Motor power for the drivetrain to move (between 0 and 1)
+     */
     @Override
     public void strafe(Direction direction, double power) {
         switch (direction) {
@@ -41,6 +48,10 @@ public class Slide extends Drivetrain {
         robot.strafeDrive.setPower(0);
     }
 
+    /** Move the drivetrain in a specified direction.
+     * @param direction Direction (Forward, Backward) for the drivetrain to move
+     * @param power Motor power for the drivetrain to move (between 0 and 1)
+     */
     @Override
     public void drive(Direction direction, double power) {
         switch (direction) {
