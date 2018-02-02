@@ -26,14 +26,17 @@ import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
 public abstract class Auto extends LinearOpMode {
     Revbot robot = new Revbot();
 
+    Vuforia vuforia = new Vuforia();
+
+    // Claw for relic
     OneServoClaw relicClaw;
+
+    // Claw for
     OneServoClaw glyphGrip;
     TwoServoClaw cubeClaw;
     ServoSwivel servoSwivel;
     Drivetrain drivetrain;
     Lift armWinch, cubeLift, relicSlide;
-
-    Vuforia vuforia = new Vuforia();
 
     RevbotSensors sensors;
 
@@ -46,6 +49,10 @@ public abstract class Auto extends LinearOpMode {
         this.location = location;
     }
 
+    /** Main class that runs whenever the OpMode is called from the phone
+     *
+     * @throws InterruptedException Exception is thrown
+     */
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
@@ -68,9 +75,36 @@ public abstract class Auto extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
+
+        toBalls();
+
+        drivetrain.drive(alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD, 0.5, 700);
+        sleep(500);
+
+        drivetrain.strafe(Direction.RIGHT, 0.5, 750);
+        sleep(500);
+
+        cubeIntoCrypotbox();
+        sleep(500);
+
+        drivetrain.drive(Direction.FORWARD, 0.5, 1000);
+        sleep(500);
+
+        cubeLift.lower(125);
+
+        cubeClaw.open();
+
+        drivetrain.drive(Direction.BACKWARD, 0.5, 125);
+
+        for (int i = 0; i < 3; i++) {
+            robot.beep();
+        }
     }
 
-    //Knocks the ball off the stand
+    /**
+     *
+     * @param alliance
+     */
     void knockBalls(Alliance alliance) {
 
         //Knocks off right ball
@@ -90,6 +124,9 @@ public abstract class Auto extends LinearOpMode {
         sleep(1000);
     }
 
+    /**
+     *
+     */
     void toBalls() {
         cubeClaw.close();
         sleep(500);
@@ -122,5 +159,60 @@ public abstract class Auto extends LinearOpMode {
         drivetrain.strafe(Direction.RIGHT, 0.5, 125);
         armWinch.raise(4500);
         sleep(500);
+    }
+
+    void cubeIntoCrypotbox() {
+
+        // Time it takes to reach the first column of the box
+        int baseMs = location.equals(Location.UPPER) ? 50 : 200;
+
+        // Time it takes to travel between columns
+        int incrementMs = 250;
+
+        // Time it takes to turn 180˚
+        int turnMs = 750;
+
+        Direction direction = alliance.equals(Alliance.RED) ? Direction.BACKWARD : Direction.FORWARD;
+
+        Direction turnDirection = alliance.equals(Alliance.RED) ? Direction.LEFT : Direction.RIGHT;
+
+        if (location.equals(Location.LOWER)) {
+            // Align the robot so that the camera is facing the cryptobox
+            drivetrain.turn(turnDirection, 0.5, turnMs);
+        }
+
+        if (alliance.equals(Alliance.RED)) {
+            switch (boxLocation) {
+                case RIGHT:
+                    drivetrain.drive(direction, 0.5, baseMs + incrementMs);
+                    break;
+
+                case CENTER:
+                    drivetrain.drive(direction, 0.5, baseMs + 2 *incrementMs);
+                    break;
+
+                case LEFT:
+                    drivetrain.drive(direction, 0.5, baseMs + 3 * incrementMs);
+                    break;
+            }
+
+        } else if (alliance.equals(Alliance.BLUE)) {
+            switch (boxLocation) {
+                case LEFT:
+                    drivetrain.drive(direction, 0.5, baseMs + incrementMs);
+                    break;
+
+                case CENTER:
+                    drivetrain.drive(direction, 0.5, baseMs + 2 * incrementMs);
+                    break;
+
+                case RIGHT:
+                    drivetrain.drive(direction, 0.5, baseMs + 3 * incrementMs);
+                    break;
+            }
+        }
+
+        // Turn left to face the cryptobox
+        drivetrain.turn(Direction.LEFT, 0.5, turnMs);
     }
 }
