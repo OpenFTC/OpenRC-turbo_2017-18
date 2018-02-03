@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.drivetrain;
 
-import org.firstinspires.ftc.teamcode.Revbot;
 import org.firstinspires.ftc.teamcode.Sleep;
 import org.firstinspires.ftc.teamcode.enums.Direction;
 import org.firstinspires.ftc.teamcode.sensor.RobotSensors;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Generic drivetrain class.
