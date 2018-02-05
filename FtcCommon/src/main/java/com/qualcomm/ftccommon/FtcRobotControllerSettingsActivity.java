@@ -85,6 +85,7 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
             }
         }
 
+        // Modified for OpenRC (new method)
         private void addLineWrapPref() {
             String lwPreferenceKey = getString(R.string.pref_line_wrap_log_key);
             String logCategoryKey = getString(R.string.prefcat_logging_key);
