@@ -40,6 +40,12 @@ into [OpenRC-turbo](https://github.com/OpenFTC/OpenRC-turbo), which features fas
 # Release Notes
 To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGELOG.md](doc/FIRST_CHANGELOG.md)
 
+## 2.0 beta 2
+* CRITICAL BUG FIX: The app wouldn't automatically restart when it ought to. Now it will.
+* Updated Gradle from version 4.1 to version 4.5
+* Updated the ancient Gradle Wrapper
+* Tiny text fixes
+
 ## 2.0 beta 1
 * Renamed from OpenFTC-app and OpenFTC-app-turbo to OpenRC and OpenRC-turbo. OpenFTC is now solely the name of the team
   and community that develops these apps and others.
