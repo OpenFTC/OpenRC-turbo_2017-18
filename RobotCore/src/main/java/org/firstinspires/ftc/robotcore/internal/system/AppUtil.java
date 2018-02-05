@@ -946,7 +946,8 @@ public class AppUtil {
     }
 
     private void initializeRootActivityIfNecessary() {
-        if (rootActivity == null) {
+        // Modified for Turbo: If we detect that this is a splash screen activity, don't set it as root.
+        if (rootActivity == null && !currentActivity.getClass().getName().toLowerCase().contains("splash")) {
             rootActivity = currentActivity;
             RobotLog.vv(TAG, "rootActivity=%s", rootActivity.getClass().getSimpleName());
         }
