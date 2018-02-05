@@ -59,6 +59,20 @@ public class FtcRobotControllerWatchdogService extends Service {
 
     // Use of nested class defers initialization (and so class lookup) until activity class is actually referenced
     protected static class ActivityFinder {
+        // Modified for OpenRC: This is the class for the main activity that we can trust to remain running (not the splash screen).
+        protected static final Class rcActivityClass = findRcActivityClass();
+
+        protected static Class findRcActivityClass() {
+            // I'd love to not have to hard-code this class (OpenRC)
+            Class result = null;
+            try {
+                result = Class.forName("org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity");
+            } catch (ClassNotFoundException | RuntimeException e) {
+                // Ignore
+            }
+            return result;
+        }
+
         // This is the actual concrete class which should be launched to (re)start the robot controller
         protected static final Class launchActivityClass = findLaunchActivityClass();
 
@@ -110,7 +124,10 @@ public class FtcRobotControllerWatchdogService extends Service {
     }
 
     public static boolean isFtcRobotControllerActivity(Class clazz) {
-        return clazz == ActivityFinder.launchActivityClass;
+        // Modified for OpenRC: In our case, launchActivityClass is the splash screen.
+        // This method should check for the real main activity.
+        return clazz == ActivityFinder.findRcActivityClass();
+//        return clazz == ActivityFinder.launchActivityClass;
     }
 
     //----------------------------------------------------------------------------------------------
