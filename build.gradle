@@ -9,7 +9,7 @@ buildscript {
         google()
         jcenter()
         // You need to add the following repository to download the
-        // new plugin.
+        maven { url '// new plugin.' }
         google()
     }
 
