@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.claw.TwoServoClaw;
 import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
 import org.firstinspires.ftc.teamcode.drivetrain.Slide;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
-import org.firstinspires.ftc.teamcode.enums.Column;
 import org.firstinspires.ftc.teamcode.enums.Direction;
 import org.firstinspires.ftc.teamcode.enums.Location;
 import org.firstinspires.ftc.teamcode.lift.CRServoLift;

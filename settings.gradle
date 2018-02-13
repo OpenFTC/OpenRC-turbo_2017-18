@@ -1,2 +1,2 @@
-include ':FtcRobotController', ':RobotCore', ':FtcCommon', ':Hardware', ':Inspection', ':OpenRC', ':Turbo'
+include ':FtcRobotController', ':RobotCore', ':FtcCommon', ':Hardware', ':Inspection', ':OpenRC', ':Turbo', ':3565Lib'
 include ':TeamCode'

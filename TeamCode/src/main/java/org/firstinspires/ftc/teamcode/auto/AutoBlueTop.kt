@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import org.firstinspires.ftc.teamcode.enums.Alliance
-import org.firstinspires.ftc.teamcode.enums.Location
 
 /**
  * Holds callable AutoBlueTop OpMode.
@@ -10,4 +8,4 @@ import org.firstinspires.ftc.teamcode.enums.Location
 
 
 @Autonomous(name = "Auto Blue Right", group = "auto")
-class AutoBlueTop : Auto(Alliance.BLUE, Location.UPPER)
+class AutoBlueTop : Auto(me.joshlin.a3565lib.enums.Alliance.BLUE, me.joshlin.a3565lib.enums.Location.UPPER)

@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import org.firstinspires.ftc.teamcode.enums.Alliance;
-import org.firstinspires.ftc.teamcode.enums.Direction;
 import org.firstinspires.ftc.teamcode.enums.Location;
-import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
 
 /**
  * Created by josh on 1/13/18.

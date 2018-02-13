@@ -1,19 +1,32 @@
-package org.firstinspires.ftc.teamcode.drivetrain;
+package me.joshlin.a3565lib.component.drivetrain;
 
-import org.firstinspires.ftc.teamcode.Sleep;
-import org.firstinspires.ftc.teamcode.enums.Direction;
-import org.firstinspires.ftc.teamcode.sensor.RobotSensors;
+
+import me.joshlin.a3565lib.enums.Direction;
 
 /**
- * Generic drivetrain class.
+ * TODO: Write info
  */
 
 public abstract class Drivetrain {
-    RobotSensors sensors;
 
+    /** Move the robot using values.
+     * Should be the only method that directly references motors.
+     * @param direction an array[2] that takes [forward, right] as parameters
+     */
     public abstract void move(double[] direction);
 
-    public abstract void strafe(Direction direction, double power);
+    public void strafe(Direction direction, double power) {
+        double[] motorValues = new double[] {0., power};
+        switch (direction) {
+            case LEFT:
+                motorValues[1] = -motorValues[1];
+                //fall through
+            case RIGHT:
+                move(motorValues);
+            default:
+                throw new IllegalArgumentException("Invalid direction");
+        }
+    }
 
     public abstract void stopStrafing();
 
@@ -37,6 +50,7 @@ public abstract class Drivetrain {
 
     public abstract void stopTurning();
 
+    // TODO: Implement this with a generic array system
     public void turn(Direction direction, double power, long ms) {
         turn(direction, power);
         new Sleep().javaIsDumb(ms);
