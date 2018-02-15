@@ -31,4 +31,5 @@ repositories {
 
 dependencies {
     implementation project(':RobotCore')
+    compile project(path: ':Hardware')
 }

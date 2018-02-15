@@ -1,0 +1,25 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import me.joshlin.a3565lib.component.RobotMap;
+
+/**
+ * Created by 3565 on 2/15/2018.
+ */
+
+public class Mecanum implements RobotMap {
+    HardwareMap hardwareMap;
+
+    DcMotor backL, backR, frontL, frontR;
+
+    @Override
+    public void init(HardwareMap aHwMap) {
+        this.hardwareMap = aHwMap;
+        backL = hardwareMap.get(DcMotor.class, "backL");
+        backR = hardwareMap.get(DcMotor.class, "backR");
+        frontL = hardwareMap.get(DcMotor.class, "frontL");
+        frontR = hardwareMap.get(DcMotor.class, "frontR");
+    }
+}

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.sensor;
+package me.joshlin.a3565lib.component.sensor;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -7,7 +7,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.enums.Alliance;
+
+import me.joshlin.a3565lib.enums.Alliance;
 
 /**
  * Created by josh on 1/6/18.

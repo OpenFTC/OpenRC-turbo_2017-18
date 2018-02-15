@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package me.joshlin.a3565lib;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 

@@ -4,18 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.Revbot;
-import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
-import org.firstinspires.ftc.teamcode.claw.TwoServoClaw;
-import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
-import org.firstinspires.ftc.teamcode.drivetrain.Slide;
-import org.firstinspires.ftc.teamcode.enums.Alliance;
-import org.firstinspires.ftc.teamcode.enums.Direction;
-import org.firstinspires.ftc.teamcode.enums.Location;
-import org.firstinspires.ftc.teamcode.lift.CRServoLift;
-import org.firstinspires.ftc.teamcode.lift.Lift;
-import org.firstinspires.ftc.teamcode.lift.MotorLift;
-import org.firstinspires.ftc.teamcode.sensor.RobotSensors;
-import org.firstinspires.ftc.teamcode.swivel.ServoSwivel;
+import me.joshlin.a3565lib.component.claw.OneServoClaw;
+import me.joshlin.a3565lib.component.claw.TwoServoClaw;
+import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
+import me.joshlin.a3565lib.component.drivetrain.Slide;
+import me.joshlin.a3565lib.component.lift.CRServoLift;
+import me.joshlin.a3565lib.component.lift.Lift;
+import me.joshlin.a3565lib.component.lift.MotorLift;
+import me.joshlin.a3565lib.component.sensor.RobotSensors;
+import me.joshlin.a3565lib.component.swivel.ServoSwivel;
+import me.joshlin.a3565lib.enums.Alliance;
+import me.joshlin.a3565lib.enums.Direction;
+import me.joshlin.a3565lib.enums.Location;
+
 import org.firstinspires.ftc.teamcode.vuforia.Vuforia;
 
 /**
@@ -61,10 +62,10 @@ public abstract class Auto extends LinearOpMode {
         relicClaw = new OneServoClaw(robot.relicClaw);
         cubeClaw = new TwoServoClaw(robot.clawLeft, robot.clawRight, 0.2, 0.8);
         servoSwivel = new ServoSwivel(robot.ballKnock);
-        drivetrain = new Slide(robot);
+        drivetrain = new Slide(robot.leftDrive, robot.rightDrive, robot.strafeDrive);
         armWinch = new CRServoLift(robot.armWinch, -1, 0, 1);
         cubeLift = new MotorLift(robot.cubeLift, -1, 0, 1);
-        relicSlide = new CRServoLift(robot.relicSlide, -1, 0, 1);
+        relicSlide = new MotorLift(robot.relicSlide, -1, 0, 1);
         sensors = new RobotSensors(robot.color);
         glyphGrip = new OneServoClaw(robot.glyphGrip, 0.2, 1);
 

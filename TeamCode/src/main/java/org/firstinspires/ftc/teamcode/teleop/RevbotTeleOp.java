@@ -4,14 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Revbot;
-import org.firstinspires.ftc.teamcode.claw.OneServoClaw;
-import org.firstinspires.ftc.teamcode.claw.TwoServoClaw;
-import org.firstinspires.ftc.teamcode.drivetrain.Drivetrain;
-import org.firstinspires.ftc.teamcode.drivetrain.Slide;
-import org.firstinspires.ftc.teamcode.lift.CRServoLift;
-import org.firstinspires.ftc.teamcode.lift.Lift;
-import org.firstinspires.ftc.teamcode.lift.MotorLift;
-import org.firstinspires.ftc.teamcode.swivel.ServoSwivel;
+import me.joshlin.a3565lib.component.claw.OneServoClaw;
+import me.joshlin.a3565lib.component.claw.TwoServoClaw;
+import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
+import me.joshlin.a3565lib.component.drivetrain.Slide;
+import me.joshlin.a3565lib.component.lift.CRServoLift;
+import me.joshlin.a3565lib.component.lift.Lift;
+import me.joshlin.a3565lib.component.lift.MotorLift;
+import me.joshlin.a3565lib.component.swivel.ServoSwivel;
 
 /**
  * Drive method (TeleOp) from which all methods extend from.
@@ -54,7 +54,7 @@ public abstract class RevbotTeleOp extends LinearOpMode {
         robot.init(hardwareMap);
         inputHandler.init(robot);
 
-        Drivetrain drivetrain = new Slide(robot);
+        Drivetrain drivetrain = new Slide(robot.leftDrive, robot.rightDrive, robot.strafeDrive);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

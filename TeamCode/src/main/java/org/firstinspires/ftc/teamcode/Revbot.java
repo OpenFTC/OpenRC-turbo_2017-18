@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import me.joshlin.a3565lib.component.RobotMap;
+
 /**
  * This is the hardware map for the 2017-2018 robot.
  */
 @SuppressWarnings("unused")
-public class Revbot {
+public class Revbot implements RobotMap {
 
     // Define hardware
     public DcMotor leftDrive, rightDrive, strafeDrive;
@@ -33,6 +35,7 @@ public class Revbot {
      *
      * @param aHwMap HardwareMap to pass in
      */
+    @Override
     public void init(HardwareMap aHwMap) {
         // Save reference to HardwareMap
         this.hardwareMap = aHwMap;

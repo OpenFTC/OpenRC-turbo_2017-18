@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.lift;
+package me.joshlin.a3565lib.component.lift;
 
-import org.firstinspires.ftc.teamcode.Sleep;
+
+import me.joshlin.a3565lib.Sleep;
 
 /**
  * Abstract class that all Lifts should extend from.

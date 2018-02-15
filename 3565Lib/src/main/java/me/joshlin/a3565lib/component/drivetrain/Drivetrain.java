@@ -1,6 +1,7 @@
 package me.joshlin.a3565lib.component.drivetrain;
 
 
+import me.joshlin.a3565lib.Sleep;
 import me.joshlin.a3565lib.enums.Direction;
 
 /**
@@ -28,7 +29,10 @@ public abstract class Drivetrain {
         }
     }
 
-    public abstract void stopStrafing();
+    public void stopStrafing() {
+        double[] motorValues = new double[] {0., 0.};
+        move(motorValues);
+    }
 
     public void strafe(Direction direction, double power, long ms) {
         strafe(direction, power);

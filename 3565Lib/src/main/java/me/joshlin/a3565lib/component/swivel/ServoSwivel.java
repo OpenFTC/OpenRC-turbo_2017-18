@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.swivel;
+package me.joshlin.a3565lib.component.swivel;
 
 import com.qualcomm.robotcore.hardware.Servo;
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.claw;
+package me.joshlin.a3565lib.component.claw;
 
 /**
  * Abstract Claw

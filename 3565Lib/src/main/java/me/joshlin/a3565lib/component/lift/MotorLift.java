@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.lift;
+package me.joshlin.a3565lib.component.lift;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
