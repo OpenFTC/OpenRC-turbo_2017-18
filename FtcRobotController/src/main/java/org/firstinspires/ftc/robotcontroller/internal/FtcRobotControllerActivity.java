@@ -183,6 +183,8 @@ public class FtcRobotControllerActivity extends Activity {
         }
     };
 
+
+    // Modified for OpenRC: Changes to this method may need to be reflected in SplashActivity.
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
