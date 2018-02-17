@@ -27,5 +27,7 @@ public class RevbotConventional extends RobotMap {
         glyphPivot = hardwareMap.get(Servo.class, "GlyphPivot");
 
         sucking.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        right.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

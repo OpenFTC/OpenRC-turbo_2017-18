@@ -5,7 +5,7 @@ package me.joshlin.a3565lib.component.swivel;
  */
 
 public abstract class Swivel {
-    ;
+
     double left, center, right;
 
     Swivel() {

@@ -9,7 +9,6 @@ import me.joshlin.a3565lib.component.drivetrain.Conventional;
 import me.joshlin.a3565lib.component.lift.Lift;
 import me.joshlin.a3565lib.component.lift.MotorLift;
 import me.joshlin.a3565lib.component.swivel.ServoSwivel;
-import me.joshlin.a3565lib.component.swivel.Swivel;
 
 /**
  * Created by 3565 on 2/16/2018.
@@ -21,7 +20,7 @@ public class ConventionalTeleOp extends LinearOpMode {
     private Conventional drivetrain;
 
     private Lift glyphLift;
-    private Swivel flipper;
+    private ServoSwivel flipper;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,7 +28,7 @@ public class ConventionalTeleOp extends LinearOpMode {
         drivetrain = new Conventional(robot.left, robot.right);
 
         glyphLift = new MotorLift(robot.lift);
-        flipper = new ServoSwivel(robot.glyphPivot, 0.01, 0.04, 0.07);
+        flipper = new ServoSwivel(robot.glyphPivot, 0.82, 0.84, 0.87);
 
         robot.beep();
 
@@ -39,7 +38,7 @@ public class ConventionalTeleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            drivetrain.move(gamepad1.left_stick_y, gamepad1.right_stick_y);
+            drivetrain.move(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
 
             if (gamepad1.dpad_up) {
                 glyphLift.raise();
@@ -50,11 +49,11 @@ public class ConventionalTeleOp extends LinearOpMode {
             }
 
             if (gamepad1.dpad_left) {
-                flipper.swivelRight();
+                flipper.getServo().setPosition(flipper.getServo().getPosition() + 0.01);
             } else if (gamepad1.dpad_right) {
-                flipper.swivelLeft();
+                flipper.getServo().setPosition(flipper.getServo().getPosition() - 0.01);
             } else if (gamepad1.a) {
-                flipper.swivelCenter();
+                //no
             }
 
             if (gamepad1.b) {
@@ -62,6 +61,9 @@ public class ConventionalTeleOp extends LinearOpMode {
             } else if (gamepad1.x) {
                 robot.sucking.setPower(0);
             }
+
+            telemetry.addData("Position", flipper.getServo().getPosition());
+            telemetry.update();
         }
     }
 }

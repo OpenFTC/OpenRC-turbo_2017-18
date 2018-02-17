@@ -43,4 +43,8 @@ public class ServoSwivel extends Swivel {
     public void setPosition(double position) {
         servo.setPosition(position);
     }
+
+    public Servo getServo() {
+        return servo;
+    }
 }
