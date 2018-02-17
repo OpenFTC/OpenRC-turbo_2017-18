@@ -8,9 +8,15 @@ public class DriveMath {
 
     private static double[] verticalDrive = {1, -1, 1, -1}; //drives straight forward
     private static double[] horizontalDrive = {1, 1, -1, -1}; //drives side-to-side
-    private static double[] turnDrive = {1,1,1,1}; //turns in an unknown direction
+    private static double[] turnDrive = {1, 1, 1, 1}; //turns in an unknown direction
 
-    //converts angle to a vector
+    /**
+     * Converts an angle to a vector
+     *
+     * @param angle angle (θ) of vector
+     * @param length length of vector
+     * @return the vector
+     */
     public static double[] angleToVector(double angle, double length) {
         double[] vector = new double[2];
 
@@ -23,12 +29,19 @@ public class DriveMath {
         return vector;
     }
 
-    //converts controller input to motor values
+    /**
+     * Converts controller input to motor values
+     *
+     * @param x    the x-direction of the robot
+     * @param y    the y-direction of the robot
+     * @param turn the amount to turn (-1 to 1 [left to right])
+     * @return the values for each of the motors
+     */
     public static double[] vectorToMotors(double x, double y, double turn) {
 
         double x_input = x;
         double y_input = y;
-        double turn_input = ((y_input>0) ? -turn:turn);
+        double turn_input = ((y_input > 0) ? turn : -turn);
 
         double[] driveMatrix = new double[4];
 
@@ -36,14 +49,14 @@ public class DriveMath {
         double[] yMatrix = new double[4];
         double[] turnMatrix = new double[4];
 
-        //sets values of matrices in x, y, and z directions
+        // sets values of matrices in x, y, and z directions
         for (int i = 0; i < 4; i++) {
             xMatrix[i] = horizontalDrive[i] * x_input;
             yMatrix[i] = verticalDrive[i] * y_input;
             turnMatrix[i] = turnDrive[i] * turn_input;
         }
 
-        //adds matrices to get motor values
+        // adds matrices to get motor values
         for (int i = 0; i < 4; i++) {
             driveMatrix[i] = xMatrix[i] + yMatrix[i] + turnMatrix[i];
         }
@@ -53,7 +66,38 @@ public class DriveMath {
         return driveMatrix;
     }
 
-    private static double[] normalize(double[] vector) {    //normalizes an input vector of any dimension
+    /**
+     * Convert an angle to mecanum motor values
+     *
+     * @param angle angle (θ) of vector
+     * @param length length of vector
+     * @return the values for each of the motors
+     */
+    public double[] angleToMotor(double angle, double length) {
+        return angleToMotor(angle, length, 0);
+    }
+
+    /**
+     * Convert an angle to mecanum motor values
+     *
+     * @param angle angle (θ) of vector
+     * @param length length of vector
+     * @param turn the amount to turn (-1 to 1 [left to right])
+     * @return the values for each of the motors
+     */
+    public double[] angleToMotor(double angle, double length, double turn) {
+        double[] vector = angleToVector(angle, length);
+
+        return vectorToMotors(vector[0], vector[1], turn);
+    }
+
+    /**
+     * Normalizes an input vector of any dimension
+     *
+     * @param vector the vector to normalize - can be any dimension
+     * @return the normalized vector
+     */
+    private static double[] normalize(double[] vector) {
 
         //finds length of vector
         double sqrSum = 0;

@@ -19,18 +19,19 @@ public abstract class Claw {
 
     /**
      * Gets the current position of the claw
+     *
      * @return the current location of the claw
      */
     public abstract double getPosition();
 
     /**
      * Sets the position of the claw.
+     *
      * @param position the position to set the claw to
      */
     public abstract void setPosition(double position);
 
     /**
-     *
      * @return
      */
     public boolean isOpen() {

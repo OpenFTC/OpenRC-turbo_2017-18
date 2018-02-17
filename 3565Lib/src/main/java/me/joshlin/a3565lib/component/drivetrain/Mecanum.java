@@ -13,10 +13,10 @@ public class Mecanum extends Drivetrain {
     private DcMotor backR;
 
     public Mecanum(DcMotor frontL, DcMotor frontR, DcMotor backL, DcMotor backR) {
-        this.backR = backR;
-        this.backL = backL;
-        this.frontR = frontR;
         this.frontL = frontL;
+        this.frontR = frontR;
+        this.backL = backL;
+        this.backR = backR;
     }
 
     public void move(double[] driveMatrix) {

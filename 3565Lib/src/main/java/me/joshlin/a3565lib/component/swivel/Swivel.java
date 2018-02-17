@@ -21,7 +21,9 @@ public abstract class Swivel {
     }
 
     public abstract void swivelLeft();
+
     public abstract void swivelCenter();
+
     public abstract void swivelRight();
 
     public abstract double getPosition();

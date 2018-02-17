@@ -18,6 +18,7 @@ public abstract class Lift {
     }
 
     public abstract void raise();
+
     public void raise(long ms) {
         raise();
         new Sleep().javaIsDumb(ms);
@@ -25,6 +26,7 @@ public abstract class Lift {
     }
 
     public abstract void lower();
+
     public void lower(long ms) {
         lower();
         new Sleep().javaIsDumb(ms);

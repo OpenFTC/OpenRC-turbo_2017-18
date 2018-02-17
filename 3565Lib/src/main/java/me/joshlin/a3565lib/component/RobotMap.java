@@ -3,6 +3,7 @@ package me.joshlin.a3565lib.component;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -21,4 +22,10 @@ public abstract class RobotMap {
     }
 
     public abstract void init(HardwareMap aHwMap);
+
+    public void setMode(DcMotor.RunMode mode, DcMotor... motors) {
+        for (DcMotor motor : motors) {
+            motor.setMode(mode);
+        }
+    }
 }

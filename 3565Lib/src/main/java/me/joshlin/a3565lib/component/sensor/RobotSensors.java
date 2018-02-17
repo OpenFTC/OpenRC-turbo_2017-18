@@ -46,6 +46,7 @@ public class RobotSensors {
 
     /**
      * Get current cumulative angle rotation from last reset.
+     *
      * @return Angle in degrees. + = left, - = right.
      */
     public double getAngle() {
@@ -58,10 +59,11 @@ public class RobotSensors {
 
         double deltaAngle = angles.firstAngle - baseAngles.firstAngle;
 
-        if (deltaAngle < -180)
+        if (deltaAngle < -180) {
             deltaAngle += 360;
-        else if (deltaAngle > 180)
+        } else if (deltaAngle > 180) {
             deltaAngle -= 360;
+        }
 
         globalAngle += deltaAngle;
 

@@ -10,7 +10,7 @@ public class OneServoClaw extends Claw {
     private Servo clawServo;
 
     public OneServoClaw(Servo servo) {
-        this(servo,0,1);
+        this(servo, 0, 1);
     }
 
     public OneServoClaw(Servo servo, double closedPosition, double openPosition) {
@@ -23,6 +23,7 @@ public class OneServoClaw extends Claw {
         clawServo.setPosition(openPosition);
         open = true;
     }
+
     public void close() {
         clawServo.setPosition(closedPosition);
         open = false;
