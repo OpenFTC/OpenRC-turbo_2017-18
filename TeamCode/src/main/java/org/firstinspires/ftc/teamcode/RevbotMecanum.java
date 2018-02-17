@@ -9,10 +9,9 @@ import me.joshlin.a3565lib.component.RobotMap;
  * Created by 3565 on 2/15/2018.
  */
 
-public class Mecanum implements RobotMap {
-    HardwareMap hardwareMap;
+public class RevbotMecanum extends RobotMap {
 
-    DcMotor backL, backR, frontL, frontR;
+    public DcMotor backL, backR, frontL, frontR;
 
     @Override
     public void init(HardwareMap aHwMap) {
