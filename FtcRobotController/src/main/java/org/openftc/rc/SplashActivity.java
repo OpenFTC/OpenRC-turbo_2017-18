@@ -58,7 +58,7 @@ public class SplashActivity extends Activity
         try
         {
             /*
-             * Attempt to set up the Vuforai library for loading in
+             * Attempt to set up the Vuforia library for loading in
              * the next statement
              */
             setupVuforiaFilesForLaunch();

@@ -19,4 +19,6 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compile project(path: ':3565Lib')
+    compile project(path: ':DogeCV')
+    implementation project(':openCVLibrary320')
 }

@@ -11,8 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 public class Vuforia {
-    // Vuforia License Key
-    public static final String VUFORIA_LICENSE_KEY = "";
     public ClosableVuforiaLocalizer vuforia;
     private VuforiaTrackable relicTemplate;
 

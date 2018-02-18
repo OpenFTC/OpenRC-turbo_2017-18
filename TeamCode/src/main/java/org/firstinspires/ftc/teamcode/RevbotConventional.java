@@ -28,6 +28,6 @@ public class RevbotConventional extends RobotMap {
 
         sucking.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        right.setDirection(DcMotorSimple.Direction.REVERSE);
+        left.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }
