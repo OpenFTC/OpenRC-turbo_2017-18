@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
+import com.disnodeteam.dogecv.detectors.JewelDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.BuildConfig;
 
 import me.joshlin.a3565lib.enums.Alliance;
 import me.joshlin.a3565lib.vuforia.ClosableVuforiaLocalizer;
@@ -32,6 +32,8 @@ public abstract class CVLinearOpMode extends LinearOpMode {
     protected CryptoboxDetector cryptoboxDetector;
 
     protected BNO055IMU imu;
+
+    protected JewelDetector jewelDetector;
 
     public void initVuforia() {
         /*
@@ -68,13 +70,13 @@ public abstract class CVLinearOpMode extends LinearOpMode {
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
     }
 
-    public void initDogeCV(Alliance alliance) {
+    public void initCryptobox(Alliance cryptoboxColor) {
         CryptoboxDetector.CryptoboxDetectionMode mode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
         // init cryptobox detector
         cryptoboxDetector = new CryptoboxDetector();
-        cryptoboxDetector.downScaleFactor = 0.4;
+        cryptoboxDetector.downScaleFactor = 0.3;
 
-        switch (alliance) {
+        switch (cryptoboxColor) {
             case RED:
                 mode = CryptoboxDetector.CryptoboxDetectionMode.RED;
                 break;
@@ -88,6 +90,10 @@ public abstract class CVLinearOpMode extends LinearOpMode {
         cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.FAST;
 
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+    }
+
+    public void initJewelDetector(Alliance alliance) {
+
     }
 
     public void initBNO055IMU(BNO055IMU aImu) {

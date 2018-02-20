@@ -39,8 +39,6 @@ android {
 
     compileSdkVersion 23
 
-    buildToolsVersion "27.0.3"
-
     signingConfigs {
         debug {
             keyAlias 'androiddebugkey'
@@ -86,6 +84,8 @@ android {
         //
         versionCode vCode
         versionName vName
+
+        multiDexEnabled true
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
@@ -121,8 +121,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     sourceSets.main {

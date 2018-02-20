@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.teamcode.teleop.CVLinearOpMode;
+import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 
 /**
  * Created by josh on 2/17/18.

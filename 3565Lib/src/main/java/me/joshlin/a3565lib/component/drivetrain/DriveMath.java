@@ -7,7 +7,7 @@ package me.joshlin.a3565lib.component.drivetrain;
  *
  * ======================================================================================
  * Math involved in converting input values (vectors / directions) to the motor values
- * required to move the robot in that direction using mechanum wheels.
+ * required to move the robot in that direction using mecanum wheels.
  * ======================================================================================
  *
  * The motor values are passed around as arrays containing 4 double values:
@@ -21,7 +21,7 @@ package me.joshlin.a3565lib.component.drivetrain;
  *                [ROBOT base      ]
  *      [Motor 3]                    [Motor 4]
  *
- * (The directions of the mechanum wheels should form a diamond when viewed from above, NOT an 'X')
+ * (The directions of the mecanum wheels should form a diamond when viewed from above, NOT an 'X')
  * (It is not certain if the code would still work with an 'X' arrangement, but it might)
  * =======================================================================================
  *
@@ -29,7 +29,7 @@ package me.joshlin.a3565lib.component.drivetrain;
  * Instead, longer vectors will produce faster motion (but the motors can only handle values between -1 and 1)
  *
  * If you are unfamiliar with vectors and how they are represented, consult the internet first.
- * This code does not use any complicated vector math, onyl simple conversions and some
+ * This code does not use any complicated vector math, only simple conversions and some
  * addition
  * =======================================================================================
  */

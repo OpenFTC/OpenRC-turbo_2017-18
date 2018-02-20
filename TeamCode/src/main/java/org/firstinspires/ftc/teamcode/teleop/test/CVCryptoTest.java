@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop.test;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.teleop.CVLinearOpMode;
+import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 
 import me.joshlin.a3565lib.enums.Alliance;
 
