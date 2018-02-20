@@ -19,6 +19,8 @@ public class MecanumTeleOp extends LinearOpMode {
     private RevbotMecanum robot = new RevbotMecanum();
     private Mecanum drivetrain;
 
+    private MecanumInputHandler inputHandler;
+
     /**
      * Override this method and place your code here.
      * <p>
@@ -31,6 +33,9 @@ public class MecanumTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
         drivetrain = new Mecanum(robot.frontL, robot.frontR, robot.backL, robot.backR);
+        inputHandler = new MecanumInputHandler(gamepad1, gamepad2);
+        inputHandler.init(robot);
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -38,7 +43,11 @@ public class MecanumTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             drivetrain.move(DriveMath.vectorToMotors(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x));
+            inputHandler.handleInput();
             telemetry.addData("Status", "Running");
+            telemetry.addData("Intake", inputHandler.getIntake().getStatus());
+            telemetry.addData("Flipper", inputHandler.getFlipper().getStatus());
+            telemetry.addData("Lift", inputHandler.getGlyphLift().getStatus());
             telemetry.update();
         }
     }

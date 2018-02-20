@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop.test;
 
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.teleop.CVLinearOpMode;
+
+import me.joshlin.a3565lib.enums.Alliance;
 
 /**
  * Created by josh on 2/18/18.
@@ -14,8 +14,6 @@ import org.firstinspires.ftc.teamcode.teleop.CVLinearOpMode;
 public class CVCryptoTest extends CVLinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-
-    private CryptoboxDetector cryptoboxDetector;
 
     /**
      * Override this method and place your code here.
@@ -28,15 +26,7 @@ public class CVCryptoTest extends CVLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // init cryptobox detector
-        cryptoboxDetector = new CryptoboxDetector();
-        cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
-
-        cryptoboxDetector.downScaleFactor = 0.4;
-        cryptoboxDetector.detectionMode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
-        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.FAST;
-
-        // don't rotate matrix
-        cryptoboxDetector.rotateMat = false;
+        initDogeCV(Alliance.BLUE);
 
         cryptoboxDetector.enable();
 
@@ -53,7 +43,10 @@ public class CVCryptoTest extends CVLinearOpMode {
             telemetry.addData("Column Left ", cryptoboxDetector.getCryptoBoxLeftPosition());
             telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
             telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
+            telemetry.addData("Screen Resolution", cryptoboxDetector.getFrameSize().width);
             telemetry.update();
         }
+
+        cryptoboxDetector.disable();
     }
 }

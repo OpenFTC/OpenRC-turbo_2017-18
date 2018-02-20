@@ -49,5 +49,7 @@ public class VuforiaTest extends CVLinearOpMode {
 
             telemetry.update();
         }
+
+        vuforia.close();
     }
 }

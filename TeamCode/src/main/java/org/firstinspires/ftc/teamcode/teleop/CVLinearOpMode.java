@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -7,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.BuildConfig;
 
+import me.joshlin.a3565lib.enums.Alliance;
 import me.joshlin.a3565lib.vuforia.ClosableVuforiaLocalizer;
 
 /**
@@ -23,6 +28,10 @@ public abstract class CVLinearOpMode extends LinearOpMode {
 
     // Create the Vuforia localizer
     protected VuforiaTrackable relicTemplate;
+
+    protected CryptoboxDetector cryptoboxDetector;
+
+    protected BNO055IMU imu;
 
     public void initVuforia() {
         /*
@@ -57,5 +66,49 @@ public abstract class CVLinearOpMode extends LinearOpMode {
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+    }
+
+    public void initDogeCV(Alliance alliance) {
+        CryptoboxDetector.CryptoboxDetectionMode mode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
+        // init cryptobox detector
+        cryptoboxDetector = new CryptoboxDetector();
+        cryptoboxDetector.downScaleFactor = 0.4;
+
+        switch (alliance) {
+            case RED:
+                mode = CryptoboxDetector.CryptoboxDetectionMode.RED;
+                break;
+            case BLUE:
+                mode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
+                break;
+        }
+
+        cryptoboxDetector.rotateMat = false;
+        cryptoboxDetector.detectionMode = mode;
+        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.FAST;
+
+        cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+    }
+
+    public void initBNO055IMU(BNO055IMU aImu) {
+        this.imu = aImu;
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu.initialize(parameters);
+
+        while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
     }
 }

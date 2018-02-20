@@ -1,5 +1,7 @@
 package me.joshlin.a3565lib.component.drivetrain;
 
+import com.qualcomm.robotcore.util.Range;
+
 /**
  * Created by 3565 on 2/15/2018.
  */
@@ -13,7 +15,7 @@ public class DriveMath {
     /**
      * Converts an angle to a vector
      *
-     * @param angle angle (θ) of vector
+     * @param angle  angle (θ) of vector
      * @param length length of vector
      * @return the vector
      */
@@ -61,34 +63,13 @@ public class DriveMath {
             driveMatrix[i] = xMatrix[i] + yMatrix[i] + turnMatrix[i];
         }
 
-        //driveMatrix = normalize(driveMatrix);
+        for (int i = 0; i < 4; i++) {
+            driveMatrix[i] = Range.clip(driveMatrix[i], -1, 1);
+        }
+
+        // driveMatrix = normalize(driveMatrix);
 
         return driveMatrix;
-    }
-
-    /**
-     * Convert an angle to mecanum motor values
-     *
-     * @param angle angle (θ) of vector
-     * @param length length of vector
-     * @return the values for each of the motors
-     */
-    public double[] angleToMotor(double angle, double length) {
-        return angleToMotor(angle, length, 0);
-    }
-
-    /**
-     * Convert an angle to mecanum motor values
-     *
-     * @param angle angle (θ) of vector
-     * @param length length of vector
-     * @param turn the amount to turn (-1 to 1 [left to right])
-     * @return the values for each of the motors
-     */
-    public double[] angleToMotor(double angle, double length, double turn) {
-        double[] vector = angleToVector(angle, length);
-
-        return vectorToMotors(vector[0], vector[1], turn);
     }
 
     /**
@@ -112,5 +93,30 @@ public class DriveMath {
         }
 
         return vector;
+    }
+
+    /**
+     * Convert an angle to mecanum motor values
+     *
+     * @param angle  angle (θ) of vector
+     * @param length length of vector
+     * @return the values for each of the motors
+     */
+    public static double[] angleToMotor(double angle, double length) {
+        return angleToMotor(angle, length, 0);
+    }
+
+    /**
+     * Convert an angle to mecanum motor values
+     *
+     * @param angle  angle (θ) of vector
+     * @param length length of vector
+     * @param turn   the amount to turn (-1 to 1 [left to right])
+     * @return the values for each of the motors
+     */
+    public static double[] angleToMotor(double angle, double length, double turn) {
+        double[] vector = angleToVector(angle, length);
+
+        return vectorToMotors(vector[0], vector[1], turn);
     }
 }

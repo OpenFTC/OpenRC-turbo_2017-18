@@ -11,7 +11,11 @@ import java.util.ArrayList;
  */
 
 public class MultiDcMotor implements DcMotor {
-    ArrayList<DcMotor> motors;
+    ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
+
+    @Deprecated
+    public MultiDcMotor() {
+    }
 
     public MultiDcMotor(DcMotor... motors) {
         for (DcMotor motor : motors) {
@@ -21,6 +25,10 @@ public class MultiDcMotor implements DcMotor {
 
     public void add(DcMotor motor) {
         motors.add(motor);
+    }
+
+    public void remove(DcMotor motor) {
+        motors.remove(motor);
     }
 
     /**
