@@ -48,12 +48,12 @@ public class TestTurn90Degrees extends CVLinearOpMode {
         while (opModeIsActive()) {
             do {
                 currentAngle = imuObj.getAngle();
-                drivetrain.move(DriveMath.vectorToMotors(0, 0, -.25));
+                drivetrain.move(DriveMath.inputsToMotors(0, 0, -.25));
                 telemetry.addData("Current Angle", currentAngle);
                 telemetry.update();
             } while (opModeIsActive() && currentAngle < 90);
 
-            drivetrain.move(DriveMath.vectorToMotors(0, 0, 0));
+            drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
 
             robot.beep();
             imuObj.resetAngle();

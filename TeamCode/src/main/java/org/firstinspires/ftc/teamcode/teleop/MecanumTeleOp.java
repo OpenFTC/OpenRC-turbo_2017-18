@@ -42,7 +42,7 @@ public class MecanumTeleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            drivetrain.move(DriveMath.vectorToMotors(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x));
+            drivetrain.move(DriveMath.inputsToMotors(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x));
             inputHandler.handleInput();
             telemetry.addData("Status", "Running");
             telemetry.addData("Intake", inputHandler.getIntake().getStatus());

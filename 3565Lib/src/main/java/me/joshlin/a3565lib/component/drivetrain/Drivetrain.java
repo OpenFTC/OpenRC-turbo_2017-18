@@ -12,6 +12,6 @@ public abstract class Drivetrain {
     public void move(double[] driveMatrix, long milliseconds) {
         move(driveMatrix);
         new Sleep().javaIsDumb(milliseconds);
-        move(DriveMath.vectorToMotors(0, 0, 0));
+        move(DriveMath.inputsToMotors(0, 0, 0));
     }
 }

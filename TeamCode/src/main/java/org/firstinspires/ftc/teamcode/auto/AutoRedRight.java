@@ -78,8 +78,8 @@ public class AutoRedRight extends CVLinearOpMode {
 
         sleep(1000);
 
-        drivetrain.move(DriveMath.vectorToMotors(0, -.5, 0), 2100);
-        drivetrain.move(DriveMath.vectorToMotors(-.5, 0, 0), 800);
+        drivetrain.move(DriveMath.inputsToMotors(0, -.5, 0), 2100);
+        drivetrain.move(DriveMath.inputsToMotors(-.5, 0, 0), 800);
 
         currentAngle = imuObj.getAngle();
 
@@ -87,16 +87,16 @@ public class AutoRedRight extends CVLinearOpMode {
             currentAngle = imuObj.getAngle();
 
             if (currentAngle < -3) {
-                drivetrain.move(DriveMath.vectorToMotors(0, 0, -0.06));
+                drivetrain.move(DriveMath.inputsToMotors(0, 0, -0.06));
             } else if (currentAngle > 3) {
-                drivetrain.move(DriveMath.vectorToMotors(0, 0, 0.06));
+                drivetrain.move(DriveMath.inputsToMotors(0, 0, 0.06));
             }
 
             telemetry.addData("Current Heading", currentAngle);
             telemetry.update();
         }
 
-        drivetrain.move(DriveMath.vectorToMotors(0, 0, 0));
+        drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
 
         cryptoboxDetector.enable();
 
@@ -121,13 +121,13 @@ public class AutoRedRight extends CVLinearOpMode {
             if (inRange(targetPosLocation, (cryptoboxDetector.getFrameSize().width) - 2, (cryptoboxDetector.getFrameSize().width) + 2)) {
                 aligned = true;
             } else if (targetPosLocation < (cryptoboxDetector.getFrameSize().width) - 2) {
-                drivetrain.move(DriveMath.vectorToMotors(0, -.03, 0));
+                drivetrain.move(DriveMath.inputsToMotors(0, -.03, 0));
             } else if (targetPosLocation > (cryptoboxDetector.getFrameSize().width) + 2) {
-                drivetrain.move(DriveMath.vectorToMotors(0, .03, 0));
+                drivetrain.move(DriveMath.inputsToMotors(0, .03, 0));
             }
 
             if (!cryptoboxDetector.isCryptoBoxDetected() || !cryptoboxDetector.isColumnDetected()) {
-                drivetrain.move(DriveMath.vectorToMotors(0, 0, 0));
+                drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
             }
 
             telemetry.addData("isCryptoBoxDetected", cryptoboxDetector.isCryptoBoxDetected());
@@ -139,7 +139,7 @@ public class AutoRedRight extends CVLinearOpMode {
             telemetry.update();
         }
 
-        drivetrain.move(DriveMath.vectorToMotors(0, 0, 0));
+        drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
 
 
         sleep(2000);
@@ -156,21 +156,21 @@ public class AutoRedRight extends CVLinearOpMode {
 
         while (opModeIsActive() && !inRange(currentAngle, -92, -88)) {
             currentAngle = imuObj.getAngle();
-            drivetrain.move(DriveMath.vectorToMotors(0, 0, .10));
+            drivetrain.move(DriveMath.inputsToMotors(0, 0, .10));
             telemetry.addData("Turning", "");
             telemetry.addData("Angle", currentAngle);
             telemetry.update();
         }
 
-        drivetrain.move(DriveMath.vectorToMotors(0, 0, 0), 2000);
+        drivetrain.move(DriveMath.inputsToMotors(0, 0, 0), 2000);
 
-        drivetrain.move(DriveMath.vectorToMotors(0, -.3, 0), 3000);
+        drivetrain.move(DriveMath.inputsToMotors(0, -.3, 0), 3000);
 
         flipper.up();
 
         sleep(2000);
 
-        drivetrain.move(DriveMath.vectorToMotors(0, -.2, 0), 500);
+        drivetrain.move(DriveMath.inputsToMotors(0, -.2, 0), 500);
 
         robot.beep();
     }
