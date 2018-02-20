@@ -96,6 +96,7 @@ public class DriveMath {
 
     //normalizes an input vector of any dimension
     //(scales a vector so its length is 1 (one) unit)
+    //this math is independent of the robot itself and will work even with vectors of higher dimensions
     private static double[] normalize(double[] vector) {
 
         //finds length of vector
@@ -122,6 +123,7 @@ public class DriveMath {
         return inputsToMotors(x, y, turn); //just runs the other method
     }
 
+
     //converts a polar vector directly to the motor values
     //this method includes a "turn" value
     public static double[] angleToMotors(double angle, double length, double turn){
@@ -135,6 +137,7 @@ public class DriveMath {
         //returns motor values
         return matrix;
     }
+
 
     //converts a polar vector directly to the motor values
     //this method does not inclue a "turn" value (defaults to 0)
