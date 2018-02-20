@@ -3,7 +3,8 @@ package me.joshlin.a3565lib.component.drivetrain;
 /**
  * Created by 3565 on 2/15/2018.
  *
- * by LEO
+ * Made by LEO (See? I'm helping)
+ *
  * ======================================================================================
  * Math involved in converting input values (vectors / directions) to the motor values
  * required to move the robot in that direction using mechanum wheels.
