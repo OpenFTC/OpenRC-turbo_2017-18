@@ -122,5 +122,23 @@ public class DriveMath {
         return inputsToMotors(x, y, turn); //just runs the other method
     }
 
-    //public static double[] angleToMotors(double angle, double)
+    //converts a polar vector directly to the motor values
+    //this method includes a "turn" value
+    public static double[] angleToMotors(double angle, double length, double turn){
+
+        //converts polar vector to rectangular vector
+        double[] vector = angleToVector(angle, length);
+
+        //converts rectrangular vector to motor values
+        double[] matrix = vectorToMotors(vector[0], vector[1], turn);
+
+        //returns motor values
+        return matrix;
+    }
+
+    //converts a polar vector directly to the motor values
+    //this method does not inclue a "turn" value (defaults to 0)
+    public static double[] angleToMotors(double angle, double length){
+        return angleToMotors(angle, length, 0);
+    }
 }
