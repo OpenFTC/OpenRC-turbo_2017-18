@@ -6,6 +6,7 @@ import com.disnodeteam.dogecv.detectors.JewelDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -18,7 +19,7 @@ import me.joshlin.a3565lib.vuforia.ClosableVuforiaLocalizer;
  * Created by josh on 2/18/18.
  */
 
-public abstract class CVLinearOpMode extends LinearOpMode {
+public abstract class SensorLinearOpMode extends LinearOpMode {
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -34,6 +35,8 @@ public abstract class CVLinearOpMode extends LinearOpMode {
     protected BNO055IMU imu;
 
     protected JewelDetector jewelDetector;
+
+    protected ElapsedTime runtime = new ElapsedTime();
 
     public void initVuforia() {
         /*
@@ -92,8 +95,20 @@ public abstract class CVLinearOpMode extends LinearOpMode {
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
     }
 
-    public void initJewelDetector(Alliance alliance) {
+    public void initJewelDetector() {
+        jewelDetector = new JewelDetector();
+        jewelDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
 
+        //Jewel Detector Settings
+        jewelDetector.downScaleFactor = 0.4;
+        jewelDetector.ratioWeight = 15;
+        jewelDetector.perfectRatio = 1.0;
+        jewelDetector.areaWeight = 0.75;
+        jewelDetector.maxDiffrence = 250;
+        jewelDetector.debugContours = true;
+        jewelDetector.detectionMode = JewelDetector.JewelDetectionMode.PERFECT_AREA;
+        jewelDetector.perfectArea = 2150;
+        jewelDetector.minArea = 1800;
     }
 
     public void initBNO055IMU(BNO055IMU aImu) {

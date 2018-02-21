@@ -33,6 +33,30 @@ public class Camera2Renderer extends CameraGLRendererBase {
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
+    private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
+
+        @Override
+        public void onOpened(CameraDevice cameraDevice) {
+            mCameraDevice = cameraDevice;
+            mCameraOpenCloseLock.release();
+            createCameraPreviewSession();
+        }
+
+        @Override
+        public void onDisconnected(CameraDevice cameraDevice) {
+            cameraDevice.close();
+            mCameraDevice = null;
+            mCameraOpenCloseLock.release();
+        }
+
+        @Override
+        public void onError(CameraDevice cameraDevice, int error) {
+            cameraDevice.close();
+            mCameraDevice = null;
+            mCameraOpenCloseLock.release();
+        }
+
+    };
 
     Camera2Renderer(CameraGLSurfaceView view) {
         super(view);
@@ -45,7 +69,6 @@ public class Camera2Renderer extends CameraGLRendererBase {
         super.doStart();
     }
 
-
     @Override
     protected void doStop() {
         Log.d(LOGTAG, "doStop");
@@ -54,8 +77,8 @@ public class Camera2Renderer extends CameraGLRendererBase {
     }
 
     boolean cacPreviewSize(final int width, final int height) {
-        Log.i(LOGTAG, "cacPreviewSize: "+width+"x"+height);
-        if(mCameraID == null) {
+        Log.i(LOGTAG, "cacPreviewSize: " + width + "x" + height);
+        if (mCameraID == null) {
             Log.e(LOGTAG, "Camera isn't initialized!");
             return false;
         }
@@ -67,23 +90,23 @@ public class Camera2Renderer extends CameraGLRendererBase {
             StreamConfigurationMap map = characteristics
                     .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             int bestWidth = 0, bestHeight = 0;
-            float aspect = (float)width / height;
+            float aspect = (float) width / height;
             for (Size psize : map.getOutputSizes(SurfaceTexture.class)) {
                 int w = psize.getWidth(), h = psize.getHeight();
-                Log.d(LOGTAG, "trying size: "+w+"x"+h);
-                if ( width >= w && height >= h &&
-                     bestWidth <= w && bestHeight <= h &&
-                     Math.abs(aspect - (float)w/h) < 0.2 ) {
+                Log.d(LOGTAG, "trying size: " + w + "x" + h);
+                if (width >= w && height >= h &&
+                        bestWidth <= w && bestHeight <= h &&
+                        Math.abs(aspect - (float) w / h) < 0.2) {
                     bestWidth = w;
                     bestHeight = h;
                 }
             }
-            Log.i(LOGTAG, "best size: "+bestWidth+"x"+bestHeight);
-            if( bestWidth == 0 || bestHeight == 0 ||
-                mPreviewSize.getWidth() == bestWidth &&
-                mPreviewSize.getHeight() == bestHeight )
+            Log.i(LOGTAG, "best size: " + bestWidth + "x" + bestHeight);
+            if (bestWidth == 0 || bestHeight == 0 ||
+                    mPreviewSize.getWidth() == bestWidth &&
+                            mPreviewSize.getHeight() == bestHeight) {
                 return false;
-            else {
+            } else {
                 mPreviewSize = new Size(bestWidth, bestHeight);
                 return true;
             }
@@ -103,25 +126,25 @@ public class Camera2Renderer extends CameraGLRendererBase {
         CameraManager manager = (CameraManager) mView.getContext().getSystemService(Context.CAMERA_SERVICE);
         try {
             String camList[] = manager.getCameraIdList();
-            if(camList.length == 0) {
+            if (camList.length == 0) {
                 Log.e(LOGTAG, "Error: camera isn't detected.");
                 return;
             }
-            if(id == CameraBridgeViewBase.CAMERA_ID_ANY) {
+            if (id == CameraBridgeViewBase.CAMERA_ID_ANY) {
                 mCameraID = camList[0];
             } else {
                 for (String cameraID : camList) {
                     CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
-                    if( id == CameraBridgeViewBase.CAMERA_ID_BACK &&
-                        characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK ||
-                        id == CameraBridgeViewBase.CAMERA_ID_FRONT &&
-                        characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT) {
+                    if (id == CameraBridgeViewBase.CAMERA_ID_BACK &&
+                            characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK ||
+                            id == CameraBridgeViewBase.CAMERA_ID_FRONT &&
+                                    characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT) {
                         mCameraID = cameraID;
                         break;
                     }
                 }
             }
-            if(mCameraID != null) {
+            if (mCameraID != null) {
                 if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                     throw new RuntimeException(
                             "Time out waiting to lock camera opening.");
@@ -160,36 +183,12 @@ public class Camera2Renderer extends CameraGLRendererBase {
         }
     }
 
-    private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
-
-        @Override
-        public void onOpened(CameraDevice cameraDevice) {
-            mCameraDevice = cameraDevice;
-            mCameraOpenCloseLock.release();
-            createCameraPreviewSession();
-        }
-
-        @Override
-        public void onDisconnected(CameraDevice cameraDevice) {
-            cameraDevice.close();
-            mCameraDevice = null;
-            mCameraOpenCloseLock.release();
-        }
-
-        @Override
-        public void onError(CameraDevice cameraDevice, int error) {
-            cameraDevice.close();
-            mCameraDevice = null;
-            mCameraOpenCloseLock.release();
-        }
-
-    };
-
     private void createCameraPreviewSession() {
-        int w=mPreviewSize.getWidth(), h=mPreviewSize.getHeight();
-        Log.i(LOGTAG, "createCameraPreviewSession("+w+"x"+h+")");
-        if(w<0 || h<0)
+        int w = mPreviewSize.getWidth(), h = mPreviewSize.getHeight();
+        Log.i(LOGTAG, "createCameraPreviewSession(" + w + "x" + h + ")");
+        if (w < 0 || h < 0) {
             return;
+        }
         try {
             mCameraOpenCloseLock.acquire();
             if (null == mCameraDevice) {
@@ -202,7 +201,7 @@ public class Camera2Renderer extends CameraGLRendererBase {
                 Log.e(LOGTAG, "createCameraPreviewSession: mCaptureSession is already started");
                 return;
             }
-            if(null == mSTexture) {
+            if (null == mSTexture) {
                 mCameraOpenCloseLock.release();
                 Log.e(LOGTAG, "createCameraPreviewSession: preview SurfaceTexture is null");
                 return;
@@ -218,7 +217,7 @@ public class Camera2Renderer extends CameraGLRendererBase {
             mCameraDevice.createCaptureSession(Arrays.asList(surface),
                     new CameraCaptureSession.StateCallback() {
                         @Override
-                        public void onConfigured( CameraCaptureSession cameraCaptureSession) {
+                        public void onConfigured(CameraCaptureSession cameraCaptureSession) {
                             mCaptureSession = cameraCaptureSession;
                             try {
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
@@ -244,8 +243,7 @@ public class Camera2Renderer extends CameraGLRendererBase {
         } catch (InterruptedException e) {
             throw new RuntimeException(
                     "Interrupted while createCameraPreviewSession", e);
-        }
-        finally {
+        } finally {
             //mCameraOpenCloseLock.release();
         }
     }
@@ -260,8 +258,9 @@ public class Camera2Renderer extends CameraGLRendererBase {
 
     private void stopBackgroundThread() {
         Log.i(LOGTAG, "stopBackgroundThread");
-        if(mBackgroundThread == null)
+        if (mBackgroundThread == null) {
             return;
+        }
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -274,17 +273,21 @@ public class Camera2Renderer extends CameraGLRendererBase {
 
     @Override
     protected void setCameraPreviewSize(int width, int height) {
-        Log.i(LOGTAG, "setCameraPreviewSize("+width+"x"+height+")");
-        if(mMaxCameraWidth  > 0 && mMaxCameraWidth  < width)  width  = mMaxCameraWidth;
-        if(mMaxCameraHeight > 0 && mMaxCameraHeight < height) height = mMaxCameraHeight;
+        Log.i(LOGTAG, "setCameraPreviewSize(" + width + "x" + height + ")");
+        if (mMaxCameraWidth > 0 && mMaxCameraWidth < width) {
+            width = mMaxCameraWidth;
+        }
+        if (mMaxCameraHeight > 0 && mMaxCameraHeight < height) {
+            height = mMaxCameraHeight;
+        }
         try {
             mCameraOpenCloseLock.acquire();
 
             boolean needReconfig = cacPreviewSize(width, height);
-            mCameraWidth  = mPreviewSize.getWidth();
+            mCameraWidth = mPreviewSize.getWidth();
             mCameraHeight = mPreviewSize.getHeight();
 
-            if( !needReconfig ) {
+            if (!needReconfig) {
                 mCameraOpenCloseLock.release();
                 return;
             }

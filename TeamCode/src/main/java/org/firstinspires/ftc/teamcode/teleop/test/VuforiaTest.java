@@ -4,14 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.teamcode.CVLinearOpMode;
+import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
 /**
  * Created by josh on 2/17/18.
  */
 
 @TeleOp(name = "Vuforia Test", group = "test")
-public class VuforiaTest extends CVLinearOpMode {
+public class VuforiaTest extends SensorLinearOpMode {
 
     /**
      * Override this method and place your code here.

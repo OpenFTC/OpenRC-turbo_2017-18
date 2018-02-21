@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import com.disnodeteam.dogecv.detectors.JewelDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 import org.firstinspires.ftc.teamcode.RevbotMecanum;
+import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
@@ -13,13 +14,15 @@ import me.joshlin.a3565lib.component.interfaces.Pivot;
 import me.joshlin.a3565lib.component.sensor.IMU;
 import me.joshlin.a3565lib.component.servo.ServoPivot;
 import me.joshlin.a3565lib.enums.Alliance;
+import me.joshlin.a3565lib.enums.Direction;
+import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
  * Created by josh on 2/19/18.
  */
 
 @Autonomous(name = "Auto Red Right", group = "Auto")
-public class AutoRedRight extends CVLinearOpMode {
+public class AutoRedRight extends SensorLinearOpMode {
     static final int LEFT_POSITION = 0;
     static final int CENTER_POSITION = 1;
     static final int RIGHT_POSITION = 2;
@@ -39,9 +42,13 @@ public class AutoRedRight extends CVLinearOpMode {
 
     Pivot flipper;
 
-    static final int PRECISION_VALUE = 2;
+    static final int TURN_PRECISION_VALUE = 2;
 
-    static final int CRYPTO_CENTER_CORRECTION = -40;
+    static final int CRYPTO_PRECISION_VALUE = 6;
+
+    static final int CRYPTO_CENTER_CORRECTION = -160;
+
+    JewelDetector.JewelOrder jewelOrder;
 
     /**
      * Override this method and place your code here.
@@ -55,6 +62,7 @@ public class AutoRedRight extends CVLinearOpMode {
     public void runOpMode() throws InterruptedException {
         initVuforia();
         initCryptobox(Alliance.BLUE);
+        initJewelDetector();
 
         robot.init(hardwareMap);
         drivetrain = new Mecanum(robot.frontL, robot.frontR, robot.backL, robot.backR);
@@ -70,7 +78,7 @@ public class AutoRedRight extends CVLinearOpMode {
 
         waitForStart();
 
-        drivetrain.move(DriveMath.inputsToMotors(1, 0 , 0), 100);
+        drivetrain.drive(Direction.RIGHT, .5, 200);
 
         relicTrackables.activate();
 
@@ -82,32 +90,37 @@ public class AutoRedRight extends CVLinearOpMode {
 
         vuforia.close();
 
-        drivetrain.move(DriveMath.inputsToMotors(-1, 0 , 0), 100);
+        jewelDetector.enable();
+
+        jewelOrder = jewelDetector.getCurrentOrder();
+        telemetry.addData("Jewel Order", jewelOrder);
+        telemetry.update();
+
+        jewelDetector.disable();
+
+        drivetrain.drive(Direction.LEFT, .5, 200);
 
         sleep(1000);
 
-        drivetrain.move(DriveMath.inputsToMotors(0, -.5, 0), 2100);
-        drivetrain.move(DriveMath.inputsToMotors(-.5, 0, 0), 800);
+        drivetrain.drive(Direction.FORWARD, .5, 2100);
+        drivetrain.drive(Direction.LEFT, .5, 800);
 
         currentAngle = imuObj.getAngle();
 
-        while (opModeIsActive() && !inRange(currentAngle, 0 - PRECISION_VALUE, 0 + PRECISION_VALUE)) {
+        while (opModeIsActive() && !DriveMath.inRange(currentAngle, 0 - TURN_PRECISION_VALUE, 0 + TURN_PRECISION_VALUE)) {
             currentAngle = imuObj.getAngle();
 
             if (opModeIsActive() && currentAngle < -2) {
-                drivetrain.move(DriveMath.inputsToMotors(0, 0, 0.06));
+                drivetrain.turn(TurnDirection.LEFT, .06, 1000);
             } else if (opModeIsActive() && currentAngle > 2) {
-                drivetrain.move(DriveMath.inputsToMotors(0, 0, -0.06));
+                drivetrain.turn(TurnDirection.RIGHT, .06, 1000);
             }
 
             telemetry.addData("Current Heading", currentAngle);
             telemetry.update();
         }
 
-        drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
-
-
-
+        drivetrain.stop();
 
         switch (vuMark) {
             case LEFT:
@@ -127,17 +140,21 @@ public class AutoRedRight extends CVLinearOpMode {
 
         while (opModeIsActive() && !aligned) {
             currentCryptoboxPositions = cryptoboxDetector.getCryptoBoxPositions();
-            targetPosLocation = currentCryptoboxPositions[targetPosition];
+            if (currentCryptoboxPositions != null) {
+                targetPosLocation = currentCryptoboxPositions[targetPosition];
+            } else {
+                targetPosLocation = (int) cryptoboxDetector.getFrameSize().width;
+            }
 
             if (opModeIsActive() && !cryptoboxDetector.isColumnDetected()) {
                 drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
             } else {
-                if (opModeIsActive() && inRange(targetPosLocation, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - PRECISION_VALUE*4, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + PRECISION_VALUE*4)) {
+                if (opModeIsActive() && DriveMath.inRange(targetPosLocation, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - CRYPTO_PRECISION_VALUE, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + CRYPTO_PRECISION_VALUE)) {
                     aligned = true;
-                } else if (opModeIsActive() && targetPosLocation < (cryptoboxDetector.getFrameSize().width) - PRECISION_VALUE) {
-                    drivetrain.move(DriveMath.inputsToMotors(0, -.1, 0));
-                } else if (opModeIsActive() && targetPosLocation > (cryptoboxDetector.getFrameSize().width) + PRECISION_VALUE) {
-                    drivetrain.move(DriveMath.inputsToMotors(0, .1, 0));
+                } else if (opModeIsActive() && targetPosLocation < (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - CRYPTO_CENTER_CORRECTION) {
+                    drivetrain.drive(Direction.FORWARD, .1);
+                } else if (opModeIsActive() && targetPosLocation > (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + CRYPTO_PRECISION_VALUE) {
+                    drivetrain.drive(Direction.BACKWARD, .1);
                 }
             }
 
@@ -147,10 +164,14 @@ public class AutoRedRight extends CVLinearOpMode {
             telemetry.addData("Column Left ", cryptoboxDetector.getCryptoBoxLeftPosition());
             telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
             telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
+
+            // TODO: show target position
+            telemetry.addData("Frame Width", cryptoboxDetector.getFrameSize().width);
+
             telemetry.update();
         }
 
-        drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
+        drivetrain.stop();
 
 
         sleep(2000);
@@ -165,32 +186,36 @@ public class AutoRedRight extends CVLinearOpMode {
         telemetry.update();
 
 
-        while (opModeIsActive() && !inRange(currentAngle, -90 - PRECISION_VALUE, -90 + PRECISION_VALUE)) {
+        while (opModeIsActive() && !DriveMath.inRange(currentAngle, -90 - TURN_PRECISION_VALUE, -90 + TURN_PRECISION_VALUE)) {
             currentAngle = imuObj.getAngle();
-            drivetrain.move(DriveMath.inputsToMotors(0, 0, -.10));
+            drivetrain.turn(TurnDirection.RIGHT, .1);
             telemetry.addData("Turning", "");
             telemetry.addData("Angle", currentAngle);
             telemetry.update();
         }
 
-        drivetrain.move(DriveMath.inputsToMotors(0, 0, 0), 1000);
+        drivetrain.stop();
 
-        drivetrain.move(DriveMath.inputsToMotors(0, -.3, 0), 2000);
+        sleep(1000);
+
+        drivetrain.drive(Direction.FORWARD, .3, 2000);
 
         flipper.up();
 
         sleep(1000);
 
-        drivetrain.move(DriveMath.inputsToMotors(0, .3, 0), 1000);
+        drivetrain.drive(Direction.BACKWARD, .3, 1000);
 
         sleep(2000);
 
-        drivetrain.move(DriveMath.inputsToMotors(0, -.2, 0), 500);
+        drivetrain.drive(Direction.FORWARD, .2, 500);
+
+        flipper.down();
 
         robot.beep();
     }
 
-    private boolean inRange(double number, double lower, double upper) {
-        return lower < number && number < upper;
+    protected boolean correctTurn() {
+        return false;
     }
 }

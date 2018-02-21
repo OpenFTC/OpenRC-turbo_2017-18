@@ -69,7 +69,7 @@ public class DriveMath {
         //this part just makes editing the rest of the code easier
         double x_input = x;
         double y_input = y;
-        double turn_input = ((y_input>0) ? -turn:turn); //the turning is reversed if the robot is driving backwards
+        double turn_input = ((y_input>0) ? turn:-turn); //the turning is reversed if the robot is driving backwards
 
         double[] driveMatrix = new double[4];
 
@@ -144,5 +144,16 @@ public class DriveMath {
     //this method does not inclue a "turn" value (defaults to 0)
     public static double[] angleToMotors(double angle, double length){
         return angleToMotors(angle, length, 0);
+    }
+
+    /**
+     * Checks to see if a number is in a range
+     * @param number the number to check
+     * @param lower the lower bound of the range
+     * @param upper the upper bound of the range
+     * @return true if the number is in the range
+     */
+    public static boolean inRange(double number, double lower, double upper) {
+        return lower < number && number < upper;
     }
 }

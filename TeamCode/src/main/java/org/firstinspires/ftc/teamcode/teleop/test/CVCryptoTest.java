@@ -1,19 +1,14 @@
 package org.firstinspires.ftc.teamcode.teleop.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.CVLinearOpMode;
-
-import me.joshlin.a3565lib.enums.Alliance;
+import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
 /**
  * Created by josh on 2/18/18.
  */
 @TeleOp(name = "CV Crypto Test")
-public class CVCryptoTest extends CVLinearOpMode {
-
-    private ElapsedTime runtime = new ElapsedTime();
+public class CVCryptoTest extends SensorLinearOpMode {
 
     /**
      * Override this method and place your code here.
@@ -25,10 +20,10 @@ public class CVCryptoTest extends CVLinearOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        // init cryptobox detector
-        initDogeCV(Alliance.BLUE);
+        // init jewel detector
+        initJewelDetector();
 
-        cryptoboxDetector.enable();
+        jewelDetector.enable();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -37,16 +32,12 @@ public class CVCryptoTest extends CVLinearOpMode {
 
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("isCryptoBoxDetected", cryptoboxDetector.isCryptoBoxDetected());
-            telemetry.addData("isColumnDetected ", cryptoboxDetector.isColumnDetected());
 
-            telemetry.addData("Column Left ", cryptoboxDetector.getCryptoBoxLeftPosition());
-            telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
-            telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
-            telemetry.addData("Screen Resolution", cryptoboxDetector.getFrameSize().width);
+            telemetry.addData("Current Order", "Jewel Order: " + jewelDetector.getCurrentOrder().toString()); // Current Result
+            telemetry.addData("Last Order", "Jewel Order: " + jewelDetector.getLastOrder().toString()); // Last Known Result
             telemetry.update();
         }
 
-        cryptoboxDetector.disable();
+        jewelDetector.disable();
     }
 }

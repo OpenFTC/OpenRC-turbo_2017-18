@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.auto.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 import org.firstinspires.ftc.teamcode.RevbotMecanum;
+import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
@@ -15,7 +15,7 @@ import me.joshlin.a3565lib.component.sensor.IMU;
  */
 
 @Autonomous(name = "Test turn 90", group = "test")
-public class TestTurn90Degrees extends CVLinearOpMode {
+public class TestTurn90Degrees extends SensorLinearOpMode {
     RevbotMecanum robot = new RevbotMecanum();
     Drivetrain drivetrain;
 
