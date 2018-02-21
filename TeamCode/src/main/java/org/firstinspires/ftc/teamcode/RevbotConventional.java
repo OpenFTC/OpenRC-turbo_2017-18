@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import me.joshlin.a3565lib.component.RobotMap;
+import me.joshlin.a3565lib.RobotMap;
 
 /**
  * Created by 3565 on 2/16/2018.

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import me.joshlin.a3565lib.component.RobotMap;
+import me.joshlin.a3565lib.RobotMap;
 
 /**
  * Created by 3565 on 2/15/2018.
@@ -54,6 +54,9 @@ public class RevbotMecanum extends RobotMap {
         // Set motors to run with encoders
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER, frontL, frontR);
         setMode(DcMotor.RunMode.RUN_USING_ENCODER, backL, backR);
+
+        // Set all motors to brake
+        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE, frontL, frontR, backL, backR);
 
         // Reverse right motor
         rightSpinner.setDirection(DcMotorSimple.Direction.REVERSE);

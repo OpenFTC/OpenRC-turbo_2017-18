@@ -4,13 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
-import me.joshlin.a3565lib.enums.Alliance;
-
 /**
  * Created by josh on 2/18/18.
  */
-@TeleOp(name = "CV Crypto Test")
-public class CVCryptoTest extends SensorLinearOpMode {
+@TeleOp(name = "CV Jewel Test")
+public class CVJewelTest extends SensorLinearOpMode {
 
     /**
      * Override this method and place your code here.
@@ -23,9 +21,9 @@ public class CVCryptoTest extends SensorLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // init jewel detector
-        initCryptobox(Alliance.BLUE);
+        initJewelDetector();
 
-        cryptoboxDetector.enable();
+        jewelDetector.enable();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -35,15 +33,11 @@ public class CVCryptoTest extends SensorLinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
-            telemetry.addData("isCryptoBoxDetected", cryptoboxDetector.isCryptoBoxDetected());
-            telemetry.addData("isColumnDetected ", cryptoboxDetector.isColumnDetected());
-
-            telemetry.addData("Column Left ", cryptoboxDetector.getCryptoBoxLeftPosition());
-            telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
-            telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
+            telemetry.addData("Current Order", "Jewel Order: " + jewelDetector.getCurrentOrder().toString()); // Current Result
+            telemetry.addData("Last Order", "Jewel Order: " + jewelDetector.getLastOrder().toString()); // Last Known Result
             telemetry.update();
         }
 
-        cryptoboxDetector.disable();
+        jewelDetector.disable();
     }
 }

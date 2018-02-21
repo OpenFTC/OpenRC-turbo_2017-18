@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.RevbotMecanum;
 
 import me.joshlin.a3565lib.InputHandler;
-import me.joshlin.a3565lib.component.RobotMap;
+import me.joshlin.a3565lib.RobotMap;
 import me.joshlin.a3565lib.component.hardware.MultiDcMotor;
 import me.joshlin.a3565lib.component.interfaces.Intake;
 import me.joshlin.a3565lib.component.interfaces.Lift;

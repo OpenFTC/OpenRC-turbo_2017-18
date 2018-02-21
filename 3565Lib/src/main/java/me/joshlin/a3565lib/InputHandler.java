@@ -2,8 +2,6 @@ package me.joshlin.a3565lib;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import me.joshlin.a3565lib.component.RobotMap;
-
 /**
  * Created by josh on 2/17/18.
  */

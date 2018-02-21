@@ -30,9 +30,9 @@ public class RobotSensors {
             return Alliance.BLUE;
         } else if (color.red() > color.blue()) {
             return Alliance.RED;
-        } else {
-            return Alliance.UNKNOWN;
         }
+
+        return Alliance.BLUE;
     }
 
     /**

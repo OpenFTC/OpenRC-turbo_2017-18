@@ -23,17 +23,27 @@ import me.joshlin.a3565lib.enums.TurnDirection;
 
 @Autonomous(name = "Auto Red Right", group = "Auto")
 public class AutoRedRight extends SensorLinearOpMode {
+    // Parameters
     static final int LEFT_POSITION = 0;
     static final int CENTER_POSITION = 1;
     static final int RIGHT_POSITION = 2;
-    static final int TURN_PRECISION_VALUE = 2;
-    static final int CRYPTO_PRECISION_VALUE = 6;
-    static final int CRYPTO_CENTER_CORRECTION = -160;
+
+    // Change these to calibrate values =======
+    // Change this to change the turn margin
+    static final double TURN_PRECISION_VALUE = .5;
+    // Change this to change the cryptobox lineup margin
+    static final double CRYPTO_PRECISION_VALUE = 3;
+    // Change this to correct the center
+    static final double CRYPTO_CENTER_CORRECTION = 40;
+    static final double COLUMN_POSITION = 432;
+    static final double CORRECTED_COLUMN_POSITION = COLUMN_POSITION + CRYPTO_CENTER_CORRECTION;
+    // 475 is center position
     RelicRecoveryVuMark vuMark;
     RevbotMecanum robot = new RevbotMecanum();
     Drivetrain drivetrain;
     int targetPosition = CENTER_POSITION;
     int targetPosLocation;
+    double columnPosition = COLUMN_POSITION;
     int[] currentCryptoboxPositions;
     boolean aligned = false;
     IMU imuObj;
@@ -69,24 +79,18 @@ public class AutoRedRight extends SensorLinearOpMode {
 
         waitForStart();
 
+        runtime.reset();
+
         drivetrain.drive(Direction.RIGHT, .5, 200);
+        buildTelemetry();
 
-        currentAngle = imuObj.getAngle();
-
-        while (opModeIsActive() && !DriveMath.inRange(currentAngle, -TURN_PRECISION_VALUE, TURN_PRECISION_VALUE)) {
-            currentAngle = imuObj.getAngle();
-            correctTurn(currentAngle, 0, 1);
-
-            telemetry.addData("Current Heading", currentAngle);
-            telemetry.update();
-        }
+        correctTurn(0, 2);
 
         relicTrackables.activate();
 
         do {
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            telemetry.addData("VuMark", "%s visible", vuMark);
-            telemetry.update();
+            buildTelemetry();
         } while (opModeIsActive() && vuMark == RelicRecoveryVuMark.UNKNOWN);
 
         vuforia.close();
@@ -94,28 +98,18 @@ public class AutoRedRight extends SensorLinearOpMode {
         jewelDetector.enable();
 
         jewelOrder = jewelDetector.getCurrentOrder();
-        telemetry.addData("Jewel Order", jewelOrder);
-        telemetry.update();
+        buildTelemetry();
 
         jewelDetector.disable();
 
-        drivetrain.drive(Direction.LEFT, .5, 200);
-
         sleep(1000);
+        correctTurn(0);
 
         drivetrain.drive(Direction.FORWARD, .5, 2100);
-        drivetrain.drive(Direction.LEFT, .5, 800);
+        correctTurn(0);
+        drivetrain.drive(Direction.LEFT, .5, 1200);
 
-        currentAngle = imuObj.getAngle();
-
-        while (opModeIsActive() && !DriveMath.inRange(currentAngle, -TURN_PRECISION_VALUE, TURN_PRECISION_VALUE)) {
-            currentAngle = imuObj.getAngle();
-
-            correctTurn(currentAngle, 0);
-
-            telemetry.addData("Current Heading", currentAngle);
-            telemetry.update();
-        }
+        correctTurn(0);
 
         drivetrain.stop();
 
@@ -134,41 +128,37 @@ public class AutoRedRight extends SensorLinearOpMode {
         sleep(1000);
 
         cryptoboxDetector.enable();
-
-
-
         // This keeps crashing and I don't know why
-        while (opModeIsActive() && !aligned) {
+        do {
+            if (opModeIsActive() && !cryptoboxDetector.isCryptoBoxDetected() && vuMark.equals(RelicRecoveryVuMark.RIGHT)) {
+                targetPosition = CENTER_POSITION;
+                columnPosition = CORRECTED_COLUMN_POSITION;
+            } else if (opModeIsActive() && cryptoboxDetector.isCryptoBoxDetected() && vuMark.equals(RelicRecoveryVuMark.RIGHT)) {
+                targetPosition = RIGHT_POSITION;
+                columnPosition = COLUMN_POSITION;
+            }
+
             currentCryptoboxPositions = cryptoboxDetector.getCryptoBoxPositions();
             if (currentCryptoboxPositions != null) {
                 targetPosLocation = currentCryptoboxPositions[targetPosition];
             } else {
-                targetPosLocation = (int) cryptoboxDetector.getFrameSize().width;
+                targetPosLocation = (int) COLUMN_POSITION;
             }
 
             if (opModeIsActive() && !cryptoboxDetector.isColumnDetected()) {
-                drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
+                drivetrain.stop();
             } else {
-                if (opModeIsActive() && DriveMath.inRange(targetPosLocation, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - CRYPTO_PRECISION_VALUE, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + CRYPTO_PRECISION_VALUE)) {
+                if (opModeIsActive() && DriveMath.inRange(targetPosLocation, COLUMN_POSITION - CRYPTO_PRECISION_VALUE, COLUMN_POSITION + CRYPTO_PRECISION_VALUE)) {
                     aligned = true;
-                } else if (opModeIsActive() && targetPosLocation < (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - CRYPTO_CENTER_CORRECTION) {
+                } else if (opModeIsActive() && targetPosLocation < COLUMN_POSITION - CRYPTO_PRECISION_VALUE) {
                     drivetrain.drive(Direction.FORWARD, .07);
-                } else if (opModeIsActive() && targetPosLocation > (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + CRYPTO_PRECISION_VALUE) {
+                } else if (opModeIsActive() && targetPosLocation > COLUMN_POSITION + CRYPTO_PRECISION_VALUE) {
                     drivetrain.drive(Direction.BACKWARD, .07);
                 }
             }
 
-            telemetry.addData("isCryptoBoxDetected", cryptoboxDetector.isCryptoBoxDetected());
-            telemetry.addData("isColumnDetected ", cryptoboxDetector.isColumnDetected());
-
-            telemetry.addData("Column Left ", cryptoboxDetector.getCryptoBoxLeftPosition());
-            telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
-            telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
-
-            telemetry.addData("Target Position", targetPosLocation);
-
-            telemetry.update();
-        }
+            buildTelemetry();
+        } while (opModeIsActive() && !aligned);
 
         drivetrain.stop();
 
@@ -176,55 +166,79 @@ public class AutoRedRight extends SensorLinearOpMode {
         sleep(2000);
 
 
-        cryptoboxDetector.disable();
-
-
-        currentAngle = imuObj.getAngle();
-        telemetry.addData("Status", "Aligned");
-        telemetry.addData("Angle", currentAngle);
-        telemetry.update();
-
-
-        while (opModeIsActive() && !DriveMath.inRange(currentAngle, -90 - TURN_PRECISION_VALUE, -90 + TURN_PRECISION_VALUE)) {
-            currentAngle = imuObj.getAngle();
-            correctTurn(currentAngle, -90);
-            telemetry.addData("Turning", "");
-            telemetry.addData("Angle", currentAngle);
-            telemetry.update();
+        if (opModeIsActive()) {
+            cryptoboxDetector.disable();
         }
+
+        buildTelemetry();
+
+        correctTurn(-86);
 
         drivetrain.stop();
 
         sleep(1000);
 
-        drivetrain.drive(Direction.FORWARD, .3, 2000);
+        drivetrain.drive(Direction.FORWARD, .3, 2500);
 
         flipper.up();
 
         sleep(1000);
 
-        drivetrain.drive(Direction.BACKWARD, .3, 1000);
+        drivetrain.drive(Direction.BACKWARD, .3, 750);
 
-        sleep(2000);
+        sleep(1000);
 
-        drivetrain.drive(Direction.FORWARD, .2, 500);
+        drivetrain.drive(Direction.FORWARD, .2, 750);
+
+        sleep(1000);
+
+        drivetrain.drive(Direction.BACKWARD, .2, 750);
 
         flipper.down();
+
+        buildTelemetry();
+
+        sleep(1000);
+
+        buildTelemetry();
 
         robot.beep();
     }
 
-    protected void correctTurn(double currentAngle, double desiredAngle) {
-        correctTurn(currentAngle, desiredAngle, TURN_PRECISION_VALUE);
+    protected void correctTurn(double desiredAngle) {
+        correctTurn(desiredAngle, TURN_PRECISION_VALUE);
     }
 
-    protected void correctTurn(double currentAngle, double desiredAngle, double margin) {
-        if (opModeIsActive() && currentAngle < -margin) {
-            drivetrain.turn(TurnDirection.LEFT, .1);
-        } else if (opModeIsActive() && currentAngle > margin) {
-            drivetrain.turn(TurnDirection.RIGHT, .1);
-        } else {
-            drivetrain.stop();
+    protected void correctTurn(double desiredAngle, double margin) {
+        do {
+            currentAngle = imuObj.getAngle();
+            if (opModeIsActive() && currentAngle < desiredAngle - margin) {
+                drivetrain.turn(TurnDirection.LEFT, .2);
+            } else if (opModeIsActive() && currentAngle > desiredAngle + margin) {
+                drivetrain.turn(TurnDirection.RIGHT, .2);
+            } else {
+                drivetrain.stop();
+            }
+            buildTelemetry();
         }
+        while (opModeIsActive() && !DriveMath.inRange(currentAngle, desiredAngle - margin, desiredAngle + margin));
+    }
+
+    protected void buildTelemetry() {
+        telemetry.addData("Status", "Running, %s seconds", runtime.time());
+        telemetry.addData("Current Heading", currentAngle);
+        telemetry.addData("VuMark", "%s visible", vuMark);
+        telemetry.addData("Jewel Order", jewelOrder);
+
+        telemetry.addData("isCryptoBoxDetected", cryptoboxDetector.isCryptoBoxDetected());
+        telemetry.addData("isColumnDetected ", cryptoboxDetector.isColumnDetected());
+
+        telemetry.addData("Column Left ", cryptoboxDetector.getCryptoBoxLeftPosition());
+        telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
+        telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
+
+        telemetry.addData("Target Position | Target Column", "%s|%s", COLUMN_POSITION, targetPosition);
+
+        telemetry.update();
     }
 }

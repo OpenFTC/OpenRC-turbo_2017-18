@@ -1,4 +1,4 @@
-package me.joshlin.a3565lib.component;
+package me.joshlin.a3565lib;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -26,6 +26,12 @@ public abstract class RobotMap {
     public void setMode(DcMotor.RunMode mode, DcMotor... motors) {
         for (DcMotor motor : motors) {
             motor.setMode(mode);
+        }
+    }
+
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior, DcMotor... motors) {
+        for (DcMotor motor : motors) {
+            motor.setZeroPowerBehavior(zeroPowerBehavior);
         }
     }
 }

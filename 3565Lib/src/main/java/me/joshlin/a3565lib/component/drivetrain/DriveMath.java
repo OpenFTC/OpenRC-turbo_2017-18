@@ -1,33 +1,33 @@
 package me.joshlin.a3565lib.component.drivetrain;
 
 /**
- * Created by 3565 on 2/15/2018.
- *
+ * @author Leo
+ * <p>
  * Made by LEO (See? I'm helping)
- *
+ * <p>
  * ======================================================================================
  * Math involved in converting input values (vectors / directions) to the motor values
  * required to move the robot in that direction using mecanum wheels.
  * ======================================================================================
- *
+ * <p>
  * The motor values are passed around as arrays containing 4 double values:
- *
- *      {motor 1, motor 2, motor 3, motor 4}
- *
+ * <p>
+ * {motor 1, motor 2, motor 3, motor 4}
+ * <p>
  * The motors correspond to the array elements like so:
- *
- *      [Motor 1]                    [Motor 2]
- *                [^Front of robot^]
- *                [ROBOT base      ]
- *      [Motor 3]                    [Motor 4]
- *
+ * <p>
+ * [Motor 1]                    [Motor 2]
+ * [^Front of robot^]
+ * [   ROBOT base   ]
+ * [Motor 3]                    [Motor 4]
+ * <p>
  * (The directions of the mecanum wheels should form a diamond when viewed from above, NOT an 'X')
  * (It is not certain if the code would still work with an 'X' arrangement, but it might)
  * =======================================================================================
- *
+ * <p>
  * The length of the vectors passed to the methods do NOT correspond to drive distance.
  * Instead, longer vectors will produce faster motion (but the motors can only handle values between -1 and 1)
- *
+ * <p>
  * If you are unfamiliar with vectors and how they are represented, consult the internet first.
  * This code does not use any complicated vector math, only simple conversions and some
  * addition
@@ -36,16 +36,23 @@ package me.joshlin.a3565lib.component.drivetrain;
 
 public class DriveMath {
 
-//===================================[Constants]===========================================
+    //===================================[Constants]===========================================
     //change these constants if the robot is not behaving correctly!
-    private static final double[] verticalDrive =   {1, -1, 1, -1};   //the motor values that drive straight forward  (maybe backwards?)
+    private static final double[] verticalDrive = {1, -1, 1, -1};   //the motor values that drive straight forward  (maybe backwards?)
     private static final double[] horizontalDrive = {1, 1, -1, -1};   //the motor values that strafe left             (maybe right?)
-    private static final double[] turnDrive =       {1,1,1,1};        //the motor values that turn clockwise          (maybe counterclockwise?)
+    private static final double[] turnDrive = {1, 1, 1, 1};        //the motor values that turn clockwise          (maybe counterclockwise?)
 
 
-//==================================[Methods]==============================================
-    //converts a vector in polar notation (angle and length) to a vector in rectangular notation (x and y)
-    //This is just vector conversion, and has no dependency on the robot itself
+    //==================================[Methods]==============================================
+
+    /**
+     * Converts a vector in polar notation (angle and length) to a vector in rectangular notation (x and y).
+     * This is just vector conversion, and has no dependency on the robot itself.
+     *
+     * @param angle  the angle of the vector
+     * @param length the length of the vector
+     * @return a vector in rectangular notation
+     */
     public static double[] angleToVector(double angle, double length) {
 
         double[] vector = new double[2];
@@ -62,14 +69,20 @@ public class DriveMath {
         return vector;
     }
 
-
-    //converts controller input (y and x) to motor values
+    /**
+     * Converts controller input (x and y) to motor values.
+     *
+     * @param x    controller input for the x-axis
+     * @param y    controller input for the y-axis
+     * @param turn controller input for turning
+     * @return motor values for the four motors
+     */
     public static double[] inputsToMotors(double x, double y, double turn) {
 
         //this part just makes editing the rest of the code easier
         double x_input = x;
         double y_input = y;
-        double turn_input = ((y_input>0) ? turn:-turn); //the turning is reversed if the robot is driving backwards
+        double turn_input = ((y_input > 0) ? turn : -turn); //the turning is reversed if the robot is driving backwards
 
         double[] driveMatrix = new double[4];
 
@@ -79,9 +92,9 @@ public class DriveMath {
 
         //sets values of matrices in x, y, and turning directions
         for (int i = 0; i < 4; i++) {
-            xMatrix[i] =    horizontalDrive[i]  *   x_input;
-            yMatrix[i] =    verticalDrive[i]    *   y_input;
-            turnMatrix[i] = turnDrive[i]        *   turn_input;
+            xMatrix[i] = horizontalDrive[i] * x_input;
+            yMatrix[i] = verticalDrive[i] * y_input;
+            turnMatrix[i] = turnDrive[i] * turn_input;
         }
 
         //adds matrices to get motor values
@@ -94,40 +107,70 @@ public class DriveMath {
         return driveMatrix;
     }
 
-
-    //normalizes an input vector of any dimension
-    //(scales a vector so its length is 1 (one) unit)
-    //this math is independent of the robot itself and will work even with vectors of higher dimensions
+    /**
+     * Normalizes an input vector of any dimension (scales a vector so its length is 1 (one) unit).
+     * This math is independent of the robot itself and will work even with vectors of higher dimensions.
+     *
+     * @param vector the vector to normalize
+     * @return the normalized vector
+     */
     private static double[] normalize(double[] vector) {
 
         //finds length of vector
         double sqrSum = 0;
-        for (double d : vector)
+        for (double d : vector) {
             sqrSum += d * d;
+        }
 
         double length = Math.sqrt(sqrSum); //length
 
         //divide the vector by its length
-        for (int i = 0; i < vector.length; i++)
+        for (int i = 0; i < vector.length; i++) {
             vector[i] /= length;
+        }
 
 
         return vector;  //returns normalized vector
     }
 
-
-    //same as inputsToMotors, but allows the input vector to be from a traditional coordinate plane (not the weird inverted ones from the gamepad's joystick)
-    public static double[] vectorToMotors(double x, double y, double turn){
+    /**
+     * Converts a rectangular vector (x and y) to motor values.
+     * same as inputsToMotors, but allows the input vector to be from a traditional coordinate plane (not the weird inverted ones from the gamepad's joystick).
+     *
+     * @param x    x-value of the vector
+     * @param y    y-value of the vector
+     * @param turn turn value for the robot
+     * @return motor values for the four motors
+     */
+    public static double[] vectorToMotors(double x, double y, double turn) {
         //converts y and x coordinates to the (inverted) values they would be on the gamepad
         y = -y; //only y is inverted (I guess?)
 
         return inputsToMotors(x, y, turn); //just runs the other method
     }
 
+    /**
+     * Converts a polar vector directly to motor values.
+     * This method does not include a "turn" value (defaults to 0).
+     *
+     * @param angle  the angle of the vector
+     * @param length the length of the vector
+     * @return motor values for the four motors
+     */
+    public static double[] angleToMotors(double angle, double length) {
+        return angleToMotors(angle, length, 0);
+    }
 
-    //converts a polar vector directly to the motor values
-    //this method includes a "turn" value
-    public static double[] angleToMotors(double angle, double length, double turn){
+    /**
+     * Converts a polar vector and turn value directly to motor values.
+     * This method includes a "turn" value.
+     *
+     * @param angle  the angle of the vector
+     * @param length the length of the vector
+     * @param turn   turn value for the robot
+     * @return motor values for the four motors
+     */
+    public static double[] angleToMotors(double angle, double length, double turn) {
 
         //converts polar vector to rectangular vector
         double[] vector = angleToVector(angle, length);
@@ -139,18 +182,12 @@ public class DriveMath {
         return matrix;
     }
 
-
-    //converts a polar vector directly to the motor values
-    //this method does not inclue a "turn" value (defaults to 0)
-    public static double[] angleToMotors(double angle, double length){
-        return angleToMotors(angle, length, 0);
-    }
-
     /**
-     * Checks to see if a number is in a range
+     * Checks to see if a number is in a range.
+     *
      * @param number the number to check
-     * @param lower the lower bound of the range
-     * @param upper the upper bound of the range
+     * @param lower  the lower bound of the range
+     * @param upper  the upper bound of the range
      * @return true if the number is in the range
      */
     public static boolean inRange(double number, double lower, double upper) {

@@ -9,6 +9,7 @@ import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
 import me.joshlin.a3565lib.component.drivetrain.Mecanum;
 import me.joshlin.a3565lib.component.sensor.IMU;
+import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
  * Created by josh on 2/19/18.
@@ -48,16 +49,25 @@ public class TestTurn90Degrees extends SensorLinearOpMode {
         while (opModeIsActive()) {
             do {
                 currentAngle = imuObj.getAngle();
-                drivetrain.move(DriveMath.inputsToMotors(0, 0, -.25));
+                correctTurn(currentAngle, 90, 1);
                 telemetry.addData("Current Angle", currentAngle);
                 telemetry.update();
-            } while (opModeIsActive() && currentAngle < 90);
+            } while (opModeIsActive() && !DriveMath.inRange(currentAngle, 90-1, 90+1));
 
-            drivetrain.move(DriveMath.inputsToMotors(0, 0, 0));
+            drivetrain.stop();
 
             robot.beep();
             imuObj.resetAngle();
             sleep(2000);
+        }
+    }
+    protected void correctTurn(double currentAngle, double desiredAngle, double margin) {
+        if (opModeIsActive() && currentAngle < desiredAngle-margin) {
+            drivetrain.turn(TurnDirection.LEFT, .1);
+        } else if (opModeIsActive() && currentAngle > desiredAngle + margin) {
+            drivetrain.turn(TurnDirection.RIGHT, .1);
+        } else {
+            drivetrain.stop();
         }
     }
 }

@@ -38,6 +38,9 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
 
     protected ElapsedTime runtime = new ElapsedTime();
 
+    /**
+     * Initialize the Vuforia system. Call before using Vuforia.
+     */
     public void initVuforia() {
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
@@ -77,7 +80,7 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
         CryptoboxDetector.CryptoboxDetectionMode mode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
         // init cryptobox detector
         cryptoboxDetector = new CryptoboxDetector();
-        cryptoboxDetector.downScaleFactor = 0.3;
+        cryptoboxDetector.downScaleFactor = 0.4;
 
         switch (cryptoboxColor) {
             case RED:
@@ -90,7 +93,7 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
 
         cryptoboxDetector.rotateMat = false;
         cryptoboxDetector.detectionMode = mode;
-        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.FAST;
+        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.BALANCED;
 
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
     }
