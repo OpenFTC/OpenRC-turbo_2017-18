@@ -26,28 +26,19 @@ public class AutoRedRight extends SensorLinearOpMode {
     static final int LEFT_POSITION = 0;
     static final int CENTER_POSITION = 1;
     static final int RIGHT_POSITION = 2;
+    static final int TURN_PRECISION_VALUE = 2;
+    static final int CRYPTO_PRECISION_VALUE = 6;
+    static final int CRYPTO_CENTER_CORRECTION = -160;
     RelicRecoveryVuMark vuMark;
     RevbotMecanum robot = new RevbotMecanum();
     Drivetrain drivetrain;
     int targetPosition = CENTER_POSITION;
     int targetPosLocation;
-
     int[] currentCryptoboxPositions;
-
     boolean aligned = false;
-
     IMU imuObj;
-
     double currentAngle;
-
     Pivot flipper;
-
-    static final int TURN_PRECISION_VALUE = 2;
-
-    static final int CRYPTO_PRECISION_VALUE = 6;
-
-    static final int CRYPTO_CENTER_CORRECTION = -160;
-
     JewelDetector.JewelOrder jewelOrder;
 
     /**
@@ -80,6 +71,16 @@ public class AutoRedRight extends SensorLinearOpMode {
 
         drivetrain.drive(Direction.RIGHT, .5, 200);
 
+        currentAngle = imuObj.getAngle();
+
+        while (opModeIsActive() && !DriveMath.inRange(currentAngle, -TURN_PRECISION_VALUE, TURN_PRECISION_VALUE)) {
+            currentAngle = imuObj.getAngle();
+            correctTurn(currentAngle, 0, 1);
+
+            telemetry.addData("Current Heading", currentAngle);
+            telemetry.update();
+        }
+
         relicTrackables.activate();
 
         do {
@@ -107,14 +108,10 @@ public class AutoRedRight extends SensorLinearOpMode {
 
         currentAngle = imuObj.getAngle();
 
-        while (opModeIsActive() && !DriveMath.inRange(currentAngle, 0 - TURN_PRECISION_VALUE, 0 + TURN_PRECISION_VALUE)) {
+        while (opModeIsActive() && !DriveMath.inRange(currentAngle, -TURN_PRECISION_VALUE, TURN_PRECISION_VALUE)) {
             currentAngle = imuObj.getAngle();
 
-            if (opModeIsActive() && currentAngle < -2) {
-                drivetrain.turn(TurnDirection.LEFT, .06, 1000);
-            } else if (opModeIsActive() && currentAngle > 2) {
-                drivetrain.turn(TurnDirection.RIGHT, .06, 1000);
-            }
+            correctTurn(currentAngle, 0);
 
             telemetry.addData("Current Heading", currentAngle);
             telemetry.update();
@@ -138,6 +135,9 @@ public class AutoRedRight extends SensorLinearOpMode {
 
         cryptoboxDetector.enable();
 
+
+
+        // This keeps crashing and I don't know why
         while (opModeIsActive() && !aligned) {
             currentCryptoboxPositions = cryptoboxDetector.getCryptoBoxPositions();
             if (currentCryptoboxPositions != null) {
@@ -152,9 +152,9 @@ public class AutoRedRight extends SensorLinearOpMode {
                 if (opModeIsActive() && DriveMath.inRange(targetPosLocation, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - CRYPTO_PRECISION_VALUE, (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + CRYPTO_PRECISION_VALUE)) {
                     aligned = true;
                 } else if (opModeIsActive() && targetPosLocation < (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) - CRYPTO_CENTER_CORRECTION) {
-                    drivetrain.drive(Direction.FORWARD, .1);
+                    drivetrain.drive(Direction.FORWARD, .07);
                 } else if (opModeIsActive() && targetPosLocation > (cryptoboxDetector.getFrameSize().width + CRYPTO_CENTER_CORRECTION) + CRYPTO_PRECISION_VALUE) {
-                    drivetrain.drive(Direction.BACKWARD, .1);
+                    drivetrain.drive(Direction.BACKWARD, .07);
                 }
             }
 
@@ -165,8 +165,7 @@ public class AutoRedRight extends SensorLinearOpMode {
             telemetry.addData("Column Center ", cryptoboxDetector.getCryptoBoxCenterPosition());
             telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
 
-            // TODO: show target position
-            telemetry.addData("Frame Width", cryptoboxDetector.getFrameSize().width);
+            telemetry.addData("Target Position", targetPosLocation);
 
             telemetry.update();
         }
@@ -188,7 +187,7 @@ public class AutoRedRight extends SensorLinearOpMode {
 
         while (opModeIsActive() && !DriveMath.inRange(currentAngle, -90 - TURN_PRECISION_VALUE, -90 + TURN_PRECISION_VALUE)) {
             currentAngle = imuObj.getAngle();
-            drivetrain.turn(TurnDirection.RIGHT, .1);
+            correctTurn(currentAngle, -90);
             telemetry.addData("Turning", "");
             telemetry.addData("Angle", currentAngle);
             telemetry.update();
@@ -215,7 +214,17 @@ public class AutoRedRight extends SensorLinearOpMode {
         robot.beep();
     }
 
-    protected boolean correctTurn() {
-        return false;
+    protected void correctTurn(double currentAngle, double desiredAngle) {
+        correctTurn(currentAngle, desiredAngle, TURN_PRECISION_VALUE);
+    }
+
+    protected void correctTurn(double currentAngle, double desiredAngle, double margin) {
+        if (opModeIsActive() && currentAngle < -margin) {
+            drivetrain.turn(TurnDirection.LEFT, .1);
+        } else if (opModeIsActive() && currentAngle > margin) {
+            drivetrain.turn(TurnDirection.RIGHT, .1);
+        } else {
+            drivetrain.stop();
+        }
     }
 }
