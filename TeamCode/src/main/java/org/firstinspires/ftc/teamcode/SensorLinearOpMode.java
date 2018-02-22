@@ -93,7 +93,7 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
 
         cryptoboxDetector.rotateMat = false;
         cryptoboxDetector.detectionMode = mode;
-        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.BALANCED;
+        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.FAST;
 
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
     }

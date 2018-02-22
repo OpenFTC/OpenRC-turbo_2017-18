@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,6 +28,8 @@ public class RevbotMecanum extends RobotMap {
 
     // Declare servos
     public Servo flipper;
+    public CRServo spool;
+    public Servo knock;
 
     // Declare other sensors
     public BNO055IMU imu;
@@ -47,6 +50,8 @@ public class RevbotMecanum extends RobotMap {
 
         // Assign servos to Servo variables
         flipper = hardwareMap.get(Servo.class, "flipper");
+        spool = hardwareMap.get(CRServo.class, "spool");
+        knock = hardwareMap.get(Servo.class, "knock");
 
         // Assign sensors to sensor variables
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -60,5 +65,7 @@ public class RevbotMecanum extends RobotMap {
 
         // Reverse right motor
         rightSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        spool.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

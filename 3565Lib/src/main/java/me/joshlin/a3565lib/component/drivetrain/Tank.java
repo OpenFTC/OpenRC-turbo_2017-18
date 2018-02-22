@@ -6,12 +6,13 @@ import me.joshlin.a3565lib.enums.Direction;
 import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
- * Created by 3565 on 2/16/2018.
+ * @author Josh
+ *         A general tank/2-motor drive class, implementing Drivetrain.
  */
 
 public class Tank implements Drivetrain {
-    DcMotor left;
-    DcMotor right;
+    private DcMotor left;
+    private DcMotor right;
 
     public Tank(DcMotor left, DcMotor right) {
         this.left = left;
@@ -25,16 +26,34 @@ public class Tank implements Drivetrain {
 
     @Override
     public void drive(Direction direction, double power) {
-
+        switch (direction) {
+            case BACKWARD:
+                power = -power;
+                // fall through
+            case FORWARD:
+                move(new double[]{power, power});
+                break;
+            case LEFT:
+                // fall through
+            case RIGHT:
+                throw new IllegalArgumentException("Tank drives can't strafe!");
+        }
     }
 
     @Override
     public void turn(TurnDirection turnDirection, double power) {
-
+        switch (turnDirection) {
+            case LEFT:
+                power = -power;
+                // fall through
+            case RIGHT:
+                move(new double[]{power, -power});
+                break;
+        }
     }
 
     @Override
     public void stop() {
-
+        move(new double[]{0, 0});
     }
 }

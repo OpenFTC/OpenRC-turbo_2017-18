@@ -7,28 +7,49 @@ import com.qualcomm.robotcore.hardware.configuration.MotorConfigurationType;
 import java.util.ArrayList;
 
 /**
- * Created by josh on 2/18/18.
+ * @author Josh
+ *
  */
 
 public class MultiDcMotor implements DcMotor {
     ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
 
+    /**
+     * @deprecated Should never be called without motors in constructor, use {@link #MultiDcMotor(DcMotor...)} instead.
+     */
     @Deprecated
     public MultiDcMotor() {
     }
 
+    /**
+     * Class constructor specifying the motors that make up the robot.
+     *
+     * @param motors the motors to add to the multi-motor
+     */
     public MultiDcMotor(DcMotor... motors) {
         for (DcMotor motor : motors) {
             add(motor);
         }
     }
 
-    public void add(DcMotor motor) {
-        motors.add(motor);
+    /**
+     * Adds a motor to the multi-motor.
+     *
+     * @param motor the motor to add to the multi-motor
+     * @return true if the motor was successfully added
+     */
+    public boolean add(DcMotor motor) {
+        return motors.add(motor);
     }
 
-    public void remove(DcMotor motor) {
-        motors.remove(motor);
+    /**
+     * Removes a motor from the multi-motor.
+     *
+     * @param motor the motor to remove from the multi-motor
+     * @return true if the motor was successfully added
+     */
+    public boolean remove(DcMotor motor) {
+        return motors.remove(motor);
     }
 
     /**

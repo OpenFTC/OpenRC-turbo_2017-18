@@ -6,7 +6,8 @@ import me.joshlin.a3565lib.enums.Direction;
 import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
- * Created by 3565 on 2/16/2018.
+ * @author Josh
+ *         A mecanum drive class, implementing Drivetrain.
  */
 
 public class Mecanum implements Drivetrain {
