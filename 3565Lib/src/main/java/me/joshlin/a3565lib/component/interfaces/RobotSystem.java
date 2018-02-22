@@ -1,9 +1,15 @@
 package me.joshlin.a3565lib.component.interfaces;
 
 /**
- * Created by josh on 2/19/18.
+ * @author Josh
+ *         Describes required methods for robot systems (any component on a robot).
  */
 
 public interface RobotSystem {
+    /**
+     * Gets the current status of the system.
+     *
+     * @return the status
+     */
     ComponentStatus getStatus();
 }

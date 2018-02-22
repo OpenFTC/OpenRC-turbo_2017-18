@@ -8,15 +8,29 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
- * Created by josh on 2/19/18.
+ * @author Josh
+ *         A wrapper class for an {@link BNO055IMU}.
+ *         Adds methods for dealing with angles,
  */
 
-public class IMU {
-    BNO055IMU imu;
-    Orientation lastAngles = new Orientation();
-    double globalAngle;
+public class GhostIMU {
+    /**
+     * Holds the IMU passed into the object.
+     */
+    private BNO055IMU imu;
+    private Orientation lastAngles = new Orientation();
+    /**
+     * The current angle of the device, after correcting for sign changes.
+     * Increases CCW, decreases CW
+     */
+    private double globalAngle;
 
-    public IMU(BNO055IMU imu) {
+    /**
+     * Constructor.
+     *
+     * @param imu the imu object to pass in
+     */
+    public GhostIMU(BNO055IMU imu) {
         this.imu = imu;
     }
 
@@ -31,6 +45,7 @@ public class IMU {
 
     /**
      * Get current cumulative angle rotation from last reset.
+     *
      * @return Angle in degrees. + = left, - = right.
      */
     public double getAngle() {
@@ -43,10 +58,11 @@ public class IMU {
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
-        if (deltaAngle < -180)
+        if (deltaAngle < -180) {
             deltaAngle += 360;
-        else if (deltaAngle > 180)
+        } else if (deltaAngle > 180) {
             deltaAngle -= 360;
+        }
 
         globalAngle += deltaAngle;
 
@@ -57,6 +73,7 @@ public class IMU {
 
     /**
      * See if we are moving in a straight line and if not return a power correction value.
+     *
      * @return Power adjustment, + is adjust left - is adjust right.
      */
     public double checkDirection() {
@@ -67,10 +84,11 @@ public class IMU {
 
         angle = getAngle();
 
-        if (angle == 0)
+        if (angle == 0) {
             correction = 0;             // no adjustment.
-        else
+        } else {
             correction = -angle;        // reverse sign of angle for correction.
+        }
 
         correction = correction * gain;
 

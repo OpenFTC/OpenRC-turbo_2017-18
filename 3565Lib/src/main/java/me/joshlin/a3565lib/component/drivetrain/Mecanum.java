@@ -16,6 +16,14 @@ public class Mecanum implements Drivetrain {
     private DcMotor backL;
     private DcMotor backR;
 
+    /**
+     * Constructor.
+     *
+     * @param frontL the front-left motor
+     * @param frontR the front-right motor
+     * @param backL  the back-left motor
+     * @param backR  the back-right motor
+     */
     public Mecanum(DcMotor frontL, DcMotor frontR, DcMotor backL, DcMotor backR) {
         this.frontL = frontL;
         this.frontR = frontR;

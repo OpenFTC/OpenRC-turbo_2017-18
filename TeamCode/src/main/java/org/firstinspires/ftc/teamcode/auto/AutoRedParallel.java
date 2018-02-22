@@ -7,14 +7,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.RevbotMecanum;
 import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
-import me.joshlin.a3565lib.component.crservo.CRServoLift;
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
 import me.joshlin.a3565lib.component.drivetrain.Mecanum;
 import me.joshlin.a3565lib.component.interfaces.Arm;
-import me.joshlin.a3565lib.component.interfaces.Lift;
 import me.joshlin.a3565lib.component.interfaces.Pivot;
-import me.joshlin.a3565lib.component.sensor.IMU;
+import me.joshlin.a3565lib.component.sensor.GhostIMU;
 import me.joshlin.a3565lib.component.servo.ServoArm;
 import me.joshlin.a3565lib.component.servo.ServoPivot;
 import me.joshlin.a3565lib.enums.Alliance;
@@ -23,7 +21,6 @@ import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
  * @author Josh
- *
  */
 
 @Autonomous(name = "Auto Red Parallel", group = "Auto")
@@ -40,9 +37,9 @@ public class AutoRedParallel extends SensorLinearOpMode {
     // Change this to change the cryptobox lineup margin
     static final double CRYPTO_PRECISION_VALUE = 3;
     // Change this to correct the center (if the robot is tracking too far right, subtract; if the robot is tracking too far left, add
-    static final double CRYPTO_CENTER_CORRECTION = 20;
+    static final double CRYPTO_CENTER_CORRECTION = 60;
     static final double COLUMN_POSITION = 432 + CRYPTO_CENTER_CORRECTION;
-    // 475 is center position
+
     RelicRecoveryVuMark vuMark;
 
     Status status;
@@ -52,10 +49,10 @@ public class AutoRedParallel extends SensorLinearOpMode {
     int targetPosLocation;
     int[] currentCryptoboxPositions;
     boolean aligned = false;
-    IMU imuObj;
+    GhostIMU ghostImuObj;
     double currentAngle;
     Pivot flipper;
-    Lift armLift;
+    Pivot vertical;
     Arm ballKnock;
     JewelDetector.JewelOrder jewelOrder;
 
@@ -77,14 +74,14 @@ public class AutoRedParallel extends SensorLinearOpMode {
         robot.init(hardwareMap);
         drivetrain = new Mecanum(robot.frontL, robot.frontR, robot.backL, robot.backR);
         flipper = new ServoPivot(robot.flipper, 0.40, 0.38, 0.35);
-        armLift = new CRServoLift(robot.spool);
+        vertical = new ServoPivot(robot.vertical, .5, 0);
         ballKnock = new ServoArm(robot.knock, 1, 0.5, 0);
 
         flipper.down();
 
         initBNO055IMU(robot.imu);
-        imuObj = new IMU(imu);
-        imuObj.resetAngle();
+        ghostImuObj = new GhostIMU(imu);
+        ghostImuObj.resetAngle();
 
         status = Status.INITIALIZED;
         buildTelemetry();
@@ -109,7 +106,7 @@ public class AutoRedParallel extends SensorLinearOpMode {
 
         ballKnock.center();
 
-        armLift.extend(2200);
+        vertical.down();
 
         buildTelemetry();
 
@@ -126,7 +123,7 @@ public class AutoRedParallel extends SensorLinearOpMode {
 
         ballKnock.center();
 
-        armLift.retract(3000);
+        vertical.up();
 
         ballKnock.left();
 
@@ -215,7 +212,7 @@ public class AutoRedParallel extends SensorLinearOpMode {
 
         sleep(2000);
 
-        //=============================[Put Relic in Cryptobox]=====================================
+        //=============================[Put Glyph in Cryptobox]=====================================
         correctTurn(-85);
 
         drivetrain.stop();
@@ -254,7 +251,7 @@ public class AutoRedParallel extends SensorLinearOpMode {
 
     protected void correctTurn(double desiredAngle, double margin) {
         do {
-            currentAngle = imuObj.getAngle();
+            currentAngle = ghostImuObj.getAngle();
             if (opModeIsActive() && currentAngle < desiredAngle - margin) {
                 drivetrain.turn(TurnDirection.LEFT, .2);
             } else if (opModeIsActive() && currentAngle > desiredAngle + margin) {

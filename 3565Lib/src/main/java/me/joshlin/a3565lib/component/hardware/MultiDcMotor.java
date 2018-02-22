@@ -8,11 +8,11 @@ import java.util.ArrayList;
 
 /**
  * @author Josh
- *
+ *         Allows the aggregation of multiple {@link DcMotor}s into one.
  */
 
 public class MultiDcMotor implements DcMotor {
-    ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
+    private ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
 
     /**
      * @deprecated Should never be called without motors in constructor, use {@link #MultiDcMotor(DcMotor...)} instead.

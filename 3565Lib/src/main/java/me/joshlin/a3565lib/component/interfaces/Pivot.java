@@ -1,17 +1,30 @@
 package me.joshlin.a3565lib.component.interfaces;
 
 /**
- * Created by josh on 2/19/18.
+ * @author Josh
+ *         Describes required methods for pivots.
  */
 
 public interface Pivot extends RobotSystem {
+    /**
+     * Set the pivot to the up position.
+     */
     void up();
 
+    /**
+     * Set the pivot to the center position.
+     */
     void center();
 
+    /**
+     * Set the pivot to the down position.
+     */
     void down();
 
-    public enum Status implements ComponentStatus {
+    /**
+     * Enumerate the statuses that a pivot can have.
+     */
+    enum Status implements ComponentStatus {
         UP,
         CENTER,
         DOWN

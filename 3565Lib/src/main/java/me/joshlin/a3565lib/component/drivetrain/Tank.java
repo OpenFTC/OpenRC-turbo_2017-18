@@ -14,11 +14,18 @@ public class Tank implements Drivetrain {
     private DcMotor left;
     private DcMotor right;
 
+    /**
+     * Constructor.
+     *
+     * @param left  the left motor
+     * @param right the right motor
+     */
     public Tank(DcMotor left, DcMotor right) {
         this.left = left;
         this.right = right;
     }
 
+    @Override
     public void move(double[] driveMatrix) {
         left.setPower(driveMatrix[0]);
         right.setPower(driveMatrix[1]);

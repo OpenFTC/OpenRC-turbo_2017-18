@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
 import me.joshlin.a3565lib.component.drivetrain.Mecanum;
-import me.joshlin.a3565lib.component.sensor.IMU;
+import me.joshlin.a3565lib.component.sensor.GhostIMU;
 import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
@@ -20,7 +20,7 @@ public class TestTurn90Degrees extends SensorLinearOpMode {
     RevbotMecanum robot = new RevbotMecanum();
     Drivetrain drivetrain;
 
-    IMU imuObj;
+    GhostIMU ghostImuObj;
 
     double currentAngle;
     /**
@@ -38,17 +38,17 @@ public class TestTurn90Degrees extends SensorLinearOpMode {
 
         initBNO055IMU(robot.imu);
 
-        imuObj = new IMU(imu);
+        ghostImuObj = new GhostIMU(imu);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
 
-        imuObj.resetAngle();
+        ghostImuObj.resetAngle();
 
         while (opModeIsActive()) {
             do {
-                currentAngle = imuObj.getAngle();
+                currentAngle = ghostImuObj.getAngle();
                 correctTurn(currentAngle, 90, 1);
                 telemetry.addData("Current Angle", currentAngle);
                 telemetry.update();
@@ -57,7 +57,7 @@ public class TestTurn90Degrees extends SensorLinearOpMode {
             drivetrain.stop();
 
             robot.beep();
-            imuObj.resetAngle();
+            ghostImuObj.resetAngle();
             sleep(2000);
         }
     }

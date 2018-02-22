@@ -1,8 +1,8 @@
 package me.joshlin.a3565lib.component.interfaces;
 
 /**
- * Created by josh on 2/19/18.
+ * Marks a status as that of a component.
  */
 
-public interface ComponentStatus {
+interface ComponentStatus {
 }
