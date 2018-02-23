@@ -6,7 +6,7 @@ import me.joshlin.a3565lib.component.interfaces.Lift;
 
 /**
  * @author Josh
- *         An implementation of a {@link Lift} using a CRServo.
+ *         An implementation of a {@link Lift} using a {@link CRServo}.
  */
 
 public class CRServoLift extends CRServoHardwareComponent implements Lift {

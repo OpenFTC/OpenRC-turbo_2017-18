@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
+import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 
 import me.joshlin.a3565lib.enums.Alliance;
 
@@ -10,20 +10,11 @@ import me.joshlin.a3565lib.enums.Alliance;
  * Created by josh on 2/18/18.
  */
 @TeleOp(name = "CV Crypto Test")
-public class CVCryptoTest extends SensorLinearOpMode {
-
-    /**
-     * Override this method and place your code here.
-     * <p>
-     * Please do not swallow the InterruptedException, as it is used in cases
-     * where the op mode needs to be terminated early.
-     *
-     * @throws InterruptedException
-     */
+public class CVCryptoTest extends CVLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // init jewel detector
-        initCryptobox(Alliance.BLUE);
+        initCryptoboxDetector(Alliance.BLUE);
 
         cryptoboxDetector.enable();
 

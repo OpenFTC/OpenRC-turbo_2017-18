@@ -7,31 +7,51 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import me.joshlin.a3565lib.RobotMap;
+import me.joshlin.a3565lib.component.drivetrain.Mecanum;
+import me.joshlin.a3565lib.component.hardware.MultiDcMotor;
+import me.joshlin.a3565lib.component.interfaces.Intake;
+import me.joshlin.a3565lib.component.interfaces.Lift;
+import me.joshlin.a3565lib.component.interfaces.Pivot;
+import me.joshlin.a3565lib.component.motor.MotorIntake;
+import me.joshlin.a3565lib.component.motor.MotorLift;
+import me.joshlin.a3565lib.component.sensor.GhostIMU;
+import me.joshlin.a3565lib.component.servo.ServoPivot;
 
 /**
  * Created by 3565 on 2/15/2018.
  */
 
 public class RevbotMecanum extends RobotMap {
-
+    // TODO: Fix visibility of variables
     // Declare drive motors
-    public DcMotor frontL;
-    public DcMotor frontR;
-    public DcMotor backL;
-    public DcMotor backR;
+    private DcMotor frontL;
+    private DcMotor frontR;
+    private DcMotor backL;
+    private DcMotor backR;
 
     // Declare other motors
-    public DcMotor lift;
-    public DcMotor leftSpinner;
-    public DcMotor rightSpinner;
+    private DcMotor lift;
+    private DcMotor leftSpinner;
+    private DcMotor rightSpinner;
 
     // Declare servos
-    public Servo flipper;
-    public Servo vertical;
-    public Servo knock;
+    private Servo flipperServo;
+    private Servo verticalServo;
 
     // Declare other sensors
-    public BNO055IMU imu;
+    private BNO055IMU imu;
+
+    // Declare robot components.
+    // Holds the glyph flipper.
+    public Pivot flipper;
+    // Holds the ball knocker arm.
+    public Pivot vertical;
+    // Holds the REV IMU.
+    public GhostIMU ghostIMU;
+    // Holds the glyph lift.
+    public Lift glyphLift;
+    // Holds the intake.
+    public Intake intake;
 
     @Override
     public void init(HardwareMap aHwMap) {
@@ -48,9 +68,8 @@ public class RevbotMecanum extends RobotMap {
         rightSpinner = hardwareMap.get(DcMotor.class, "rightSpinner");
 
         // Assign servos to Servo variables
-        flipper = hardwareMap.get(Servo.class, "flipper");
-        vertical = hardwareMap.get(Servo.class, "vertical");
-        knock = hardwareMap.get(Servo.class, "knock");
+        flipperServo = hardwareMap.get(Servo.class, "flipper");
+        verticalServo = hardwareMap.get(Servo.class, "vertical");
 
         // Assign sensors to sensor variables
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -64,5 +83,13 @@ public class RevbotMecanum extends RobotMap {
 
         // Reverse right motor
         rightSpinner.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Initialize the components of the robot.
+        drivetrain = new Mecanum(frontL, frontR, backL, backR);
+        flipper = new ServoPivot(flipperServo, 0.81, 0.46, 0.25);
+        vertical = new ServoPivot(verticalServo, .5, 0);
+        ghostIMU = new GhostIMU(imu);
+        glyphLift = new MotorLift(lift);
+        intake = new MotorIntake(new MultiDcMotor(leftSpinner, rightSpinner));
     }
 }

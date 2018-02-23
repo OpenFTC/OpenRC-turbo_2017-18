@@ -1,4 +1,4 @@
-package me.joshlin.a3565lib.vuforia;
+package me.joshlin.a3565lib.cv;
 
 import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaLocalizerImpl;
 

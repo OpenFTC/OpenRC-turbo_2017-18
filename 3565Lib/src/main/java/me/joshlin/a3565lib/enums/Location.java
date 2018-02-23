@@ -5,6 +5,6 @@ package me.joshlin.a3565lib.enums;
  */
 
 public enum Location {
-    UPPER,
-    LOWER
+    PARALLEL,
+    PERPENDICULAR
 }

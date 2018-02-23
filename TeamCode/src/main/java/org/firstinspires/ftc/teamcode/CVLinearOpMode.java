@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.disnodeteam.dogecv.detectors.JewelDetector;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,14 +10,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import me.joshlin.a3565lib.cv.ClosableVuforiaLocalizer;
 import me.joshlin.a3565lib.enums.Alliance;
-import me.joshlin.a3565lib.vuforia.ClosableVuforiaLocalizer;
 
 /**
  * Created by josh on 2/18/18.
  */
 
-public abstract class SensorLinearOpMode extends LinearOpMode {
+public abstract class CVLinearOpMode extends LinearOpMode {
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -31,8 +29,6 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
     protected VuforiaTrackable relicTemplate;
 
     protected CryptoboxDetector cryptoboxDetector;
-
-    protected BNO055IMU imu;
 
     protected JewelDetector jewelDetector;
 
@@ -76,7 +72,7 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
     }
 
-    public void initCryptobox(Alliance cryptoboxColor) {
+    public void initCryptoboxDetector(Alliance cryptoboxColor) {
         CryptoboxDetector.CryptoboxDetectionMode mode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
         // init cryptobox detector
         cryptoboxDetector = new CryptoboxDetector();
@@ -103,36 +99,14 @@ public abstract class SensorLinearOpMode extends LinearOpMode {
         jewelDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
 
         //Jewel Detector Settings
-        jewelDetector.downScaleFactor = 0.4;
-        jewelDetector.ratioWeight = 15;
+        jewelDetector.downScaleFactor = 0.5;
+        jewelDetector.ratioWeight = 20;
         jewelDetector.perfectRatio = 1.0;
-        jewelDetector.areaWeight = 0.75;
-        jewelDetector.maxDiffrence = 250;
+        jewelDetector.areaWeight = .1;
+        jewelDetector.maxDiffrence = 200;
         jewelDetector.debugContours = true;
         jewelDetector.detectionMode = JewelDetector.JewelDetectionMode.PERFECT_AREA;
-        jewelDetector.perfectArea = 2150;
-        jewelDetector.minArea = 1800;
-    }
-
-    public void initBNO055IMU(BNO055IMU aImu) {
-        this.imu = aImu;
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        imu.initialize(parameters);
-
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            sleep(50);
-            idle();
-        }
-
+        jewelDetector.perfectArea = 975;
+        jewelDetector.minArea = 850;
     }
 }

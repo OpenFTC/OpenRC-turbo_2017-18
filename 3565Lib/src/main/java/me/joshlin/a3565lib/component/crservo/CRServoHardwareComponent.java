@@ -33,21 +33,21 @@ public abstract class CRServoHardwareComponent extends HardwareComponent {
      * Set the servo to the first speed.
      */
     public void positionOne() {
-        servo.setPower(one);
+        setPower(one);
     }
 
     /**
      * Set the servo to the second speed.
      */
     public void positionTwo() {
-        servo.setPower(two);
+        setPower(two);
     }
 
     /**
      * Set the servo to the stop speed.
      */
     public void stop() {
-        servo.setPower(three);
+        setPower(three);
         setStatus(Lift.Status.STOPPED);
     }
 

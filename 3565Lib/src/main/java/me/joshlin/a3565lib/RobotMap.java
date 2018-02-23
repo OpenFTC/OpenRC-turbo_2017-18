@@ -6,12 +6,17 @@ import android.media.ToneGenerator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
+
 /**
  * Marks a class as a hardware map.
  */
 
 public abstract class RobotMap {
-    public HardwareMap hardwareMap;
+    protected HardwareMap hardwareMap;
+
+    public Drivetrain drivetrain;
+
     private ToneGenerator tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
 
     /**
@@ -23,13 +28,13 @@ public abstract class RobotMap {
 
     public abstract void init(HardwareMap aHwMap);
 
-    public void setMode(DcMotor.RunMode mode, DcMotor... motors) {
+    protected void setMode(DcMotor.RunMode mode, DcMotor... motors) {
         for (DcMotor motor : motors) {
             motor.setMode(mode);
         }
     }
 
-    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior, DcMotor... motors) {
+    protected void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior, DcMotor... motors) {
         for (DcMotor motor : motors) {
             motor.setZeroPowerBehavior(zeroPowerBehavior);
         }

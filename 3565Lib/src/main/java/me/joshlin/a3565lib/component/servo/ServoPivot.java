@@ -5,11 +5,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import me.joshlin.a3565lib.component.interfaces.Pivot;
 
 /**
- * Created by josh on 2/19/18.
+ * @author Josh
+ * An implementation of a {@link Pivot} using a {@link Servo}.
  */
-
+// TODO: fill out comment
 public class ServoPivot extends ServoHardwareComponent implements Pivot {
-
+    /**
+     *
+     * @param servo
+     * @param up
+     * @param down
+     */
     public ServoPivot(Servo servo, double up, double down) {
         this(servo, up, 0.5, down);
     }

@@ -6,34 +6,65 @@ import me.joshlin.a3565lib.component.interfaces.HardwareComponent;
 import me.joshlin.a3565lib.component.interfaces.Lift;
 
 /**
- * Created by josh on 2/19/18.
+ * @author Josh
+ *         Implements required {@link HardwareComponent} methods for {@link DcMotor}s.
  */
 
 public abstract class MotorHardwareComponent extends HardwareComponent {
-    DcMotor motor;
+    /**
+     * Holds the motor passed in to the object.
+     */
+    private DcMotor motor;
 
-    public MotorHardwareComponent(DcMotor motor, double one, double two, double stop) {
+    /**
+     * Constructor.
+     *
+     * @param motor the motor to pass in
+     * @param one   the first speed
+     * @param two   the second speed
+     * @param stop  the stop speed
+     */
+    MotorHardwareComponent(DcMotor motor, double one, double two, double stop) {
         super(one, two, stop);
         this.motor = motor;
     }
 
+    /**
+     * Set the motor to the first speed.
+     */
     public void positionOne() {
-        motor.setPower(one);
+        setPower(one);
     }
 
+    /**
+     * Set the motor to the second speed.
+     */
     public void positionTwo() {
-        motor.setPower(two);
+        setPower(two);
     }
 
+    /**
+     * Set the motor to the stop speed.
+     */
     public void stop() {
-        motor.setPower(three);
+        setPower(three);
         setStatus(Lift.Status.STOPPED);
     }
 
+    /**
+     * Gets the current power of the motor.
+     *
+     * @return the current power of the motor (-1.0 to 1.0)
+     */
     public double getPower() {
         return motor.getPower();
     }
 
+    /**
+     * Sets the current power of the motor.
+     *
+     * @param power the desired power of the motor
+     */
     public void setPower(double power) {
         motor.setPower(power);
     }

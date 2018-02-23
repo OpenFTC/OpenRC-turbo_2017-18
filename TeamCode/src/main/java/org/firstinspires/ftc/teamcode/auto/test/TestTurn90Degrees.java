@@ -2,13 +2,10 @@ package org.firstinspires.ftc.teamcode.auto.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 import org.firstinspires.ftc.teamcode.RevbotMecanum;
-import org.firstinspires.ftc.teamcode.SensorLinearOpMode;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
-import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
-import me.joshlin.a3565lib.component.drivetrain.Mecanum;
-import me.joshlin.a3565lib.component.sensor.GhostIMU;
 import me.joshlin.a3565lib.enums.TurnDirection;
 
 /**
@@ -16,13 +13,11 @@ import me.joshlin.a3565lib.enums.TurnDirection;
  */
 
 @Autonomous(name = "Test turn 90", group = "test")
-public class TestTurn90Degrees extends SensorLinearOpMode {
+public class TestTurn90Degrees extends CVLinearOpMode {
     RevbotMecanum robot = new RevbotMecanum();
-    Drivetrain drivetrain;
-
-    GhostIMU ghostImuObj;
 
     double currentAngle;
+
     /**
      * Override this method and place your code here.
      * <p>
@@ -34,40 +29,38 @@ public class TestTurn90Degrees extends SensorLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
-        drivetrain = new Mecanum(robot.frontL, robot.frontR, robot.backL, robot.backR);
 
-        initBNO055IMU(robot.imu);
-
-        ghostImuObj = new GhostIMU(imu);
+        robot.ghostIMU.init();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
 
-        ghostImuObj.resetAngle();
+        robot.ghostIMU.resetAngle();
 
         while (opModeIsActive()) {
             do {
-                currentAngle = ghostImuObj.getAngle();
+                currentAngle = robot.ghostIMU.getAngle();
                 correctTurn(currentAngle, 90, 1);
                 telemetry.addData("Current Angle", currentAngle);
                 telemetry.update();
-            } while (opModeIsActive() && !DriveMath.inRange(currentAngle, 90-1, 90+1));
+            } while (opModeIsActive() && !DriveMath.inRange(currentAngle, 90 - 1, 90 + 1));
 
-            drivetrain.stop();
+            robot.drivetrain.stop();
 
             robot.beep();
-            ghostImuObj.resetAngle();
+            robot.ghostIMU.resetAngle();
             sleep(2000);
         }
     }
+
     protected void correctTurn(double currentAngle, double desiredAngle, double margin) {
-        if (opModeIsActive() && currentAngle < desiredAngle-margin) {
-            drivetrain.turn(TurnDirection.LEFT, .1);
+        if (opModeIsActive() && currentAngle < desiredAngle - margin) {
+            robot.drivetrain.turn(TurnDirection.LEFT, .1);
         } else if (opModeIsActive() && currentAngle > desiredAngle + margin) {
-            drivetrain.turn(TurnDirection.RIGHT, .1);
+            robot.drivetrain.turn(TurnDirection.RIGHT, .1);
         } else {
-            drivetrain.stop();
+            robot.drivetrain.stop();
         }
     }
 }
