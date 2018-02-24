@@ -179,11 +179,15 @@ public class CryptoboxDetector extends OpenCVPipeline {
             int maxX = (int) MathFTC.clip(center.x+5, 0, mask.width());
             int count = 0;
             while (y < mask.height() && y < max && count < 10) {
-                if(mask.get(y, (int) center.x)[0] > 0 || mask.get(y, minX)[0] > 0 || mask.get(y, maxX)[0] > 0) {
-                    count++;
-                    // Imgproc.circle(rgba, new Point(2*center.x, 2*y), 10, new Scalar(255,255,255), 6);
-                } else {
-                    //Imgproc.circle(rgba, new Point(2*center.x, 2*y), 10, new Scalar(30,30,200), 6);
+                try {
+                    if(mask.get(y, (int) center.x)[0] > 0 || mask.get(y, minX)[0] > 0 || mask.get(y, maxX)[0] > 0) {
+                        count++;
+                        // Imgproc.circle(rgba, new Point(2*center.x, 2*y), 10, new Scalar(255,255,255), 6);
+                    } else {
+                        //Imgproc.circle(rgba, new Point(2*center.x, 2*y), 10, new Scalar(30,30,200), 6);
+                    }
+                } catch (NullPointerException ex) {
+                    ex.printStackTrace();
                 }
                 y += 4;
             }

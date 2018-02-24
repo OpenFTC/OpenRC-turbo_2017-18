@@ -3,15 +3,14 @@ package org.firstinspires.ftc.teamcode.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import me.joshlin.a3565lib.enums.Alliance;
-import me.joshlin.a3565lib.enums.Direction;
 import me.joshlin.a3565lib.enums.Location;
 
 /**
- * @author Josh
+ * Created by josh on 2/23/18.
  */
 
-@Autonomous(name = "Auto Red Parallel", group = "Auto")
-public class AutoParallelRed extends Auto {
+@Autonomous(name = "Auto Jewel Only", group = "Auto")
+public class AutoJewelOnly extends Auto {
     @Override
     public void runOpMode() throws InterruptedException {
         //=================================[Initialization]=======================================
@@ -29,23 +28,8 @@ public class AutoParallelRed extends Auto {
         //===================================[Knock Jewel]==========================================
         knockJewel();
         buildTelemetry();
-        //=============================[Align to read Cryptobox]====================================
-        // Align horizontally with the cryptobox
-        robot.drivetrain.drive(Direction.FORWARD, 1, 900);
-        robot.drivetrain.drive(Direction.LEFT, 1, 700);
-
-        // Make sure we're aligned properly
-        correctTurn(0);
-
-        //=============================[Line up with column]========================================
-        alignWithCryptobox();
-
-        //=============================[Put Glyph in Cryptobox]=====================================
-        correctTurn(-88);
-        putGlyphInCryptobox();
-
-        robot.beep();
-
+        while (opModeIsActive()) {
+            sleep(50);
+        }
     }
-
 }

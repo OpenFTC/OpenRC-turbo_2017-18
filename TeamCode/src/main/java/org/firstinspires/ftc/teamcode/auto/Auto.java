@@ -7,7 +7,6 @@ import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 import org.firstinspires.ftc.teamcode.RevbotMecanum;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
-import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
 import me.joshlin.a3565lib.enums.Alliance;
 import me.joshlin.a3565lib.enums.Column;
 import me.joshlin.a3565lib.enums.Direction;
@@ -27,20 +26,20 @@ public abstract class Auto extends CVLinearOpMode {
     // Center pixel of the phone screen (determine by dividing the total width of the screen by 2)
     private static final int SCREEN_CENTER = 432;
     // Change this to correct the center (if the robot is tracking too far right, subtract; if the robot is tracking too far left, add)
-    private static final int CRYPTO_CENTER_CORRECTION = 60;
+    private static final int RED_CENTER_CORRECTION = 60;
+    // Change this to correct the center (if the robot is tracking too far left, subtract; if the robot is tracking too far right, add)
+    private static final int BLUE_CENTER_CORRECTION = 40;
     // The corrected target column position on the screen
-    private static final int COLUMN_POSITION = SCREEN_CENTER + CRYPTO_CENTER_CORRECTION;
-    // The id of the column the VuMark shows (0 = left, 1 = center, 2 = right)
-    int targetPositionId;
+    private int columnPosition = SCREEN_CENTER + RED_CENTER_CORRECTION;
     // Holds the current status of the program.
-    Status status;
-    // Holds the stored VuMark.
-    RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
+    private Status status;
     //=====================================[Robot Components]=======================================
     // Declare robot type.
     RevbotMecanum robot = new RevbotMecanum();
-    // Holds drivetrain.
-    Drivetrain drivetrain;
+    // The id of the column the VuMark shows (0 = left, 1 = center, 2 = right)
+    private int targetPositionId;
+    // Holds the stored VuMark.
+    private RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
     // The current location of the target position on screen
     private int targetPosLocation;
     // Holds the cryptobox positions returned by the detector
@@ -56,6 +55,22 @@ public abstract class Auto extends CVLinearOpMode {
     private JewelDetector.JewelOrder jewelOrder = JewelDetector.JewelOrder.UNKNOWN;
     // Holds the current angle of the robot.
     private double currentAngle;
+
+    /**
+     * Get the current status.
+     * @return the current status of the program
+     */
+    protected Status getStatus() {
+        return status;
+    }
+
+    /**
+     * Set the current status.
+     * @param status the status to set
+     */
+    protected void setStatus(Status status) {
+        this.status = status;
+    }
 
     /**
      * Initialization of components. Make sure to call this before anything else.
@@ -77,7 +92,7 @@ public abstract class Auto extends CVLinearOpMode {
         robot.init(hardwareMap);
 
         // Set default positions for the components.
-        drivetrain.stop();
+        robot.drivetrain.stop();
         robot.flipper.down();
         robot.vertical.up();
 
@@ -85,8 +100,18 @@ public abstract class Auto extends CVLinearOpMode {
         robot.ghostIMU.init();
         robot.ghostIMU.resetAngle();
 
+
+        switch (alliance) {
+            case BLUE:
+                columnPosition = SCREEN_CENTER + BLUE_CENTER_CORRECTION;
+                break;
+            case RED:
+                columnPosition = SCREEN_CENTER + RED_CENTER_CORRECTION;
+                break;
+        }
+
         // Finish initialization and build telemetry.
-        status = Status.INITIALIZED;
+        setStatus(Status.INITIALIZED);
         buildTelemetry();
     }
 
@@ -114,15 +139,15 @@ public abstract class Auto extends CVLinearOpMode {
             // If the robot is too far to the right...
             if (opModeIsActive() && currentAngle < (desiredAngle - margin)) {
                 // ...then correct left.
-                drivetrain.turn(TurnDirection.LEFT, power);
+                robot.drivetrain.turn(TurnDirection.LEFT, power);
                 // If the robot is too far to the left...
             } else if (opModeIsActive() && currentAngle > (desiredAngle + margin)) {
                 // ...then correct right.
-                drivetrain.turn(TurnDirection.RIGHT, power);
+                robot.drivetrain.turn(TurnDirection.RIGHT, power);
                 // Otherwise...
             } else {
                 // ...stop the robot.
-                drivetrain.stop();
+                robot.drivetrain.stop();
             }
             buildTelemetry();
         }
@@ -134,7 +159,7 @@ public abstract class Auto extends CVLinearOpMode {
      */
     void buildTelemetry() {
         telemetry.addData("Alliance", "%s | Location: %s", alliance, location);
-        telemetry.addData("Status", "%s, %s seconds", status, runtime.time());
+        telemetry.addData("Status", "%s, %s seconds", getStatus(), runtime.time());
         telemetry.addData("Current Heading", currentAngle);
         telemetry.addData("VuMark", "%s visible | Jewel Order: %s", vuMark, jewelOrder);
 
@@ -145,7 +170,7 @@ public abstract class Auto extends CVLinearOpMode {
                 cryptoboxDetector.getCryptoBoxLeftPosition(),
                 cryptoboxDetector.getCryptoBoxCenterPosition(),
                 cryptoboxDetector.getCryptoBoxRightPosition());
-        telemetry.addData("Target Position", "%s | Target Column: %s", COLUMN_POSITION, targetPositionId);
+        telemetry.addData("Target Position", "%s | Target Column: %s", columnPosition, targetPositionId);
 
         telemetry.update();
     }
@@ -185,12 +210,15 @@ public abstract class Auto extends CVLinearOpMode {
      * Knock the correct jewel from the jewel holder.
      */
     void knockJewel() {
-        drivetrain.stop();
+        robot.drivetrain.stop();
         // Enable the jewel detector
         jewelDetector.enable();
 
         // Lower the arm
-        robot.flipper.down();
+        robot.vertical.down();
+        robot.beep();
+        // Wait for the arm to go down
+        sleep(1500);
         buildTelemetry();
 
         do {
@@ -198,7 +226,7 @@ public abstract class Auto extends CVLinearOpMode {
             jewelOrder = jewelDetector.getCurrentOrder();
             buildTelemetry();
         }
-        while (opModeIsActive() && (JewelDetector.JewelOrder.UNKNOWN == jewelOrder) && (runtime.time() < 5));
+        while (opModeIsActive() && (JewelDetector.JewelOrder.UNKNOWN == jewelOrder));
 
         // Get the last known order of the jewels, just to be safe
         jewelOrder = jewelDetector.getLastOrder();
@@ -210,33 +238,38 @@ public abstract class Auto extends CVLinearOpMode {
             // TODO: fix this so that there's more factoring
             case BLUE_RED:
                 if (alliance.equals(Alliance.RED)) {
-                    drivetrain.drive(Direction.FORWARD, .5, 300);
-                    drivetrain.drive(Direction.BACKWARD, .5, 300);
+                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
+                    // Raise the arm
+                    robot.vertical.up();
+                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
                 } else {
-                    drivetrain.drive(Direction.BACKWARD, .5, 300);
-                    drivetrain.drive(Direction.FORWARD, .5, 300);
+                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
+                    // Raise the arm
+                    robot.vertical.up();
+                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
                 }
                 break;
             case RED_BLUE:
                 if (alliance.equals(Alliance.BLUE)) {
-                    drivetrain.drive(Direction.FORWARD, .5, 300);
-                    drivetrain.drive(Direction.BACKWARD, .5, 300);
+                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
+                    // Raise the arm
+                    robot.vertical.up();
+                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
                 } else {
-                    drivetrain.drive(Direction.BACKWARD, .5, 300);
-                    drivetrain.drive(Direction.FORWARD, .5, 300);
+                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
+                    // Raise the arm
+                    robot.vertical.up();
+                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
                 }
                 break;
             case UNKNOWN:
                 // If it doesn't see jewels then just don't knock either to be safe
                 break;
         }
+        robot.drivetrain.stop();
         buildTelemetry();
 
-        // Raise the arm
-        robot.vertical.up();
-
-        // Wait for the arm to finish raising
-        sleep(500);
+        sleep(1000);
 
         // Close the jewel detector to use other computer vision
         jewelDetector.disable();
@@ -246,7 +279,7 @@ public abstract class Auto extends CVLinearOpMode {
      * Align properly with the correct column, assuming that the robot is lined up correctly with the box.
      */
     void alignWithCryptobox() {
-        drivetrain.stop();
+        robot.drivetrain.stop();
         // Enable cryptobox detector
         cryptoboxDetector.enable();
 
@@ -282,24 +315,24 @@ public abstract class Auto extends CVLinearOpMode {
                 switch (vuMark) {
                     // ... correct position based on the VuMark (because the id is unreliable)
                     case LEFT:
-                        drivetrain.drive(Direction.BACKWARD, .1);
+                        robot.drivetrain.drive(Direction.BACKWARD, .1);
                         break;
                     case RIGHT:
-                        drivetrain.drive(Direction.FORWARD, .1);
+                        robot.drivetrain.drive(Direction.FORWARD, .1);
                         break;
                     case CENTER:
-                        drivetrain.stop();
+                        robot.drivetrain.stop();
                         break;
                 }
             } else {
                 // If it's aligned, then break out of the loop.
-                if (DriveMath.inRange(targetPosLocation, COLUMN_POSITION - CRYPTO_PRECISION_VALUE, COLUMN_POSITION + CRYPTO_PRECISION_VALUE)) {
+                if (DriveMath.inRange(targetPosLocation, columnPosition - CRYPTO_PRECISION_VALUE, columnPosition + CRYPTO_PRECISION_VALUE)) {
                     aligned = true;
                     // Otherwise, correct for the column as appropriate.
-                } else if (targetPosLocation < COLUMN_POSITION - CRYPTO_PRECISION_VALUE) {
-                    drivetrain.drive(Direction.FORWARD, .1);
-                } else if (targetPosLocation > COLUMN_POSITION + CRYPTO_PRECISION_VALUE) {
-                    drivetrain.drive(Direction.BACKWARD, .1);
+                } else if (targetPosLocation < columnPosition - CRYPTO_PRECISION_VALUE) {
+                    robot.drivetrain.drive(Direction.FORWARD, .07);
+                } else if (targetPosLocation > columnPosition + CRYPTO_PRECISION_VALUE) {
+                    robot.drivetrain.drive(Direction.BACKWARD, .07);
                 }
             }
 
@@ -307,7 +340,7 @@ public abstract class Auto extends CVLinearOpMode {
         } while (opModeIsActive() && !aligned);
 
         // Stop moving.
-        drivetrain.stop();
+        robot.drivetrain.stop();
 
         // Only disable the cryptobox if the OpMode is active, to prevent crashing
         if (opModeIsActive()) {
@@ -321,23 +354,23 @@ public abstract class Auto extends CVLinearOpMode {
      * Put the glyph into cryptobox, after alignment and turning to face the box.
      */
     void putGlyphInCryptobox() {
-        drivetrain.stop();
+        robot.drivetrain.stop();
 
         sleep(500);
 
-        drivetrain.drive(Direction.FORWARD, 1, 750);
+        robot.drivetrain.drive(Direction.FORWARD, 1, 750);
 
         robot.flipper.up();
 
         sleep(500);
 
-        drivetrain.drive(Direction.BACKWARD, .15, 2000);
+        robot.drivetrain.drive(Direction.BACKWARD, .15, 2000);
 
-        drivetrain.drive(Direction.FORWARD, .5, 600);
+        robot.drivetrain.drive(Direction.FORWARD, .5, 600);
 
         sleep(500);
 
-        drivetrain.drive(Direction.BACKWARD, 1, 100);
+        robot.drivetrain.drive(Direction.BACKWARD, 1, 100);
 
         robot.flipper.down();
 

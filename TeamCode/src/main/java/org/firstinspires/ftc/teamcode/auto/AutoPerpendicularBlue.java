@@ -9,7 +9,7 @@ import me.joshlin.a3565lib.enums.Location;
 /**
  * @author Josh
  */
-
+@SuppressWarnings("unused")
 @Autonomous(name = "Auto Blue Perpendicular", group = "Auto")
 public class AutoPerpendicularBlue extends Auto {
     @Override
@@ -21,7 +21,7 @@ public class AutoPerpendicularBlue extends Auto {
 
         waitForStart();
         //===================================[Run program]==========================================
-        status = Status.RUNNING;
+        setStatus(Status.RUNNING);
 
         runtime.reset();
 
@@ -31,9 +31,9 @@ public class AutoPerpendicularBlue extends Auto {
         buildTelemetry();
         //=============================[Align to read Cryptobox]====================================
         // Align horizontally with the cryptobox
-        drivetrain.drive(Direction.BACKWARD, 1, 1250);
+        robot.drivetrain.drive(Direction.BACKWARD, 1, 1050);
         correctTurn(-90);
-        drivetrain.drive(Direction.BACKWARD, 1, 700);
+        robot.drivetrain.drive(Direction.BACKWARD, 1, 650);
 
         // Make sure we're aligned properly
         correctTurn(-90);
@@ -42,7 +42,7 @@ public class AutoPerpendicularBlue extends Auto {
         alignWithCryptobox();
 
         //=============================[Put Glyph in Cryptobox]=====================================
-        correctTurn(-180);
+        correctTurn(-175);
         putGlyphInCryptobox();
 
         robot.beep();

@@ -86,8 +86,8 @@ public class RevbotMecanum extends RobotMap {
 
         // Initialize the components of the robot.
         drivetrain = new Mecanum(frontL, frontR, backL, backR);
-        flipper = new ServoPivot(flipperServo, 0.81, 0.46, 0.25);
-        vertical = new ServoPivot(verticalServo, .5, 0);
+        flipper = new ServoPivot(flipperServo, 0.63, 0.24, 0.04);
+        vertical = new ServoPivot(verticalServo, .6, 0);
         ghostIMU = new GhostIMU(imu);
         glyphLift = new MotorLift(lift);
         intake = new MotorIntake(new MultiDcMotor(leftSpinner, rightSpinner));
