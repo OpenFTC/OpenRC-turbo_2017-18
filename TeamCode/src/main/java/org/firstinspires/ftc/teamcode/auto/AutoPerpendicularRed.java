@@ -32,16 +32,17 @@ public class AutoPerpendicularRed extends Auto {
         //=============================[Align to read Cryptobox]====================================
         // Align horizontally with the cryptobox
         drivetrain.drive(Direction.FORWARD, 1, 1250);
-        drivetrain.drive(Direction.LEFT, 1, 700);
+        correctTurn(90);
+        drivetrain.drive(Direction.FORWARD, 1, 700);
 
         // Make sure we're aligned properly
-        correctTurn(0);
+        correctTurn(90);
 
         //=============================[Line up with column]========================================
         alignWithCryptobox();
 
         //=============================[Put Glyph in Cryptobox]=====================================
-        correctTurn(-88);
+        correctTurn(0);
         putGlyphInCryptobox();
 
         robot.beep();

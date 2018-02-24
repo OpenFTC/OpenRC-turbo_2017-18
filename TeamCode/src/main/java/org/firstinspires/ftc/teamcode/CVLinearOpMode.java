@@ -72,6 +72,7 @@ public abstract class CVLinearOpMode extends LinearOpMode {
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
     }
 
+    // TODO: comment this
     public void initCryptoboxDetector(Alliance cryptoboxColor) {
         CryptoboxDetector.CryptoboxDetectionMode mode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
         // init cryptobox detector
@@ -94,6 +95,7 @@ public abstract class CVLinearOpMode extends LinearOpMode {
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
     }
 
+    // TODO: comment this
     public void initJewelDetector() {
         jewelDetector = new JewelDetector();
         jewelDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
