@@ -16,7 +16,7 @@ import me.joshlin.a3565lib.Sleep;
  *         Adds methods for dealing with angles,
  */
 
-public class GhostIMU {
+public class GhostIMU implements GhostSensor {
     /**
      * Holds the IMU passed into the object.
      */

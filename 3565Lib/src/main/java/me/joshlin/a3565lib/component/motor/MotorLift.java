@@ -6,7 +6,7 @@ import me.joshlin.a3565lib.component.interfaces.Lift;
 
 /**
  * @author Josh
- * An implementation of a {@link Lift} using a {@link DcMotor}.
+ *         An implementation of a {@link Lift} using a {@link DcMotor}.
  */
 
 public class MotorLift extends MotorHardwareComponent implements Lift {
@@ -18,6 +18,7 @@ public class MotorLift extends MotorHardwareComponent implements Lift {
      * Extend: 1
      * Retract: -1
      * Stop: 0
+     *
      * @param motor the motor to pass in
      */
     public MotorLift(DcMotor motor) {
@@ -26,10 +27,11 @@ public class MotorLift extends MotorHardwareComponent implements Lift {
 
     /**
      * Constructor.
-     * @param motor the motor to pass in
-     * @param extend motor power value for extending
+     *
+     * @param motor   the motor to pass in
+     * @param extend  motor power value for extending
      * @param retract motor power value for retracting
-     * @param stop motor power value for stopping
+     * @param stop    motor power value for stopping
      */
     public MotorLift(DcMotor motor, double extend, double retract, double stop) {
         super(motor, extend, retract, stop);

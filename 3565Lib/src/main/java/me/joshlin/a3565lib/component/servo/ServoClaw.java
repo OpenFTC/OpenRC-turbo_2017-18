@@ -6,23 +6,27 @@ import me.joshlin.a3565lib.component.interfaces.Claw;
 
 /**
  * @author Josh
- * An implementation of a {@link Claw} using a {@link Servo}.
+ *         An implementation of a {@link Claw} using a {@link Servo}.
  */
-// TODO: fill out comments
 public class ServoClaw extends ServoHardwareComponent implements Claw {
     /**
+     * Constructor with default values.
+     * <p>
+     * Open position defaults to 1
+     * Close position defaults to 0
      *
-     * @param servo
+     * @param servo the servo to pass in
      */
     public ServoClaw(Servo servo) {
         this(servo, 1, 0);
     }
 
     /**
+     * Constructor.
      *
-     * @param servo
-     * @param open
-     * @param close
+     * @param servo the servo to pass in
+     * @param open  the open position of the claw
+     * @param close the close position of the claw
      */
     public ServoClaw(Servo servo, double open, double close) {
         this(servo, open, close, 0);

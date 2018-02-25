@@ -11,7 +11,7 @@ import me.joshlin.a3565lib.enums.Alliance;
  *         Note: Ignores the color green.
  */
 
-public class GhostColorSensor {
+public class GhostColorSensor implements GhostSensor {
     /**
      * Holds the color sensor passed into the object.
      */
@@ -57,5 +57,11 @@ public class GhostColorSensor {
         } else {
             return Alliance.RED;
         }
+    }
+
+    @Override
+    public void init() {
+        // Color sensor wrapper doesn't need initialization right now
+        // Any initialization steps should go here
     }
 }

@@ -59,7 +59,6 @@ public abstract class ServoHardwareComponent extends HardwareComponent {
     }
 
     /**
-     *
      * @param position the position to set the servo to
      */
     public void setPosition(double position) {

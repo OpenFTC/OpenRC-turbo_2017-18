@@ -6,7 +6,7 @@ import me.joshlin.a3565lib.component.interfaces.Intake;
 
 /**
  * @author Josh
- * An implementation of an {@link Intake} using a {@link DcMotor}
+ *         An implementation of an {@link Intake} using a {@link DcMotor}
  */
 
 public class MotorIntake extends MotorHardwareComponent implements Intake {
@@ -18,6 +18,7 @@ public class MotorIntake extends MotorHardwareComponent implements Intake {
      * In: 1
      * Out: -1
      * Stop: 0
+     *
      * @param motor the motor to pass in
      */
     public MotorIntake(DcMotor motor) {
@@ -26,10 +27,11 @@ public class MotorIntake extends MotorHardwareComponent implements Intake {
 
     /**
      * Constructor.
+     *
      * @param motor the motor to pass in
-     * @param in motor power value for intake
-     * @param out motor power value for eject
-     * @param stop motor power value for stopping
+     * @param in    motor power value for intake
+     * @param out   motor power value for eject
+     * @param stop  motor power value for stopping
      */
     public MotorIntake(DcMotor motor, double in, double out, double stop) {
         super(motor, in, out, stop);
