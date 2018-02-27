@@ -3,7 +3,7 @@ package me.joshlin.a3565lib;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * Created by 3565 on 1/26/2018.
+ * Instantiable version of LinearOpMode that allows access to methods without passing in an OpMode.
  */
 
 public class Sleep extends LinearOpMode {

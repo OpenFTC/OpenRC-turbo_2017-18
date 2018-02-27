@@ -13,6 +13,7 @@ import me.joshlin.a3565lib.component.drivetrain.Drivetrain;
  */
 
 public abstract class RobotMap {
+
     protected HardwareMap hardwareMap;
 
     public Drivetrain drivetrain;
@@ -20,14 +21,23 @@ public abstract class RobotMap {
     private ToneGenerator tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
 
     /**
-     * void beep() Make the robot play a tone.
+     * Make the robot play a tone.
      */
     public void beep() {
         tone.startTone(ToneGenerator.TONE_CDMA_KEYPAD_VOLUME_KEY_LITE);
     }
 
+    /**
+     * Initializes the robot.
+     * @param aHwMap the hardware map, obtained from the OpMode.
+     */
     public abstract void init(HardwareMap aHwMap);
 
+    /**
+     *
+     * @param mode
+     * @param motors
+     */
     protected void setMode(DcMotor.RunMode mode, DcMotor... motors) {
         for (DcMotor motor : motors) {
             motor.setMode(mode);

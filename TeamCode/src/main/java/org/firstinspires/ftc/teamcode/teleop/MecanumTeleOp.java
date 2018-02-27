@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.CVLinearOpMode;
-import org.firstinspires.ftc.teamcode.RevbotMecanum;
+import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 

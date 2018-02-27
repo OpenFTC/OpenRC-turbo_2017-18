@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.test;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.CVLinearOpMode;
-import org.firstinspires.ftc.teamcode.RevbotMecanum;
+import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.enums.TurnDirection;

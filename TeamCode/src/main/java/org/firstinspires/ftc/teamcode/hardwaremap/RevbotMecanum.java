@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardwaremap;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,24 +22,23 @@ import me.joshlin.a3565lib.component.servo.ServoPivot;
  */
 
 public class RevbotMecanum extends RobotMap {
-    // TODO: Fix visibility of variables
     // Declare drive motors
-    private DcMotor frontL;
-    private DcMotor frontR;
-    private DcMotor backL;
-    private DcMotor backR;
+    public DcMotor frontL;
+    public DcMotor frontR;
+    public DcMotor backL;
+    public DcMotor backR;
 
     // Declare other motors
-    private DcMotor lift;
-    private DcMotor leftSpinner;
-    private DcMotor rightSpinner;
+    public DcMotor lift;
+    public DcMotor leftSpinner;
+    public DcMotor rightSpinner;
 
     // Declare servos
-    private Servo flipperServo;
-    private Servo verticalServo;
+    public Servo flipperServo;
+    public Servo verticalServo;
 
     // Declare other sensors
-    private BNO055IMU imu;
+    public BNO055IMU imu;
 
     // Declare robot components.
     // Holds the glyph flipper.

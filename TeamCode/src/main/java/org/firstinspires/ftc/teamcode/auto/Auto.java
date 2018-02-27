@@ -4,7 +4,7 @@ import com.disnodeteam.dogecv.detectors.JewelDetector;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.CVLinearOpMode;
-import org.firstinspires.ftc.teamcode.RevbotMecanum;
+import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.enums.Alliance;
@@ -85,6 +85,7 @@ public abstract class Auto extends CVLinearOpMode {
         // Initialize computer vision.
         initVuforia();
         // TODO: Change this to actually read correct alliance for competition
+        // initCryptoboxDetector(alliance);`
         initCryptoboxDetector(Alliance.BLUE);
         initJewelDetector();
 
@@ -100,7 +101,7 @@ public abstract class Auto extends CVLinearOpMode {
         robot.ghostIMU.init();
         robot.ghostIMU.resetAngle();
 
-
+        // Figure out which correction position to use based o
         switch (alliance) {
             case BLUE:
                 columnPosition = SCREEN_CENTER + BLUE_CENTER_CORRECTION;

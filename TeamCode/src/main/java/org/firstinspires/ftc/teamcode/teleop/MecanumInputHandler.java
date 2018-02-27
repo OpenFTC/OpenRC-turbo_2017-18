@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.RevbotMecanum;
+import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 
 import me.joshlin.a3565lib.InputHandler;
 import me.joshlin.a3565lib.RobotMap;
