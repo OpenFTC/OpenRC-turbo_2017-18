@@ -13,7 +13,7 @@ import me.joshlin.a3565lib.RobotMap;
  */
 
 public class MecanumInputHandler extends InputHandler {
-    RevbotMecanum robot;
+    private RevbotMecanum robot;
 
     public MecanumInputHandler(Gamepad gamepad1, Gamepad gamepad2) {
         super(gamepad1, gamepad2);
@@ -23,6 +23,11 @@ public class MecanumInputHandler extends InputHandler {
     public void init(RobotMap robotMap) {
         if (robotMap instanceof RevbotMecanum) {
             this.robot = (RevbotMecanum) robotMap;
+
+            // Initialize components to starting position
+            robot.vertical.up();
+            robot.flipper.down();
+            robot.drivetrain.stop();
         }
     }
 

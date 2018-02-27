@@ -26,7 +26,7 @@ public class AutoJewelOnly extends Auto {
 
         buildTelemetry();
         //===================================[Knock Jewel]==========================================
-        knockJewel();
+        readAndKnockJewel();
         buildTelemetry();
         while (opModeIsActive()) {
             sleep(50);

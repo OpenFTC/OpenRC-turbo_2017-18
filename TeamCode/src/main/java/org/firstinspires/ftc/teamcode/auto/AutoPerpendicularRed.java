@@ -28,7 +28,7 @@ public class AutoPerpendicularRed extends Auto {
 
         buildTelemetry();
         //===================================[Knock Jewel]==========================================
-        knockJewel();
+        readAndKnockJewel();
         buildTelemetry();
         //=============================[Align to read Cryptobox]====================================
         // Align horizontally with the cryptobox

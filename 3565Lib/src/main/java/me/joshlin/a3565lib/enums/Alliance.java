@@ -6,5 +6,6 @@ package me.joshlin.a3565lib.enums;
 
 public enum Alliance {
     RED,
-    BLUE
+    BLUE,
+    UNKNOWN
 }

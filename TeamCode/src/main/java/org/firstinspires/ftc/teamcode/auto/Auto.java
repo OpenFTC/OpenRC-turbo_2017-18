@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-import com.disnodeteam.dogecv.detectors.JewelDetector;
-
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
+
+import java.util.ArrayList;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
 import me.joshlin.a3565lib.enums.Alliance;
@@ -49,10 +49,10 @@ public abstract class Auto extends CVLinearOpMode {
     //====================================[OpMode Variables]========================================
     // Holds the declared alliance of the OpMode.
     private Alliance alliance;
+    // Holds the color of the jewel.
+    private Alliance jewelColor;
     // Holds the declared location of the OpMode.
     private Location location;
-    // Holds the stored jewel order.
-    private JewelDetector.JewelOrder jewelOrder = JewelDetector.JewelOrder.UNKNOWN;
     // Holds the current angle of the robot.
     private double currentAngle;
 
@@ -87,7 +87,6 @@ public abstract class Auto extends CVLinearOpMode {
         // TODO: Change this to actually read correct alliance for competition
         // initCryptoboxDetector(alliance);`
         initCryptoboxDetector(Alliance.BLUE);
-        initJewelDetector();
 
         // Initialize the robot and its components.
         robot.init(hardwareMap);
@@ -101,7 +100,7 @@ public abstract class Auto extends CVLinearOpMode {
         robot.ghostIMU.init();
         robot.ghostIMU.resetAngle();
 
-        // Figure out which correction position to use based o
+        // Figure out which correction position to use based on the defined alliance
         switch (alliance) {
             case BLUE:
                 columnPosition = SCREEN_CENTER + BLUE_CENTER_CORRECTION;
@@ -162,7 +161,7 @@ public abstract class Auto extends CVLinearOpMode {
         telemetry.addData("Alliance", "%s | Location: %s", alliance, location);
         telemetry.addData("Status", "%s, %s seconds", getStatus(), runtime.time());
         telemetry.addData("Current Heading", currentAngle);
-        telemetry.addData("VuMark", "%s visible | Jewel Order: %s", vuMark, jewelOrder);
+        telemetry.addData("VuMark", "%s visible | Jewel Order: %s", vuMark, jewelColor);
 
         telemetry.addData("isCryptoBoxDetected", "%s | isColumnDetected: %s",
                 cryptoboxDetector.isCryptoBoxDetected(),
@@ -210,10 +209,8 @@ public abstract class Auto extends CVLinearOpMode {
     /**
      * Knock the correct jewel from the jewel holder.
      */
-    void knockJewel() {
+    void readAndKnockJewel() {
         robot.drivetrain.stop();
-        // Enable the jewel detector
-        jewelDetector.enable();
 
         // Lower the arm
         robot.vertical.down();
@@ -221,59 +218,66 @@ public abstract class Auto extends CVLinearOpMode {
         // Wait for the arm to go down
         sleep(1500);
         buildTelemetry();
-
-        do {
-            // Get the currently seen jewel order.
-            jewelOrder = jewelDetector.getCurrentOrder();
-            buildTelemetry();
-        }
-        while (opModeIsActive() && (JewelDetector.JewelOrder.UNKNOWN == jewelOrder));
-
-        // Get the last known order of the jewels, just to be safe
-        jewelOrder = jewelDetector.getLastOrder();
-        buildTelemetry();
-
         // Move based on the jewel order
-        switch (jewelOrder) {
-            // this is disgusting but it works
-            // TODO: fix this so that there's more factoring
-            case BLUE_RED:
-                if (alliance.equals(Alliance.RED)) {
-                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
-                    // Raise the arm
-                    robot.vertical.up();
-                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
-                } else {
-                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
-                    // Raise the arm
-                    robot.vertical.up();
-                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
-                }
-                break;
-            case RED_BLUE:
-                if (alliance.equals(Alliance.BLUE)) {
-                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
-                    // Raise the arm
-                    robot.vertical.up();
-                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
-                } else {
-                    robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
-                    // Raise the arm
-                    robot.vertical.up();
-                    robot.drivetrain.drive(Direction.FORWARD, .3, 300);
-                }
-                break;
-            case UNKNOWN:
-                // If it doesn't see jewels then just don't knock either to be safe
-                break;
-        }
+        knockJewel(readJewel());
         robot.drivetrain.stop();
         buildTelemetry();
 
         sleep(1000);
+    }
 
-        // Close the jewel detector to use other computer vision
-        jewelDetector.disable();
+    Direction readJewel() {
+        // Get the detected color of the color sensor
+        ArrayList<Alliance> sensorColors = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            sensorColors.add(robot.ghostColor.readColor());
+        }
+
+        jewelColor = getMostCommon(sensorColors);
+
+        if (jewelColor.equals(alliance)) {
+            return Direction.FORWARD;
+        } else {
+            return Direction.BACKWARD;
+        }
+    }
+
+    void knockJewel(Direction direction) {
+        switch (direction) {
+            case FORWARD:
+                robot.drivetrain.drive(Direction.FORWARD, .3, 300);
+                // Raise the arm
+                robot.vertical.up();
+                robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
+                break;
+            case BACKWARD:
+                robot.drivetrain.drive(Direction.BACKWARD, .3, 300);
+                // Raise the arm
+                robot.vertical.up();
+                robot.drivetrain.drive(Direction.FORWARD, .3, 300);
+                break;
+        }
+        buildTelemetry();
+    }
+
+    Alliance getMostCommon(ArrayList<Alliance> alliances) {
+        int red = 0;
+        int blue = 0;
+        for (Alliance alliance : alliances) {
+            if (alliance.equals(Alliance.RED)) {
+                red++;
+            } else if (alliance.equals(Alliance.BLUE)) {
+                blue++;
+            }
+        }
+
+        if (red > blue) {
+            return Alliance.RED;
+        } else if (red < blue) {
+            return Alliance.BLUE;
+        } else {
+            return Alliance.UNKNOWN;
+        }
     }
 
     /**

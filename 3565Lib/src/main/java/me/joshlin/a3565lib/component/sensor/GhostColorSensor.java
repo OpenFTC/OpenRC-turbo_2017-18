@@ -51,7 +51,7 @@ public class GhostColorSensor implements GhostSensor {
      *
      * @return the alliance that the sensor sees
      */
-    public Alliance getAlliance() {
+    public Alliance readColor() {
         if (isBlue() && !isRed()) {
             return Alliance.BLUE;
         } else {

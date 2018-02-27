@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardwaremap;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,6 +15,7 @@ import me.joshlin.a3565lib.component.interfaces.Lift;
 import me.joshlin.a3565lib.component.interfaces.Pivot;
 import me.joshlin.a3565lib.component.motor.MotorIntake;
 import me.joshlin.a3565lib.component.motor.MotorLift;
+import me.joshlin.a3565lib.component.sensor.GhostColorSensor;
 import me.joshlin.a3565lib.component.sensor.GhostIMU;
 import me.joshlin.a3565lib.component.servo.ServoPivot;
 
@@ -39,6 +41,7 @@ public class RevbotMecanum extends RobotMap {
 
     // Declare other sensors
     public BNO055IMU imu;
+    public ColorSensor color;
 
     // Declare robot components.
     // Holds the glyph flipper.
@@ -47,6 +50,8 @@ public class RevbotMecanum extends RobotMap {
     public Pivot vertical;
     // Holds the REV IMU.
     public GhostIMU ghostIMU;
+    // Holds the color sensor wrapper.
+    public GhostColorSensor ghostColor;
     // Holds the glyph lift.
     public Lift glyphLift;
     // Holds the intake.
@@ -72,6 +77,7 @@ public class RevbotMecanum extends RobotMap {
 
         // Assign sensors to sensor variables
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        color = hardwareMap.get(ColorSensor.class, "color");
 
         // Set motors to run with encoders
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER, frontL, frontR);
@@ -85,9 +91,10 @@ public class RevbotMecanum extends RobotMap {
 
         // Initialize the components of the robot.
         drivetrain = new Mecanum(frontL, frontR, backL, backR);
-        flipper = new ServoPivot(flipperServo, 0.63, 0.24, 0.04);
+        flipper = new ServoPivot(flipperServo, 0.55, 0.54, 0.51);
         vertical = new ServoPivot(verticalServo, .6, 0);
         ghostIMU = new GhostIMU(imu);
+        ghostColor = new GhostColorSensor(color);
         glyphLift = new MotorLift(lift);
         intake = new MotorIntake(new MultiDcMotor(leftSpinner, rightSpinner));
     }

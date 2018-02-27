@@ -12,7 +12,7 @@ import me.joshlin.a3565lib.enums.TurnDirection;
  * Created by josh on 2/19/18.
  */
 
-@Autonomous(name = "Test turn 90", group = "test")
+@Autonomous(name = "Test Turn 90", group = "test")
 public class TestTurn90Degrees extends CVLinearOpMode {
     RevbotMecanum robot = new RevbotMecanum();
 
