@@ -17,8 +17,24 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(':openCVLibrary340')
     implementation project(':3565Lib')
     implementation project(':DogeCV')
+}
+
+android {
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 25
+    }
+    productFlavors {
+        openrc {
+            minSdkVersion 23
+            targetSdkVersion 25
+        }
+        stock {
+            minSdkVersion 23
+            targetSdkVersion 25
+        }
+    }
 }

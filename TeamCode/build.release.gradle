@@ -1,6 +1,8 @@
 dependencies {
     implementation project(path: ':FtcRobotController')
 
+    implementation 'com.android.support:multidex:1.0.3'
+
     implementation(name: 'Analytics-release', ext: 'aar')
     implementation(name: 'WirelessP2p-release', ext: 'aar')
 

@@ -1,23 +1,21 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-
-
+    compileSdkVersion 25
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 19
+        minSdkVersion 23
+        targetSdkVersion 25
         versionCode 40
         versionName "5.18"
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    productFlavors {
+    }
 }
 
 repositories {
@@ -27,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':RobotCore')
     implementation project(':Hardware')
     implementation project(':Inspection')

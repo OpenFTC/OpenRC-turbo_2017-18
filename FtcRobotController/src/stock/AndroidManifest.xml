@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools">
+    >
     <application>
 
-        <activity-alias
+        <activity
             android:name="org.openftc.rc.SplashActivity"
             android:targetActivity="org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity">
 
@@ -18,7 +18,7 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter"/>
-        </activity-alias>
+        </activity>
 
     </application>
 

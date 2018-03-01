@@ -50,11 +50,11 @@ public class MecanumInputHandler extends InputHandler {
         }
 
         if (gamepad1.dpad_left) {
-            robot.flipper.up();
+            robot.flipperLift.extend();
         } else if (gamepad1.dpad_right) {
-            robot.flipper.down();
-        } else if (gamepad1.a) {
-            robot.flipper.center();
+            robot.flipperLift.retract();
+        } else {
+            robot.flipperLift.stop();
         }
 
         if (gamepad2.dpad_up) {

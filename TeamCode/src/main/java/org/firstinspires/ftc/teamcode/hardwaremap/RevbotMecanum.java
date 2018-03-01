@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import me.joshlin.a3565lib.RobotMap;
 import me.joshlin.a3565lib.component.drivetrain.Mecanum;
+import me.joshlin.a3565lib.component.encodermotor.EncoderMotorPivot;
 import me.joshlin.a3565lib.component.hardware.MultiDcMotor;
 import me.joshlin.a3565lib.component.interfaces.Intake;
 import me.joshlin.a3565lib.component.interfaces.Lift;
@@ -36,7 +37,7 @@ public class RevbotMecanum extends RobotMap {
     public DcMotor rightSpinner;
 
     // Declare servos
-    public Servo flipperServo;
+    public DcMotor flipperMotor;
     public Servo verticalServo;
 
     // Declare other sensors
@@ -54,6 +55,8 @@ public class RevbotMecanum extends RobotMap {
     public GhostColorSensor ghostColor;
     // Holds the glyph lift.
     public Lift glyphLift;
+
+    public Lift flipperLift;
     // Holds the intake.
     public Intake intake;
 
@@ -72,7 +75,7 @@ public class RevbotMecanum extends RobotMap {
         rightSpinner = hardwareMap.get(DcMotor.class, "rightSpinner");
 
         // Assign servos to Servo variables
-        flipperServo = hardwareMap.get(Servo.class, "flipper");
+        flipperMotor = hardwareMap.get(DcMotor.class, "flipper");
         verticalServo = hardwareMap.get(Servo.class, "vertical");
 
         // Assign sensors to sensor variables
@@ -91,11 +94,12 @@ public class RevbotMecanum extends RobotMap {
 
         // Initialize the components of the robot.
         drivetrain = new Mecanum(frontL, frontR, backL, backR);
-        flipper = new ServoPivot(flipperServo, 0.55, 0.54, 0.51);
+        flipper = new EncoderMotorPivot(flipperMotor, 1, 0.56, 0.54);//up used to be .58
         vertical = new ServoPivot(verticalServo, .6, 0);
         ghostIMU = new GhostIMU(imu);
         ghostColor = new GhostColorSensor(color);
         glyphLift = new MotorLift(lift);
+        flipperLift = new MotorLift(flipperMotor, 0.4, -0.1, 0);
         intake = new MotorIntake(new MultiDcMotor(leftSpinner, rightSpinner));
     }
 }
