@@ -68,4 +68,11 @@ public abstract class CRServoHardwareComponent extends HardwareComponent {
     public void setPower(double power) {
         servo.setPower(power);
     }
+
+    /**
+     * CR Servos can't lock, sorry.
+     */
+    public void lock() {
+        // Nothing here
+    }
 }

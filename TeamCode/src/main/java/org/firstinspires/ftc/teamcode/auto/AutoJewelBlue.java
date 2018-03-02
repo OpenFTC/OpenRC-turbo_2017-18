@@ -9,12 +9,12 @@ import me.joshlin.a3565lib.enums.Location;
  * Created by josh on 2/23/18.
  */
 
-@Autonomous(name = "Auto Jewel Only", group = "Auto")
-public class AutoJewelOnly extends Auto {
+@Autonomous(name = "Auto Jewel Blue", group = "Auto")
+public class AutoJewelBlue extends Auto {
     @Override
     public void runOpMode() throws InterruptedException {
         //=================================[Initialization]=======================================
-        init(Alliance.RED, Location.PARALLEL);
+        init(Alliance.BLUE, Location.PARALLEL);
         //===================================[Read VuMark]==========================================
         readVuMark();
 

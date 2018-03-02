@@ -1,27 +1,38 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    flavorDimensions 'type'
+    productFlavors {
+        openrc {
+            dimension 'type'
+            buildConfigField 'boolean', 'IS_OPENRC', 'true'
+            buildConfigField 'boolean', 'IS_TURBO', 'true'
+        }
+        stock {
+            dimension 'type'
+            buildConfigField 'boolean', 'IS_OPENRC', 'false'
+            buildConfigField 'boolean', 'IS_TURBO', 'false'
         }
     }
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+
+    // Selecting a release variant will prompt teams to set up a signing key. Now that there's
+    // a reason to select other variants (the stock feature of OpenRC), it's better to filter out
+    // the ones that will confuse teams.
+    variantFilter { variant ->
+        if (variant.buildType.name == "release") {
+            setIgnore(true)
+        }
     }
-    productFlavors {
+
+    buildToolsVersion '26.0.2'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -32,6 +43,11 @@ repositories {
 }
 
 dependencies {
-    implementation project(':RobotCore')
-    compile project(path: ':Hardware')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    stockImplementation(name: 'RobotCore-release', ext: 'aar')
+    stockImplementation(name: 'Hardware-release', ext: 'aar')
+    stockImplementation(name: 'FtcCommon-release', ext: 'aar')
+    openrcImplementation project(':RobotCore')
+    openrcImplementation project(':Hardware')
+    openrcImplementation project(':FtcCommon')
 }

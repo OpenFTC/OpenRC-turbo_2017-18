@@ -64,4 +64,11 @@ public abstract class ServoHardwareComponent extends HardwareComponent {
     public void setPosition(double position) {
         servo.setPosition(position);
     }
+
+    /**
+     * Implementation of lock function. Sets the servo position to the current position.
+     */
+    public void lock() {
+        setPosition(getPosition());
+    }
 }

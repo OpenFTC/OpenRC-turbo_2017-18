@@ -50,4 +50,6 @@ public abstract class HardwareComponent implements RobotSystem {
     protected void setStatus(ComponentStatus status) {
         this.status = status;
     }
+
+    public abstract void lock();
 }

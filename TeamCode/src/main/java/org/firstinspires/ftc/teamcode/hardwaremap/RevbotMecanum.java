@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import me.joshlin.a3565lib.RobotMap;
 import me.joshlin.a3565lib.component.drivetrain.Mecanum;
-import me.joshlin.a3565lib.component.encodermotor.EncoderMotorPivot;
 import me.joshlin.a3565lib.component.hardware.MultiDcMotor;
 import me.joshlin.a3565lib.component.interfaces.Intake;
 import me.joshlin.a3565lib.component.interfaces.Lift;
@@ -21,7 +20,8 @@ import me.joshlin.a3565lib.component.sensor.GhostIMU;
 import me.joshlin.a3565lib.component.servo.ServoPivot;
 
 /**
- * Created by 3565 on 2/15/2018.
+ * @author Josh
+ * Hardware map for the mecanum drive robot.
  */
 
 public class RevbotMecanum extends RobotMap {
@@ -46,7 +46,7 @@ public class RevbotMecanum extends RobotMap {
 
     // Declare robot components.
     // Holds the glyph flipper.
-    public Pivot flipper;
+    public Lift flipper;
     // Holds the ball knocker arm.
     public Pivot vertical;
     // Holds the REV IMU.
@@ -94,12 +94,12 @@ public class RevbotMecanum extends RobotMap {
 
         // Initialize the components of the robot.
         drivetrain = new Mecanum(frontL, frontR, backL, backR);
-        flipper = new EncoderMotorPivot(flipperMotor, 1, 0.56, 0.54);//up used to be .58
+        flipper = new MotorLift(flipperMotor, 1, 0.56, 0.54);//up used to be .58
         vertical = new ServoPivot(verticalServo, .6, 0);
         ghostIMU = new GhostIMU(imu);
         ghostColor = new GhostColorSensor(color);
         glyphLift = new MotorLift(lift);
-        flipperLift = new MotorLift(flipperMotor, 0.4, -0.1, 0);
+        flipperLift = new MotorLift(flipperMotor, 0.45, -0.08, 0);
         intake = new MotorIntake(new MultiDcMotor(leftSpinner, rightSpinner));
     }
 }

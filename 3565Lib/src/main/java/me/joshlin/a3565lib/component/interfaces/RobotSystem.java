@@ -12,4 +12,9 @@ public interface RobotSystem {
      * @return the status
      */
     ComponentStatus getStatus();
+
+    /**
+     * Locks the system in its current position.
+     */
+    void lock();
 }

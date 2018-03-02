@@ -66,6 +66,16 @@ public abstract class MotorHardwareComponent extends HardwareComponent {
      * @param power the desired power of the motor
      */
     public void setPower(double power) {
+        // Just to be sure
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setPower(power);
+    }
+
+    /**
+     * Implementation of lock function. Requires encoder on motor.
+     */
+    public void lock() {
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setTargetPosition(motor.getCurrentPosition());
     }
 }

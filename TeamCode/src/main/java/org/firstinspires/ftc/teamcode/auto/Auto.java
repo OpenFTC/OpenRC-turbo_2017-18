@@ -93,7 +93,6 @@ public abstract class Auto extends CVLinearOpMode {
 
         // Set default positions for the components.
         robot.drivetrain.stop();
-        robot.flipper.down();
         robot.vertical.up();
 
         // Initialize the gyroscope.
@@ -365,7 +364,7 @@ public abstract class Auto extends CVLinearOpMode {
 
         robot.drivetrain.drive(Direction.FORWARD, 1, 750);
 
-        robot.flipper.up();
+        robot.flipper.extend(750);
 
         sleep(500);
 
@@ -377,7 +376,7 @@ public abstract class Auto extends CVLinearOpMode {
 
         robot.drivetrain.drive(Direction.BACKWARD, 1, 100);
 
-        robot.flipper.down();
+        robot.flipper.retract(750);
 
         buildTelemetry();
 
