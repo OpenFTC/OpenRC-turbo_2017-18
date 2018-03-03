@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.CVLinearOpMode;
 /**
  * Created by josh on 2/18/18.
  */
-@TeleOp(name = "CV Jewel Test")
+@TeleOp(name = "CV Jewel Test", group = "Test")
 public class CVJewelTest extends CVLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

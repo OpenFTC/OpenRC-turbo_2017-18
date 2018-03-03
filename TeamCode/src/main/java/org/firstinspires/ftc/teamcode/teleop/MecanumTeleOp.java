@@ -13,7 +13,7 @@ import me.joshlin.a3565lib.component.drivetrain.DriveMath;
  * 420 blazit erryday amarite?
  */
 
-@TeleOp(name = "Mecanum TeleOp", group = "mecanum")
+@TeleOp(name = "Mecanum TeleOp", group = "A TeleOp")
 public class MecanumTeleOp extends CVLinearOpMode {
     private RevbotMecanum robot = new RevbotMecanum();
 
@@ -34,8 +34,9 @@ public class MecanumTeleOp extends CVLinearOpMode {
             inputHandler.handleInput();
             telemetry.addData("Status", "Running");
             telemetry.addData("Intake", robot.intake.getStatus());
-            telemetry.addData("Flipper", robot.flipper.getStatus());
+            telemetry.addData("Flipper", robot.flipperLift.getStatus());
             telemetry.addData("Lift", robot.glyphLift.getStatus());
+            telemetry.addData("Arm", robot.vertical.getStatus());
             telemetry.update();
         }
     }

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.CVLinearOpMode;
  * Created by josh on 2/17/18.
  */
 
-@TeleOp(name = "Vuforia Test", group = "test")
+@TeleOp(name = "Vuforia Test", group = "Test")
 public class VuforiaTest extends CVLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

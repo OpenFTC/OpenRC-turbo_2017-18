@@ -32,9 +32,9 @@ public class AutoPerpendicularRed extends Auto {
         buildTelemetry();
         //=============================[Align to read Cryptobox]====================================
         // Align horizontally with the cryptobox
-        robot.drivetrain.drive(Direction.FORWARD, .7, 1100);
+        robot.drivetrain.drive(Direction.FORWARD, 1, 800);
         correctTurn(90);
-        robot.drivetrain.drive(Direction.FORWARD, 1, 500);
+        robot.drivetrain.drive(Direction.FORWARD, 1, 300);
 
         // Make sure we're aligned properly
         correctTurn(90);

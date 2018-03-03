@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     stockImplementation(name: 'RobotCore-release', ext: 'aar')
     stockImplementation(name: 'Hardware-release', ext: 'aar')
     stockImplementation(name: 'FtcCommon-release', ext: 'aar')

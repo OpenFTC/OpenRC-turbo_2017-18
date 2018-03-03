@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 import java.util.ArrayList;
 
 import me.joshlin.a3565lib.component.drivetrain.DriveMath;
+import me.joshlin.a3565lib.component.motor.MotorHardwareComponent;
 import me.joshlin.a3565lib.enums.Alliance;
 import me.joshlin.a3565lib.enums.Column;
 import me.joshlin.a3565lib.enums.Direction;
@@ -284,6 +285,7 @@ public abstract class Auto extends CVLinearOpMode {
      */
     void alignWithCryptobox() {
         robot.drivetrain.stop();
+        sleep(1000);
         // Enable cryptobox detector
         cryptoboxDetector.enable();
 
@@ -355,20 +357,27 @@ public abstract class Auto extends CVLinearOpMode {
     }
 
     /**
-     * Put the glyph into cryptobox, after alignment and turning to face the box.
+     * Put the glyph into cryptobox, after alignment and turni'=ng to face the box.
      */
     void putGlyphInCryptobox() {
         robot.drivetrain.stop();
 
         sleep(500);
+        robot.intake.in();
 
         robot.drivetrain.drive(Direction.FORWARD, 1, 750);
 
-        robot.flipper.extend(750);
+        robot.drivetrain.drive(Direction.BACKWARD, .2);
+        sleep(100);
+        MotorHardwareComponent mhc = (MotorHardwareComponent) robot.flipperLift;
+        mhc.setPower(0.35);
 
-        sleep(500);
+        sleep(1000);
+        robot.flipperLift.stop();
 
-        robot.drivetrain.drive(Direction.BACKWARD, .15, 2000);
+        robot.drivetrain.drive(Direction.BACKWARD, .15, 1000);
+
+        robot.intake.stop();
 
         robot.drivetrain.drive(Direction.FORWARD, .5, 600);
 
@@ -376,11 +385,11 @@ public abstract class Auto extends CVLinearOpMode {
 
         robot.drivetrain.drive(Direction.BACKWARD, 1, 100);
 
-        robot.flipper.retract(750);
+        robot.flipperLift.retract();
 
         buildTelemetry();
 
-        sleep(500);
+        sleep(700);
 
         buildTelemetry();
     }

@@ -9,7 +9,7 @@ import me.joshlin.a3565lib.enums.Alliance;
 /**
  * Created by josh on 2/18/18.
  */
-@TeleOp(name = "CV Crypto Test")
+@TeleOp(name = "CV Crypto Test", group = "Test")
 public class CVCryptoTest extends CVLinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

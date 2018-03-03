@@ -45,8 +45,6 @@ public class RevbotMecanum extends RobotMap {
     public ColorSensor color;
 
     // Declare robot components.
-    // Holds the glyph flipper.
-    public Lift flipper;
     // Holds the ball knocker arm.
     public Pivot vertical;
     // Holds the REV IMU.
@@ -94,12 +92,11 @@ public class RevbotMecanum extends RobotMap {
 
         // Initialize the components of the robot.
         drivetrain = new Mecanum(frontL, frontR, backL, backR);
-        flipper = new MotorLift(flipperMotor, 1, 0.56, 0.54);//up used to be .58
         vertical = new ServoPivot(verticalServo, .6, 0);
         ghostIMU = new GhostIMU(imu);
         ghostColor = new GhostColorSensor(color);
         glyphLift = new MotorLift(lift);
-        flipperLift = new MotorLift(flipperMotor, 0.45, -0.08, 0);
+        flipperLift = new MotorLift(flipperMotor, 0.45, -0.2, 0);
         intake = new MotorIntake(new MultiDcMotor(leftSpinner, rightSpinner));
     }
 }

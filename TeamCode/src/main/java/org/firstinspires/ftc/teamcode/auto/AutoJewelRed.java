@@ -9,7 +9,7 @@ import me.joshlin.a3565lib.enums.Location;
  * Created by josh on 2/23/18.
  */
 
-@Autonomous(name = "Auto Jewel Red", group = "Auto")
+@Autonomous(name = "Auto Jewel Red", group = "Jewel Only")
 public class AutoJewelRed extends Auto {
     @Override
     public void runOpMode() throws InterruptedException {

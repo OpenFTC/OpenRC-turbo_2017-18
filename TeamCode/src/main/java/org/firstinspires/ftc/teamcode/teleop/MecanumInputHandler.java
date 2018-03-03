@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 
 import me.joshlin.a3565lib.InputHandler;
 import me.joshlin.a3565lib.RobotMap;
+import me.joshlin.a3565lib.component.motor.MotorHardwareComponent;
 
 /**
  * @author Josh
@@ -26,12 +27,15 @@ public class MecanumInputHandler extends InputHandler {
 
             // Initialize components to starting position
             robot.vertical.up();
+            robot.flipperLift.stop();
             robot.drivetrain.stop();
+            robot.intake.stop();
         }
     }
 
     @Override
     public void handleInput() {
+        // Move the lift
         if (gamepad1.dpad_up || gamepad2.dpad_up) {
             robot.glyphLift.extend();
         } else if (gamepad1.dpad_down || gamepad2.dpad_down) {
@@ -40,6 +44,7 @@ public class MecanumInputHandler extends InputHandler {
             robot.glyphLift.stop();
         }
 
+        // Move the intake
         if (gamepad1.b || gamepad2.b) {
             robot.intake.in();
         } else if (gamepad1.x || gamepad2.x) {
@@ -48,6 +53,7 @@ public class MecanumInputHandler extends InputHandler {
             robot.intake.stop();
         }
 
+        // Move the flipper
         if (gamepad1.dpad_left || gamepad2.dpad_left) {
             robot.flipperLift.extend();
         } else if (gamepad1.dpad_right|| gamepad2.dpad_right) {
@@ -58,10 +64,19 @@ public class MecanumInputHandler extends InputHandler {
             robot.flipperLift.stop();
         }
 
-        if (gamepad2.right_stick_y < 0) {
+        // Move the arm
+        if (gamepad2.right_stick_y < 0.05) {
             robot.vertical.up();
-        } else if (gamepad2.right_stick_y > 0) {
+        } else if (gamepad2.right_stick_y > 0.05) {
             robot.vertical.down();
+        }
+
+        // Precise control of the flipper
+        if (Math.abs(gamepad2.left_stick_y) > 0.05) {
+            if (robot.flipperLift instanceof MotorHardwareComponent) {
+                MotorHardwareComponent mhc = (MotorHardwareComponent) robot.flipperLift;
+                mhc.setPower((-gamepad2.left_stick_y) / 2);
+            }
         }
     }
 }

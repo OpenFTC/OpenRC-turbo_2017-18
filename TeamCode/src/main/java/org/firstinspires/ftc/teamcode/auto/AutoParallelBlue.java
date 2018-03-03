@@ -31,8 +31,8 @@ public class AutoParallelBlue extends Auto {
         buildTelemetry();
         //=============================[Align to read Cryptobox]====================================
         // Align horizontally with the cryptobox
-        robot.drivetrain.drive(Direction.BACKWARD, 1, 1200);
-        robot.drivetrain.drive(Direction.LEFT, 1, 700);
+        robot.drivetrain.drive(Direction.BACKWARD, .5, 2000);
+        robot.drivetrain.drive(Direction.LEFT, 1, 500);
 
         // Make sure we're aligned properly
         correctTurn(0, 2, .2);
@@ -41,7 +41,7 @@ public class AutoParallelBlue extends Auto {
         alignWithCryptobox();
 
         //=============================[Put Glyph in Cryptobox]=====================================
-        correctTurn(-90);
+        correctTurn(-87);
         putGlyphInCryptobox();
 
         robot.beep();
