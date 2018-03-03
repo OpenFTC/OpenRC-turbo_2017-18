@@ -86,8 +86,8 @@ public abstract class Auto extends CVLinearOpMode {
         // Initialize computer vision.
         initVuforia();
         // TODO: Change this to actually read correct alliance for competition
-        // initCryptoboxDetector(alliance);`
-        initCryptoboxDetector(Alliance.BLUE);
+        initCryptoboxDetector(alliance);
+        // initCryptoboxDetector(Alliance.BLUE);
 
         // Initialize the robot and its components.
         robot.init(hardwareMap);
