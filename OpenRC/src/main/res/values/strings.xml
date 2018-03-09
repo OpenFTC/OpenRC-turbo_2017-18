@@ -5,6 +5,16 @@
         path to install a competition-legal version of the app. \n\nThe GDC has ruled that OpenRC is not legal for
         competition use, and a user acknowledged this fact the first time they launched this app.\n\nFor more information
         about OpenRC and the OpenFTC community responsible for it, please see http://openftc.org/OpenRC</string>
+    <string name="openRcLegalityWarning">
+        OpenRC has been ruled ILLEGAL for competition use.
+
+        \n\nUse Android Studio to switch to the competition-legal stock build variant before going to a competition.
+
+        \n\nhttp://openftc.org/OpenRC/legality
+    </string>
+
+    <string name="openRcPreferencesFile">org.openftc.openrc.preferences</string>
+    <string name="acknowledgedLegalityPrefKey">acknowledged_legality</string>
 
     <!-- Strings for Line Wrap preference -->
     <string name="prefcat_logging_key">logging_category</string>

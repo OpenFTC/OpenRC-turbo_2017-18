@@ -6,8 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 public class UiUtils {
     public static void showDsAppInstalledDialog(final Activity activity) {
@@ -57,5 +61,29 @@ public class UiUtils {
                 })
                 .setIcon(R.drawable.ic_info_outline)
                 .show();
+    }
+
+    public static void showLegalityAcknowlegementDialog(final Activity activity) {
+        SpannableString dialogText = new SpannableString(activity.getText(R.string.openRcLegalityWarning));
+        Linkify.addLinks(dialogText, Linkify.WEB_URLS);
+
+        AlertDialog legalityDialog = new AlertDialog.Builder(activity)
+                .setMessage(dialogText)
+                .setPositiveButton("Acknowledged.", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Utils.setLegalityAcknowledgementStatus(true);
+                    }
+                })
+                .setNegativeButton("Tell me again.", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Utils.setLegalityAcknowledgementStatus(false);
+                    }
+                })
+                .create();
+        legalityDialog.show();
+
+        ((TextView)legalityDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
