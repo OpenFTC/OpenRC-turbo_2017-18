@@ -55,7 +55,7 @@ To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGE
 * Bug fix: USB devices plugged in while the app is running were not detected until "restart robot" was selected
 * Added new dialog that displays on first startup, which warns that OpenRC is not legal for competition use, and points
   the user to the stock build variant
-* On about screen, replaced completely broken app build time with correct app installation time
+* On about screen, replaced completely broken app build time with correct app installation time (guest contribution by @antgo2!)
 * Changed About OpenRC dialog to reflect the GDC ruling
 * Updated README.md to reflect the GDC ruling and add links to website
 * Made link in About OpenRC dialog clickable
