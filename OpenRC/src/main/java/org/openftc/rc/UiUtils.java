@@ -45,29 +45,35 @@ public class UiUtils {
     }
 
     public static void showOpenRcSummary(final Activity activity) {
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View view = inflater.inflate(R.layout.about_openrc_layout, null);
+        final LayoutInflater inflater = LayoutInflater.from(activity);
+        final View view = inflater.inflate(R.layout.about_openrc_layout, null);
 
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(activity);
-        builder.setCancelable(false);
+        final TextView textView = (TextView)view.findViewById(R.id.about_openrc_textview);
+        final SpannableString aboutText = new SpannableString(activity.getText(R.string.openRcSummary));
+        Linkify.addLinks(aboutText, Linkify.WEB_URLS);
 
-        builder.setTitle("About OpenRC")
+        textView.setText(aboutText);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        new AlertDialog.Builder(activity)
+                .setCancelable(false)
+                .setTitle("About OpenRC")
                 .setView(view)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
                 .setIcon(R.drawable.ic_info_outline)
                 .show();
+
     }
 
     public static void showLegalityAcknowlegementDialog(final Activity activity) {
-        SpannableString dialogText = new SpannableString(activity.getText(R.string.openRcLegalityWarning));
+        final SpannableString dialogText = new SpannableString(activity.getText(R.string.openRcLegalityWarning));
         Linkify.addLinks(dialogText, Linkify.WEB_URLS);
 
-        AlertDialog legalityDialog = new AlertDialog.Builder(activity)
+        final AlertDialog legalityDialog = new AlertDialog.Builder(activity)
                 .setMessage(dialogText)
                 .setPositiveButton("Acknowledged.", new DialogInterface.OnClickListener() {
                     @Override
