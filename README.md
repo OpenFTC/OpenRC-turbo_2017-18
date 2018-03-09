@@ -1,10 +1,22 @@
 [![Discord](https://img.shields.io/discord/377144270034829324.svg?style=for-the-badge)](https://discord.gg/ameFTnC)
 
-# OpenRC-turbo is to be used at your own risk.
-##### While every change is made with care not to break anything, FIRST has NOT tested our modifications.
-##### Volunteers at competitions may be less willing to assist you if you use OpenRC.
-The OpenFTC community (which created OpenRC) is very helpful, so please create an issue or talk to us on Discord if you
-encounter any problems.
+# OpenRC-turbo
+
+OpenRC-turbo is a modified version of the official [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit)
+that provides various enhancements to the FTC development experience. Check out our
+[documentation on the OpenFTC website](https://openftc.github.io/OpenRC/).
+
+## Legality for competition use
+
+The Game Design Committee ruled on the official Game Q&A forum that [OpenRC is not legal for competition use](https://ftcforum.usfirst.org/forum/i-first-i-tech-challenge-game-q-and-a-forum-this-is-a-moderated-forum/first-relic-recovery-presented-by-qualcomm-game-q-a-forum/robot-inspection-rules/answers-electrical-materials/50465-control-system-answers?p=63242#post63242)
+because it modifies the libraries that the official SDK provides. Because the real value of OpenRC applies even if you
+don't use it at a competition, we added a feature that allows you to deploy a [**competition-legal**](https://openftc.org/OpenRC/legality)
+version of the app from within the OpenRC project (no copying code around). It builds using the untouched libraries that
+ship with the official app.
+
+You can learn how to use this feature by reading [our build variants guide](https://openftc.github.io/OpenRC/buildvariants).
+Always make sure to test this feature for yourself at least a week before competition. Don't ignore the part about doing
+a Gradle sync.
 
 ---
 
@@ -14,8 +26,6 @@ encounter any problems.
 
 OpenRC is currently based on version 3.6 of the SDK. Do not attempt to manually update beyond that yourself. OpenRC will
 be updated within a week of new official app releases.
-
-The OpenRC documentation is still under construction.
 
 ---
 
@@ -29,6 +39,7 @@ converted to first-class modules in the OpenRC Android Studio project. This make
 entirety of the Robot Controller app's source code. In addition, the history in Git shows all changes that have been
 made to the core code since OpenRC's inception. This is a very useful supplement to the changelogs that FIRST provides -
 teams can see exactly what code has been changed and determine how those changes will affect them.
+
 This system allows pull requests and enhancements to the code of the entire SDK, and can allow teams to understand the
 structure and functionality of the whole system. Enhancements will be considered as long as they _do not force teams to
 change their workflow._ Changes made in the OpenRC should keep it possible for teams to move from the official SDK to
@@ -39,6 +50,15 @@ very likely to be added to the list for a future release.
 
 # Release Notes
 To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGELOG.md](doc/FIRST_CHANGELOG.md)
+
+## 2.0 beta 3
+* Bug fix: USB devices plugged in while the app is running were not detected until "restart robot" was selected
+* Added new dialog that displays on first startup, which warns that OpenRC is not legal for competition use, and points
+  the user to the stock build variant
+* On about screen, replaced completely broken app build time with correct app installation time
+* Changed About OpenRC dialog to reflect the GDC ruling
+* Updated README.md to reflect the GDC ruling and add links to website
+* Made link in About OpenRC dialog clickable
 
 ## 2.0 beta 2
 * CRITICAL BUG FIX: The app wouldn't automatically restart when it ought to. Now it will.
