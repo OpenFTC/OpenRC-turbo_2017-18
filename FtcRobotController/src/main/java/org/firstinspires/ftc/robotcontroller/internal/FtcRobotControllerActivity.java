@@ -185,6 +185,8 @@ public class FtcRobotControllerActivity extends Activity {
         }
     };
 
+
+    // Modified for OpenRC: Changes to this method may need to be reflected in SplashActivity.
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -236,6 +238,10 @@ public class FtcRobotControllerActivity extends Activity {
      */
         if (BuildConfig.IS_OPENRC && Utils.isFtcDriverStationInstalled(getPackageManager())) {
             UiUtils.showDsAppInstalledDialog(this);
+        }
+
+        if(BuildConfig.IS_OPENRC && !Utils.hasAcknowledgedLegalityStatus()) {
+            UiUtils.showLegalityAcknowlegementDialog(this);
         }
 
         ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor

@@ -52,9 +52,9 @@ import java.util.WeakHashMap;
 @SuppressWarnings("WeakerAccess")
 public class RobotLog {
 
-  /*
-   * Currently only supports android style logging, but may support more in the future.
-   */
+    /*
+     * Currently only supports android style logging, but may support more in the future.
+     */
 
     /*
      * Only contains static utility methods
@@ -651,16 +651,21 @@ public class RobotLog {
 
         // Kill off the logging process. That will let the shell.run() in the logging thread return
         try {
-            RobotLog.v("closing logcat file " + filename);
+            RobotLog.v("Killing logcat process.");
             RunShellCommand shell = new RunShellCommand();
             RunShellCommand.killSpawnedProcess(logcatCommand, packageName, shell);
         } catch (RobotCoreException e) {
-            RobotLog.v("Unable to cancel writing log file to disk: " + e.toString());
+            RobotLog.e("Unable to cancel writing log file to disk: " + e.toString());
             return;
         }
 
+        RobotLog.v("Waiting for the logcat process to die.");
+        ElapsedTime timeoutTimer = new ElapsedTime();
         // wait until the log thread terminates
         while (loggingThread != null) {
+            if (timeoutTimer.milliseconds() > 1000.0) {
+                loggingThread.interrupt();
+            }
             Thread.yield();
         }
     }

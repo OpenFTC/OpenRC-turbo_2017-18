@@ -604,8 +604,8 @@ public class HardwareDeviceManager implements DeviceManager {
     }
 
     /* (non-Javadoc)
-       * @see com.qualcomm.hardware.DeviceManager#createNxtAccelerationSensor(com.qualcomm.robotcore.hardware.LegacyModule, int)
-       */
+     * @see com.qualcomm.hardware.DeviceManager#createNxtAccelerationSensor(com.qualcomm.robotcore.hardware.LegacyModule, int)
+     */
     @Override
     public AccelerationSensor createHTAccelerationSensor(LegacyModule legacyModule, int physicalPort, String name) {
         RobotLog.v("Creating HiTechnic NXT Acceleration Sensor - Port: " + physicalPort);

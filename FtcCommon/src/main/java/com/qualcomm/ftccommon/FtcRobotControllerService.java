@@ -203,17 +203,17 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
         void awaitUSB() throws InterruptedException {
             updateRobotStatus(RobotStatus.SCANNING_USB);
-      /*
-       * Give android a chance to finish scanning for USB devices before
-       * we create our robot object.
-       *
-       * It takes Android some time per USB device plugged into a hub.
-       * Higher quality hubs take less time.
-       *
-       * If USB hubs are chained this can take much longer.
-       *
-       * TODO: should be reviewed
-       */
+            /*
+             * Give android a chance to finish scanning for USB devices before
+             * we create our robot object.
+             *
+             * It takes Android some time per USB device plugged into a hub.
+             * Higher quality hubs take less time.
+             *
+             * If USB hubs are chained this can take much longer.
+             *
+             * TODO: should be reviewed
+             */
             Thread.sleep(USB_WAIT);
         }
 
@@ -455,14 +455,14 @@ public class FtcRobotControllerService extends Service implements NetworkConnect
 
     public synchronized void setupRobot(EventLoop eventLoop, EventLoop idleEventLoop) {
 
-    /* 
-     * (Possibly out-of-date comment:)
-     * There is a bug in the Android activity life cycle with regards to apps
-     * launched via USB. To work around this bug we will only honor this
-     * method if setup is not currently running
-     *
-     * See: https://code.google.com/p/android/issues/detail?id=25701
-     */
+        /*
+         * (Possibly out-of-date comment:)
+         * There is a bug in the Android activity life cycle with regards to apps
+         * launched via USB. To work around this bug we will only honor this
+         * method if setup is not currently running
+         *
+         * See: https://code.google.com/p/android/issues/detail?id=25701
+         */
 
         shutdownRobotSetup();
 
