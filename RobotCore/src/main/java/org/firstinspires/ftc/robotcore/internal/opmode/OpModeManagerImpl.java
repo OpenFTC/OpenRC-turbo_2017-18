@@ -478,9 +478,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
                         errorWasSet = RobotLog.setGlobalErrorMsg(message);
                         RobotLog.e(message);
 
-            /*
-             * We are giving the Robot Controller a lethal injection, try to help its operator figure out why.
-             */
+                        /*
+                         * We are giving the Robot Controller a lethal injection, try to help its operator figure out why.
+                         */
                         RobotLog.e("Begin thread dump");
                         Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
                         for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {

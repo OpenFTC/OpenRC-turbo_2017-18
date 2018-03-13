@@ -60,32 +60,32 @@ public class FtConstants {
      */
     public static final int FTDI_BREAK_OFF = 0;
     public static final int FTDI_BREAK_ON = 0x4000;
-    public static final int FTDI_SIO_RESET = 0;	/* Reset the port */
-    public static final int FTDI_SIO_MODEM_CTRL = 1;	/* Set the modem control register */
-    public static final int FTDI_SIO_SET_FLOW_CTRL = 2;	/* Set flow control register */
-    public static final int FTDI_SIO_SET_BAUDRATE = 3;	/* Set baud rate */
-    public static final int FTDI_SIO_SET_DATA = 4;	/* Set the data characteristics of the port */
-    public static final int FTDI_SIO_GET_STATUS = 5;	/* Retrieve current value of status reg */
-    public static final int FTDI_SIO_SET_EVENT_CHAR = 6;	/* Set the event character */
-    public static final int FTDI_SIO_SET_ERROR_CHAR = 7;	/* Set the error character */
-    public static final int FTDI_SIO_SET_LATENCY = 9;	/* Set the latency timer */
-    public static final int FTDI_SIO_GET_LATENCY = 10;	/* Read the latency timer */
-    public static final int FTDI_SIO_SET_BITMODE = 11;	/* Set the bit bang I/O mode */
-    public static final int FTDI_SIO_GET_BITMODE = 12;	/* Read pin states from any mode */
-    public static final int FTDI_SIO_READ_EEPROM = 144;	/* Read eeprom word */
-    public static final int FTDI_SIO_WRITE_EEPROM = 145;	/* Write eeprom word */
-    public static final int FTDI_SIO_ERASE_EEPROM = 146;	/* Erase entire eeprom */
+    public static final int FTDI_SIO_RESET = 0;    /* Reset the port */
+    public static final int FTDI_SIO_MODEM_CTRL = 1;    /* Set the modem control register */
+    public static final int FTDI_SIO_SET_FLOW_CTRL = 2;    /* Set flow control register */
+    public static final int FTDI_SIO_SET_BAUDRATE = 3;    /* Set baud rate */
+    public static final int FTDI_SIO_SET_DATA = 4;    /* Set the data characteristics of the port */
+    public static final int FTDI_SIO_GET_STATUS = 5;    /* Retrieve current value of status reg */
+    public static final int FTDI_SIO_SET_EVENT_CHAR = 6;    /* Set the event character */
+    public static final int FTDI_SIO_SET_ERROR_CHAR = 7;    /* Set the error character */
+    public static final int FTDI_SIO_SET_LATENCY = 9;    /* Set the latency timer */
+    public static final int FTDI_SIO_GET_LATENCY = 10;    /* Read the latency timer */
+    public static final int FTDI_SIO_SET_BITMODE = 11;    /* Set the bit bang I/O mode */
+    public static final int FTDI_SIO_GET_BITMODE = 12;    /* Read pin states from any mode */
+    public static final int FTDI_SIO_READ_EEPROM = 144;    /* Read eeprom word */
+    public static final int FTDI_SIO_WRITE_EEPROM = 145;    /* Write eeprom word */
+    public static final int FTDI_SIO_ERASE_EEPROM = 146;    /* Erase entire eeprom */
 
     /* Port Identifier Table */
-    public static final int FTDI_PIT_DEFAULT = 0;	/* SIOA */
-    public static final int FTDI_PIT_SIOA = 1;	/* SIOA */
-    public static final int FTDI_PIT_SIOB = 2;	/* SIOB */
-    public static final int FTDI_PIT_PARALLEL = 3;	/* Parallel */
+    public static final int FTDI_PIT_DEFAULT = 0;    /* SIOA */
+    public static final int FTDI_PIT_SIOA = 1;    /* SIOA */
+    public static final int FTDI_PIT_SIOB = 2;    /* SIOB */
+    public static final int FTDI_PIT_PARALLEL = 3;    /* Parallel */
 
     /* Values for driver_info */
     //public static final int UFTDI_JTAG_IFACE(i)	(1 << i)	/* Flag interface as jtag */
-    public static final int UFTDI_JTAG_IFACES_MAX = 8;		/* Allow up to 8 jtag intfs */
-    public static final int UFTDI_JTAG_CHECK_STRING = 0xff;	    /* Check product names table */
+    public static final int UFTDI_JTAG_IFACES_MAX = 8;        /* Allow up to 8 jtag intfs */
+    public static final int UFTDI_JTAG_CHECK_STRING = 0xff;        /* Check product names table */
     public static final int UFTDI_JTAG_MASK = 0xff;
 
     /*
