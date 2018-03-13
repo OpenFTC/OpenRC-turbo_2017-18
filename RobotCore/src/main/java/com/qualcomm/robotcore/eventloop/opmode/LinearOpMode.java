@@ -119,13 +119,13 @@ public abstract class LinearOpMode extends OpMode {
      */
     @Deprecated
     public void waitForNextHardwareCycle() throws InterruptedException {
-    /*
-     * If an InterruptedException is thrown we won't handle it, instead
-     * we will pass it up to the calling method to handle.
-     *
-     * In the case of the linear op mode; this will likely cause the
-     * thread to terminate.
-     */
+        /*
+         * If an InterruptedException is thrown we won't handle it, instead
+         * we will pass it up to the calling method to handle.
+         *
+         * In the case of the linear op mode; this will likely cause the
+         * thread to terminate.
+         */
         synchronized (this) {
             this.wait();
         }

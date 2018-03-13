@@ -158,9 +158,9 @@ public class MatrixDcMotorController implements DcMotorController {
             case RUN_TO_POSITION: // 0x03
                 return CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL;
             case STOP_AND_RESET_ENCODER:
-            /*
-             * Set the reset bit in the Mode byte.  This will also reset the power/position/target bytes.
-             */
+                /*
+                 * Set the reset bit in the Mode byte.  This will also reset the power/position/target bytes.
+                 */
                 return CHANNEL_MODE_FLAG_SELECT_RESET;
         }
         return CHANNEL_MODE_FLAG_SELECT_RESET;
@@ -175,9 +175,9 @@ public class MatrixDcMotorController implements DcMotorController {
             case CHANNEL_MODE_FLAG_SELECT_RTP_CONTROL: // 0x03
                 return DcMotor.RunMode.RUN_TO_POSITION;
             case CHANNEL_MODE_FLAG_SELECT_RESET:
-            /*
-             * Set the reset bit in the Mode byte.  This will also reset the power/position/target bytes.
-             */
+                /*
+                 * Set the reset bit in the Mode byte.  This will also reset the power/position/target bytes.
+                 */
                 return DcMotor.RunMode.STOP_AND_RESET_ENCODER;
         }
 

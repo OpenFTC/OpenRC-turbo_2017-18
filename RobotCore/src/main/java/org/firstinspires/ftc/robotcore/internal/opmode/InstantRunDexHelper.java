@@ -101,9 +101,9 @@ public class InstantRunDexHelper {
                     } finally {
                         dexFile.close();
                     }
-                /*
-                 * Catch, log, but don't rethrow as we might as well not short-circuit the list of paths.
-                 */
+                    /*
+                     * Catch, log, but don't rethrow as we might as well not short-circuit the list of paths.
+                     */
                 } catch (IOException e) {
                     RobotLog.ee(TAG, e, "Error loading dex file: " + f.toString() + ", IOException: " + e.toString());
                 }

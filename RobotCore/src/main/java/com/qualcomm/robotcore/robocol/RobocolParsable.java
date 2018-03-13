@@ -40,19 +40,19 @@ import com.qualcomm.robotcore.util.RobotLog;
  */
 public interface RobocolParsable {
 
-  /*
-   * When implementing this class, you must make sure you populate the header
-   * at the beginning of your buffer.
-   *
-   * Robocol Packet Format
-   *
-   *   Byte | Field
-   * -------|-------------------------
-   *    00  | Message type
-   * 01-02  | Payload length, in bytes
-   * 03-04  | Sequence number
-   *    05+ | Payload
-   */
+    /*
+     * When implementing this class, you must make sure you populate the header
+     * at the beginning of your buffer.
+     *
+     * Robocol Packet Format
+     *
+     *   Byte | Field
+     * -------|-------------------------
+     *    00  | Message type
+     * 01-02  | Payload length, in bytes
+     * 03-04  | Sequence number
+     *    05+ | Payload
+     */
 
     /**
      * Message Type
