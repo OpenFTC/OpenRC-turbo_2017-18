@@ -52,6 +52,7 @@ into [OpenRC-turbo](https://github.com/OpenFTC/OpenRC-turbo), which features fas
 To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGELOG.md](doc/FIRST_CHANGELOG.md)
 
 ## 2.0 beta 3
+* Updated to version 3.7 of the official SDK, with a fix for Android 7.0 Nougat
 * Bug fix: USB devices plugged in while the app is running were not detected until "restart robot" was selected
 * Added new dialog that displays on first startup, which warns that OpenRC is not legal for competition use, and points
   the user to the stock build variant
