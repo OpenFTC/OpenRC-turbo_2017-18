@@ -1,13 +1,14 @@
 <ScrollView
+
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
     <TextView
+        android:id="@+id/about_openrc_textview"
         android:layout_width="match_parent"
         android:layout_margin="10dp"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:text="@string/openRcSummary"/>
+        android:textSize="15sp" />
 
 </ScrollView>
