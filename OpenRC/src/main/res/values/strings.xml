@@ -1,6 +1,26 @@
 <resources>
     <string name="app_name">OpenRC</string>
-    <string name="openRcSummary">OpenRC is a modified version of the SDK created by members of the OpenFTC community. The goal of OpenRC is to add extra features and functionality to the official SDK, while being conscientious to ensure that any changes won\'t create new bugs which could cause problems during a competition/event.\n\nThe legality of OpenRC has not been ruled on by the GDC, however, as of revision 1.3 of the 2017–18 game manual, modifications to the RC app are not prohibited.\n\nFor more info about OpenRC and the OpenFTC community responsible for it, please see openftc.org</string>
+    <string name="openRcSummary">
+        OpenRC is a modified version of the ftc_app software created by members of the OpenFTC
+        community. The goal of OpenRC is to improve the development experience for teams, while providing a quick-and-easy
+        path to install a competition-legal version of the app.
+
+        \n\nThe GDC has ruled that OpenRC is NOT legal for competition use, and the user acknowledged this fact the first
+        time they launched this app. For more information, visit http://openftc.org/OpenRC/legality
+
+        \n\nFor more information about OpenRC and the OpenFTC community responsible for it, please visit http://openftc.org/OpenRC
+    </string>
+
+    <string name="openRcLegalityWarning">
+        OpenRC has been ruled ILLEGAL for competition use.
+
+        \n\nUse Android Studio to switch to the competition-legal stock build variant before going to a competition.
+
+        \n\nhttp://openftc.org/OpenRC/legality
+    </string>
+
+    <string name="openRcPreferencesFile">org.openftc.openrc.preferences</string>
+    <string name="acknowledgedLegalityPrefKey">acknowledged_legality</string>
 
     <!-- Strings for Line Wrap preference -->
     <string name="prefcat_logging_key">logging_category</string>

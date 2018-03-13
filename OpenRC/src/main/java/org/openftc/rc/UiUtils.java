@@ -6,8 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 public class UiUtils {
     public static void showDsAppInstalledDialog(final Activity activity) {
@@ -41,21 +45,51 @@ public class UiUtils {
     }
 
     public static void showOpenRcSummary(final Activity activity) {
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View view = inflater.inflate(R.layout.about_openrc_layout, null);
+        final LayoutInflater inflater = LayoutInflater.from(activity);
+        final View view = inflater.inflate(R.layout.about_openrc_layout, null);
 
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(activity);
-        builder.setCancelable(false);
+        final TextView textView = (TextView)view.findViewById(R.id.about_openrc_textview);
+        final SpannableString aboutText = new SpannableString(activity.getText(R.string.openRcSummary));
+        Linkify.addLinks(aboutText, Linkify.WEB_URLS);
 
-        builder.setTitle("About OpenRC")
+        textView.setText(aboutText);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        new AlertDialog.Builder(activity)
+                .setCancelable(false)
+                .setTitle("About OpenRC")
                 .setView(view)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
                 .setIcon(R.drawable.ic_info_outline)
                 .show();
+
+    }
+
+    public static void showLegalityAcknowlegementDialog(final Activity activity) {
+        final SpannableString dialogText = new SpannableString(activity.getText(R.string.openRcLegalityWarning));
+        Linkify.addLinks(dialogText, Linkify.WEB_URLS);
+
+        final AlertDialog legalityDialog = new AlertDialog.Builder(activity)
+                .setMessage(dialogText)
+                .setPositiveButton("Acknowledged.", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Utils.setLegalityAcknowledgementStatus(true);
+                    }
+                })
+                .setNegativeButton("Tell me again.", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Utils.setLegalityAcknowledgementStatus(false);
+                    }
+                })
+                .create();
+        legalityDialog.show();
+
+        ((TextView)legalityDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
