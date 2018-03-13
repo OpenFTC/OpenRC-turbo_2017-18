@@ -250,9 +250,9 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
             case PROPERTY_POSITION:
                 offset = motorPositionOffset[transaction.motor];
                 len = 4;
-            /*
-             * Unused for reads, but Android Studio complains so...
-             */
+                /*
+                 * Unused for reads, but Android Studio complains so...
+                 */
                 buffer = new byte[1];
                 buffer[0] = 0x0;
                 break;
@@ -294,9 +294,9 @@ public class MatrixMasterController implements I2cController.I2cPortReadyCallbac
             case PROPERTY_MOTOR_BATCH:
                 offset = motorPositionOffset[transaction.motor];
                 ByteBuffer bb = ByteBuffer.allocate(10);
-            /*
-             * TODO: Do we really need to write position? (Probably not)
-             */
+                /*
+                 * TODO: Do we really need to write position? (Probably not)
+                 */
                 bb.put(TypeConversion.intToByteArray(0));
                 bb.put(TypeConversion.intToByteArray(transaction.target));
                 bb.put(transaction.speed);

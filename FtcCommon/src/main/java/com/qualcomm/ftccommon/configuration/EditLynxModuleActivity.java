@@ -228,8 +228,8 @@ public class EditLynxModuleActivity extends EditActivity {
                 }
             }
             /*
-            * Save as dirty.
-            */
+             * Save as dirty.
+             */
             currentCfgFile.markDirty();
             robotConfigFileManager.setActiveConfig(currentCfgFile);
         }

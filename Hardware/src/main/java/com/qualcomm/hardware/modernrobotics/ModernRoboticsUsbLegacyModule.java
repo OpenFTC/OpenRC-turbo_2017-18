@@ -152,8 +152,8 @@ public class ModernRoboticsUsbLegacyModule extends ModernRoboticsUsbI2cControlle
     };
 
     /*
-   * map of NXT ports to memory addresses
-   */
+     * map of NXT ports to memory addresses
+     */
     public static final int[] ADDRESS_I2C_PORT_MAP = {
             ADDRESS_I2C_PORT_SO,
             ADDRESS_I2C_PORT_S1,

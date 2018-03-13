@@ -690,10 +690,10 @@ public class FtcConfigurationActivity extends EditActivity implements RecvLoopRu
                 }
 
                 try {
-          /*
-           * If the user changed the name then we create a new set of metadata for the
-           * new name and set the active config to be the new metadata
-           */
+                    /*
+                     * If the user changed the name then we create a new set of metadata for the
+                     * new name and set the active config to be the new metadata
+                     */
                     if (!currentCfgFile.getName().equals(newConfigurationName)) {
                         currentCfgFile = new RobotConfigFile(robotConfigFileManager, newConfigurationName);
                     }

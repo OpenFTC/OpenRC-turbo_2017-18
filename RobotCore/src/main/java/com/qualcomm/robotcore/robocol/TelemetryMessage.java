@@ -401,39 +401,39 @@ public class TelemetryMessage extends RobocolParsableBase {
 
     private int countMessageBytes() {
 
-    /*
-     * Data format
-     *
-     * bytes    | format | value
-     * ---------|--------|---------------------------------
-     *  8       | int64  | timestamp
-     *  1       | uint8  | isSorted
-     *  1       | uint8  | robotState
-     *  1       | uint8  | length of tag (may be zero)
-     *  varies  | UTF-8  | value of tag
-     *  1       | uint8  | count of string data points
-     *  varies  | varies | string data points
-     *  1       | uint8  | count of number data points
-     *  varies  | varies | number data points
-     *
-     *
-     * String Data Points (repeating)
-     *
-     * bytes    | format | value
-     * ---------|--------|---------------------------------
-     *  2       | uint16 | length of key
-     *  varies  | UTF-8  | key
-     *  2       | uint16 | length of value
-     *  varies  | UTF-8  | value
-     *
-     * Number Data Points (repeating)
-     *
-     * bytes    | format | value
-     * ---------|--------|---------------------------------
-     *  2       | uint16 | length of key
-     *  varies  | UTF-8  | key
-     *  4       | float  | value
-     */
+        /*
+         * Data format
+         *
+         * bytes    | format | value
+         * ---------|--------|---------------------------------
+         *  8       | int64  | timestamp
+         *  1       | uint8  | isSorted
+         *  1       | uint8  | robotState
+         *  1       | uint8  | length of tag (may be zero)
+         *  varies  | UTF-8  | value of tag
+         *  1       | uint8  | count of string data points
+         *  varies  | varies | string data points
+         *  1       | uint8  | count of number data points
+         *  varies  | varies | number data points
+         *
+         *
+         * String Data Points (repeating)
+         *
+         * bytes    | format | value
+         * ---------|--------|---------------------------------
+         *  2       | uint16 | length of key
+         *  varies  | UTF-8  | key
+         *  2       | uint16 | length of value
+         *  varies  | UTF-8  | value
+         *
+         * Number Data Points (repeating)
+         *
+         * bytes    | format | value
+         * ---------|--------|---------------------------------
+         *  2       | uint16 | length of key
+         *  varies  | UTF-8  | key
+         *  4       | float  | value
+         */
 
         int count = cbTimestamp + cbSorted + cbRobotState;
 

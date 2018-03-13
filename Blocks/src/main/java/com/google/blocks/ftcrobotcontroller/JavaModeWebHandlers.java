@@ -1321,14 +1321,14 @@ class JavaModeWebHandlers {
          * @return a response with the current millisecond time if the launch was successful
          */
         private NanoHTTPD.Response launchBuild() {
-        /*
-        *      <li>control: Whenever the contents of the 'buildRequest.txt' file in this directory is
-*                changed, a build is automatically kicked off it's not already running. Note
-*                that the contents of the file don't matter, only the act of changing it. This
-*                directory also contains a locking mechanism so as to allow clients to examine
-*                the state of a successful build without having to worry that a new build will
-*                be kicked off while they are doing so. See 'buildLock' below.</li>
-         */
+            /*
+             *      <li>control: Whenever the contents of the 'buildRequest.txt' file in this directory is
+             *                changed, a build is automatically kicked off it's not already running. Note
+             *                that the contents of the file don't matter, only the act of changing it. This
+             *                directory also contains a locking mechanism so as to allow clients to examine
+             *                the state of a successful build without having to worry that a new build will
+             *                be kicked off while they are doing so. See 'buildLock' below.</li>
+             */
             File buildStartFile = OnBotJavaManager.buildRequestFile;
             synchronized (buildMonitor.buildCompletionNotifier) {
                 try {
@@ -1932,11 +1932,11 @@ class JavaModeWebHandlers {
                 srcDir.mkdirs();
             }
             ArrayList<String> srcList = new ArrayList<>();
-        /*
-        *      <li>jars: (optional) Any externally-compiled jar src can be placed in this
-        *                directory. They will be installed in the system, much as the .java source
-        *                src are after they have been compiled.</li>
-         */
+            /*
+             *      <li>jars: (optional) Any externally-compiled jar src can be placed in this
+             *                directory. They will be installed in the system, much as the .java source
+             *                src are after they have been compiled.</li>
+             */
             final String jarPath = OnBotJavaManager.jarDir.getAbsolutePath();
             File jarDir = OnBotJavaManager.jarDir.getAbsoluteFile();
             if (!jarDir.isDirectory()) {
