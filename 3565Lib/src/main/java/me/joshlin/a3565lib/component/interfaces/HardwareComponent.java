@@ -51,5 +51,5 @@ public abstract class HardwareComponent implements RobotSystem {
         this.status = status;
     }
 
-    public abstract void lock();
+    //public abstract void lock();
 }

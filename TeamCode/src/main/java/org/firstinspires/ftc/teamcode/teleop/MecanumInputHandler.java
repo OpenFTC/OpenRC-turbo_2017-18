@@ -45,13 +45,22 @@ public class MecanumInputHandler extends InputHandler {
         }
 
         // Move the intake
-        if (gamepad1.b || gamepad2.b) {
+        if (gamepad1.b) {
             robot.intake.in();
-        } else if (gamepad1.x || gamepad2.x) {
+        } else if (gamepad1.x) {
             robot.intake.out();
-        } else if (gamepad1.y || gamepad2.y) {
+        } else if (gamepad1.y) {
             robot.intake.stop();
         }
+
+//        if (gamepad2.b) {
+//            robot.flipperMotor.setTargetPosition(0);
+//        } else if (gamepad2.y) {
+//            robot.flipperMotor.setTargetPosition(200);
+//        }
+
+
+
 
         // Move the flipper
         if (gamepad1.dpad_left || gamepad2.dpad_left) {
@@ -59,7 +68,13 @@ public class MecanumInputHandler extends InputHandler {
         } else if (gamepad1.dpad_right|| gamepad2.dpad_right) {
             robot.flipperLift.retract();
         } else if (gamepad1.a|| gamepad2.a) {
-            robot.flipperLift.lock();
+            // robot.flipperLift.lock();
+        } else if (gamepad2.b) {
+            robot.flipper.down();
+        } else if (gamepad2.x) {
+            robot.flipper.up();
+        } else if (gamepad2.y) {
+            robot.flipper.center();
         } else {
             robot.flipperLift.stop();
         }

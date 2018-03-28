@@ -37,6 +37,8 @@ public class MecanumTeleOp extends CVLinearOpMode {
             telemetry.addData("Flipper", robot.flipperLift.getStatus());
             telemetry.addData("Lift", robot.glyphLift.getStatus());
             telemetry.addData("Arm", robot.vertical.getStatus());
+            telemetry.addData("Position", robot.flipperMotor.getCurrentPosition());
+
             telemetry.update();
         }
     }

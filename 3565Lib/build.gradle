@@ -29,7 +29,7 @@ android {
         }
     }
 
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

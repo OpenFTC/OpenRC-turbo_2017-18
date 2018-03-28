@@ -41,7 +41,7 @@ public class AutoParallelRed extends Auto {
         alignWithCryptobox();
 
         //=============================[Put Glyph in Cryptobox]=====================================
-        correctTurn(-87);
+        correctTurn(-85);
         putGlyphInCryptobox();
 
         robot.beep();

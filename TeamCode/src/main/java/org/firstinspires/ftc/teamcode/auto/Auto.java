@@ -27,7 +27,7 @@ public abstract class Auto extends CVLinearOpMode {
     // Center pixel of the phone screen (determine by dividing the total width of the screen by 2)
     private static final int SCREEN_CENTER = 432;
     // Change this to correct the center (if the robot is tracking too far right, subtract; if the robot is tracking too far left, add)
-    private static final int RED_CENTER_CORRECTION = 60;
+    private static final int RED_CENTER_CORRECTION = 39;
     // Change this to correct the center (if the robot is tracking too far left, subtract; if the robot is tracking too far right, add)
     private static final int BLUE_CENTER_CORRECTION = 40;
     // The corrected target column position on the screen

@@ -6,8 +6,6 @@
 //import org.firstinspires.ftc.teamcode.hardwaremap.RevbotMecanum;
 //
 //import me.joshlin.a3565lib.component.encodermotor.EncoderMotorHardwareComponent;
-//import me.joshlin.a3565lib.component.encodermotor.EncoderMotorPivot;
-//import me.joshlin.a3565lib.component.interfaces.Pivot;
 //
 ///**
 // * Created by josh on 2/17/18.
@@ -17,13 +15,13 @@
 //public class PivotTest extends LinearOpMode {
 //    private RevbotMecanum robot = new RevbotMecanum();
 //
-//    private Pivot flipper;
+//    private EncoderMotorHardwareComponent flipper;
 //
 //    @Override
 //    public void runOpMode() throws InterruptedException {
 //        robot.init(hardwareMap);
-//        flipper = robot.flipper;
-//        flipper.
+//        flipper = (EncoderMotorHardwareComponent) robot.flipper;
+//        flipper.reset();
 //
 //        telemetry.addData("Status", "Initialized");
 //        telemetry.update();
