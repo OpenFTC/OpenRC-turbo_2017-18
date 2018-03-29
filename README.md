@@ -4,7 +4,7 @@
 
 OpenRC is a modified version of the official [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit)
 that provides various enhancements to the FTC development experience. Check out our
-[documentation on the OpenFTC website](https://openftc.github.io/OpenRC/).
+[documentation on the OpenFTC website](http://openftc.github.io/OpenRC/).
 
 ## Legality for competition use
 
