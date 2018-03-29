@@ -24,7 +24,12 @@ android {
     }
 }
 
+repositories {
+    flatDir {
+        dirs '../libs'
+    }
+}
+
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(path: ':RobotCore')
+    compileOnly(name: 'RobotCore-release', ext: 'aar')
 }
