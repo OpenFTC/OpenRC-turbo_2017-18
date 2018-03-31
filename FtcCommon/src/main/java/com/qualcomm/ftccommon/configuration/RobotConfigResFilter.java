@@ -117,10 +117,10 @@ public class RobotConfigResFilter implements ClassFilter {
     @Override
     public void filterClass(Class clazz) {
         if (clazz.getName().endsWith("R$xml")) {
-      /*
-       * Pull out all the R.xml classes and then filter all the xml files for robot configurations.
-       * Create a list of robot configurations to be used elsewhere.
-       */
+            /*
+             * Pull out all the R.xml classes and then filter all the xml files for robot configurations.
+             * Create a list of robot configurations to be used elsewhere.
+             */
             Field[] fields = clazz.getFields();
             for (Field f : fields) {
                 try {

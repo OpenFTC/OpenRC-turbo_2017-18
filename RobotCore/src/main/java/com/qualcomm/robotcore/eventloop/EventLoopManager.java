@@ -624,9 +624,9 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
         networkConnectionHandler.sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_ROBOT_STATE, Integer.toString(state.asByte())));
     }
 
-  /*
-   * Event processing methods
-   */
+    /*
+     * Event processing methods
+     */
 
     @Override
     public CallbackResult gamepadEvent(RobocolDatagram packet) throws RobotCoreException {

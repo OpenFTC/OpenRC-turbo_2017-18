@@ -412,11 +412,11 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     }
 
     protected void doReadCycle() throws InterruptedException, RobotUsbException /* never RuntimeException, such as null pointer */ {
-    /*
-     * read, but don't even think of touching the controller if reads have been
-     * suppressed: the controller is in an extremely sensitive state which such
-     * measures are necessary.
-     */
+        /*
+         * read, but don't even think of touching the controller if reads have been
+         * suppressed: the controller is in an extremely sensitive state which such
+         * measures are necessary.
+         */
         synchronized (readSupressionLock) {
             if (!suppressReads) {
                 try {
@@ -457,9 +457,9 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
 
 
     protected void doWriteCycle() throws InterruptedException, RobotUsbException /* never RuntimeException, such as null pointer */ {
-    /*
-     * Handle adjustment of buffer. Then write!
-     */
+        /*
+         * Handle adjustment of buffer. Then write!
+         */
         synchronized (localDeviceWriteCache) {
 
             if (fullWriteNeeded) {
@@ -547,10 +547,10 @@ public class ReadWriteRunnableStandard implements ReadWriteRunnable {
     protected void dumpBuffers(String name, byte[] byteArray) {
         RobotLog.v("Dumping " + name + " buffers for " + serialNumber);
 
-    /*
-     * We want to print the contents of the local device cache, but not all of it. Only the
-     * bytes up to the device buffer length matter.
-     */
+        /*
+         * We want to print the contents of the local device cache, but not all of it. Only the
+         * bytes up to the device buffer length matter.
+         */
 
         StringBuilder s = new StringBuilder(MAX_BUFFER_SIZE * 4);
         for (int i = 0; i < startAddress + monitorLength; i++) {
