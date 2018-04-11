@@ -4,17 +4,17 @@
 
 OpenRC is a modified version of the official [FTC SDK](https://github.com/ftctechnh/ftc_app) (Software Development Kit)
 that provides various enhancements to the FTC development experience. Check out our
-[documentation on the OpenFTC website](https://openftc.github.io/OpenRC/).
+[documentation on the OpenFTC website](https://www.openftc.org/openrc/).
 
 ## Legality for competition use
 
 The Game Design Committee ruled on the official Game Q&A forum that [OpenRC is not legal for competition use](https://ftcforum.usfirst.org/forum/i-first-i-tech-challenge-game-q-and-a-forum-this-is-a-moderated-forum/first-relic-recovery-presented-by-qualcomm-game-q-a-forum/robot-inspection-rules/answers-electrical-materials/50465-control-system-answers?p=63242#post63242)
 because it modifies the libraries that the official SDK provides. Because the real value of OpenRC applies even if you
-don't use it at a competition, we added a feature that allows you to deploy a [**competition-legal**](https://openftc.org/OpenRC/legality)
+don't use it at a competition, we added a feature that allows you to deploy a [**competition-legal**](https://www.openftc.org/OpenRC/legality)
 version of the app from within the OpenRC project (no copying code around). It builds using the untouched libraries that
 ship with the official app.
 
-You can learn how to use this feature by reading [our build variants guide](https://openftc.github.io/OpenRC/buildvariants).
+You can learn how to use this feature by reading [our build variants guide](https://www.openftc.org/openrc/buildvariants).
 Always make sure to test this feature for yourself at least a week before competition. Don't ignore the part about doing
 a Gradle sync.
 
@@ -50,6 +50,10 @@ into [OpenRC-turbo](https://github.com/OpenFTC/OpenRC-turbo), which features fas
 
 # Release Notes
 To see the release notes for FIRST's releases of this SDK, see [doc/FIRST_CHANGELOG.md](doc/FIRST_CHANGELOG.md)
+
+## 2.0 beta 4
+* CRITICAL BUG FIX: Stock mode was broken in 2.0 beta 3
+* Fixed incompatiblity with version 3.1 of the Android Gradle Plugin
 
 ## 2.0 beta 3
 * Updated to version 3.7 of the official SDK, with a fix for Android 7.0 Nougat
