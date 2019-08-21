@@ -1,3 +1,5 @@
+# This repository is deprecated. Please see the refreshed [OpenRC-Turbo](https://github.com/OpenFTC/OpenRC-Turbo)
+
 [![Discord](https://img.shields.io/discord/377144270034829324.svg?style=for-the-badge)](https://discord.gg/ameFTnC)
 
 # OpenRC
